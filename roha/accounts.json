@@ -1,0 +1,38 @@
+{
+	"mistral":{
+		"currency": "USD",
+		"env": "MISTRAL_API_KEY",
+		"url": "https:/api.mistral.ai/v1",
+		"api":"OpenAI"
+	},
+	"xai": {
+		"currency": "USD",
+		"env": "XAI_API_KEY",
+		"url": "https://api.x.ai/v1",
+		"api":"OpenAI"
+	},
+	"deepseek":{
+		"currency":"CNY",
+		"env":"DEEPSEEK_API_KEY",
+		"url":"https://api.deepseek.com",
+		"api":"DeepSeek"
+	},
+	"alibaba":{
+		"currency": "USD",
+		"env": "ALIBABA_API_KEY",
+		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+		"api": "OpenAI"
+	},
+	"openai": {
+		"currency": "USD",
+		"env": "OPENAI_API_KEY",
+		"url": "https://api.openai.com/v1",
+		"api":"OpenAI"
+	},
+	"gemini":{
+		"currency":"USD",
+		"env":"GEMINI_API_KEY",
+		"url":"https://generativelanguage.googleapis.com/v1beta/openai/",
+		"api":"OpenAI"
+	}
+}

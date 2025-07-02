@@ -1,0 +1,12 @@
+
+  o---/\     /---o     \---/     /---/\     o---/\     \---o     /---/\ 
+  |    \/   /    |     |    /   /    \/    |    \/   /    |     |    \/ 
+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #
+
+	WELCOME TO NITROLOGIC FORGE
+
+	A COMMAND LINE TOOL FOR CHATTING AND SHARING FILES
+
+	THIS TEXT IS PART OF A ROHA FOUNDRY CLIENT DISTRIBUTION
+
+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #

@@ -1,0 +1,154 @@
+{
+	"deepseek-chat@deepseek": {
+		"pricing": [0.27, 0.07, 1.10],
+		"purpose": "General conversation and text generation",
+		"press": "Cost-effective model for versatile tasks, trained on massive text datasets."
+	},
+	"deepseek-reasoner@deepseek": {
+		"pricing": [0.55, 0.14, 2.19],
+		"purpose": "Advanced reasoning and problem-solving",
+		"press": "High-performance model for complex math, coding, and logical tasks."
+	},
+	"qwen-max@alibaba":{
+		"pricing": [1.60,6.40],
+		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
+	},
+	"qwen-plus@alibaba":{
+		"pricing":[0.40,1.20],
+		"purpose":"Balanced performance, speed and cost."
+	},
+	"qwen-turbo@alibaba":{
+		"pricing":[0.05,0.20],
+		"purpose":"Fast speed and low cost"
+	},
+	"qwen2-7b-instruct@alibaba":{
+		"pricing":[0.175,0.70],
+		"purpose":"Open source Qwen2 model"
+	},
+	"ministral-3b-2410@mistral":{
+		"pricing":[0.04,0.04],
+		"purpose":"highly efficient, open-source 3-billion-parameter model",
+		"reality":"chokes for 10 minutes when sharing forge.js file"
+	},
+	"mistral-small-2503@mistral":{
+		"pricing":[0.10,0.30],
+		"purpose":"fast, cost-effective performance in translation, summarization, and sentiment analysis"
+	},
+	"mistral-medium-2505@mistral":{
+		"pricing":[0.40,2.00],
+		"purpose":"Optimized for: coding, mathematical reasoning, long document understanding, image to text, function calling, agentic orchestration"
+	},
+	"magistral-small-2506@mistral":{
+		"pricing":[0.50,1.50],
+		"purpose":"lightweight multilingual reasoning"
+	},
+	"magistral-medium-2506@mistral":{
+		"pricing":[2.00,5.00],
+		"purpose":"Enterprise-grade reasoning in law, healthcare, complex problem solving"
+	},
+	"codestral-2501@mistral":{
+		"pricing":[0.20,0.60],
+		"purpose":"Cheap high-volume code generation",
+		"reality":"Serious no nonsense Mistral AI model"
+	},
+	"devstral-small-2505@mistral":{
+		"pricing":[0.10,0.30],
+		"purpose":"Cheap open-source high-volume code generation"
+	},
+	"o3-2025-04-16@openai":{
+		"pricing":[2.00, 0.50, 8.00],
+		"purpose":"well-rounded and powerful model across domains",
+		"press":"Excels at math, science, coding, visual reasoning tasks, technical writing and instruction-following"
+	},
+	"o3-mini-2025-01-31@openai":{
+		"pricing": [10.00, 2.50, 40.00],
+		"purpose": "Pushing the frontier of cost-effective reasoning.",
+		"press": "tbc",
+		"reality": "fabricates often, cuts corners oddly"
+	},
+	"gpt-4o-2024-08-06@openai": {
+		"pricing": [3.75, 1.875, 15.00],
+		"purpose": "General use with fine-tuning capabilities",
+		"press": "Designed to handle complex queries",
+		"reality": "Full featured model"
+	},
+	"gpt-4o-mini-2024-07-18@openai": {
+		"pricing": [0.30, 0.15, 1.20],
+		"purpose": "Lightweight model for efficiency",
+		"press": "Optimized for speed over complexity",
+		"reality": "Reduced capacity model"
+	},
+	"gpt-4.1-2025-04-14@openai":{
+		"pricing":[2.00,0.50,8.00],
+		"purpose":"Smartest model for complex tasks,",
+		"press":"GPT models for everyday tasks"
+	},
+	"gpt-4.1-nano-2025-04-14@openai":{
+		"pricing":[0.10,0.025,0.40],
+		"purpose":"nano nano - faster than a fast thing",
+		"press":"supporting up to 1 million tokens of context",
+		"reality":"suffers from clueless ideation"
+	},
+	"o4-mini-2025-04-16@openai":{
+		"pricing":[1.10,0.275,4.40],
+		"stone":true,
+		"purpose":"optimized for fast, cost-efficient reasoning",
+		"press":"remarkable performance for its size and cost, particularly in math, coding, and visual tasks",
+		"reality":"a real unit, literally no warmth, single temp"
+	},
+	"gpt-4.5-preview-2025-02-27@openai":{
+		"pricing":[75.00,37.50,150.00],
+		"purpose":"burn money"
+	},
+	"models/gemini-2.5-pro-preview-06-05@gemini":{
+		"pricing":[1.25,10.0],
+		"purpose":"Excels at coding and complex reasoning tasks",
+		"press":"A state-of-the-art multipurpose model",
+		"reality":"Not cheap, and often a complete dunce."
+	},
+	"models/gemini-2.5-flash-preview-04-17@gemini":{
+		"pricing":[0.15,0.15,0.60,3.50],
+		"purpose":"Adaptive thinking, cost efficiency.",
+		"press":"The best price-to-performance ratio.",
+		"reality":"testing now, thinking budget say what now?"
+	},
+	"models/gemini-2.0-flash@gemini":{
+		"pricing":[0.10,0.40],
+		"purpose":"High-performance multimodal model optimized for agent-based applications.",
+		"press":"Balanced performance across tasks with a 1 million token context window, built for the era of Agents.",
+		"reality":"A tendency to regurgitate Mr Creosote style."
+	},
+	"grok-2-vision-1212@xai":{
+		"pricing": [3.00, 0.75, 15.00],
+		"modalities": ["vision"],
+		"purpose": "Image vision, text and code generation",
+		"reality": "Model under test."
+	},
+	"grok-3@xai": {
+		"pricing": [3.00, 0.75, 15.00],
+		"purpose": "Text and code generation",
+		"press": "Versatile model balancing performance and cost for diverse applications.",
+		"reality": "Fair, thorough, sadly a tad expensive, oops, maximum prompt length exceeded."
+	},
+	"grok-3-fast@xai": {
+		"pricing": [5.00, 1.25, 25.00],
+		"purpose": "Rapid text generation and reasoning",
+		"press": "High-speed model for time-sensitive tasks and efficient processing."
+	},
+	"grok-3-mini@xai": {
+		"pricing": [0.30, 0.075, 0.50],
+		"purpose": "Efficient text generation",
+		"press": "Compact model for lightweight reasoning and cost-effective tasks.",
+		"reality": "128K token limit for nice and cheap, same positive vibe as big brother"
+	},
+	"grok-3-mini-fast@xai": {
+		"pricing": [0.60, 0.15, 4.00],
+		"purpose": "Fast text generation",
+		"press": "Lightweight, high-speed model for basic reasoning and cost-efficient applications."
+	},
+	"grok-2-1212@xai": {
+		"pricing": [2.00, 10.00],
+		"purpose": "Advanced reasoning and code generation",
+		"press": "High-performance model for complex research tasks and multi-step workflows."
+	}
+}
