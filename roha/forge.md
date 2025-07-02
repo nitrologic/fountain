@@ -9,6 +9,10 @@ Timestamps in some file names is hex seconds since 1.1.1970.
 commands with no arguments may often prompt for a # index from
 the items displayed
 
+### /listen
+
+Accept connections from web clients on port
+
 ### /attach
 
 Attach an image file (.jpg or .png) with next prompt.

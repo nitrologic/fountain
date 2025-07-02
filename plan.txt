@@ -1,3 +1,5 @@
+- attach images
+- run web server
 - log user prompts
 - add responses and assistants api support
 - check valid assistant, tool and user role usage

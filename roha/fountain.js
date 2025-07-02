@@ -2,12 +2,14 @@
 // A research tool for smelting large language models.
 // (c)2025 Simon Armstrong
 
+// embeds nitrologic roha foundry forge
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
-import { GoogleGenerativeAI } from "npm:@google/generative-ai";
+// import { GoogleGenerativeAI } from "npm:@google/generative-ai";
+import { GoogleGenAI } from "npm:@google/genai";
 
 const fountainVersion = "1.0.7";
 const rohaTitle="fountain "+fountainVersion;
@@ -18,9 +20,10 @@ const exitMessage="";
 const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
 const pageBreak=break50+break50+break50;
 
+const username=Deno.hostname();
+
 const terminalColumns=120;
 const slowMillis=25;
-const SpentTokenChar="¤";
 const MaxFileSize=512*1024;
 
 const appDir=Deno.cwd();
@@ -74,6 +77,7 @@ const emptyRoha={
 	},
 	tags:{},
 	sharedFiles:[],
+	attachedFiles:[],
 	saves:[],
 	counters:{},
 	mut:{},
@@ -316,13 +320,13 @@ async function flush() {
 	const delay = roha.config.slow ? slowMillis : 0;
 	for (const line of printBuffer) {
 		console.log(line);
-		log(line,"model");
+		log(line,"mut");
 		await sleep(delay)
 	}
 	printBuffer=[];
 	for (const line of outputBuffer) {
 		console.log(line);
-		log(line,"stdout");
+		log(line,"roha");
 		await sleep(delay);
 	}
 	outputBuffer=[];
@@ -574,7 +578,7 @@ function listShare(){
 	sorted.sort((a, b) => b.size - a.size);
 	for (const share of sorted) {
 		let shared=(rohaShares.includes(share.path))?"*":"";
-		let tags="["+share.tag+"]";
+		let tags="["+rohaTitle+" "+share.tag+"]";
 		let info=(share.description)?share.description:"";
 		echo((count++),share.path,share.size,shared,tags,info);
 		list.push(share.id);
@@ -1106,13 +1110,54 @@ function readable(text){
 	return text;
 }
 
+
+function listShares(shares){
+	const list=[];
+	let count=0;
+	let sorted = shares.slice();
+	sorted.sort((a, b) => b.size - a.size);
+	for (const share of sorted) {
+		let shared=(rohaShares.includes(share.path))?"*":"";
+		let tags="["+rohaTitle+" "+share.tag+"]";
+		let info=(share.description)?share.description:"";
+		echo((count++),share.path,share.size,shared,tags,info);
+		list.push(share.id);
+	}
+	shareList=list;
+}
+
+async function attachMedia(words){
+	if (words.length==1){
+		listShares(roha.attachedFiles);
+	}else{
+		const filename = words.slice(1).join(" ");
+		const path = resolvePath(Deno.cwd(), filename);
+		const info = await Deno.stat(path);
+		const tag = "";//await promptForge("Enter tag name (optional):");
+		if(info.isFile){
+			const size=info.size;
+			const modified=info.mtime.getTime();
+			echo("Attach media path:",path,"size:",info.size);
+//			const hash = await hashFile(path,size);
+//			echo("hash:",hash);
+//			await addShare({path,size,modified,hash,tag});
+		}
+		await writeForge();
+	}
+}
+
+var service;
+
 async function callCommand(command) {
 	let dirty=false;
 	let words = command.split(" ");
 	try {
 		switch (words[0]) {
+			case "listen":
+				service=listenPort(words);
+				break;
 			case "attach":
-				attachMedia(words);
+				await attachMedia(words);
 				break;
 			case "think":
 				if (words.length > 1) {
@@ -1550,7 +1595,7 @@ async function relay(depth) {
 		let cost="("+usage.prompt_tokens+"+"+usage.completion_tokens+"["+grokUsage+"])";
 		if(spend) cost="$"+spend.toFixed(3);
 		let temp=grokTemperature.toFixed(1)+"°";
-		let modelSpec=[grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
+		let modelSpec=[rohaTitle,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
 		let status = "["+modelSpec.join(" ")+"]";
 		if (roha.config.ansi)
 			echo(ansiDashBlock+status+ansiReset);
@@ -1686,9 +1731,6 @@ async function chat() {
 
 			if (line.startsWith("/")) {
 				const command = line.substring(1).trim();
-				if(command=="attach"){
-					continue;
-				}
 				let dirty=await callCommand(command);
 				if(dirty){
 					lines.push(warnDirty);
@@ -1697,7 +1739,7 @@ async function chat() {
 				continue;
 			}
 			lines.push(line.trim());
-			await log(line,"prompt")
+			await log(line,username)
 		}
 
 		if (lines.length){
@@ -1754,7 +1796,7 @@ let grokTemperature = 1.0;
 let grokThink = 0.0;
 
 echo("present [",grokModel,"]");
-echo("shares",roha.sharedFiles.length)
+echo("user:",username,"shares:",roha.sharedFiles.length)
 echo("use /help for latest and exit to quit");
 echo("");
 

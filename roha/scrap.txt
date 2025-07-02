@@ -1,0 +1,39 @@
+const SpentTokenChar="¤";
+
+
+
+async function onHttp(connection){
+	(async () => {
+		for await (const r of Deno.serveHttp(connection)) {
+			r.respondWith(new Response("Hello World"));
+		}
+	});
+}
+
+Deno.serve({
+  onListen: ({ port }) => {
+    echo("Deno server listening on port","http://[::]:"+port);
+  },
+}, (req, conn) => {
+  const method = req.method;
+  const ip = conn.remoteAddr.hostname;
+  echo(`${ip} just made an HTTP ${method} request.`);
+  return new Response("Hello, world!");
+});
+
+async function listenPort(words){
+	echo("serving");
+	return Deno.serve(
+		{ port: 8000, hostname: "::" },
+		(_req) => new Response("Hello, world")
+	);
+
+//	Deno.serve((_req) => new Response("Hello, world"));
+/*
+	echo("listening");
+	for await (const connection of Deno.listen({ port: 8000 })) {
+		echo("connecting");
+		onHttp(connection);
+	}
+*/
+}
