@@ -3,7 +3,7 @@
   |    \/   /    |     |    /   /    \/    |    \/   /    |     |    \/ 
 #+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #
 
-	WELCOME TO NITROLOGIC FORGE
+	WELCOME TO NITROLOGIC SLOP FOUNTAIN
 
 	A COMMAND LINE TOOL FOR CHATTING AND SHARING FILES
 

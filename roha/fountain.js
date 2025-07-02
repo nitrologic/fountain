@@ -2,6 +2,7 @@
 // A research tool for smelting large language models.
 // (c)2025 Simon Armstrong
 
+
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
@@ -1325,7 +1326,7 @@ async function callCommand(command) {
 async function pathExists(path) {
 	try {
 		const stat = await Deno.stat(path);
-		if (!stat.isFile) return false;
+//		if (!stat.isFile) return false;
 		return true;
 	} catch (error) {
 		if (error instanceof Deno.errors.NotFound) return false;
@@ -1711,11 +1712,16 @@ async function chat() {
 
 // forge uses rohaPath to boot
 
+let forgeExists = await pathExists(forgePath);
+if(!forgeExists){
+	await Deno.mkdir(forgePath);
+	echo("Created path",forgePath);
+	forgeExists=true;
+}
 const fileExists = await pathExists(rohaPath);
-
 if (!fileExists) {
 	await Deno.writeTextFile(rohaPath, JSON.stringify(emptyRoha));
-	echo("Created new",rohaPath);
+	echo("Created forge",rohaPath);
 }
 
 // forge lists models from active accounts
