@@ -4,6 +4,8 @@
 
 // embeds nitrologic roha foundry forge
 
+// writeForge - 
+
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
@@ -11,7 +13,7 @@ import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 // import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { GoogleGenAI } from "npm:@google/genai";
 
-const fountainVersion = "1.0.7";
+const fountainVersion = "1.0.8";
 const rohaTitle="fountain "+fountainVersion;
 const rohaMihi="I am an experienced software engineer. You are a helpful assistant.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
@@ -20,7 +22,11 @@ const exitMessage="";
 const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
 const pageBreak=break50+break50+break50;
 
-const username=Deno.hostname();
+const username=Deno.env.get("USERNAME");
+const userdomain=Deno.env.get("USERDOMAIN");
+const user=username+"@"+userdomain;
+
+//"nitrologic@ryzen5";//Deno.hostname();
 
 const terminalColumns=120;
 const slowMillis=25;
@@ -38,6 +44,8 @@ const modelRates = JSON.parse(await Deno.readTextFile(ratesPath));
 
 const decoder = new TextDecoder("utf-8");
 const encoder = new TextEncoder();
+
+let fountainMut="mut";
 
 const flagNames={
 	tools : "enable model tool interface",
@@ -280,8 +288,9 @@ let printBuffer = [];
 function print(){
 	const args=arguments.length?Array.from(arguments):[];
 	const lines=args.join(" ").split("\n");
-	for(const line of lines){
-		printBuffer.push(line.trimEnd());
+	for(const eachline of lines){
+		const line=eachline.trimEnd();
+		printBuffer.push({model:fountainMut,line});
 	}
 }
 
@@ -316,17 +325,18 @@ async function log(lines,id){
 }
 
 async function flush() {
-	const out=writer;
 	const delay = roha.config.slow ? slowMillis : 0;
-	for (const line of printBuffer) {
-		console.log(line);
-		log(line,"mut");
+	for (const mutline of printBuffer) {
+		const mut=mutline.model;
+		const line=mutline.line;
+		console.log(line);		
+		await log(line,mut);
 		await sleep(delay)
 	}
 	printBuffer=[];
 	for (const line of outputBuffer) {
 		console.log(line);
-		log(line,"roha");
+		await log(line,"roha");
 		await sleep(delay);
 	}
 	outputBuffer=[];
@@ -547,11 +557,21 @@ async function aboutModel(name){
 	await writeForge();
 }
 
-async function resetModel(name){
-	grokModel=name;
+async function resetModel(modelname){
+	grokModel=modelname;
+	const modelAccount=grokModel.split("@");
+	let path=modelAccount[0];
+	let account=modelAccount[1];
+	let names=path.split("/");
+	let name=names.pop();
+	let nameversion=name.split("-preview");
+	let mut=nameversion[0];
+	fountainMut=mut;	
 	grokFunctions=false;
 	rohaHistory.push({role:"system",content:"Model changed to "+name+"."});
-	await aboutModel(name);
+	if(roha.config.verbose){
+		await aboutModel(name);
+	}
 }
 
 function dropShares(){
@@ -648,7 +668,7 @@ function ansiStyle(text, style = "bold", colorIndex = null) {
 		case "italic": formatted = "\x1b[3m" + formatted + "\x1b[0m"; break;
 		case "underline": formatted = "\x1b[4m" + formatted + "\x1b[0m"; break;
 	}
-	if (colorIndex !== null && colorIndex >= 0 && colorIndex < ansiColors.length) {
+	if (!Deno.noColor && colorIndex !== null && colorIndex >= 0 && colorIndex < ansiColors.length) {
 		formatted = ansiColors[colorIndex] + formatted + "\x1b[0m";
 	}
 	return formatted;
@@ -712,7 +732,7 @@ function mdToAnsi(md) {
 				if (header) {
 					const level = header[0].length;
 					line = line.substring(level).trim();
-					const ink=ansiColors[(colorCycle++)&7];
+					const ink=Deno.noColor?"":ansiColors[(colorCycle++)&7];
 					line = ink + line + ansiReset;	//ansiPop
 				}
 				// bullets
@@ -839,7 +859,7 @@ async function promptForge(message) {
 						promptBuffer = promptBuffer.slice(n);
 					}
 					result = line.trimEnd();
-					log(result, "stdin");
+					await log(result, "stdin");
 					busy = false;
 				} else {
 					bytes.push(byte);
@@ -1537,7 +1557,9 @@ async function relay(depth) {
 		const elapsed=(performance.now()-now)/1000;
 		if (completion.model != model) {
 			echo("[relay model alert model:" + completion.model + " grokModel:" + grokModel + "]");
-			grokModel=completion.model+"@"+account;
+//			grokModel=completion.model+"@"+account;
+			const name=completion.model+"@"+account;
+			resetModel(name);
 		}
 		if (verbose) {
 			// echo("relay completion:" + JSON.stringify(completion, null, "\t"));
@@ -1739,7 +1761,7 @@ async function chat() {
 				continue;
 			}
 			lines.push(line.trim());
-			await log(line,username)
+			await log(line,user)
 		}
 
 		if (lines.length){
@@ -1789,14 +1811,17 @@ for(let account in modelAccounts){
 // forge starts here, grok started this thing, blame grok
 
 await flush();
-let grokModel = roha.model||"deepseek-chat@deepseek";
+
+let grokModel = "";
 let grokFunctions=true;
 let grokUsage = 0;
 let grokTemperature = 1.0;
 let grokThink = 0.0;
 
-echo("present [",grokModel,"]");
-echo("user:",username,"shares:",roha.sharedFiles.length)
+resetModel(roha.model||"deepseek-chat@deepseek");
+
+echo("present [",fountainMut,"]");
+echo("user:",user,"shares:",roha.sharedFiles.length)
 echo("use /help for latest and exit to quit");
 echo("");
 
@@ -1829,7 +1854,7 @@ await flush();
 try {
 	await chat();
 } catch (error) {
-	console.error("Forge crashed, darn, this release should be stable:", error);
+	console.error("Slop Fountain has crashed, darn, this release will be stable soon:", error);
 	await exitForge();
 	Deno.exit(1);
 }
