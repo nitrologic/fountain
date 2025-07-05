@@ -8,7 +8,7 @@ import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
-import { GoogleGenAI } from "npm:@google/genai";
+import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
 const fountainVersion = "1.0.9";
 const rohaTitle="fountain "+fountainVersion;
@@ -391,7 +391,9 @@ async function listModels(config){
 	}
 	return null;
 }
+
 //https://ai.google.dev/gemini-api/docs/text-generation
+
 async function connectGoogle(account,config){
 	try{
 		const baseURL = config.url;
