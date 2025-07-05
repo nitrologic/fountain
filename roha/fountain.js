@@ -8,14 +8,13 @@ import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
-// import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { GoogleGenAI } from "npm:@google/genai";
 
 const fountainVersion = "1.0.9";
 const rohaTitle="fountain "+fountainVersion;
-const rohaMihi="I am an experienced software engineer. You are a helpful assistant.";
+const rohaMihi="Welcome to nitrologic's Slop Fountain. Please be mindful of others, courteous and professional.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
-const warnDirty="Please review source for bugs and all content if notable changes detected, thanks.";
+const warnDirty="Please review modified source.";
 const exitMessage="";
 const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
 const pageBreak=break50+break50+break50;
@@ -48,9 +47,10 @@ let rohaHistory=[];
 let rohaModel="mut";
 
 const flagNames={
+	reasonoutloud : "echo chain of thought",
 	tools : "enable model tool interface",
 	commitonstart : "commit shared files on start",
-	saveonexit : " save conversation history on exit",
+	saveonexit : " save conversation history on exit",	
 	ansi : "markdown ANSI rendering",
 	verbose : "emit debug information",
 	broken : "ansi background blocks",
@@ -172,27 +172,48 @@ function resetHistory(){
 	rohaHistory = [{role:"system",title:rohaTitle,content:rohaMihi}];
 }
 
+function echoContent(content,wide,left,right){
+	const chars=wide-(left+right);
+	const indent=" ".repeat(left);
+	let cursor=0;
+	while(cursor<content.length){
+		let line=content.substring(cursor,cursor+chars);
+		let n=line.indexOf("\n");
+		if(n==-1) n=line.lastIndexOf(" ");
+		if(n!=-1) line=line.substring(0,n+1);
+		echo(indent+line);
+		cursor+=line.length;
+	}
+}
+
 function listHistory(){
+	const wide=terminalColumns;
+	const history=rohaHistory;
 	let total=0;
-	let history=rohaHistory;
 	for(let i=0;i<history.length;i++){
-		let item=history[i];
-		let content=readable(item.content);
-		let clip=content.substring(0,60);
-		let size="("+content.length+")";
-		echo(i,item.role,item.name||"forge",clip,size);
+		const item=history[i];
+		const content=readable(item.content);
+		const clip=content.substring(0,wide);
+		const size="("+content.length+")";
+		const role=item.role.padEnd(10," ");
+		const name=(item.name||"forge").padEnd(15," ");
+		const iii=String(i).padStart(3,"0");
+		echo(iii,role,name,clip,size);
 		total+=content.length;
 	}
-	if(roha.config.squash){
-		let flat=squashMessages(rohaHistory);
-		for(let i=0;i<flat.length;i++){
-			let item=flat[i];
-			let content=readable(item.content).substring(0,90);
-			echo("Squashed flat",i,item.role,item.name||"broken",content);
-		}
-	}
-	let size=unitString(total,4,"B");
+	const size=unitString(total,4,"B");
 	echo("History size",size);
+}
+function logHistory(){
+	const wide=terminalColumns;
+	const flat=squashMessages(rohaHistory);
+	for(let i=0;i<flat.length;i++){
+		const item=flat[i];
+		const iii=String(i).padStart(3,"0");
+		echo(iii,item.role,item.name||item.title||"???");			
+		const content=readable(item.content).substring(0,1500);
+		echoContent(content,wide,4,2);
+	}
 }
 
 function rohaPush(content,name="forge"){
@@ -1237,17 +1258,23 @@ async function callCommand(command) {
 			case "time":
 				echo("Current time:", new Date().toString());
 				break;
+			case "log":
+				logHistory();
+				break;
 			case "history":
 				listHistory();
 				break;
 			case "load":{
-					const save=words[1];
+					let save=words[1];
 					if(save){
 						if(save.length && !isNaN(save)) save=roha.saves[save|0];
 						if(roha.saves.includes(save)){
-							const history=await loadHistory(save);
-							rohaHistory=history;
-							echo("a new history is set");
+							echo("loading",save);
+							const path="forge/"+save;
+							let load=await loadHistory(path);
+							rohaHistory=load;
+							echo("rohaHistory <= ",save);
+							// call history command?
 						}
 					}else{
 						listSaves();
@@ -1469,7 +1496,7 @@ function squashMessages(history) {
 	for(const item of history){
 		if(item.role=="system") system.push(item); else others.push(item);
 	}
-	for(const list of [[...system],[...other]]){
+	for(const list of [[...system],[...others]]){
 		let last=null;
 		for (let i = 0; i < list.length; i++) {
 			const current=list[i];
@@ -1650,7 +1677,7 @@ async function relay(depth) {
 				await relay(depth+1); // Recursive call to process tool results
 			}
 			const reasoning = choice.message.reasoning_content;
-			if(reasoning){
+			if(reasoning && roha.config.reasonoutloud){
 				print("=== reasoning ===");
 				// print chain of thought
 				if (roha.config.ansi) {
