@@ -2,9 +2,7 @@
 // A research tool for smelting large language models.
 // (c)2025 Simon Armstrong
 
-// embeds nitrologic roha foundry forge
-
-// writeForge - 
+// embeds nitrologic roha foundry forge slop fountain
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
@@ -13,7 +11,7 @@ import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 // import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { GoogleGenAI } from "npm:@google/genai";
 
-const fountainVersion = "1.0.8";
+const fountainVersion = "1.0.9";
 const rohaTitle="fountain "+fountainVersion;
 const rohaMihi="I am an experienced software engineer. You are a helpful assistant.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
@@ -24,9 +22,7 @@ const pageBreak=break50+break50+break50;
 
 const username=Deno.env.get("USERNAME");
 const userdomain=Deno.env.get("USERDOMAIN");
-const user=username+"@"+userdomain;
-
-//"nitrologic@ryzen5";//Deno.hostname();
+const rohaUser=username+"@"+userdomain;
 
 const terminalColumns=120;
 const slowMillis=25;
@@ -45,7 +41,11 @@ const modelRates = JSON.parse(await Deno.readTextFile(ratesPath));
 const decoder = new TextDecoder("utf-8");
 const encoder = new TextEncoder();
 
-let fountainMut="mut";
+// rohaHistory is array of {role,name,content}
+// attached as payload messages in chat completions
+
+let rohaHistory=[];
+let rohaModel="mut";
 
 const flagNames={
 	tools : "enable model tool interface",
@@ -157,7 +157,6 @@ let listCommand="";
 let creditCommand=null;
 let rohaShares=[];
 let currentDir = Deno.cwd();
-let rohaHistory;
 
 const sessionStack=[];
 
@@ -170,7 +169,7 @@ function popHistory(){
 	return sessionStack.pop();
 }
 function resetHistory(){
-	rohaHistory = [{role:"system",content:rohaMihi}];
+	rohaHistory = [{role:"system",title:rohaTitle,content:rohaMihi}];
 }
 
 function listHistory(){
@@ -197,7 +196,7 @@ function listHistory(){
 }
 
 function rohaPush(content,name="forge"){
-	rohaHistory.push({role:"user",name,content});
+	rohaHistory.push({role:"user",name:username,content:content});
 }
 
 resetHistory();
@@ -290,7 +289,7 @@ function print(){
 	const lines=args.join(" ").split("\n");
 	for(const eachline of lines){
 		const line=eachline.trimEnd();
-		printBuffer.push({model:fountainMut,line});
+		printBuffer.push({model:rohaModel,line});
 	}
 }
 
@@ -566,9 +565,9 @@ async function resetModel(modelname){
 	let name=names.pop();
 	let nameversion=name.split("-preview");
 	let mut=nameversion[0];
-	fountainMut=mut;	
+	rohaModel=mut;	
 	grokFunctions=false;
-	rohaHistory.push({role:"system",content:"Model changed to "+name+"."});
+	rohaHistory.push({role:"system",title:userdomain,content:"ModelUnderTest:"+modelname+"."});
 	if(roha.config.verbose){
 		await aboutModel(name);
 	}
@@ -619,7 +618,7 @@ async function saveHistory(name) {
 		let filename=(name||"transmission-"+timestamp)+".json";
 		let filePath = resolve(forgePath,filename);
 		let line="Saved session "+filename+".";
-		rohaHistory.push({role:"system",content:line});
+		rohaHistory.push({role:"system",title:"Fountain History Saved",content:line});
 		await Deno.writeTextFile(filePath,JSON.stringify(rohaHistory,null,"\t"));
 		echo(line);
 		roha.saves.push(filename);
@@ -702,7 +701,7 @@ const rohaPrompt=">";
 let colorCycle=0;
 
 function mdToAnsi(md) {
-	let broken=roha.config.broken;
+	const broken = roha.config.broken;
 	const lines = md.split("\n");
 	let inCode = false;
 	const result = broken?[ansiReplyBlock]:[];
@@ -1007,7 +1006,7 @@ async function commitShares(tag) {
 		echo("Removed invalid shares:", removedPaths.join(" "));
 	}
 	if (dirty && tag) {
-		rohaHistory.push({ role: "system", content: "Feel free to call annotate_forge to tag " + tag });
+		rohaHistory.push({ role: "system", title:"Fountain Tool Hint", content: "Feel free to call annotate_forge to tag " + tag });
 	}
 	if (count && roha.config.verbose) {
 		echo("Updated files",count,"of",validShares.length);
@@ -1464,17 +1463,17 @@ async function onCall(toolCall) {
 
 function squashMessages(history) {
 	if (history.length < 2) return history;
-	const squashed = [history[0]];
-	let system=[];
-	let other=[];
-	for(let item of history){
-		if(item.role=="system") system.push(item); else other.push(item);
+	const squashed = [];
+	const system=[];
+	const others=[];
+	for(const item of history){
+		if(item.role=="system") system.push(item); else others.push(item);
 	}
-	for(let list of [system,other]){
+	for(const list of [[...system],[...other]]){
 		let last=null;
 		for (let i = 0; i < list.length; i++) {
 			const current=list[i];
-			if(last){
+			if(last && last.role==current.role){
 				last.content += "\n" + current.content;
 			} else {
 				squashed.push(current);
@@ -1524,17 +1523,21 @@ async function relay(depth) {
 	try {
 		const now=performance.now();
 		const modelAccount=grokModel.split("@");
-		let model=modelAccount[0];
-		let account=modelAccount[1];
-		let endpoint=rohaEndpoint[account];
+		const model=modelAccount[0];
+		const account=modelAccount[1];
+		const endpoint=rohaEndpoint[account];
+
+		// prepare payload
+
 		payload={model};
 		const useTools=grokFunctions&&roha.config.tools;
 		// some toolless models may get snurty unless messages are squashed
 		if(useTools){
-			payload.messages=rohaHistory;
+			payload.messages=[...rohaHistory];
 			payload.tools=rohaTools;
 		}else{
-			payload.messages=squashMessages(rohaHistory);
+//			payload.messages=squashMessages(rohaHistory);
+			payload.messages=[...rohaHistory];
 		}
 		// check stone flag before enabling temperature
 		const info=(grokModel in modelRates)?modelRates[grokModel]:null;
@@ -1552,6 +1555,9 @@ async function relay(depth) {
 //			debug("payload",JSON.stringify(payload));
 			echo(JSON.stringify(payload,null,"\t"));
 		}		
+
+		// relay completions
+
 //		if(config.hasCache) payload.cache_tokens=true;
 		const completion = await endpoint.chat.completions.create(payload);
 		const elapsed=(performance.now()-now)/1000;
@@ -1636,7 +1642,7 @@ async function relay(depth) {
 					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
 				}));
 				let content=choice.message.content || "";
-				rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});
+				rohaHistory.push({role:"assistant",name:payload.model,content,tool_calls: toolCalls});
 				const toolResults = await processToolCalls(calls);
 				for (const result of toolResults) {
 				  rohaHistory.push({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
@@ -1664,7 +1670,7 @@ async function relay(depth) {
 				replies.push(reply);
 			}
 		}
-		const name="mut1";
+		const name=rohaModel||"mut1";
 		let content=replies.join("\n\n");
 		rohaHistory.push({role:"assistant",name,content});
 	} catch (error) {
@@ -1761,13 +1767,13 @@ async function chat() {
 				continue;
 			}
 			lines.push(line.trim());
-			await log(line,user)
+			await log(line,rohaUser)
 		}
 
 		if (lines.length){
 			const query=lines.join("\n");
 			if(query.length){
-				rohaHistory.push({ role: "user", content: query });
+				rohaHistory.push({ role: "user", name:rohaUser, content: query });
 				await relay(0);
 			}
 		}
@@ -1820,8 +1826,8 @@ let grokThink = 0.0;
 
 resetModel(roha.model||"deepseek-chat@deepseek");
 
-echo("present [",fountainMut,"]");
-echo("user:",user,"shares:",roha.sharedFiles.length)
+echo("present [",rohaModel,"]");
+echo("user:",rohaUser,"shares:",roha.sharedFiles.length)
 echo("use /help for latest and exit to quit");
 echo("");
 

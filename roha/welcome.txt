@@ -3,7 +3,7 @@
   |    \/   /    |     |    /   /    \/    |    \/   /    |     |    \/ 
 #+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #
 
-	WELCOME TO NITROLOGIC SLOP FOUNTAIN
+	WELCOME TO NITROLOGIC SLOP FOUNTAIN INTREPID USER
 
 	A COMMAND LINE TOOL FOR CHATTING AND SHARING FILES
 
