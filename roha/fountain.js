@@ -10,7 +10,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
-const fountainVersion = "1.0.9";
+const fountainVersion = "1.1.0";
 const rohaTitle="fountain "+fountainVersion;
 const rohaMihi="Welcome to nitrologic's Slop Fountain. Please be mindful of others, courteous and professional.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
@@ -23,7 +23,7 @@ const username=Deno.env.get("USERNAME");
 const userdomain=Deno.env.get("USERDOMAIN");
 const rohaUser=username+"@"+userdomain;
 
-const terminalColumns=140;
+const terminalColumns=160;
 const slowMillis=25;
 const MaxFileSize=512*1024;
 
@@ -40,7 +40,7 @@ const modelRates = JSON.parse(await Deno.readTextFile(ratesPath));
 const decoder = new TextDecoder("utf-8");
 const encoder = new TextEncoder();
 
-// rohaHistory is array of {role,name,content}
+// rohaHistory is array of {role,name||title,content}
 // attached as payload messages in chat completions
 
 let rohaHistory=[];
@@ -187,7 +187,7 @@ function echoContent(content,wide,left,right){
 }
 
 function listHistory(){
-	const wide=terminalColumns;
+	const wide=terminalColumns-42;
 	const history=rohaHistory;
 	let total=0;
 	for(let i=0;i<history.length;i++){
@@ -198,7 +198,8 @@ function listHistory(){
 		const role=item.role.padEnd(12," ");
 		const name=(item.name||"forge").padEnd(15," ");
 		const iii=String(i).padStart(3,"0");
-		echo(iii,role,name,clip,size);
+		const spend=item.price?item.price.toFixed(4) :"";
+		echo(iii,role,name,clip,size,spend);
 		total+=content.length;
 	}
 	const size=unitString(total,4,"B");
@@ -1585,8 +1586,6 @@ async function processToolCalls(calls) {
 	return results;
 }
 
-// returns spend
-
 async function relay(depth) {
 	const verbose=roha.config.verbose;
 	let payload={};
@@ -1785,7 +1784,6 @@ async function relay(depth) {
 //			echo(JSON.stringify(payload));
 //		}
 	}
-	return spend;
 }
 
 async function chat() {
