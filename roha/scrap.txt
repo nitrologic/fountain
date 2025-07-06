@@ -1,3 +1,6 @@
+	versioning : "allow multiple versions in share history",
+
+
 <meta property="og:locale" content="en_NZ">
 <meta property="og:title" content="Skid Radio" />
 <meta property="og:type" content="music.radio_station" />

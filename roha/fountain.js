@@ -57,31 +57,31 @@ const flagNames={
 	logging : "log all output to file",
 	debugging : "temporary switch for emitting debug information",
 	pushonshare : "emit a /push after any /share",
-	rawPrompt : "experimental rawmode stdin deno prompt replacement",
+	rawprompt : "experimental rawmode stdin deno prompt replacement",
 	resetcounters : "factory reset when reset",
-	versioning : "allow multiple versions in share history",
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed",
-	squash : "experimental history parse",
-	pagemode : "use a page mode interface"
+	squash : "experimental history parse"
 };
 
 const emptyRoha={
 	config:{
-		tools:true,
 		showWelcome:false,
+		reasonoutloud:false,
+		tools:true,
 		commitonstart:true,
-		pushonshare:false,
 		saveonexit:false,
 		ansi:true,
-		slow:false,
-		verbose:true,
+		verbose:false,
 		broken:false,
 		logging:false,
+		debugging:false,
+		pushonshare:false,
+		rawprompt:false,
 		resetcounters:false,
 		returntopush:false,
-		squash:false,
-		pagemode:true
+		slow:false,
+		squash:false
 	},
 	tags:{},
 	sharedFiles:[],
@@ -621,9 +621,7 @@ async function resetModel(modelname){
 	rohaModel=mut;	
 	grokFunctions=false;
 	rohaHistory.push({role:"system",title:userdomain,content:"ModelUnderTest:"+modelname+"."});
-	if(roha.config.verbose){
-		await aboutModel(name);
-	}
+	await aboutModel(name);
 }
 
 function dropShares(){
@@ -860,9 +858,9 @@ function resolvePath(dir,filename){
 }
 
 // a raw mode prompt replacement
-// roha.config.rawPrompt is not default
+// roha.config.rawprompt is not default
 // arrow navigation and tab completion incoming
-// a reminder to enable rawPrompt for new modes
+// a reminder to enable rawprompt for new modes
 
 const reader = Deno.stdin.readable.getReader();
 const writer = Deno.stdout.writable.getWriter();
@@ -870,7 +868,7 @@ const writer = Deno.stdout.writable.getWriter();
 let promptBuffer = new Uint8Array(0);
 
 async function promptForge(message) {
-	if(!roha.config.rawPrompt) return prompt(message);
+	if(!roha.config.rawprompt) return prompt(message);
 	let result = "";
 	if (message) {
 		await writer.write(encoder.encode(message));
