@@ -1,4 +1,8 @@
 
+const pid=Deno.pid.toString();
+
+//Deno.env.set("slop",pid);
+
 Deno.serve((request) => {
     const r=JSON.stringify(request);
     return new Response("Slop Fountain:"+r);
