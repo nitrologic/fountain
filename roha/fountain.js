@@ -15,7 +15,7 @@ const rohaTitle="fountain "+fountainVersion;
 const rohaMihi="Welcome to nitrologic's Slop Fountain. Please be mindful of others, courteous and professional.";
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Please review modified source.";
-const exitMessage="";
+const exitMessage="Closing Forge";
 const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
 const pageBreak=break50+break50+break50;
 
@@ -94,6 +94,11 @@ const emptyRoha={
 };
 
 async function exitForge(){
+	const pid=Deno.env.get("slop");
+	if(pid){
+		Deno.kill(Number(pid),"SIGKILL");
+		echo("pid",pid,"killed");
+	}
 	echo(exitMessage);
 	await flush();
 	if(roha.config.saveonexit){
@@ -1938,4 +1943,4 @@ try {
 	Deno.exit(1);
 }
 
-exitForge();
+await exitForge();

@@ -1,8 +1,5 @@
 {
-	"imports": {
-		"genai": "npm:@google/genai"
-	}
-	,"scripts": {
+	"scripts": {
 		"listen": "roa listen"
 	}
 	,"tasks":{

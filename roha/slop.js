@@ -4,12 +4,38 @@
 
 "use strict"
 
+const AppVersion="Slop Studio 0.1"
+const AppBanner=AppVersion+" ©2025 nitrologic All Rights Reserved";
+const AppAbout="a boot";
+
+function replaceString(a,b,c){
+	var split=a.split(b);
+	var join=split.join(c);	
+	return join;
+}
+
+function shorten(number){
+	if(number>=1e12) return (number/1e12).toFixed(3)+"T";
+	if(number>=1e9) return (number/1e9).toFixed(3)+"G";
+	if(number>=1e6) return (number/1e6).toFixed(3)+"M";
+	if(number>=1e3) return (number/1e3).toFixed(3)+"K";
+	return number.toFixed(3);
+}
+
+function log(...data){
+	const line=data.join(" ");
+	console.log(line);
+	var text=document.createTextNode(line+"\n");
+	logText.appendChild(text);
+	logText.scrollTop=logText.scrollHeight;
+}
+
 var logDiv;
-var logText;    // "div"
+var logText;
 var logVars;
 var logVals;
 
-function addTitle(group,name,labelClassName="dsplabel"){
+function addTitle(group,name,labelClassName="label"){
 	const div=document.createElement("div");
 	div.className="group";
 	const labelText=document.createTextNode(name);
@@ -30,7 +56,7 @@ function addLog(group){
 
 function initLog(){
 	logDiv=document.getElementById("log");
-	addTitle(logDiv,"Slop Log");
+	addTitle(logDiv,"Slop Fountain Log");
 /*
     logTools=addToolbar(logDiv);
 	
@@ -45,8 +71,13 @@ function initLog(){
 //	logVarBar=addDiv("block",logTools);
 }
 
+var pageBody;
+
 function onLoad(){
+	pageBody=document.body;
+	pageBody.setAttribute("palette","night");
 	initLog();
+	log(AppVersion);
 }
 
 function onFocus(){
