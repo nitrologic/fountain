@@ -1,3 +1,19 @@
+/*
+
+Deno.serve({
+  port: 443,
+  cert: Deno.readTextFileSync("./cert.pem"),
+  key: Deno.readTextFileSync("./key.pem"),
+}, handler);
+
+
+return new Response(body.pipeThrough(new TextEncoderStream()), {
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+    },
+  });
+*/
+
 	versioning : "allow multiple versions in share history",
 
 
