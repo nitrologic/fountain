@@ -1,3 +1,3 @@
 pushd roha
-deno task roha
+deno task slop
 popd
