@@ -23,7 +23,7 @@ const username=Deno.env.get("USERNAME");
 const userdomain=Deno.env.get("USERDOMAIN");
 const rohaUser=username+"@"+userdomain;
 
-const terminalColumns=120;
+const terminalColumns=140;
 const slowMillis=25;
 const MaxFileSize=512*1024;
 
@@ -195,7 +195,7 @@ function listHistory(){
 		const content=readable(item.content);
 		const clip=content.substring(0,wide);
 		const size="("+content.length+")";
-		const role=item.role.padEnd(10," ");
+		const role=item.role.padEnd(12," ");
 		const name=(item.name||"forge").padEnd(15," ");
 		const iii=String(i).padStart(3,"0");
 		echo(iii,role,name,clip,size);
@@ -204,6 +204,7 @@ function listHistory(){
 	const size=unitString(total,4,"B");
 	echo("History size",size);
 }
+
 function logHistory(){
 	const wide=terminalColumns;
 	const flat=squashMessages(rohaHistory);
@@ -211,8 +212,8 @@ function logHistory(){
 		const item=flat[i];
 		const iii=String(i).padStart(3,"0");
 		echo(iii,item.role,item.name||item.title||"???");			
-		const content=readable(item.content).substring(0,1500);
-		echoContent(content,wide,4,2);
+		const content=readable(item.content).substring(0,800);
+		echoContent(content,wide,3,2);
 	}
 }
 
@@ -394,6 +395,33 @@ async function listModels(config){
 
 //https://ai.google.dev/gemini-api/docs/text-generation
 
+function prepareContentRequest(payload){
+	const contents=[];
+	const sysparts=[];	// GenerateContentRequest systemInstruction content
+	for(const message of payload.messages){
+		switch(message.role){
+			case "system":
+				sysparts.push({text:message.content});
+				break;
+			case "user":
+				contents.push({role:"user",parts:[{text:message.content}]});
+				break;
+			case "assistant":{
+					const ass={role:"model",parts:[{text:message.content}]}
+					if(message.price) ass.price=message.price;
+					contents.push(ass);
+				}
+				break;
+		}
+	}
+	// todo tools and toolsconfig support
+	const request={contents,systemInstruction:{content:{role:"system",parts:sysparts}}};
+	if(roha.config.verbose){
+		debug("contentRequest",request);
+	}
+	return request;
+}
+
 async function connectGoogle(account,config){
 	try{
 		const baseURL = config.url;
@@ -424,11 +452,12 @@ async function connectGoogle(account,config){
 					create: async (payload) => {
 //						config: { systemInstruction: setup, maxOutputTokens: 500,temperature: 0.1, }
 						const model = genAI.getGenerativeModel({model:payload.model});
-//						const content = payload.messages;
-
-						const content = payload.messages[0].content;
-						const result = await model.generateContent(content);
-//						console.log("result",result);
+						const request = prepareContentRequest(payload);
+						// todo hook up ,signal SingleRequestOptions parameter
+						const result = await model.generateContent(request);
+						if(roha.config.verbose){
+							console.log("GoogleGenerativeAI result",result);
+						}
 						const text=await result.response.text();
 						const usage=result.response.usageMetadata||{};
 
@@ -1188,7 +1217,14 @@ async function attachMedia(words){
 	}
 }
 
-var service;
+// TODO - use deno comms to talk with slop <=> fountain task comms
+
+function listenSevice(){
+	const listener = Deno.listen({ hostname: "localhost", port: 23, transport: "tcp" });
+	return listener;
+}
+
+let _serviceListener;
 
 async function callCommand(command) {
 	let dirty=false;
@@ -1196,7 +1232,7 @@ async function callCommand(command) {
 	try {
 		switch (words[0]) {
 			case "listen":
-				service=listenPort(words);
+				_serviceListener=listenSevice(words);
 				break;
 			case "attach":
 				await attachMedia(words);
@@ -1313,38 +1349,40 @@ async function callCommand(command) {
 					}
 				}
 				break;
-			case "model":
-				let name=words[1];
-				if(name && name!="all"){
-					if(name.length&&!isNaN(name)) name=modelList[name|0];
-					if(modelList.includes(name)){
-						resetModel(name);
-					}
-				}else{
-					let all=name && name=="all";
-					for(let i=0;i<modelList.length;i++){
-						let name=modelList[i];
-						let attr=(name==grokModel)?"*":" ";
-						let mut=(name in roha.mut)?roha.mut[name]:emptyMUT;
-						mut.name=name;
-						let flag = (mut.hasForge) ? "𝆑" : "";
-						let notes=mut.notes.join(" ");
-						let rated=name in modelRates?modelRates[name]:null;
-						if(rated || all){
-							let pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
-							echo(i,attr,name,flag,mut.relays|0,notes,pricing);
+			case "model":{
+					let name=words[1];
+					if(name && name!="all"){
+						if(name.length&&!isNaN(name)) name=modelList[name|0];
+						if(modelList.includes(name)){
+							resetModel(name);
 						}
+					}else{
+						let all=name && name=="all";
+						for(let i=0;i<modelList.length;i++){
+							let name=modelList[i];
+							let attr=(name==grokModel)?"*":" ";
+							let mut=(name in roha.mut)?roha.mut[name]:emptyMUT;
+							mut.name=name;
+							let flag = (mut.hasForge) ? "𝆑" : "";
+							let notes=mut.notes.join(" ");
+							let rated=name in modelRates?modelRates[name]:null;
+							if(rated || all){
+								let pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
+								echo(i,attr,name,flag,mut.relays|0,notes,pricing);
+							}
+						}
+						listCommand="model";
 					}
-					listCommand="model";
 				}
 				break;
 			case "begin":
 				await pushHistory();
 				break;
-			case "finish":
-				let ok=await popHistory();
-				if(!ok){
-					echo("trigger exit here");
+			case "finish":{
+					let ok=await popHistory();
+					if(!ok){
+						echo("trigger exit here");
+					}
 				}
 				break;
 			case "reset":
@@ -1398,12 +1436,13 @@ async function callCommand(command) {
 				}
 				break;
 			case "push":
-			case "commit":
-				let tag="";
-				if(words.length>1){
-					tag=words[1];
+			case "commit":{
+					let tag="";
+					if(words.length>1){
+						tag=words[1];
+					}
+					dirty=await commitShares(tag);
 				}
-				dirty=await commitShares(tag);
 				break;
 			default:
 				echo("Command not recognised",words[0]);
@@ -1503,7 +1542,7 @@ function squashMessages(history) {
 		for (let i = 0; i < list.length; i++) {
 			const current=list[i];
 			if(last && last.role==current.role){
-				last.content += "\n" + current.content;
+				last.content += "<br>" + current.content;
 			} else {
 				squashed.push(current);
 				last=current;
@@ -1546,9 +1585,12 @@ async function processToolCalls(calls) {
 	return results;
 }
 
+// returns spend
+
 async function relay(depth) {
 	const verbose=roha.config.verbose;
 	let payload={};
+	let spend=0;
 	try {
 		const now=performance.now();
 		const modelAccount=grokModel.split("@");
@@ -1604,7 +1646,6 @@ async function relay(depth) {
 		let size = measure(rohaHistory);
 		let spent=[usage.prompt_tokens | 0,usage.completion_tokens | 0];
 		grokUsage += spent[0]+spent[1];
-		let spend=0;
 		if(grokModel in roha.mut){
 			let mut=roha.mut[grokModel];
 			mut.relays = (mut.relays || 0) + 1;
@@ -1650,10 +1691,13 @@ async function relay(depth) {
 //		if(usage.prompt_tokens_details) echo(JSON.stringify(usage));
 
 		let cost="("+usage.prompt_tokens+"+"+usage.completion_tokens+"["+grokUsage+"])";
-		if(spend) cost="$"+spend.toFixed(3);
+		if(spend) {
+			cost="$"+spend.toFixed(3);
+		}
 		let temp=grokTemperature.toFixed(1)+"°";
 		let modelSpec=[rohaTitle,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
 		let status = "["+modelSpec.join(" ")+"]";
+
 		if (roha.config.ansi)
 			echo(ansiDashBlock+status+ansiReset);
 		else
@@ -1701,18 +1745,21 @@ async function relay(depth) {
 		}
 		const name=rohaModel||"mut1";
 		let content=replies.join("\n\n");
-		rohaHistory.push({role:"assistant",name,content});
+		const ass={role:"assistant",name,content};
+		if(spend) ass.price=spend;
+		rohaHistory.push(ass);
+
 	} catch (error) {
 		let line=error.message || String(error);
 		if(line.includes("maximum prompt length")){
 			echo("Oops, maximum prompt length exceeded.");
 			echo(cleanupRequired);
-			return;
+			return spend;
 		}
 		if(line.includes("maximum context length")){
 			echo("Oops, maximum context length exceeded.");
 			echo(cleanupRequired);
-			return;
+			return spend;
 		}
 		//unhandled error line: 400 Unrecognized request argument supplied: cache_tokens
 		if(grokFunctions){
@@ -1724,7 +1771,7 @@ async function relay(depth) {
 				}
 				echo("resetting grokFunctions")
 				grokFunctions=false;
-				return;
+				return spend;
 			}
 		}
 		//unhandled error line: 400 status code (no body)+
@@ -1738,6 +1785,7 @@ async function relay(depth) {
 //			echo(JSON.stringify(payload));
 //		}
 	}
+	return spend;
 }
 
 async function chat() {

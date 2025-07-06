@@ -1,3 +1,38 @@
+<meta property="og:locale" content="en_NZ">
+<meta property="og:title" content="Skid Radio" />
+<meta property="og:type" content="music.radio_station" />
+<meta property="og:url" content="https://skid.nz" />
+<meta property="og:image" content="https://skid.nz/pixels/choppa.jpg" />
+<meta property="og:description" content="Under Construction" />
+
+
+sleep 1 && deno run --allow-net server.ts & deno run --allow-net client.ts
+
+import { Client } from "https://deno.land/x/irc/mod.ts";
+
+const client = new Client({
+  nick: "my_nick",
+  channels: ["#my_channel"],
+});
+
+await client.connect("irc.libera.chat", 6667);
+
+await client.connect("irc.libera.chat", 7000, true); // with TLS
+
+https://github.com/jeromeludmann/deno-irc
+https://github.com/ngircd/ngircd
+
+
+
+		"format": "deno fmt && deno lint",
+		"test": "deno test --allow-read",
+		"build": "deno compile --output my-app main.ts"		
+
+
+//						const content = payload.messages;
+//						const content = payload.messages[0].content;
+
+
 		"url":"https://generativelanguage.googleapis.com/v1beta/openai/",
 		"api":"OpenAI"
 

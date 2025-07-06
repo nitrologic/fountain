@@ -1,0 +1,11 @@
+/*
+// slop.css
+// (c) nitrologic 2025 all rights reserved
+*/
+
+@media print {
+	div {
+		break-inside: avoid;
+	}
+}
+

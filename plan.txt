@@ -1,15 +1,8 @@
 - attach images
 - run web server
-- log user prompts
-- add responses and assistants api support
-- check valid assistant, tool and user role usage
 - explore vector_store and fine tuning of models
 - support DeepSeek user balance https://api-docs.deepseek.com/api/get-user-balance
-- load / continue history saves
 - raw mode - fix multiline paste
 - split terminal
-- use data:text/css,content uri for text type content
-- modelRates -> modelInfo
-- adventure mode with rooms
-- upgrade to non blocking fs usage
+- optional data:text/css,content uri for text type content
 - fork experimental branch and rescue stuff.txt
