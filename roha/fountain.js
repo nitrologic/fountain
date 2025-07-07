@@ -506,8 +506,16 @@ async function connectDeepSeek(account,config) {
 		const response=await fetch(baseURL+"/models",{method:"GET",headers});
 		if (!response.ok) return null;
 		const models = await response.json();
-		const list = models.data.map(model => `${model.id}@${account}`);
-		modelList.push(...list);
+		const list=[];
+		for (const model of models.data) {
+			let name=model.id+"@"+account;
+			list.push(name);
+// dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
+			await specModel(model,account);
+		}
+		list.sort();
+		modelList=modelList.concat(list);
+		echo("connected DeepSeek",list);
 		return {
 			apiKey,
 			baseURL,
@@ -1923,7 +1931,6 @@ let grokThink = 0.0;
 
 resetModel(roha.model||"deepseek-chat@deepseek");
 
-echo("present [",rohaModel,"]");
 echo("user:",rohaUser,"shares:",roha.sharedFiles.length)
 echo("use /help for latest and exit to quit");
 echo("");

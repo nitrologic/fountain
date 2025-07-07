@@ -7,14 +7,11 @@ import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";
 const sessionName="slop"
 let sessionCount=0;
 
-const rxBufferSize=1e6;
-
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
+const greet="slop server says hello into the slop hole";
 
 // [slop] echo
 
-function echo(data:string|[]){
+function echo(...data:any[]){
 	console.log("[slop]",data);
 }
 
@@ -78,53 +75,33 @@ function sysConnections(request:JsonRPCRequest):JsonRPCResponse{
 
 const slopVersion=0.1;
 
-// [slop] fountain slopPipe
+// Creating a basic worker (main.ts)
+let worker:Worker = new Worker(new URL("./slophole.ts", import.meta.url).href, {type: "module"});
 
-let slopPipe:Deno.TcpConn;
+function closeSlopHole(){
+	worker.postMessage({ command: "close" });
+}
 
-async function connectFountain(){
-	try{
-		slopPipe = await Deno.connect({hostname:"localhost",port:8081});
-		console.log("Connected to server");
-	}catch(e){//ConnectionRefused){
-		console.log("Connection failure with server");
-//		console.log(e);
+worker.onmessage = (message) => {
+	const payload=message.data;//ports,origin.lastEventId JSON.stringify(payload)
+	echo("worker rx payload:", payload);	
+	if(payload.connected){
+		worker.postMessage({ command: "write", data:greet });
 	}
-}
-
-async function disconnectFountain(){
-	if(!slopPipe) return;
-	slopPipe.close();
-	slopPipe=null;
-}
-
-async function writeFountain(message:string){
-	if(!slopPipe) return;
-	await slopPipe.write(encoder.encode(message));
-}
-
-async function readFountain(){
-	if(!slopPipe) return;
-	const buffer = new Uint8Array(rxBufferSize);
-	const n = await slopPipe.read(buffer);
-	if (n !== null) {
-		const received = buffer.subarray(0, n);
-		console.log("Received:", decoder.decode(received));
+	if(payload.disconnected){
+		worker.terminate(); // Stop the worker when done
+		worker=null;
 	}
-}
+};
 
-//await sendAndReceive("Hello, server!");
-//await sendAndReceive("Another message");
-//conn.close();
-//console.log("Connection closed");	
+worker.onerror = (e) => {
+	console.error("Worker error:", e.message);
+};
 
-echo("sleeping");
-await sleep(7500);
-echo("connecting to fountain");
-await connectFountain();
-echo("reading fountain");
-await readFountain();
-echo("serving http:8000");
+await sleep(12000);
+
+worker.postMessage({ command: "open", data: [1, 2, 3, 4] });
+
 
 // [slop] serve http requests
 
