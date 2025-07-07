@@ -1,6 +1,8 @@
 # models under test
 
-[<= previous](https://github.com/nitrologic/forge/blob/main/blog.md)
+
+
+---
 
 ## yet another new name
 
@@ -21,3 +23,7 @@
 ## history command added
 
 ![Slop History](slop/slophistory.png)
+
+---
+
+[<= model under test](https://github.com/nitrologic/forge/blob/main/blog.md)

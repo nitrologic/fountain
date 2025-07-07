@@ -23,13 +23,15 @@ const rohaTitle="fountain "+fountainVersion;
 
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Please review modified source.";
-const exitMessage="Closing Forge";
+const exitMessage="Ending session.";
 const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
 const pageBreak=break50+break50+break50;
 
 const username=Deno.env.get("USERNAME");
 const userdomain=Deno.env.get("USERDOMAIN");
 const rohaUser=username+"@"+userdomain;
+
+let slopPid=Deno.env.get("slop");
 
 const terminalColumns=160;
 const slowMillis=25;
@@ -102,9 +104,9 @@ const emptyRoha={
 };
 
 async function exitForge(){
-	const pid=Deno.env.get("slop");
+	const pid=slopPid;
 	if(pid){
-		Deno.kill(Number(pid),"SIGKILL");
+		Deno.kill(Number(pid),"SIGTERM");
 		echo("pid",pid,"killed");
 	}
 	echo(exitMessage);

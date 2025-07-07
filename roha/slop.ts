@@ -4,10 +4,11 @@
 
 import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";                                                                                                                                                                             
 
-const sessionName="slop"
+const slopPid=Deno.pid;
+const sessionName="slop"+slopPid;
 let sessionCount=0;
 
-const greet="slop server says hello into the slop hole";
+const greet=sessionName+" server says hello into the slop hole";
 
 // [slop] echo
 
@@ -50,7 +51,7 @@ interface JsonRPCResponse {
 
 function sysInfo(request:JsonRPCRequest):JsonRPCResponse{
 	++sessionCount;
-	const session=sessionName+sessionCount;
+	const session=sessionName+"."+sessionCount;
 	const result={hostName,userName,platform,session};
 //	echo("sysInfo",request,result);
 	return {jsonrpc:request.jsonrpc,id:request.id,result};
