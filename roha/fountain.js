@@ -11,8 +11,16 @@ import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
 const fountainVersion = "1.1.0";
+
+const rohaMihi="Welcome to nitrologic's Slop Fountain.";
+
+const rohaGuide=[
+	"Please be mindful of others, courteous and professional.",
+	"Keep response short and only post code on request."
+]
+
 const rohaTitle="fountain "+fountainVersion;
-const rohaMihi="Welcome to nitrologic's Slop Fountain. Please be mindful of others, courteous and professional.";
+
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Please review modified source.";
 const exitMessage="Closing Forge";
@@ -175,6 +183,9 @@ function popHistory(){
 }
 function resetHistory(){
 	rohaHistory = [{role:"system",title:rohaTitle,content:rohaMihi}];
+	const guide = rohaGuide.join(" ");
+	if (guide) rohaHistory = [{role:"system",title:rohaTitle,content:guide}];
+	// todo: declare model specialisations
 }
 
 function echoContent(content,wide,left,right){
@@ -1221,14 +1232,22 @@ async function attachMedia(words){
 	}
 }
 
-// TODO - use deno comms to talk with slop <=> fountain task comms
+async function serveConnections(listener){
+	for await (const connection of listener) {
 
-function listenSevice(){
-	const listener = Deno.listen({ hostname: "localhost", port: 23, transport: "tcp" });
-	return listener;
+		console.log("serveConnection ",JSON.stringify(connection));
+//		connection.close();
+		connection.write(encoder.encode("greetings from fountain client"));
+	}
 }
 
-let _serviceListener;
+// TODO - use deno comms to talk with slop <=> fountain task comms
+
+async function listenService(){
+	echo("listening from slop on port 8081");
+	const listener = Deno.listen({ hostname: "localhost", port: 8081, transport: "tcp" });
+	await serveConnections(listener);
+}
 
 async function callCommand(command) {
 	let dirty=false;
@@ -1236,7 +1255,7 @@ async function callCommand(command) {
 	try {
 		switch (words[0]) {
 			case "listen":
-				_serviceListener=listenSevice(words);
+				listenService();
 				break;
 			case "attach":
 				await attachMedia(words);
@@ -1927,6 +1946,8 @@ if(roha.config){
 }else{
 	roha.config={};
 }
+
+listenService();
 
 await flush();
 

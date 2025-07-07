@@ -1,45 +1,132 @@
+// slop.ts
+// (c)2025 nitrologic 
+// All rights reserved
+
 import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";                                                                                                                                                                             
+
+const sessionName="slop"
+let sessionCount=0;
+
+const rxBufferSize=1e6;
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+// [slop] echo
+
+function echo(data:string|[]){
+	console.log("[slop]",data);
+}
+
+// [slop] sleep
+
+async function sleep(ms:number) {
+	await new Promise(function(resolve) {setTimeout(resolve, ms);});
+}
+
+// [slop] serve files
 
 async function servePath(request:Request,path:string):Promise<Response>{
 //	console.log("[slop] servePath",path);
 	return await serveFile(request,path);
 }
 
-// [slop] session
+// [slop] host session
 
 const hostName=Deno.hostname();
-const userName="slop"+Deno.uid;
+const userName=Deno.env.get("USERNAME")||"root";
+const platform=(Deno.uid()||"Windows")+" "+Deno.osRelease();
 
-let sessionCount=0;
+interface JsonRPCRequest{
+	jsonrpc:string, //"2.0"
+	id:string,
+	error?:string,
+	method: string;
+	params?: Record<string, unknown> | unknown[];
+}
 
-function sysInfo(request:Request){
+interface JsonRPCResponse {
+	jsonrpc: string;
+	id: string;
+	result: Record<string, unknown> | unknown[];
+}
+
+function sysInfo(request:JsonRPCRequest):JsonRPCResponse{
 	++sessionCount;
-	const result={hostName,userName,sessionCount};
+	const session=sessionName+sessionCount;
+	const result={hostName,userName,platform,session};
 //	echo("sysInfo",request,result);
 	return {jsonrpc:request.jsonrpc,id:request.id,result};
 }
 
-function onRPCLoad(e){
-	const target=e.currentTarget;
-	let response;
-	if(target.status!=200){
-		log("RPC "+target.rpc+" Error status:"+target.status+" "+target.statusText);
-	}else{
-		try{
-			response=JSON.parse(target.response);
-			if(response.error){
-				log("RPC "+target.rpc+" Error response:"+JSON.stringify(response.error));
-			}else{
-				target.handler(response.result,target.userdata);
-			}			
-		}catch(exception){
-			log("onRPCLoad parse exception "+exception.toString()+" from "+target.rpc);
-			log(target.response);
-		}
-	}
-}	
+function sysTick(request:JsonRPCRequest):JsonRPCResponse{
+	const _result:unknown[]=[];
+	return {jsonrpc:request.jsonrpc,id:request.id,result:{messages:_result}};
+}
+function sysPorts(request:JsonRPCRequest):JsonRPCResponse{
+	const _result:unknown[]=[];
+	return {jsonrpc:request.jsonrpc,id:request.id,result:_result};
+}
+function sysConnect(request:JsonRPCRequest):JsonRPCResponse{
+	const result={};
+	return {jsonrpc:request.jsonrpc,id:request.id,result};
+}
+function sysConnections(request:JsonRPCRequest):JsonRPCResponse{
+	const result={};
+	return {jsonrpc:request.jsonrpc,id:request.id,result};
+}
 
 const slopVersion=0.1;
+
+// [slop] fountain slopPipe
+
+let slopPipe:Deno.TcpConn;
+
+async function connectFountain(){
+	try{
+		slopPipe = await Deno.connect({hostname:"localhost",port:8081});
+		console.log("Connected to server");
+	}catch(e){//ConnectionRefused){
+		console.log("Connection failure with server");
+//		console.log(e);
+	}
+}
+
+async function disconnectFountain(){
+	if(!slopPipe) return;
+	slopPipe.close();
+	slopPipe=null;
+}
+
+async function writeFountain(message:string){
+	if(!slopPipe) return;
+	await slopPipe.write(encoder.encode(message));
+}
+
+async function readFountain(){
+	if(!slopPipe) return;
+	const buffer = new Uint8Array(rxBufferSize);
+	const n = await slopPipe.read(buffer);
+	if (n !== null) {
+		const received = buffer.subarray(0, n);
+		console.log("Received:", decoder.decode(received));
+	}
+}
+
+//await sendAndReceive("Hello, server!");
+//await sendAndReceive("Another message");
+//conn.close();
+//console.log("Connection closed");	
+
+echo("sleeping");
+await sleep(7500);
+echo("connecting to fountain");
+await connectFountain();
+echo("reading fountain");
+await readFountain();
+echo("serving http:8000");
+
+// [slop] serve http requests
 
 Deno.serve(async (request) => {
 	const url = new URL(request.url);
@@ -56,12 +143,6 @@ Deno.serve(async (request) => {
 		switch(method){
 			case "sys.info":
 				result=sysInfo(rpc);
-				break;
-			case "sys.clocks":
-				result=sysClocks(rpc);
-				break;
-			case "sys.memory":
-				result=sysMemory(rpc);
 				break;
 			case "sys.tick":
 				result=await sysTick(rpc);
@@ -87,7 +168,8 @@ Deno.serve(async (request) => {
 			const response=await servePath(request,"slop.html");
 			return response;
 		}
-		case "/slop.js":
+		case "/slopstudio.js":
+		case "/slopdom.js":
 		case "/slop.css":
 		case "/favicon.ico":{
 			const response=await servePath(request,"."+path);
