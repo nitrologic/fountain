@@ -76,7 +76,8 @@ self.onmessage = async(e) => {
 		};
 		break;
 		case "write":{
-			await writeFountain(data);
+			const payload=JSON.stringify(data);
+			await writeFountain(payload);
 		}
 		break;
 		case "read":{

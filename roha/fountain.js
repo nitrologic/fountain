@@ -10,7 +10,9 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
-const fountainVersion = "1.1.0";
+const fountainVersion = "1.2.0";
+
+const terminalColumns=120;
 
 const rohaMihi="Welcome to nitrologic's Slop Fountain.";
 
@@ -21,19 +23,17 @@ const rohaGuide=[
 
 const rohaTitle="fountain "+fountainVersion;
 
-const cleanupRequired="Switch model, drop shares or reset history to continue.";
-const warnDirty="Please review modified source.";
-const exitMessage="Ending session.";
-const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
-const pageBreak=break50+break50+break50;
-
 const username=Deno.env.get("USERNAME");
 const userdomain=Deno.env.get("USERDOMAIN");
 const rohaUser=username+"@"+userdomain;
 
-let slopPid=Deno.env.get("slop");
+const cleanupRequired="Switch model, drop shares or reset history to continue.";
+const warnDirty="Please review modified source.";
+const exitMessage="Ending session.";
 
-const terminalColumns=160;
+const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
+const pageBreak=break50+break50+break50;
+
 const slowMillis=25;
 const MaxFileSize=512*1024;
 
@@ -102,6 +102,8 @@ const emptyRoha={
 	lode:{},
 	forge:[]
 };
+
+let slopPid;
 
 async function exitForge(){
 	const pid=slopPid;
@@ -375,7 +377,7 @@ async function flush() {
 	}
 	printBuffer=[];
 	for (const line of outputBuffer) {
-		console.log(line);
+		console.info(line);
 		await log(line,"roha");
 		await sleep(delay);
 	}
@@ -407,7 +409,7 @@ async function listModels(config){
 	if(response.ok){
 		console.log(await response.text());
 	}else{
-		console.log(response);
+		console.error(response);
 	}
 	return null;
 }
@@ -446,10 +448,9 @@ async function connectGoogle(account,config){
 		const baseURL = config.url;
 		const apiKey = Deno.env.get(config.env);
 		if(!apiKey) return null;
-		console.log("fetching gemini models");
 		const response=await fetch(baseURL+"/models?key="+apiKey);
 		if (!response.ok) {
-			console.log("connectGoogle response",response)
+			console.info("connectGoogle response",response)
 			return null;
 		}
 		const models = await response.json();
@@ -475,7 +476,7 @@ async function connectGoogle(account,config){
 						// todo hook up ,signal SingleRequestOptions parameter
 						const result = await model.generateContent(request);
 						if(roha.config.verbose){
-							console.log("GoogleGenerativeAI result",result);
+							console.info("GoogleGenerativeAI result",result);
 						}
 						const text=await result.response.text();
 						const usage=result.response.usageMetadata||{};
@@ -494,7 +495,7 @@ async function connectGoogle(account,config){
 			},
 		};
 	} catch (error) {
-		console.log("connectGoogle error:",error.message);
+		console.error("connectGoogle error:",error.message);
 		return null;
 	}
 }
@@ -1245,7 +1246,7 @@ async function attachMedia(words){
 async function serveConnections(listener){
 	for await (const connection of listener) {
 
-		console.log("serveConnection ",JSON.stringify(connection));
+		console.info("serveConnection ",JSON.stringify(connection));
 //		connection.close();
 		connection.write(encoder.encode("greetings from fountain client"));
 	}

@@ -83,11 +83,16 @@ function closeSlopHole(){
 	worker.postMessage({ command: "close" });
 }
 
+function writeSlopHole(content:string){
+	worker.postMessage({ command: "write", data:{slop:[content]} });
+}
+
 worker.onmessage = (message) => {
 	const payload=message.data;//ports,origin.lastEventId JSON.stringify(payload)
 	echo("worker rx payload:", payload);	
 	if(payload.connected){
-		worker.postMessage({ command: "write", data:greet });
+		writeSlopHole(greet);
+//		worker.postMessage({ command: "write", data:greet });
 	}
 	if(payload.disconnected){
 		worker.terminate(); // Stop the worker when done
@@ -99,7 +104,7 @@ worker.onerror = (e) => {
 	console.error("Worker error:", e.message);
 };
 
-await sleep(12000);
+await sleep(10e3);
 
 worker.postMessage({ command: "open", data: [1, 2, 3, 4] });
 
