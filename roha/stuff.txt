@@ -1,0 +1,287 @@
+* 11 disorder : allow /dos command to run shell : false
+* 12 versioning : allow multiple versions in share history : false
+
+
+### /dos
+
+Begin a session with host Operating System shell.
+
+
+async function shareFile(path,tag) {
+	let fileContent=null;
+	try {
+		const fileSize=await fileLength(path);
+		if(fileSize>MaxFileSize) throw(filesize);
+		fileContent = await Deno.readFile(path);
+	} catch (error) {
+		echo("shareFile failure path",path,"error",error);
+		return;
+	}
+	if(path.endsWith("rules.txt")){
+		let lines=decoder.decode(fileContent).split("\n");
+		for(let line of lines ){
+			if (line) rohaHistory.push({role:"system",content: line});
+		}
+	}else{
+		const length=fileContent.length;
+		if(length>0 && length<MaxFileSize){
+			const extension = path.split(".").pop();
+			const type = fileType(extension);
+			if (textExtensions.includes(extension)) {
+				let txt = decoder.decode(fileContent);
+				if(txt.length){
+					let metadata=JSON.stringify({path,length,type,tag});
+					rohaPush(metadata);
+					rohaPush(txt,"forge");
+				}
+			}else{
+				const base64Encoded = btoa(String.fromCharCode(...new Uint8Array(fileContent)));
+				const mimeType = fileType(extension);
+				let metadata=JSON.stringify({path,length,type,mimeType,tag});
+				rohaPush(metadata);
+				let binary=`File content: MIME=${mimeType}, Base64=${base64Encoded}`;
+				rohaPush(binary,"forge");
+			}
+		}
+	}
+//	if(roha.config.verbose)echo("roha shared file " + path);
+	if (!rohaShares.includes(path)) rohaShares.push(path);
+
+	if (roha.config.pushonshare) {
+		await commitShares(tag);
+	}
+}
+
+
+async function isolateCode(path,cwd) {
+	try {
+		const readAllow = `--allow-read=${cwd}`;
+		const writeAllow = `--allow-write=${cwd}`;
+		const cmd = ["deno", "run", "--no-remote", readAllow, writeAllow, path];
+		const process = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
+		const [stdout, stderr] = await Promise.all([process.output(), process.stderrOutput()]);
+		const status = await process.status();
+		process.close();
+		return {
+			success: status.success,
+			output: new TextDecoder().decode(stdout),
+			error: new TextDecoder().decode(stderr)
+		};
+	} catch (err) {
+		return { success: false, output: "", error: err.message };
+	}
+}
+
+
+	disorder : "allow /dos command to run shell",
+
+
+// a work in progess file watcher
+// callers to addShare expected to await writeForge after
+
+const eventList=[];
+
+async function watchPaths(paths,handler){
+	const watcher = Deno.watchFs(paths,{recursive:false});
+	for await (const event of watcher) {
+		eventList.push(event);
+	}
+}
+
+
+
+// runDOS spawnDENO runDENO and runCode are retired until further notice
+// linter is on, constification continues
+// avoid raw ansi in function code
+
+// binaries are available on github
+//
+// https://github.com/nitrologic/forge/releases
+//
+// or install deno and run from source https://deno.com/
+//
+// deno run --allow-run --allow-env --allow-net --allow-read --allow-write forge.js
+
+
+// multi process model under test prompt replacement
+
+async function pipe(stream, tag) {
+	const raw = new Uint8Array(1024);
+	let buffer="";
+	while (true) {
+		const n = await stream.read(raw);
+		if (n === null) break;
+		buffer+=decoder.decode(raw.subarray(0,n));
+		echo("[" + tag + "]",buffer.trimEnd());
+		buffer="";
+		await flush();
+	}
+}
+
+
+		if(!roha.band) roha.band={};
+
+
+			case "dos":
+//				await runDOS(words);
+				break;
+			case "band":
+				listBand();
+				break;
+
+
+band:{},
+
+function addBand(){
+	const id="member"+increment("members");
+	roha.band[id]={};
+}
+
+function listBand(){
+	const band=[];
+	for(let id in roha.band){
+		const member=roha.band[id];
+		band.push(member);
+	}
+	band.push("add");
+	for(let i=0;i<band.length;i++){
+		echo(i,band[i]);
+	}
+	memberList=band;
+}
+
+
+// debugstuff
+// await openWithDefaultApp("foundry.json");
+// await runCode("isolation/test.js","isolation");
+
+
+/*
+async function runDOS(args) {
+	if(!roha.config.disorder) return;
+	const shell = Deno.build.os === "windows" ? "cmd" : "bash";
+	const cmd = [shell, ...args.slice(1)];
+	echo("runDos",Deno.build.os,shell,"Type exit to return to Forge.");
+	await flush();
+	const oldRaw = Deno.stdin.isRaw;
+	Deno.stdin.setRaw(false);
+	const p = Deno.run({cmd,stdin: "inherit",stdout: "inherit",stderr: "inherit"});
+	await p.status();
+	p.close();
+	Deno.stdin.setRaw(oldRaw);
+	echo("Returned to Forge");
+}
+
+async function runDeno(path, cwd) {
+	try {
+		const r = `--allow-read=${cwd}`;
+		const w = `--allow-write=${cwd}`;
+		const cmd = ["deno", "run", "--no-remote", r, w, path];
+		const p = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
+		const a = pipe(p.stdout, "out");
+		const b = pipe(p.stderr, "err");
+		const c = p.status();
+		await Promise.all([a, b, c]);
+		p.close();
+		return { ok: true, content: "done" };
+	} catch (e) {
+		return { ok: false, error: e.message };
+	}
+}
+
+// dream on gpt-4.1...
+async function spawnDeno(path, cwd) {
+	try{
+		const cmd = ["deno", "run", "--no-remote", `--allow-read=${cwd}`, `--allow-write=${cwd}`, path];
+		const proc = await Deno.spawn(cmd, { stdout: "piped", stderr: "piped" });
+		const a = pipe(proc.stdout, "out");
+		const b = pipe(proc.stderr, "err");
+		const c = proc.status;
+		await Promise.all([a, b, c]);
+		proc.stdout.close();
+		proc.stderr.close();
+		proc.close();
+		return {ok:true,content:"done"};
+	}catch(error){
+		return {ok:false,error};
+	}
+}
+
+async function runCode(){
+	let result = await runDeno("isolation/test.js", "isolation");
+	if (result.ok) {
+		echo("[isolation] runCode ran result:"+result.content);
+	} else {
+		echo("Error:", result.error);
+	}
+}
+*/
+
+
+async function getBalance(words){
+	const account=(words.length > 1)?words[1]:grokModel.split("@")[1];
+	const config = modelAccounts[account];
+	if (!config) {
+		echo(`Account ${account} not found`);
+		return;
+	}
+	const apiKey = Deno.env.get(config.env);
+	if(!apiKey){
+		echo(`Account ${account} key not found`);
+		return;
+	}
+	try {
+		const response = await fetch(config.url+"/organization/credits", {
+			headers: { "Authorization": `Bearer ${apiKey}` }
+		});
+		const data = await response.text();
+		echo(data);
+//		echo(`Balance for ${account}: $${data.available_credits} ${data.currency}`);
+	} catch (error) {
+		echo(`Error retrieving balance: ${error.message}`);
+	}
+}
+
+
+# 0
+model: deepseek-chat@deepseek tool true rates 0.27,1.10
+purpose: General conversation and text generation
+> hi deepseek!
++
+unhandled error line: 400 An assistant message with 'tool_calls' must be followed by tool messages responding to each 'tool_call_id', The following tool_call_ids did not have response messages: unknown
+Error: 400 An assistant message with 'tool_calls' must be followed by tool messages responding to each 'tool_call_id', The following tool_call_ids did not have response messages: unknown
+>
+
+
+
+
+> no its all good, lets just chat
++
+Great! I'm here to chat. What would you like to talk about today?
+
+account openai spent $384.0016 balance $-1531.7307 ¤[15525,18]
+{"cached_tokens":15360,"audio_tokens":0}
+[gpt-4.1-nano-2025-04-14@openai 0.8° $384.002 64.26KB 0.79s]
+> maybe I should add some logging for this line
++ spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6+cached*cacheRate;
++
+relay calls in progress
+I've added a log annotation for that spend calculation line to help you track detailed information about the prompt
+tokens, completion tokens, cached tokens, and their respective rates. Would you like me to help you implement the
+actual logging code, or do you want to proceed with something else?
+
+account openai spent $387.2016 balance $-1918.9323 ¤[15589,47]
+{"cached_tokens":15488,"audio_tokens":0}
+[gpt-4.1-nano-2025-04-14@openai 0.8° $387.202 64.50KB 1.06s]
+
+[{
+    "id":"call_2IF9zfYjImHGhaQioGRPSjSx",
+    "type":"function",
+    "function":{
+        "name":"annotate_forge",
+        "arguments":"{\"name\":\"spend calculation line\",\"type\":\"code\",\"description\":\"Logging for detailed spend calculation including prompt tokens, completion tokens, cached tokens, and their respective rates.\"}"}}]
+tooling 1
+account openai spent $387.2016 balance $-2306.1339 ¤[15654,57]
+{"cached_tokens":15488,"audio_tokens":0}
+[gpt-4.1-nano-2025-04-14@openai 0.8° $387.202 64.99KB 0.96s]
+

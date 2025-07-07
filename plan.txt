@@ -1,8 +1,7 @@
 - attach images
-- run web server
+- slopstudio web connections
 - explore vector_store and fine tuning of models
 - support DeepSeek user balance https://api-docs.deepseek.com/api/get-user-balance
-- raw mode - fix multiline paste
-- split terminal
+- fix - raw mode multiline paste
 - optional data:text/css,content uri for text type content
 - fork experimental branch and rescue stuff.txt
