@@ -515,7 +515,7 @@ async function connectDeepSeek(account,config) {
 		}
 		list.sort();
 		modelList=modelList.concat(list);
-		echo("connected DeepSeek",list);
+	//	echo("connected DeepSeek",list);
 		return {
 			apiKey,
 			baseURL,
