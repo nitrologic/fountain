@@ -24,6 +24,10 @@
 
 ![Slop History](slop/slophistory.png)
 
+## serving slopstudio step 1
+
+![Serving Slop Studio](slop/slopstudio.png)
+
 ---
 
 [<= model under test](https://github.com/nitrologic/forge/blob/main/blog.md)

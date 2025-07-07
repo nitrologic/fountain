@@ -15,7 +15,7 @@ const fountainVersion = "1.1.0";
 const rohaMihi="Welcome to nitrologic's Slop Fountain.";
 
 const rohaGuide=[
-	"Please be mindful of others, courteous and professional.",
+	"As a guest assistant LLM please be mindful of others, courteous and professional.",
 	"Keep response short and only post code on request."
 ]
 
