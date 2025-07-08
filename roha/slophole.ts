@@ -2,13 +2,28 @@
 // (c)2025 nitrologic 
 // All rights reserved
 
-// [slop] fountain slopPipe worker thread
+// [hole] slophole a slop.ts worker
+
+interface SlopHoleMessage {
+	command?: string;
+	data?: any;
+	message?: string;
+	connected?: boolean;
+	disconnected?: boolean;
+}
+
+// [hole] fountain slopPipe worker thread
 
 function echo(...data: any[]){
 	console.log("[hole]",data);
 }
 
 let slopPipe:Deno.Conn;
+
+const rxBufferSize=1e6;
+
+const rxBuffer = new Uint8Array(rxBufferSize);
+
 async function writeFountain(message:string){
 	if(!slopPipe) return;
 	const data=encoder.encode(message);	
@@ -20,8 +35,6 @@ async function writeFountain(message:string){
 	}
 	echo("wrote",message);
 }
-
-const rxBufferSize=1e6;
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -50,14 +63,19 @@ function disconnectFountain(){
 	return true;
 }
 
+let readingSlop:bool=false;
+
 async function readFountain(){
 	if(!slopPipe) return;
-	const buffer = new Uint8Array(rxBufferSize);
-	const n = await slopPipe.read(buffer);
+	readingSlop=true;
+	const n = await slopPipe.read(rxBuffer);
 	if (n !== null) {
-		const received = buffer.subarray(0, n);
-		echo("Received:", decoder.decode(received));
+		const received = rxBuffer.subarray(0, n);
+		const message = decoder.decode(received);
+		echo("slopPipe received:", message);		
+		self.postMessage({received:message});
 	}
+	readingSlop=false;
 }
 
 self.onmessage = async(e) => {
@@ -81,7 +99,9 @@ self.onmessage = async(e) => {
 		}
 		break;
 		case "read":{
-			readFountain();
+			if(!readingSlop){
+				readFountain();
+			}
 		}
 		break;
 		default:

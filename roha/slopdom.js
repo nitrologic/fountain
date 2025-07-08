@@ -86,3 +86,22 @@ function addToolbar(group,handler){
 	}
 	return div;
 }
+
+function addLog(group){
+	const div=document.createElement("div");
+	div.className="log";
+	group.appendChild(div);
+	return div;
+}
+
+function addTerminal(group,id,keyHandler)
+{
+	var textarea=document.createElement("textarea");
+	textarea.className=id;
+	textarea.spellcheck=false;
+	group.appendChild(textarea);
+	textarea.onkeydown=keyHandler;
+	return textarea;
+}
+
+var terminalCount = 0;

@@ -2,6 +2,8 @@
 // (c)2025 nitrologic 
 // All rights reserved
 
+// todo: check onRemoteEvent
+
 "use strict"
 
 const AppVersion="Slop Studio 0.1"
@@ -24,15 +26,6 @@ function shorten(number){
 	return number.toFixed(3);
 }
 
-function log(...data){
-	const line=data.join(" ");
-	console.log(line);
-	const text=document.createTextNode(line+"\n");
-	logText.appendChild(text);
-	logText.scrollTop=logText.scrollHeight;
-}
-
-
 let localEventCount=0;
 let localEventQueue=[]
 
@@ -41,12 +34,13 @@ let LocalEventRecording=[];
 
 let remoteEventHandlers={}
 
-function LocalEventQueueMessage(e){
+function queueMessage(e){
 	localEventQueue.push(e);
-	LocalEventHandleMessage(e);
+	onLocalEvent(e);
+	pingSession();
 }
 
-function LocalEventHandleMessage(e){
+function onLocalEvent(e){
 	LocalEventRecording.push(e);
 	localEventCount++;
 //	logVar("events",localEventCount)
@@ -58,13 +52,13 @@ function LocalEventHandleMessage(e){
 		}
 	}
 }
-function LocalEventQueueFlush(){
+function flushLocalEvents(){
 	const events=localEventQueue;
 	localEventQueue=[];
 	return events;
 }
 
-function RemoteEventHandler(src,handler){
+function onRemoteEvent(src,handler){
 	if(!(src in remoteEventHandlers)){
 		remoteEventHandlers[src]=[];
 	}
@@ -99,7 +93,7 @@ function sendRPC(uri,method,params,handler,data){
 	const body=JSON.stringify(json);
 	const param=JSON.stringify(params);
 	const rpc=method+" ("+param+")";
-// todo: optional rpc client logging
+	// todo: optional rpc client logging
 //	console.log("sendRPC "+rpc+" ["+body.length+"]");
 	const request=new XMLHttpRequest();
 	request.addEventListener("load", onRPCLoad);
@@ -258,7 +252,7 @@ function onTick(tick){
 }
 
 function pollSession(){
-	const recentEvents=LocalEventQueueFlush();
+	const recentEvents=flushLocalEvents();
 	const tick=sysTick++;
 	sendRPC("/api","sys.tick",{session:sysSession,tick,events:recentEvents},onTick);
 }
@@ -272,20 +266,29 @@ function pumpSession(){
 	}
 }
 
+function pingSession(){
+	if(sysSession && !PollSession){
+		pollSession();
+	}
+}
+
+
+// [studio] log div
 
 let logDiv;
 let logText;
 let logVars;
 let logVals;
 
-function addLog(group){
-	const div=document.createElement("div");
-	div.className="log";
-	group.appendChild(div);
-	return div;
-}
+// [studio] logging
 
-// [slop] logging
+function log(...data){
+	const line=data.join(" ").trim();
+	console.log(line);
+	const text=document.createTextNode(line+"\n");
+	logText.appendChild(text);
+	logText.scrollTop=logText.scrollHeight;
+}
 
 function logVar(name,label){
 	let varinfo=logVars[name];
@@ -325,7 +328,7 @@ let logVarBar;
 
 function initLog(){
 	logDiv=document.getElementById("log");
-	addTitle(logDiv,"Slop Fountain Log");
+	addTitle(logDiv,"Slop Studio Log");
     logTools=addToolbar(logDiv);
 /*
 	
@@ -340,6 +343,32 @@ function initLog(){
 	logVarBar=addDiv("block",logTools);
 }
 
+function onKeydown(e){
+	const keycode=e.code;
+	if(keycode=="Insert"){
+		const text=promptBox.value;
+		promptBox.value="";
+		if(text){
+			log("[studio]",text);
+			queueMessage(text);
+// todo: send prompt to sloppipe connection
+
+		}
+	}
+}
+
+let promptDiv;
+let promptTools;
+let promptBox;
+
+function initPrompt(){
+	promptDiv=document.getElementById("prompt");
+	addTitle(promptDiv,"Slop Studio Prompt");
+    promptTools=addToolbar(promptDiv);
+	promptBox=addTerminal(promptTools,"prompt",onKeydown);
+}
+
+
 let pageBody;
 
 function onLoad(){
@@ -347,6 +376,7 @@ function onLoad(){
 	pageBody=document.body;
 	pageBody.setAttribute("palette","night");
 	initLog();
+	initPrompt();
 	log(AppBanner);
 	refreshSession();
 }

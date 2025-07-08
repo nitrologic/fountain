@@ -18,7 +18,8 @@ const rohaMihi="Welcome to nitrologic's Slop Fountain.";
 
 const rohaGuide=[
 	"As a guest assistant LLM please be mindful of others, courteous and professional.",
-	"Keep response short and only post code on request."
+	"Keep response short and only post code on request.",
+	"Tabs not spaces."
 ]
 
 const rohaTitle="fountain "+fountainVersion;
@@ -103,15 +104,16 @@ const emptyRoha={
 	forge:[]
 };
 
-let slopPid;
+let slopPid=null;
 
 async function exitForge(){
 	const pid=slopPid;
 	if(pid){
 		Deno.kill(Number(pid),"SIGTERM");
 		echo("pid",pid,"killed");
+		slopPid=null;
 	}
-	echo(exitMessage);
+//	echo(exitMessage);
 	await flush();
 	if(roha.config.saveonexit){
 		await saveHistory();
@@ -1245,17 +1247,19 @@ async function attachMedia(words){
 
 async function serveConnections(listener){
 	for await (const connection of listener) {
-
 		console.info("serveConnection ",JSON.stringify(connection));
 //		connection.close();
 		connection.write(encoder.encode("greetings from fountain client"));
 	}
 }
 
+
+let listening=false;
+
 // TODO - use deno comms to talk with slop <=> fountain task comms
 
 async function listenService(){
-	echo("listening from slop on port 8081");
+	echo("listening from fountain on port 8081");
 	const listener = Deno.listen({ hostname: "localhost", port: 8081, transport: "tcp" });
 	await serveConnections(listener);
 }
@@ -1961,11 +1965,6 @@ listenService();
 
 await flush();
 
-// Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.exit(0);});
-// continues to be problematic for Windows escape key
-//Deno.addSignalListener("SIGINT", () => {console.log("sigint!");cleanup();Deno.exit(0);});
-//Deno.addSignalListener("SIGINT", () => {console.log("sigint!");});
-
 try {
 	await chat();
 } catch (error) {
@@ -1975,3 +1974,4 @@ try {
 }
 
 await exitForge();
+Deno.exit(0);

@@ -3,6 +3,8 @@
 // (c) nitrologic 2025 all rights reserved
 */
 
+
+
 @media print {
 	div {
 		break-inside: avoid;
@@ -13,6 +15,13 @@ body{
 	--renderBackground:#222;
 	font-family: Arial, Helvetica, sans-serif;
 }
+
+input{
+	margin-top:8px;
+	font-family:inherit;
+}
+
+
 
 body[palette=night] {
 	color:#aaa; 
@@ -79,11 +88,13 @@ div.log{
 	padding:4px;
 }
 
-textarea.terminal{
+textarea.prompt{
+	width:80vw;
+	height:25vh;
 	background-color:var(--editorBackground);
 	color:var(--editorColor);
-	line-height:1.24;
-	font-size:medium;
+	line-height:1.8;
+	font-size:large;
 }
 
 div.system{

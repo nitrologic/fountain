@@ -7,13 +7,23 @@ import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";
 const slopPid=Deno.pid;
 const sessionName="slop"+slopPid;
 let sessionCount=0;
+let slopMessage="";
+
+function logSlop(_result:any){
+	const message=JSON.stringify(_result);
+	if(message!=slopMessage){
+		console.log("[slop]",message);
+		slopMessage=message;
+	}
+}
 
 const greet=sessionName+" server says hello into the slop hole";
 
 // [slop] echo
 
 function echo(...data:any[]){
-	console.log("[slop]",data);
+//	console.log("[slop]",data);
+	logSlop(data);
 }
 
 // [slop] sleep
@@ -57,7 +67,18 @@ function sysInfo(request:JsonRPCRequest):JsonRPCResponse{
 	return {jsonrpc:request.jsonrpc,id:request.id,result};
 }
 
+interface Tick{
+	session:string;
+	events:string[];
+};
+
 function sysTick(request:JsonRPCRequest):JsonRPCResponse{
+	logSlop(request);
+	const tick:Tick=request.params;
+	const session=tick.session;
+	for(const event of tick.events){
+		logSlop(event);
+	}
 	const _result:unknown[]=[];
 	return {jsonrpc:request.jsonrpc,id:request.id,result:{messages:_result}};
 }
@@ -87,16 +108,25 @@ function writeSlopHole(content:string){
 	worker.postMessage({ command: "write", data:{slop:[content]} });
 }
 
+function readSlopHole(){
+	worker.postMessage({ command: "read", data:{} });
+}
+
 worker.onmessage = (message) => {
 	const payload=message.data;//ports,origin.lastEventId JSON.stringify(payload)
 	echo("worker rx payload:", payload);	
 	if(payload.connected){
 		writeSlopHole(greet);
+		readSlopHole();
 //		worker.postMessage({ command: "write", data:greet });
 	}
 	if(payload.disconnected){
 		worker.terminate(); // Stop the worker when done
 		worker=null;
+	}
+	if(payload.received){
+		const rx=payload.received;
+		echo("rx:"+rx);
 	}
 };
 
@@ -142,7 +172,7 @@ Deno.serve(async (request) => {
 			default:
 				return new Response("Not Found", { status: 404 });
 		}
-		console.log("[slop]",JSON.stringify(result));
+		console.log("[slop]",method,JSON.stringify(result));
 		const headers={"Content-Type":"application/json","Access-Control-Allow-Origin":"*"};
 		return new Response(JSON.stringify(result),{headers});
 	}
