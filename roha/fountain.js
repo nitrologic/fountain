@@ -10,11 +10,11 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
-const fountainVersion = "1.2.0";
+const fountainVersion = "1.2.2";
 
-const terminalColumns=120;
+const terminalColumns=100;
 
-const rohaMihi="Welcome to nitrologic's Slop Fountain.";
+const rohaMihi="Welcome to nitrologic's Slop Fountain, many:many human model research project.";
 
 const rohaGuide=[
 	"As a guest assistant LLM please be mindful of others, courteous and professional.",
@@ -220,7 +220,7 @@ function listHistory(){
 		const role=item.role.padEnd(12," ");
 		const name=(item.name||"forge").padEnd(15," ");
 		const iii=String(i).padStart(3,"0");
-		const spend=item.price?item.price.toFixed(4) :"";
+		const spend=item.price?(item.emoji+" "+item.price.toFixed(4)) :"";
 		echo(iii,role,name,clip,size,spend);
 		total+=content.length;
 	}
@@ -234,7 +234,8 @@ function logHistory(){
 	for(let i=0;i<flat.length;i++){
 		const item=flat[i];
 		const iii=String(i).padStart(3,"0");
-		echo(iii,item.role,item.name||item.title||"???");			
+		const spend=item.price?(item.emoji+" "+item.price.toFixed(4)) :"";
+		echo(iii,item.role,item.name||item.title||"???",spend);			
 		const content=readable(item.content).substring(0,800);
 		echoContent(content,wide,3,2);
 	}
@@ -431,7 +432,6 @@ function prepareContentRequest(payload){
 				break;
 			case "assistant":{
 					const ass={role:"model",parts:[{text:message.content}]}
-					if(message.price) ass.price=message.price;
 					contents.push(ass);
 				}
 				break;
@@ -643,13 +643,14 @@ async function resetModel(modelname){
 	const modelAccount=grokModel.split("@");
 	let path=modelAccount[0];
 	let account=modelAccount[1];
+	grokEmoji=modelAccounts[account].emoji;
 	let names=path.split("/");
 	let name=names.pop();
 	let nameversion=name.split("-preview");
 	let mut=nameversion[0];
 	rohaModel=mut;	
 	grokFunctions=false;
-	rohaHistory.push({role:"system",title:userdomain,content:"ModelUnderTest:"+modelname+"."});
+	rohaHistory.push({role:"system",title:userdomain,content:"ModelUnderTest:"+modelname+grokEmoji});
 	await aboutModel(name);
 }
 
@@ -1580,7 +1581,7 @@ function squashMessages(history) {
 		for (let i = 0; i < list.length; i++) {
 			const current=list[i];
 			if(last && last.role==current.role){
-				last.content += "<br>" + current.content;
+				last.content += "\n" + current.content;
 			} else {
 				squashed.push(current);
 				last=current;
@@ -1782,7 +1783,10 @@ async function relay(depth) {
 		const name=rohaModel||"mut1";
 		let content=replies.join("\n\n");
 		const ass={role:"assistant",name,content};
-		if(spend) ass.price=spend;
+		if(spend) {
+			ass.price=spend;
+			ass.emoji=grokEmoji;
+		}
 		rohaHistory.push(ass);
 
 	} catch (error) {
@@ -1931,6 +1935,7 @@ for(let account in modelAccounts){
 await flush();
 
 let grokModel = "";
+let grokEmoji = "";
 let grokFunctions=true;
 let grokUsage = 0;
 let grokTemperature = 1.0;
