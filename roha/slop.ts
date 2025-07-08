@@ -7,7 +7,7 @@ import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";
 const slopPid=Deno.pid;
 const sessionName="slop"+slopPid;
 let sessionCount=0;
-let slopMessage="";
+let slopMessage="";	// guard against repeating results
 
 function logSlop(_result:any){
 	const message=JSON.stringify(_result);
@@ -18,13 +18,6 @@ function logSlop(_result:any){
 }
 
 const greet=sessionName+" server says hello into the slop hole";
-
-// [slop] echo
-
-function echo(...data:any[]){
-//	console.log("[slop]",data);
-	logSlop(data);
-}
 
 // [slop] sleep
 
@@ -63,7 +56,7 @@ function sysInfo(request:JsonRPCRequest):JsonRPCResponse{
 	++sessionCount;
 	const session=sessionName+"."+sessionCount;
 	const result={hostName,userName,platform,session};
-//	echo("sysInfo",request,result);
+//	logSlop("sysInfo",request,result);
 	return {jsonrpc:request.jsonrpc,id:request.id,result};
 }
 
@@ -73,13 +66,13 @@ interface Tick{
 };
 
 function sysTick(request:JsonRPCRequest):JsonRPCResponse{
-	logSlop(request);
 	const tick:Tick=request.params;
 	const session=tick.session;
 	for(const event of tick.events){
 		logSlop(event);
 	}
 	const _result:unknown[]=[];
+	logSlop({request,result:_result});
 	return {jsonrpc:request.jsonrpc,id:request.id,result:{messages:_result}};
 }
 function sysPorts(request:JsonRPCRequest):JsonRPCResponse{
@@ -114,7 +107,7 @@ function readSlopHole(){
 
 worker.onmessage = (message) => {
 	const payload=message.data;//ports,origin.lastEventId JSON.stringify(payload)
-	echo("worker rx payload:", payload);	
+	logSlop(payload);	
 	if(payload.connected){
 		writeSlopHole(greet);
 		readSlopHole();
@@ -126,7 +119,7 @@ worker.onmessage = (message) => {
 	}
 	if(payload.received){
 		const rx=payload.received;
-		echo("rx:"+rx);
+		logSlop(rx);
 	}
 };
 
