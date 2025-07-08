@@ -1246,23 +1246,22 @@ async function attachMedia(words){
 	}
 }
 
-async function serveConnections(listener){
-	for await (const connection of listener) {
-		console.info("serveConnection ",JSON.stringify(connection));
-//		connection.close();
-		connection.write(encoder.encode("greetings from fountain client"));
-	}
-}
-
-
-let listening=false;
-
+//
+// let listening=false;
 // TODO - use deno comms to talk with slop <=> fountain task comms
 
+async function serveConnection(connection){
+	console.log("serveConnection ",JSON.stringify(connection));
+	await connection.write(encoder.encode("greetings from fountain client"));
+}
+
 async function listenService(){
-	echo("listening from fountain on port 8081");
+	echo("listening from fountain for slop on port 8081");
 	const listener = Deno.listen({ hostname: "localhost", port: 8081, transport: "tcp" });
-	await serveConnections(listener);
+	while (true) {
+        const connection = await listener.accept();
+		await serveConnection(connection);
+	}
 }
 
 async function callCommand(command) {
