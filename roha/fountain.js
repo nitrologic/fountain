@@ -27,7 +27,7 @@ const rohaGuide=[
 	"Tabs not spaces."
 ]
 
-const mutIs="slopMut:Model under test is "
+const mutsInclude="Models under test include "
 
 const rohaTitle="fountain "+fountainVersion;
 
@@ -663,7 +663,7 @@ async function resetModel(modelname){
 	let mut=nameversion[0];
 	rohaModel=mut;
 	grokFunctions=false;
-	const content=mutIs+modelname+account.emoji+" "+balance;
+	const content=mutsInclude+modelname+" "+account.emoji+" "+balance;
 	rohaHistory.push({role:"system",title:userdomain,content});
 	await aboutModel(name);
 }

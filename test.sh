@@ -1,6 +1,7 @@
-lsof -i :8000
+ss -lnp sport = :8000
 pushd roha
 export USERNAME="$USER"
-export USERDOMAIN=$(scutil --get LocalHostName)
+export USERDOMAIN="$HOSTNAME"
+deno --version
 deno task roha
 popd

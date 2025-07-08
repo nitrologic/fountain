@@ -28,7 +28,7 @@ async function writeFountain(message:string){
 	if(!slopPipe) return;
 	const data=encoder.encode(message);	
 	let offset = 0;
-	echo("writing",message);
+//	echo("writing",message);
 	while (offset < data.length) {
 		const written = await slopPipe.write(data.subarray(offset));
 		offset += written;
@@ -68,6 +68,7 @@ let readingSlop:bool=false;
 async function readFountain(){
 	if(!slopPipe) return;
 	readingSlop=true;
+	echo(readingSlop);
 	const n = await slopPipe.read(rxBuffer);
 	if (n !== null) {
 		const received = rxBuffer.subarray(0, n);
