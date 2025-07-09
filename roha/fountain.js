@@ -19,10 +19,10 @@ const statsColumn=50;
 const clipLog=1800;
 const defaultModel="deepseek-chat@deepseek";
 
-const rohaMihi="Welcome to nitrologic's Slop Fountain, many:many human model research project.";
+const rohaMihi="Welcome to nitrologic's Slop Fountain a many:many user model research project.";
 
 const rohaGuide=[
-	"As a guest assistant LLM please be mindful of others, courteous and professional.",
+	"As a guest assistant language model please be mindful of others, courteous and professional.",
 	"Keep response short and only post code on request.",
 	"Tabs not spaces."
 ]
@@ -196,10 +196,14 @@ function popHistory(){
 	return sessionStack.pop();
 }
 function resetHistory(){
+	rohaHistory=[{role:"system",content:rohaMihi}];
+	const guide=rohaGuide.join(" ");
+	if (guide) rohaHistory=[{role:"system",content:guide}];
+}
+function resetHistoryTitles(){
 	rohaHistory=[{role:"system",title:rohaTitle,content:rohaMihi}];
 	const guide=rohaGuide.join(" ");
 	if (guide) rohaHistory=[{role:"system",title:rohaTitle,content:guide}];
-	// todo: declare model specialisations
 }
 
 function echoContent(content,wide,left,right){
@@ -252,7 +256,12 @@ function logHistory(){
 }
 
 function rohaPush(content,username){
-	rohaHistory.push({role:"user",name:username,content:content});
+	const info=(grokModel in modelRates)?modelRates[grokModel]:null;
+	if(info && info.strict){
+		rohaHistory.push({role:"user",content:content});
+	}else{
+		rohaHistory.push({role:"user",name:username,content:content});
+	}
 }
 
 resetHistory();
@@ -526,7 +535,7 @@ async function connectDeepSeek(account,config) {
 			let name=model.id+"@"+account;
 			list.push(name);
 // dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
-			await specModel(model,account);
+			specModel(model,account);
 		}
 		list.sort();
 		modelList=modelList.concat(list);
@@ -579,7 +588,7 @@ async function connectOpenAI(account,config) {
 			let name=model.id+"@"+account;
 			list.push(name);
 // dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
-			await specModel(model,account);
+			specModel(model,account);
 		}
 		list.sort();
 		modelList=modelList.concat(list);
@@ -612,7 +621,7 @@ async function connectAccount(account) {
 	return null;
 }
 
-async function specAccount(account){
+function specAccount(account){
 	const config=modelAccounts[account];
 	const endpoint=rohaEndpoint[account];
 	if(!(account in roha.lode)){
@@ -620,10 +629,10 @@ async function specAccount(account){
 	}
 }
 
-async function specModel(model,account){
-	let name=model.id+"@"+account;
-	let exists=name in roha.mut;
-	let info=exists?roha.mut[name]:{name,notes:[],errors:[],relays:0,cost:0};
+function specModel(model,account){
+	const name=model.id+"@"+account;
+	const exists=name in roha.mut;
+	const info=exists?roha.mut[name]:{name,notes:[],errors:[],relays:0,cost:0};
 	info.id=model.id;
 	info.object=model.object;
 	info.created=model.created;
@@ -664,7 +673,10 @@ async function resetModel(modelname){
 	rohaModel=mut;
 	grokFunctions=false;
 	const content=mutsInclude+modelname+" "+account.emoji+" "+balance;
-	rohaHistory.push({role:"system",title:userdomain,content});
+
+	rohaHistory.push({role:"system",content});
+
+//	rohaHistory.push({role:"system",title:userdomain,content});
 	await aboutModel(name);
 }
 
@@ -715,7 +727,9 @@ async function saveHistory(name) {
 		let filename=(name||"transmission-"+timestamp)+".json";
 		let filePath=resolve(forgePath,filename);
 		let line="Saved session "+filename+".";
-		rohaHistory.push({role:"system",title:"Fountain History Saved",content:line});
+
+//		rohaHistory.push({role:"system",title:"Fountain History Saved",content:line});
+		rohaHistory.push({role:"system",content:line});
 		await Deno.writeTextFile(filePath,JSON.stringify(rohaHistory,null,"\t"));
 		echo(line);
 		roha.saves.push(filename);
@@ -966,6 +980,8 @@ async function promptForge(message) {
 			}
 			if (bytes.length) await writer.write(new Uint8Array(bytes));
 		}
+	}catch(e){
+		echo("promptForge","threw",e);
 	} finally {
 		Deno.stdin.setRaw(false);
 	}
@@ -1188,7 +1204,7 @@ async function onAccount(args){
 		if(name.length && !isNaN(name)) {
 			name=lodeList[name|0];
 		}
-		await specAccount(name);
+		specAccount(name);
 		let lode=roha.lode[name];
 		echo("Adjust",lode.name,"balance",price(lode.credit));
 		creditCommand=(credit) => creditAccount(credit, name);
@@ -1265,9 +1281,34 @@ async function attachMedia(words){
 // let listening=false;
 // TODO - use deno comms to talk with slop <=> fountain task comms
 
+const rxBufferSize=1e6;
+
+const rxBuffer = new Uint8Array(rxBufferSize);
+
+let readingSlop=false;
+
+async function writeSlop(connection,data){
+	await connection.write(data);
+}
+
+async function readSlop(slopPipe,data){
+	if(!readingSlop) return;
+	readingSlop=true;
+	const n = await slopPipe.read(rxBuffer);
+	if (n !== null) {
+		const received = rxBuffer.subarray(0, n);
+		const message = decoder.decode(received);
+		echo("readSlop", message);		
+//		self.postMessage({received:message});
+	}
+	readingSlop=false;
+}
+
 async function serveConnection(connection){
 	console.log("serveConnection ",JSON.stringify(connection));
 	await connection.write(encoder.encode("greetings from fountain client"));
+	const data=encoder.encode("greetings from fountain client");
+	await writeSlop(connection,data);
 }
 
 async function listenService(){
@@ -1660,10 +1701,9 @@ async function relay(depth) {
 //			payload.messages=squashMessages(rohaHistory);
 			payload.messages=[...rohaHistory];
 		}
-		// check stone flag before enabling temperature
+		// check notemp flag before enabling temperature
 		const info=(grokModel in modelRates)?modelRates[grokModel]:null;
-		if(info && !info.stone){
-			//echo("not stone",grokTemperature);
+		if(info && !info.notemp){
 			payload.temperature=grokTemperature;
 		}
 		if(info && info.max_tokens){
@@ -1834,10 +1874,8 @@ async function relay(depth) {
 		echo("unhandled error line:", line);
 		if(verbose){
 			echo(String(error));
+			echo(JSON.stringify(payload));
 		}
-//		if(roha.config.debugging){
-//			echo(JSON.stringify(payload));
-//		}
 	}
 }
 
@@ -1903,7 +1941,12 @@ async function chat() {
 		if (lines.length){
 			const query=lines.join("\n");
 			if(query.length){
-				rohaHistory.push({ role: "user", name:rohaUser, content: query });
+				const info=(grokModel in modelRates)?modelRates[grokModel]:null;
+				if(info && info.strict){
+					rohaHistory.push({ role: "user", content: "["+rohaUser+"] "+query });
+				}else{
+					rohaHistory.push({ role: "user", name:rohaUser, content: query });
+				}
 				await relay(0);
 			}
 		}
@@ -1932,13 +1975,13 @@ await flush();
 await readForge();
 const rohaEndpoint={};
 for(let account in modelAccounts){
-	const t=performance.now();
+//	const t=performance.now();
 	let endpoint=await connectAccount(account);
 	if(endpoint) {
 		rohaEndpoint[account]=endpoint;
-		await specAccount(account);
-		let elapsed=performance.now()-t;
-		elapsed.toFixed(2)+"s"
+		specAccount(account);
+//		let elapsed=performance.now()-t;
+//		elapsed.toFixed(2)+"s"
 	}else{
 		echo("endpoint failure for account",account);
 	}
