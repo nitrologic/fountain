@@ -12,7 +12,9 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
-const fountainVersion="1.2.3";
+const fountainVersion="1.2.4";
+
+const rohaTitle="fountain "+fountainVersion+" ⛲ ";
 
 const terminalColumns=120;
 const statsColumn=50;
@@ -28,8 +30,6 @@ const rohaGuide=[
 ]
 
 const mutsInclude="Models under test include "
-
-const rohaTitle="fountain "+fountainVersion;
 
 const username=Deno.env.get("USERNAME");
 const userdomain=Deno.env.get("USERDOMAIN").toLowerCase();
