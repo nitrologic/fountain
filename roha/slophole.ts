@@ -8,7 +8,7 @@ interface SlopHoleMessage {
 	command?: string;
 	data?: any;
 	message?: string;
-	connected?: boolean;
+	connected?: string;
 	disconnected?: boolean;
 }
 
@@ -69,8 +69,16 @@ async function readFountain(){
 	if(!slopPipe) return;
 	readingSlop=true;
 	echo(readingSlop);
-	const n = await slopPipe.read(rxBuffer);
-	if (n !== null) {
+	let n=null;
+	try{
+		n = await slopPipe.read(rxBuffer);
+	}catch(e){
+		echo("readFountain",e);
+	}
+	if (n == null) {
+		const disconnected=disconnectFountain();
+		self.postMessage({disconnected});
+	}else{
 		const received = rxBuffer.subarray(0, n);
 		const message = decoder.decode(received);
 		echo("slopPipe received:", message);		
@@ -86,7 +94,9 @@ self.onmessage = async(e) => {
 	switch(command){
 		case "open": {
 			const connected=await connectFountain()
-			self.postMessage({connected})
+			if(connected){
+				self.postMessage({connected})
+			}
 		};
 		break;
 		case "close": {
