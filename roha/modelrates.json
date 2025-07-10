@@ -94,6 +94,11 @@
 		"purpose": "Image vision, text and code generation",
 		"reality": "Model under test."
 	},
+	"grok-4-0709@xai":{
+		"pricing": [3.00, 15.00],
+		"purpose": "Advanced reasoning and code generation",
+		"press": "High-performance model for complex research tasks and multi-step workflows."
+	},
 	"grok-3@xai": {
 		"pricing": [3.00, 0.75, 15.00],
 		"purpose": "Text and code generation",

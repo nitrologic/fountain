@@ -6,7 +6,7 @@
 		"slop": "deno run --allow-net --allow-env --allow-sys --allow-read slop.ts",
 		"fountain": "deno run --allow-net --allow-env --allow-read --allow-write=./forge fountain.js",
 		"roha":{
-			"dependencies":["slop","fountain"]
+			"dependencies":["fountain","slop"]
 		}
 	}
 }

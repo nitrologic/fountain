@@ -136,7 +136,7 @@ worker.onerror = (e) => {
 	console.error("Worker error:", e.message);
 };
 
-await sleep(10e3);
+await sleep(6e3);
 
 worker.postMessage({ command: "open", data: [1, 2, 3, 4] });
 

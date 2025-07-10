@@ -130,10 +130,12 @@ async function exitForge(){
 	await flush();
 	Deno.stdin.setRaw(false);
 	console.log("exitForge",exitMessage)
+	if(slopConnection) slopConnection.close();
 }
 
 let slopPail=[];
 let readingSlop=false;
+let slopConnection;
 
 //
 // let listening=false;
@@ -177,13 +179,10 @@ async function listenService(){
 	const listener=Deno.listen({ hostname: "localhost", port: 8081, transport: "tcp" });
 	while (true) {
 		const connection=await listener.accept();
+		slopConnection=connection;
 		await serveConnection(connection);
 	}
 }
-
-
-
-
 
 function price(credit){
 	if (credit === null || isNaN(credit)) return "$0";
