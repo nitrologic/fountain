@@ -1,5 +1,5 @@
 // slophole.ts
-// (c)2025 nitrologic 
+// (c)2025 Simon Armstrong 
 // All rights reserved
 
 // [hole] slophole a slop.ts worker

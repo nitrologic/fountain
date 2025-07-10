@@ -1,18 +1,16 @@
-// fountain.js
-// A research tool for smelting large language models.
-// (c)2025 Simon Armstrong
-
-// tested with deno 2.4.0, v8 13.7.152.6, typescript 5.8.3
-
-// embeds nitrologic roha foundry forge slop fountain
-
-// mut:{name,hasForge,notes:[],errors:[],relays:0,cost:0,elapsed:0}
+// fountain.js - A research tool for smelting large language models.
+// Copyright (c) 2025 Simon Armstrong
+// Licensed under the MIT License
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
+
+// Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
+
+// mut:{name,hasForge,notes:[],errors:[],relays:0,cost:0,elapsed:0}
 
 const fountainVersion="1.2.4";
 
@@ -653,7 +651,9 @@ async function connectOpenAI(account,config) {
 }
 
 async function connectAccount(account) {
-	echo("Connecting to account:", account);
+	if(roha.config.verbose){
+		echo("Connecting to account:", account);
+	}
 	const config=modelAccounts[account];
 	if (!config) return null;
 	const api= config.api;
@@ -692,16 +692,29 @@ function specModel(model,account){
 
 async function aboutModel(name){
 	const info=(name in modelRates)?modelRates[name]:null;
-	let rate=info?info.pricing||[]:[];
-	let rates=[];
+	const rate=info?info.pricing||[]:[];
+	const rates=[];
+	const mut=mutName(name);
 	for(let i=0;i<rate.length;i++) rates.push(rate[i].toFixed(2));
-	echo("model:",name,"tool",grokFunctions,"rates",rates.join(","));
+	echo("model:",mut,"tool",grokFunctions,"rates",rates.join(","));
 	if(info){
 		if(info.purpose)echo("purpose:",info.purpose);
 		if(info.press)echo("press:",info.press);
 		if(info.reality)echo("reality:",info.reality);
 	}
 	await writeForge();
+}
+
+function mutName(modelname){
+	const modelAccount=grokModel.split("@");
+	const path=modelAccount[0];
+	const provider=modelAccount[1];
+	const account=modelAccounts[provider];
+	const emoji=(account&&account.emoji)?account.emoji:"";
+	let names=path.split("/");
+	let name=names.pop();
+	let namebits=name.split("-");	//preview");
+	let mut=namebits[0]+namebits[1]+" "+emoji;
 }
 
 async function resetModel(modelname){
@@ -715,10 +728,8 @@ async function resetModel(modelname){
 	const balance=(lode&&lode.credit)?price(lode.credit):"";
 	let names=path.split("/");
 	let name=names.pop();
-
 	let namebits=name.split("-");	//preview");
 	let mut=namebits[0]+namebits[1];
-
 	rohaModel=mut;
 	grokFunctions=false;
 	const content=mutsInclude+modelname+" "+account.emoji+" "+balance;
@@ -2052,9 +2063,11 @@ if(roha.config){
 }else{
 	roha.config={};
 }
+await flush();
 
-listenService();
-
+if(roha.config.listenonstart){
+	listenService();
+}
 await flush();
 
 try {

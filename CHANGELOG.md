@@ -12,3 +12,7 @@
 - updated gemini generative ai api
 - new history and log commands
 - work in progress slop.ts html server
+
+## [1.2.4] - 2025-7-11
+
+- slop.ts => slopfiles.ts
