@@ -15,7 +15,7 @@ interface SlopHoleMessage {
 // [hole] fountain slopPipe worker thread
 
 function echo(...data: any[]){
-	console.log("[hole]",data);
+	console.error("\t\t[hole]",data);
 }
 
 let slopPipe:Deno.Conn;

@@ -6,6 +6,8 @@
 
 // embeds nitrologic roha foundry forge slop fountain
 
+// mut:{name,hasForge,notes:[],errors:[],relays:0,cost:0,elapsed:0}
+
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
@@ -63,7 +65,7 @@ const encoder=new TextEncoder();
 // attached as payload messages in chat completions
 
 let rohaHistory=[];
-let rohaModel="mut";
+let rohaModel="mut";	//mut name excludes preview version details
 
 const flagNames={
 	reasonoutloud : "echo chain of thought",
@@ -121,14 +123,67 @@ async function exitForge(){
 		echo("pid",pid,"killed");
 		slopPid=null;
 	}
-//	echo(exitMessage);
 	await flush();
 	if(roha.config.saveonexit){
 		await saveHistory();
 	}
 	await flush();
 	Deno.stdin.setRaw(false);
+	console.log("exitForge",exitMessage)
 }
+
+let slopPail=[];
+let readingSlop=false;
+
+//
+// let listening=false;
+// TODO: use deno comms to talk with slop <=> fountain task comms
+
+const rxBufferSize=1e6;
+
+const rxBuffer = new Uint8Array(rxBufferSize);
+
+async function writeSlop(slopPipe,data){
+	return await slopPipe.write(data);
+}
+
+async function readSlop(slopPipe){
+	if(!readingSlop) return;
+	readingSlop=true;
+	let n=null;
+	try{
+		n = await slopPipe.read(rxBuffer);
+	}catch(e){
+		echo("readSlop",e);
+	}
+	if (n !== null) {
+		const received = rxBuffer.subarray(0, n);
+		const message = decoder.decode(received);
+		echo("readSlop", message);		
+		// TODO: document me
+		self.postMessage({rx:message});
+	}
+	readingSlop=false;
+}
+
+async function serveConnection(connection){
+	console.error("\t[fountain] serveConnection ",JSON.stringify(connection));
+	const text=encoder.encode("greetings from fountain client");
+	await writeSlop(connection,text);
+}
+
+async function listenService(){
+	echo("listening from fountain for slop on port 8081");
+	const listener=Deno.listen({ hostname: "localhost", port: 8081, transport: "tcp" });
+	while (true) {
+		const connection=await listener.accept();
+		await serveConnection(connection);
+	}
+}
+
+
+
+
 
 function price(credit){
 	if (credit === null || isNaN(credit)) return "$0";
@@ -196,11 +251,6 @@ function popHistory(){
 	return sessionStack.pop();
 }
 function resetHistory(){
-	rohaHistory=[{role:"system",content:rohaMihi}];
-	const guide=rohaGuide.join(" ");
-	if (guide) rohaHistory=[{role:"system",content:guide}];
-}
-function resetHistoryTitles(){
 	rohaHistory=[{role:"system",title:rohaTitle,content:rohaMihi}];
 	const guide=rohaGuide.join(" ");
 	if (guide) rohaHistory=[{role:"system",title:rohaTitle,content:guide}];
@@ -255,13 +305,11 @@ function logHistory(){
 	}
 }
 
+// TODO: username is blobuser, pass message type for images
 function rohaPush(content,username){
-	const info=(grokModel in modelRates)?modelRates[grokModel]:null;
-	if(info && info.strict){
-		rohaHistory.push({role:"user",content:content});
-	}else{
-		rohaHistory.push({role:"user",name:username,content:content});
-	}
+	const item={role:"user",name:username,content:content};
+	rohaHistory.push(item);
+	slopPail.push({"push":{item}});
 }
 
 resetHistory();
@@ -456,7 +504,7 @@ function prepareContentRequest(payload){
 				break;
 		}
 	}
-	// todo tools and toolsconfig support
+	// TODO: tools and toolsconfig support
 	const request={contents,systemInstruction:{content:{role:"system",parts:sysparts}}};
 	if(roha.config.verbose){
 		debug("contentRequest",request);
@@ -494,7 +542,7 @@ async function connectGoogle(account,config){
 //						config: { systemInstruction: setup, maxOutputTokens: 500,temperature: 0.1, }
 						const model=genAI.getGenerativeModel({model:payload.model});
 						const request=prepareContentRequest(payload);
-						// todo hook up ,signal SingleRequestOptions parameter
+						// TODO: hook up ,signal SingleRequestOptions parameter
 						const result=await model.generateContent(request);
 						if(roha.config.verbose){
 							console.info("GoogleGenerativeAI result",result);
@@ -532,7 +580,7 @@ async function connectDeepSeek(account,config) {
 		const models=await response.json();
 		const list=[];
 		for (const model of models.data) {
-			let name=model.id+"@"+account;
+			const name=model.id+"@"+account;
 			list.push(name);
 // dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
 			specModel(model,account);
@@ -585,7 +633,7 @@ async function connectOpenAI(account,config) {
 		const models=await endpoint.models.list();
 		const list=[];
 		for (const model of models.data) {
-			let name=model.id+"@"+account;
+			const name=model.id+"@"+account;
 			list.push(name);
 // dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
 			specModel(model,account);
@@ -668,14 +716,14 @@ async function resetModel(modelname){
 	const balance=(lode&&lode.credit)?price(lode.credit):"";
 	let names=path.split("/");
 	let name=names.pop();
-	let nameversion=name.split("-preview");
-	let mut=nameversion[0];
+
+	let namebits=name.split("-");	//preview");
+	let mut=namebits[0]+namebits[1];
+
 	rohaModel=mut;
 	grokFunctions=false;
 	const content=mutsInclude+modelname+" "+account.emoji+" "+balance;
-
 	rohaHistory.push({role:"system",content});
-
 //	rohaHistory.push({role:"system",title:userdomain,content});
 	await aboutModel(name);
 }
@@ -990,8 +1038,8 @@ async function promptForge(message) {
 }
 
 async function fileLength(path) {
-	const info=await Deno.stat(path);
-	return info.size;
+	const stat=await Deno.stat(path);
+	return stat.size;
 }
 
 async function addShare(share){
@@ -1013,9 +1061,9 @@ async function shareDir(dir, tag) {
 		for (const path of paths) {
 			try {
 				echo("Sharing",path);
-				const info=await Deno.stat(path);
-				const size=info.size||0;
-				const modified=info.mtime.getTime();
+				const stat=await Deno.stat(path);
+				const size=stat.size||0;
+				const modified=stat.mtime.getTime();
 				const hash=await hashFile(path);
 				await addShare({ path, size, modified, hash, tag });
 			} catch (error) {
@@ -1056,6 +1104,7 @@ async function shareBlob(path,size,tag){
 	const mimeType=fileType(extension);	
 	const metadata=JSON.stringify({ path:path,length:size,type:mimeType,tag });
 	rohaPush(metadata,blobUser);
+	// TODO: test for imageExtensions
 	if (textExtensions.includes(extension)) {
 		const content=await Deno.readTextFile(path);
 		rohaPush(content,blobUser);
@@ -1079,21 +1128,21 @@ async function commitShares(tag) {
 		}
 		try {
 			const path=share.path;
-			const info=await Deno.stat(path);
-			const size=info.size;
-			if (!info.isFile || size > MaxFileSize) {
+			const stat=await Deno.stat(path);
+			const size=stat.size;
+			if (!stat.isFile || size > MaxFileSize) {
 				removedPaths.push(path);
 				echo("Removed invalid path",path);
 				dirty=true;
 				continue;
 			}
-			const modified=share.modified !== info.mtime.getTime();
+			const modified=share.modified !== stat.mtime.getTime();
 			const isShared=rohaShares.includes(path);
 			if (modified || !isShared) {
 				let ok=await shareBlob(path,size,tag);
 				if(ok){
 					count++;
-					share.modified=info.mtime.getTime();
+					share.modified=stat.mtime.getTime();
 					dirty=true;
 					if (!rohaShares.includes(path)) {
 						rohaShares.push(path);
@@ -1263,60 +1312,17 @@ async function attachMedia(words){
 	}else{
 		const filename=words.slice(1).join(" ");
 		const path=resolvePath(Deno.cwd(), filename);
-		const info=await Deno.stat(path);
+		const stat=await Deno.stat(path);
 		const tag="";//await promptForge("Enter tag name (optional):");
-		if(info.isFile){
-			const size=info.size;
-			const modified=info.mtime.getTime();
-			echo("Attach media path:",path,"size:",info.size);
+		if(stat.isFile){
+			const size=stat.size;
+			const modified=stat.mtime.getTime();
+			echo("Attach media path:",path,"size:",size);
 //			const hash=await hashFile(path,size);
 //			echo("hash:",hash);
 //			await addShare({path,size,modified,hash,tag});
 		}
 		await writeForge();
-	}
-}
-
-//
-// let listening=false;
-// TODO - use deno comms to talk with slop <=> fountain task comms
-
-const rxBufferSize=1e6;
-
-const rxBuffer = new Uint8Array(rxBufferSize);
-
-let readingSlop=false;
-
-async function writeSlop(connection,data){
-	await connection.write(data);
-}
-
-async function readSlop(slopPipe,data){
-	if(!readingSlop) return;
-	readingSlop=true;
-	const n = await slopPipe.read(rxBuffer);
-	if (n !== null) {
-		const received = rxBuffer.subarray(0, n);
-		const message = decoder.decode(received);
-		echo("readSlop", message);		
-//		self.postMessage({received:message});
-	}
-	readingSlop=false;
-}
-
-async function serveConnection(connection){
-	console.log("serveConnection ",JSON.stringify(connection));
-	await connection.write(encoder.encode("greetings from fountain client"));
-	const data=encoder.encode("greetings from fountain client");
-	await writeSlop(connection,data);
-}
-
-async function listenService(){
-	echo("listening from fountain for slop on port 8081");
-	const listener=Deno.listen({ hostname: "localhost", port: 8081, transport: "tcp" });
-	while (true) {
-		const connection=await listener.accept();
-		await serveConnection(connection);
 	}
 }
 
@@ -1511,16 +1517,16 @@ async function callCommand(command) {
 				}else{
 					const filename=words.slice(1).join(" ");
 					const path=resolvePath(Deno.cwd(), filename);
-					const info=await Deno.stat(path);
+					const stat=await Deno.stat(path);
 					const tag="";//await promptForge("Enter tag name (optional):");
-					if(info.isDirectory){
+					if(stat.isDirectory){
 						echo("Share directory path:",path);
 						await shareDir(path,tag);
 					}else{
 						// attachMedia(words);
-						const size=info.size;
-						const modified=info.mtime.getTime();
-						echo("Share file path:",path," size:",info.size," ");
+						const size=stat.size;
+						const modified=stat.mtime.getTime();
+						echo("Share file path:",path," size:",size," ");
 						const hash=await hashFile(path,size);
 						echo("hash:",hash);
 						await addShare({path,size,modified,hash,tag});
@@ -1678,8 +1684,39 @@ async function processToolCalls(calls) {
 	return results;
 }
 
+function strictHistory(history){
+	const list=[];
+	for(const _item of history){
+		const item={..._item};
+		switch(item.role){
+			case "system":
+				list.push({role:"system",content:item.content});
+				break;
+			case "assistant":
+				if(item.tool_calls){
+					list.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
+				}else{
+					list.push({role:"assistant",content:item.content});
+				}
+				break;
+			case "user":{
+					const content="["+item.name+"] "+item.content;
+					list.push({role:item.role,content});
+				}
+				break;
+			case "tool":
+				list.push({...item});
+				//({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
+				break;
+		}
+	}
+	return list;
+}
+
 async function relay(depth) {
 	const verbose=roha.config.verbose;
+	const info=(grokModel in modelRates)?modelRates[grokModel]:null;
+	const strictMode=info&&info.strict;
 	let payload={};
 	let spend=0;
 	try {
@@ -1688,22 +1725,20 @@ async function relay(depth) {
 		const model=modelAccount[0];
 		const account=modelAccount[1];
 		const endpoint=rohaEndpoint[account];
-
-		// prepare payload
-
+	// prepare payload
 		payload={model};
-		const useTools=grokFunctions&&roha.config.tools;
-		// some toolless models may get snurty unless messages are squashed
-		if(useTools){
-			payload.messages=[...rohaHistory];
-			payload.tools=rohaTools;
+		if(strictMode){
+			payload.messages=strictHistory(rohaHistory);
 		}else{
-//			payload.messages=squashMessages(rohaHistory);
 			payload.messages=[...rohaHistory];
 		}
-		// check notemp flag before enabling temperature
-		const info=(grokModel in modelRates)?modelRates[grokModel]:null;
-		if(info && !info.notemp){
+	// use tools
+		const useTools=grokFunctions&&roha.config.tools;
+		if(useTools){
+			payload.tools=rohaTools;
+		}
+	// check cold:true in o4-mini-2025-04-16@openai before enabling temperature
+		if(info && !info.cold){
 			payload.temperature=grokTemperature;
 		}
 		if(info && info.max_tokens){
@@ -1769,6 +1804,7 @@ async function relay(depth) {
 			}
 			mut.prompt_tokens=(mut.prompt_tokens|0)+spent[0];
 			mut.completion_tokens=(mut.completion_tokens|0)+spent[1];
+			// TODO: explain hasForge false condition
 			if(useTools && mut.hasForge!==true){
 				mut.hasForge=true;
 				await writeForge();
@@ -1842,7 +1878,6 @@ async function relay(depth) {
 			ass.emoji=grokAccount.emoji;
 		}
 		rohaHistory.push(ass);
-
 	} catch (error) {
 		let line=error.message || String(error);
 		if(line.includes("maximum prompt length")){
@@ -1871,7 +1906,7 @@ async function relay(depth) {
 		//unhandled error line: 400 status code (no body)+
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)
-		echo("unhandled error line:", line);
+		echo("unhandled error line",strictMode,line);
 		if(verbose){
 			echo(String(error));
 			echo(JSON.stringify(payload));
@@ -1942,11 +1977,7 @@ async function chat() {
 			const query=lines.join("\n");
 			if(query.length){
 				const info=(grokModel in modelRates)?modelRates[grokModel]:null;
-				if(info && info.strict){
-					rohaHistory.push({ role: "user", content: "["+rohaUser+"] "+query });
-				}else{
-					rohaHistory.push({ role: "user", name:rohaUser, content: query });
-				}
+				rohaHistory.push({ role: "user", name:rohaUser, content: query });
 				await relay(0);
 			}
 		}

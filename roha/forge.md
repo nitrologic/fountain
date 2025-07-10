@@ -13,10 +13,6 @@ the items displayed
 
 Accept connections from web clients on port
 
-### /attach
-
-Attach an image file (.jpg or .png) with next prompt.
-
 ### /config
 
 Toggle configuration flags.
@@ -41,13 +37,15 @@ Set or show the prompt temperature.
 
 An entropy control, use lower values for focus, higher for creativity.
 
-### /share
+### /share /attach
 
 Share a file or folder with optional tag.
 
 Files are added to the share list used by the /push /commit command.
 
 A * signifies file share is included in current context.
+
+Valid extensions for image files are .jpg and .png.
 
 ### /drop
 

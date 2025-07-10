@@ -12,7 +12,7 @@
 
 ![Slop Log](slop/sloplog.png)
 
-## deno projects -wired make node.js -tired
+## js server platforms? deno -wired | node.js -tired
 
 ![Slop Source](slop/slopsource.png)
 

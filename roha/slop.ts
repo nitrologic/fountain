@@ -9,12 +9,21 @@ const sessionName="slop"+slopPid;
 let sessionCount=0;
 let slopMessage="";	// guard against repeating results
 
+let slopPail:unknown[]=[];
+
 function logSlop(_result:any){
 	const message=JSON.stringify(_result);
 	if(message!=slopMessage){
-		console.log("[slop]",message);
+		console.error("\t\t\t\t[slop]",message);
 		slopMessage=message;
 	}
+	slopPail.push(message);
+}
+
+function emptySlop(){
+	const slop=slopPail;
+	slopPail=[];
+	return slop;
 }
 
 const greet=sessionName+" server says hello into the slop hole";
@@ -71,7 +80,7 @@ function sysTick(request:JsonRPCRequest):JsonRPCResponse{
 	for(const event of tick.events){
 		logSlop(event);
 	}
-	const _result:unknown[]=[];
+	const _result=emptySlop();
 	logSlop({request,result:_result});
 	return {jsonrpc:request.jsonrpc,id:request.id,result:{messages:_result}};
 }
@@ -165,7 +174,7 @@ Deno.serve(async (request) => {
 			default:
 				return new Response("Not Found", { status: 404 });
 		}
-		console.log("[slop]",method,JSON.stringify(result));
+		console.error("\t\t[slop]",method,JSON.stringify(result));
 		const headers={"Content-Type":"application/json","Access-Control-Allow-Origin":"*"};
 		return new Response(JSON.stringify(result),{headers});
 	}

@@ -1,3 +1,18 @@
+		if(info && !info.strict){
+			// TODO: should this info be available to all? 
+			// these fields hidden for strict mistral
+
+
+	if(info && info.strict){
+		rohaHistory.push({role:"user",content:content});
+	}else{
+
+				if(info && info.strict){
+					rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});
+				}else{
+
+
+
 * 11 disorder : allow /dos command to run shell : false
 * 12 versioning : allow multiple versions in share history : false
 
