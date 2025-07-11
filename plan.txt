@@ -1,4 +1,6 @@
-- attach images
+- slopnet telnet connections
+- test tools read_time submit_file fetch_image connect_slopnet
+- payload image messages
 - slopstudio web connections
 - explore vector_store and fine tuning of models
 - support DeepSeek user balance https://api-docs.deepseek.com/api/get-user-balance

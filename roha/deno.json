@@ -4,9 +4,10 @@
 	}
 	,"tasks":{
 		"slop": "deno run --allow-net --allow-env --allow-sys --allow-read slop.ts",
+		"slopnet": "deno run --allow-net --allow-env --allow-sys --allow-read slopnet.ts",
 		"fountain": "deno run --allow-net --allow-env --allow-read --allow-write=./forge fountain.js",
 		"roha":{
-			"dependencies":["fountain","slop"]
+			"dependencies":["fountain","slopnet"]
 		}
 	}
 }
