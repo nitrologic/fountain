@@ -550,14 +550,63 @@ function prepareGeminiContent(payload){
 }
 //messages: [{ role: "user", content: "Hello, Claude" }],
 
-function prepareAnthropicContent(payload){
-	const result=[];
+function anthropicSystem(payload){
+	const system=[];
 	for(const item of payload.messages){
-		if(item.role=="user"){
-			result.push({role:"user",content:item.content});
+		switch(item.role){
+			case "system":
+				system.push({type:"text",text:item.content});
+				break;
 		}
 	}
-	return result;
+	return system;
+}
+
+function anthropicMessages(payload){
+	const messages=[];
+	for(const item of payload.messages){
+		switch(item.role){
+			case "user":
+				for(const content of item.content){
+					messages.push({role:"user",content:content.text});
+				}
+				break;
+			case "assistant":
+				if(item.tool_calls){
+					list.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
+				}else{
+					messages.push({role:"assistant",content:item.content});
+				}
+				break;
+		}
+	}
+	return messages;
+}
+
+/*
+const rohaTools=[{
+	type: "function",
+	function:{
+		name: "read_time",
+		description: "Returns current local time",
+		parameters: {
+			type: "object",
+			properties: {},
+			required: []
+		}
+	}
+},{
+*/
+
+function anthropicTools(payload){
+	const tools=[];
+	for(const tool of payload.tools){
+		const f=tool.function;
+		const s=f.parameters;
+		const d={name:f.name,description:f.description,input_schema:s};
+		tools.push(d);
+	}
+	return tools;
 }
 
 async function connectAnthropic(account,config){
@@ -598,26 +647,16 @@ async function connectAnthropic(account,config){
 				completions: {
 					create: async (payload) => {
 						const model=payload.model;
-						const messages=prepareAnthropicContent(payload);
-						const reply = await sdk.messages.create({
- 							model,
-							max_tokens: 1024,
-							messages
-						});
-						//{"id":"msg_01XHRXEi1xkrCkvhXdU4hR67",
-						// "type":"message",
-						// "role":"assistant",
-						// "model":"claude-3-haiku-20240307",
-						// "content":[{"type":"text","text":"Hi there! How can I assist you today?"}],
-						// "stop_reason":"end_turn",
-						// "stop_sequence":null,
-						// "usage":{"input_tokens":8,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":13,"service_tier":"standard"}}
-						//echo(text);
+						const system=anthropicSystem(payload);
+						const messages=anthropicMessages(payload);						
+						const request={model,max_tokens:1024,system,messages};
+						if (payload.tools) {
+							request.tools=anthropicTools(payload);
+						}
+						const reply = await sdk.messages.create(request);
 						const usage={
-							promptTokencount:reply.usage.input_tokens,
-							candidatesTokenCount:0,
-							thoughtsTokenCount:0,
-							totalTokenCount:reply.usage.output_tokens
+							prompt_tokens:reply.usage.input_tokens,
+							completion_tokens:reply.usage.output_tokens
 						};
 						return {
 							model,
@@ -636,6 +675,14 @@ async function connectAnthropic(account,config){
 	}
 }
 
+//{"id":"msg_01XHRXEi1xkrCkvhXdU4hR67",
+// "type":"message",
+// "role":"assistant",
+// "model":"claude-3-haiku-20240307",
+// "content":[{"type":"text","text":"Hi there! How can I assist you today?"}],
+// "stop_reason":"end_turn",
+// "stop_sequence":null,
+// "usage":{"input_tokens":8,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":13,"service_tier":"standard"}}
 
 async function connectGoogle(account,config){
 	try{
@@ -831,7 +878,7 @@ async function aboutModel(modelname){
 	const account=modelAccounts[provider];
 	const emoji=account.emoji||"";
 	const lode=roha.lode[provider];
-	const balance=(lode&&lode.credit)?price(lode.credit):"";
+	const balance=(lode&&lode.credit)?price(lode.credit):"$0";
 	echo("model",{id,mut,emoji,modelname,rate,balance,strict,multi});
 	if(roha.config.verbose && info){
 		if(info.purpose)echo("purpose:",info.purpose);

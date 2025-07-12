@@ -149,10 +149,12 @@
 	},
 	"claude-opus-4-20250514@anthropic":{
 		"pricing":[15.0,75.0],
+		"multi":true,
 		"purpose":"frontier model for coding, agentic search, and creative writing"
 	},
 	"claude-sonnet-4-20250514@anthropic":{
 		"pricing":[15.0,75.0],
+		"multi":true,
 		"purpose":"balance performance, cost-effectiveness, and speed for high-volume production"
 	},
 	"claude-3-haiku-20240307@anthropic":{
