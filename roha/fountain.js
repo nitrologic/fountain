@@ -34,6 +34,7 @@ const mutsInclude="models under test include "
 
 const username=Deno.env.get("USERNAME");
 const userdomain=Deno.env.get("USERDOMAIN").toLowerCase();
+const userregion = Intl.DateTimeFormat().resolvedOptions();	//locale,timeZone;
 
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Please review modified files, validate integrity of all functions and arguments.";
@@ -47,13 +48,13 @@ const MaxFileSize=512*1024;
 
 const appDir=Deno.cwd();
 const accountsPath=resolve(appDir,"accounts.json");
-const ratesPath=resolve(appDir,"modelrates.json");
+const specsPath=resolve(appDir,"modelspecs.json");
 
 const forgePath=resolve(appDir,"forge");
 const rohaPath=resolve(forgePath,"forge.json");
 
 const modelAccounts=JSON.parse(await Deno.readTextFile(accountsPath));
-const modelRates=JSON.parse(await Deno.readTextFile(ratesPath));
+const modelSpecs=JSON.parse(await Deno.readTextFile(specsPath));
 
 const decoder=new TextDecoder("utf-8");
 const encoder=new TextEncoder();
@@ -79,31 +80,31 @@ const flagNames={
 	rawprompt : "experimental rawmode stdin deno prompt replacement",
 	resetcounters : "factory reset when reset",
 	returntopush : "hit return to /push - under test",
-	slow : "experimental output at reading speed",
-	squash : "experimental history parse"
+	slow : "experimental output at reading speed"
+};
+
+const emptyConfig={
+	showWelcome:false,
+	reasonoutloud:false,
+	tools:true,
+	commitonstart:true,
+	saveonexit:false,
+	ansi:true,
+	verbose:false,
+	squash:false,
+	broken:false,
+	logging:false,
+	debugging:false,
+	pushonshare:false,
+	rawprompt:false,
+	resetcounters:false,
+	returntopush:false,
+	slow:false,
+	nic:"user"
 };
 
 const emptyRoha={
-	config:{
-		showWelcome:false,
-		reasonoutloud:false,
-		tools:true,
-		commitonstart:true,
-		saveonexit:false,
-		ansi:true,
-		verbose:false,
-		squash:false,
-		broken:false,
-		logging:false,
-		debugging:false,
-		pushonshare:false,
-		rawprompt:false,
-		resetcounters:false,
-		returntopush:false,
-		slow:false,
-		squash:false,
-		nic:"user"
-	},
+	config:emptyConfig,
 	tags:{},
 	sharedFiles:[],
 	attachedFiles:[],
@@ -329,7 +330,7 @@ const rohaTools=[{
 	type: "function",
 	function:{
 		name: "read_time",
-		description: "Returns current time in UTC",
+		description: "Returns current local time",
 		parameters: {
 			type: "object",
 			properties: {},
@@ -504,16 +505,26 @@ async function listModels(config){
 
 //https://ai.google.dev/gemini-api/docs/text-generation
 
-function prepareContentRequest(payload){
+function prepareGeminiContent(payload){
 	const contents=[];
 	const sysparts=[];	// GenerateContentRequest systemInstruction content
+	let blob={};
 	for(const message of payload.messages){
 		switch(message.role){
 			case "system":
 				sysparts.push({text:message.content});
 				break;
 			case "user":
-				contents.push({role:"user",parts:[{text:message.content}]});
+				if(message.name=="blob"){
+					blob=JSON.parse(message.content);
+					continue;
+				}
+				if(message.name=="image"){
+					const data=message.content;
+					contents.push({role:"user",parts:[{inlineData:{mimeType,data}}]});
+					continue;
+				}
+				contents.push({text:message.content});//{role:"user",parts:[{text:message.content}]});
 				break;
 			case "assistant":{
 					const ass={role:"model",parts:[{text:message.content}]}
@@ -523,7 +534,13 @@ function prepareContentRequest(payload){
 		}
 	}
 	// TODO: tools and toolsconfig support
-	const request={contents,systemInstruction:{content:{role:"system",parts:sysparts}}};
+
+	const request={
+		contents,
+		systemInstruction:{
+			content:{role:"system",parts:sysparts}
+		}
+	};
 	if(roha.config.verbose){
 		debug("contentRequest",request);
 	}
@@ -559,7 +576,7 @@ async function connectGoogle(account,config){
 					create: async (payload) => {
 //						config: { systemInstruction: setup, maxOutputTokens: 500,temperature: 0.1, }
 						const model=genAI.getGenerativeModel({model:payload.model});
-						const request=prepareContentRequest(payload);
+						const request=prepareGeminiContent(payload);
 						// TODO: hook up ,signal SingleRequestOptions parameter
 						const result=await model.generateContent(request);
 						if(roha.config.verbose){
@@ -713,7 +730,7 @@ function specModel(model,account){
 
 async function aboutModel(modelname){
 	const mut=mutName(modelname);
-	const info=(modelname in modelRates)?modelRates[modelname]:null;
+	const info=(modelname in modelSpecs)?modelSpecs[modelname]:null;
 	const rate=info?info.pricing||[]:[];
 	const id=(info?info.id:0)||0;
 	const strict=info?info.strict||false:false;
@@ -754,7 +771,7 @@ async function resetModel(modelname){
 	const balance=(lode&&lode.credit)?price(lode.credit):"";
 	const mut=mutName(modelname);
 	rohaModel=mut;
-	grokFunctions=false;
+	grokFunctions=true;
 	const content=mutsInclude+modelname+" "+account.emoji+" "+balance;
 	// todo: enable title field
 	rohaHistory.push({role:"system",content});
@@ -1491,7 +1508,7 @@ async function callCommand(command) {
 			case "dump":
 				for(let i=0;i<modelList.length;i++){
 					let name=modelList[i];
-					if(name in modelRates){
+					if(name in modelSpecs){
 						echo(name);
 						aboutModel(name);
 						echo(".");
@@ -1513,7 +1530,7 @@ async function callCommand(command) {
 							let mut=(name in roha.mut)?roha.mut[name]:emptyMUT;
 							mut.name=name;
 							let notes=[...mut.notes];
-							let rated=name in modelRates?modelRates[name]:null;
+							let rated=name in modelSpecs?modelSpecs[name]:null;
 
 							if(mut.hasForge) notes.push("𝆑");
 							if(rated&&rated.cold) notes.push("Cold");
@@ -1636,9 +1653,13 @@ async function onCall(toolCall) {
 	let verbose=roha.config.verbose;
 	let name=toolCall.function.name;
 	switch(name) {
-		case "read_time":
-			return {time: new Date().toISOString()};
-		case "submit_file":
+		case "read_time":{
+			const time=new Date().toLocaleString();
+			const tz=userregion.timeZone;
+			const locale=userregion.locale;
+			return {time,tz,locale};
+		}
+		case "submit_file":{
 			let args=JSON.parse(toolCall.function.arguments);
 			echo(args.contentType);
 			if (verbose) echo(args.content);
@@ -1650,14 +1671,16 @@ async function onCall(toolCall) {
 			echo("File saved to:", filePath);
 			roha.forge.push({name,path:filePath,type:args.contentType});
 			return { success: true, path: filePath };
-		case "fetch_image":
+		}
+		case "fetch_image":{
 			const { fileName }=JSON.parse(toolCall.function.arguments || "{}");
 			echo("Fetching image:", fileName);
 			let path="media/"+fileName;
 			const data=await Deno.readFile(path);
 			const base64=encodeBase64(data);
 			return { success: true, path: fileName, Base64:base64 };
-		case "annotate_forge":
+		}
+		case "annotate_forge":{
 			try {
 				const { name, type, description }=JSON.parse(toolCall.function.arguments || "{}");
 				switch(type){
@@ -1677,12 +1700,12 @@ async function onCall(toolCall) {
 				echo("annotate_forge error:",error);
 			}
 			return { success: false, updated: 0 };
-			break;
+		}
 		default:
 			echo("onCall unhandled function name:",name);
 			debug("toolCall",toolCall);
 			return { success: false, updated: 0 };
-		}
+	}
 }
 
 function squashMessages(history) {
@@ -1824,7 +1847,7 @@ function multiHistory(history){
 
 async function relay(depth) {
 	const verbose=roha.config.verbose;
-	const info=(grokModel in modelRates)?modelRates[grokModel]:null;
+	const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 	const strictMode=info&&info.strict;
 	const multiMode=info&&info.multi;
 	let payload={};
@@ -1891,8 +1914,8 @@ async function relay(depth) {
 			let mut=roha.mut[grokModel];
 			mut.relays=(mut.relays || 0) + 1;
 			mut.elapsed=(mut.elapsed || 0) + elapsed;
-			if(grokModel in modelRates){
-				let rate=modelRates[grokModel].pricing||[0,0];
+			if(grokModel in modelSpecs){
+				let rate=modelSpecs[grokModel].pricing||[0,0];
 				const tokenRate=rate[0];
 				const outputRate=rate[rate.length>2?2:1];
 				if(rate.length>2){
@@ -1915,7 +1938,7 @@ async function relay(depth) {
 				await writeForge();
 			}else{
 				if(verbose){
-					echo("modelRates not found for",grokModel);
+					echo("modelSpecs not found for",grokModel);
 				}
 			}
 			mut.prompt_tokens=(mut.prompt_tokens|0)+spent[0];
@@ -2095,7 +2118,7 @@ async function chat() {
 		if (lines.length){
 			const query=lines.join("\n");
 			if(query.length){
-				const info=(grokModel in modelRates)?modelRates[grokModel]:null;
+				const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 				const name=rohaNic;//||rohaUser;
 				rohaHistory.push({ role: "user", name, content: query });
 				await relay(0);
