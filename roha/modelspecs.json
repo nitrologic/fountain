@@ -149,6 +149,7 @@
 	},
 	"claude-opus-4-20250514@anthropic":{
 		"pricing":[15.0,75.0],
+		"limit":[20000],
 		"multi":true,
 		"purpose":"frontier model for coding, agentic search, and creative writing"
 	},

@@ -242,7 +242,7 @@ const emptyTag={}
 
 let roha=emptyRoha;
 let listCommand="";
-let creditCommand=null;
+let creditCommand="";
 let rohaShares=[];
 let currentDir=Deno.cwd();
 
@@ -627,10 +627,14 @@ async function connectAnthropic(account,config){
 		const data=await response.json();
 		const list=[];
 		for(const model of data.data){
+			//{"type":"model","id":"claude-opus-4-20250514","display_name":"Claude Opus 4","created_at":"2025-05-22T00:00:00Z"}
 			if(model.type=="model"){
-				list.push(model.id+"@"+account);
+				const name=model.id+"@"+account;
+				list.push(name);
+				const spec={id:model.id,object:"model",created:model.created_at,owner:"owner"}
+				specModel(spec,account);
 			}else{
-				echo(model);
+				echo("unexpected model type",model);
 			}
 		}
 		modelList.push(...list);
@@ -863,6 +867,7 @@ function specModel(model,account){
 //	echo("statModel",name,JSON.stringify(model));
 	if (!info.notes) info.notes=[];
 	if (!info.errors) info.errors=[];
+	echo("mut",name,info);
 	roha.mut[name]=info;
 }
 
@@ -878,8 +883,8 @@ async function aboutModel(modelname){
 	const account=modelAccounts[provider];
 	const emoji=account.emoji||"";
 	const lode=roha.lode[provider];
-	const balance=(lode&&lode.credit)?price(lode.credit):"$0";
-	echo("model",{id,mut,emoji,modelname,rate,balance,strict,multi});
+	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
+	echo("model",{id,mut,emoji,rate,modelname,balance,strict,multi});
 	if(roha.config.verbose && info){
 		if(info.purpose)echo("purpose:",info.purpose);
 		if(info.press)echo("press:",info.press);
@@ -906,7 +911,7 @@ async function resetModel(modelname){
 	const account=modelAccounts[provider];
 	grokAccount=account;
 	const lode=roha.lode[provider];
-	const balance=(lode&&lode.credit)?price(lode.credit):"";
+	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
 	const mut=mutName(modelname);
 	rohaModel=mut;
 	grokFunctions=true;
@@ -1452,8 +1457,10 @@ async function onAccount(args){
 		}
 		specAccount(name);
 		let lode=roha.lode[name];
-		echo("Adjust",lode.name,"balance",price(lode.credit));
-		creditCommand=(credit) => creditAccount(credit, name);
+		const balance=lode.credit||0;
+		echo("Adjust",lode.name,"balance",price(balance));
+		creditCommand=(credit)=>creditAccount(credit,name);
+		await writeForge();
 	}else{
 		let list=[];
 		for(let key in modelAccounts){
@@ -1561,6 +1568,7 @@ async function callCommand(command) {
 			case "tag":
 				await listTags();
 				break;
+			case "account":
 			case "credit":
 				await onAccount(words);
 				break;
@@ -2022,11 +2030,10 @@ async function relay(depth) {
 			payload.config={thinkingConfig:{thinkingBudget:grokThink}};
 		}
 		if(roha.config.debugging){
-//			debug("payload",JSON.stringify(payload));
 			echo(JSON.stringify(payload,null,"\t"));
 		}
 
-		// relay completions
+	// relay completions
 
 		const completion=await endpoint.chat.completions.create(payload);
 		const elapsed=(performance.now()-now)/1000;
@@ -2048,12 +2055,17 @@ async function relay(depth) {
 		let spent=[usage.prompt_tokens | 0,usage.completion_tokens | 0];
 		let emoji=config?(config.emoji||""):"";
 		grokUsage += spent[0]+spent[1];
+		echo("debugging spend 0",grokModel);
+
 		if(grokModel in roha.mut){
 			let mut=roha.mut[grokModel];
 			mut.relays=(mut.relays || 0) + 1;
 			mut.elapsed=(mut.elapsed || 0) + elapsed;
+
+			echo("debugging spend 1",grokModel);
+
 			if(grokModel in modelSpecs){
-				let rate=modelSpecs[grokModel].pricing||[0,0];
+				const rate=modelSpecs[grokModel].pricing||[0,0];
 				const tokenRate=rate[0];
 				const outputRate=rate[rate.length>2?2:1];
 				if(rate.length>2){
@@ -2065,13 +2077,16 @@ async function relay(depth) {
 					spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6;
 				}
 				mut.cost+=spend;
-				let lode=roha.lode[account];
-				if(lode && typeof lode.credit === "number") {
-					lode.credit-=spend;
+				const lode=roha.lode[account];
+				if(lode) {
+					const credit=lode.credit||0;
+					lode.credit=credit-spend;
 					if (verbose) {
 						let summary="{account:"+account+",spent:"+spend.toFixed(4)+",balance:"+(lode.credit).toFixed(4)+"}";
 						echo(summary);
 					}
+				}else{
+					echo("no lode for account",account);
 				}
 				await writeForge();
 			}else{
@@ -2086,6 +2101,8 @@ async function relay(depth) {
 				mut.hasForge=true;
 				await writeForge();
 			}
+		}else{
+			echo("debugging spend 2");
 		}
 
 		const details=(usage.prompt_tokens_details)?JSON.stringify(usage.prompt_tokens_details):"";
@@ -2167,6 +2184,14 @@ async function relay(depth) {
 			echo(cleanupRequired);
 			return spend;
 		}
+		//unhandled error line undefined 429 error:{"type":"error","error":{"type":"rate_limit_error",
+		const err=error.error.error;
+		if(err.type=="rate_limit_error"||err.type=="invalid_request_error"){
+			echo("Oops.",err.type,err.message);
+			echo(cleanupRequired);		
+			return spend;
+		}
+
 		//unhandled error line: 400 Unrecognized request argument supplied: cache_tokens
 		if(grokFunctions){
 			if(line.includes("does not support Function Calling")){
@@ -2183,7 +2208,10 @@ async function relay(depth) {
 		//unhandled error line: 400 status code (no body)+
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)
-		echo("unhandled error line",strictMode,line);
+
+		echo("unhandled error",error);
+
+		//		echo("unhandled error line",line);
 		if(verbose){
 			echo(String(error));
 			echo(JSON.stringify(payload));
