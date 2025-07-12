@@ -35,10 +35,8 @@ const mutsInclude="models under test include "
 const username=Deno.env.get("USERNAME");
 const userdomain=Deno.env.get("USERDOMAIN").toLowerCase();
 
-const rohaUser=username+"@"+userdomain;
-
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
-const warnDirty="Please review modified source.";
+const warnDirty="Please review modified files, validate integrity of all functions and arguments.";
 const exitMessage="Ending session.";
 
 const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
@@ -103,7 +101,8 @@ const emptyRoha={
 		resetcounters:false,
 		returntopush:false,
 		slow:false,
-		squash:false
+		squash:false,
+		nic:"user"
 	},
 	tags:{},
 	sharedFiles:[],
@@ -116,6 +115,10 @@ const emptyRoha={
 };
 
 let slopPid=null;
+
+function sanitizeNic(nic){
+	return nic.replace(/[^a-zA-Z0-9]/g,"");
+}
 
 async function exitForge(){
 	const pid=slopPid;
@@ -265,8 +268,10 @@ function echoContent(content,wide,left,right){
 		let n=line.indexOf("\n");
 		if(n==-1) n=line.lastIndexOf(" ");
 		if(n!=-1) line=line.substring(0,n+1);
-		echo(indent+line);
-		cursor+=line.length;
+		if(line.length){
+			echo(indent+line);
+			cursor+=line.length;
+		}
 	}
 }
 
@@ -414,7 +419,7 @@ function toString(arg){
 	if (typeof arg === 'object') {
         return JSON.stringify(arg);
     }
-	return String(arg).trimEnd();
+	return String(arg);
 }
 
 function echo(){
@@ -711,10 +716,15 @@ async function aboutModel(modelname){
 	const info=(modelname in modelRates)?modelRates[modelname]:null;
 	const rate=info?info.pricing||[]:[];
 	const id=(info?info.id:0)||0;
-//	const rates=[];
-//	for(let i=0;i<rate.length;i++) rates.push("$"+rate[i].toFixed(2));
-	echo("model",{id,mut,modelname,rate});
-	if(info){
+	const strict=info?info.strict||false:false;
+	const modelProvider=modelname.split("@");
+	const provider=modelProvider[1];
+	const account=modelAccounts[provider];
+	const emoji=account.emoji||"";
+	const lode=roha.lode[provider];
+	const balance=(lode&&lode.credit)?price(lode.credit):"";
+	echo("model",{id,mut,emoji,modelname,rate,balance,strict});
+	if(roha.config.verbose && info){
 		if(info.purpose)echo("purpose:",info.purpose);
 		if(info.press)echo("press:",info.press);
 		if(info.reality)echo("reality:",info.reality);
@@ -725,13 +735,10 @@ async function aboutModel(modelname){
 function mutName(modelname){
 	const modelAccount=modelname.split("@");
 	const path=modelAccount[0];
-	const provider=modelAccount[1];
-	const account=modelAccounts[provider];
-	const emoji=(account&&account.emoji)?account.emoji:"";
 	const names=path.split("/");
 	const name=names.pop().replace("gpt-","");
 	const namebits=name.split("-");	//preview");
-	const mut=namebits[0]+namebits[1]+" "+emoji;
+	const mut=namebits[0]+(namebits[1]||"")+(namebits[2]||"");
 	return mut;
 }
 
@@ -742,20 +749,13 @@ async function resetModel(modelname){
 	const provider=modelAccount[1];
 	const account=modelAccounts[provider];
 	grokAccount=account;
-
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"";
-/*	
-	let names=path.split("/");
-	let name=names.pop();
-	let namebits=name.split("-");	//preview");
-	let mut=namebits[0]+namebits[1];
-*/
 	const mut=mutName(modelname);
 	rohaModel=mut;
-
 	grokFunctions=false;
 	const content=mutsInclude+modelname+" "+account.emoji+" "+balance;
+	// todo: enable title field
 	rohaHistory.push({role:"system",content});
 //	rohaHistory.push({role:"system",title:userdomain,content});
 	await aboutModel(modelname);
@@ -764,8 +764,8 @@ async function resetModel(modelname){
 function dropShares(){
 	let dirty=false;
 	for(const item of rohaHistory){
-		if(item.role==="user" && item.name==="payload"){
-			item.user="forge";
+		if(item.role==="user" && item.name==="content"){
+			item.name="fountain";
 			item.content="dropped share";
 			dirty=true;
 		}
@@ -897,8 +897,10 @@ function mdToAnsi(md) {
 	const lines=md.split("\n");
 	let inCode=false;
 	const result=broken?[ansiReplyBlock]:[];
+	let poplast=false;
 	for (let line of lines) {
 		line=line.trimEnd();
+		poplast=line.length==0;
 		const trim=line.trim();
 		if (trim.startsWith("```")) {
 			inCode=!inCode;
@@ -941,6 +943,9 @@ function mdToAnsi(md) {
 			result.push(line.trimEnd());
 		}
 	}
+	if(poplast){
+		result.popLast();
+	}
 	result.push(ansiReset);
 	return result.join("\n");
 }
@@ -963,6 +968,7 @@ async function readForge(){
 		if(!roha.mut) roha.mut={};
 		if(!roha.forge) roha.forge=[];
 		if(!roha.lode) roha.lode={};
+		if(!roha.nic) roha.nic=sanitizeNic(username);
 	} catch (error) {
 		console.error("Error reading or parsing",rohaPath,error);
 		roha=emptyRoha;
@@ -1140,11 +1146,11 @@ async function shareBlob(path,size,tag){
 	// TODO: test for imageExtensions
 	if (textExtensions.includes(extension)) {
 		const content=await Deno.readTextFile(path);
-		rohaPush(content,"payload");
+		rohaPush(content,"content");
 	} else {
 		const data=await Deno.readFile(path);
 		const base64=encodeBase64(data);
-		rohaPush(`File content: MIME=${mimeType}, Base64=${base64}`, "payload");
+		rohaPush(`File content: MIME=${mimeType}, Base64=${base64}`, "content");
 	}
 	return true;
 }
@@ -1179,7 +1185,9 @@ async function commitShares(tag) {
 					dirty=true;
 					if (!rohaShares.includes(path)) {
 						rohaShares.push(path);
-						echo("Shared path",path);
+						if(roha.config.verbose){
+							echo("Shared path",path);
+						}
 					}else{
 						echo("Updated share path",path);
 					}
@@ -1402,6 +1410,16 @@ async function callCommand(command) {
 				break;
 			case "help":
 				await showHelp();
+				break;
+			case "nic":{
+					if(words.length>1){
+						const nic=sanitizeNic(words[1].trim()||"nix");
+						roha.config.nic=nic;
+						rohaNic=nic;
+					}else{
+						echo(roha.config.nic);
+					}
+				}
 				break;
 			case "config":
 				if(words.length>1){
@@ -1891,7 +1909,7 @@ async function relay(depth) {
 			cost="$"+spend.toFixed(3);
 		}
 		let temp=grokTemperature.toFixed(1)+"°";
-		let modelSpec=[rohaTitle,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
+		let modelSpec=[rohaTitle,rohaModel,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
 		let status="["+modelSpec.join(" ")+"]";
 
 		if (roha.config.ansi)
@@ -1940,7 +1958,7 @@ async function relay(depth) {
 			}
 		}
 		const name=rohaModel||"mut1";
-		let content=replies.join("\n\n");
+		let content=replies.join("\n<eom>\n");
 		const ass={role:"assistant",name,content};
 		if(elapsed) {
 			ass.elapsed=elapsed;
@@ -2047,7 +2065,8 @@ async function chat() {
 			const query=lines.join("\n");
 			if(query.length){
 				const info=(grokModel in modelRates)?modelRates[grokModel]:null;
-				rohaHistory.push({ role: "user", name:rohaUser, content: query });
+				const name=rohaNic;//||rohaUser;
+				rohaHistory.push({ role: "user", name, content: query });
 				await relay(0);
 			}
 		}
@@ -2101,10 +2120,6 @@ let grokThink=0.0;
 
 resetModel(roha.model||defaultModel);
 
-echo("user:",rohaUser,"shares:",roha.sharedFiles.length)
-echo("use /help for latest and exit to quit");
-echo("");
-
 await flush();
 let sessions=increment("sessions");
 if(sessions==0||roha.config.showWelcome){
@@ -2116,7 +2131,9 @@ if(sessions==0||roha.config.showWelcome){
 
 if(roha.config){
 	if(roha.config.commitonstart) {
-		echo("commitonstart");
+		if(roha.config.verbose){
+			echo("commitonstart");
+		}
 		await flush();
 		await commitShares();
 	}
@@ -2124,6 +2141,14 @@ if(roha.config){
 	roha.config={};
 }
 await flush();
+
+let rohaNic=roha.config.nic||"nic";
+let rohaUser=username+"@"+userdomain;
+const shares=roha.sharedFiles.length;
+
+echo("user:",{rohaNic,rohaUser,shares})
+echo("use /help for latest and exit to quit");
+//echo("");
 
 if(roha.config.listenonstart){
 	listenService();
