@@ -1,8 +1,7 @@
-// slophole.ts
-// (c)2025 Simon Armstrong 
-// All rights reserved
+// slophole.ts - slophole is a slopcity slopnet worker
 
-// [hole] slophole a slop.ts worker
+// (c)2025 Simon Armstrong 
+// Licensed under the MIT License - See LICENSE file
 
 interface SlopHoleMessage {
 	command?: string;

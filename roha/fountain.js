@@ -742,9 +742,10 @@ async function resetModel(modelname){
 	const provider=modelAccount[1];
 	const account=modelAccounts[provider];
 	grokAccount=account;
-/*
+
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"";
+/*	
 	let names=path.split("/");
 	let name=names.pop();
 	let namebits=name.split("-");	//preview");
@@ -752,8 +753,9 @@ async function resetModel(modelname){
 */
 	const mut=mutName(modelname);
 	rohaModel=mut;
-	grokFunctions=true;
-	const content=mutsInclude+mut;
+
+	grokFunctions=false;
+	const content=mutsInclude+modelname+" "+account.emoji+" "+balance;
 	rohaHistory.push({role:"system",content});
 //	rohaHistory.push({role:"system",title:userdomain,content});
 	await aboutModel(modelname);
