@@ -137,6 +137,12 @@
 		"pricing":[0.50,1.50],
 		"strict":true,
 		"purpose":"lightweight multilingual reasoning"
+	},
+	"mistral-ocr-2505@mistral":{
+		"pricing":[0.50,1.50],
+		"strict":true,
+		"ocr":true,
+		"purpose":"50MB per page analyser",
+		"press": "High-performance model for complex research tasks and multi-step workflows."
 	}
-
 }

@@ -2030,6 +2030,9 @@ async function relay(depth) {
 	}
 }
 
+// while true promptForge, callCommand and solicit completion
+// note - google and deepseek api provides alternative endpoint for this function
+
 async function chat() {
 	dance:
 	while (true) {
