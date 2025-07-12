@@ -2,7 +2,6 @@
 // Copyright (c) 2025 Simon Armstrong
 
 // Licensed under the MIT License - See LICENSE file
-// Requires Deno 2.4.0, TypeScript 5.8.3
 
 const slopnetVersion=0.1;
 

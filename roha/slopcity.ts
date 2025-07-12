@@ -1,8 +1,7 @@
-// slopfiles.ts
-// (c)2025 Simon Armstrong 
-// All rights reserved
+// slopcity.ts - http file server and jsonrpc for slop fountain clients
 
-// http file server and jsonrpc io
+// (c)2025 Simon Armstrong 
+// Licensed under the MIT License - See LICENSE file
 
 import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";                                                                                                                                                                             
 

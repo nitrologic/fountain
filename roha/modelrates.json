@@ -62,6 +62,7 @@
 	"o4-mini-2025-04-16@openai":{
 		"pricing":[1.10,0.275,4.40],
 		"cold":true,
+		"multi":true,
 		"purpose":"optimized for fast, cost-efficient reasoning",
 		"press":"remarkable performance for its size and cost, particularly in math, coding, and visual tasks",
 		"reality":"a real unit, literally no warmth, single temp"

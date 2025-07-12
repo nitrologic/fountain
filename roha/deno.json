@@ -1,13 +1,14 @@
 {
-	"scripts": {
-		"listen": "roa listen"
-	}
-	,"tasks":{
+	"tasks":{
 		"slop": "deno run --allow-net --allow-env --allow-sys --allow-read slop.ts",
+		"slopcity": "deno run --allow-net --allow-env --allow-sys --allow-read slopcity.ts",
 		"slopnet": "deno run --allow-net --allow-env --allow-sys --allow-read slopnet.ts",
 		"fountain": "deno run --allow-net --allow-env --allow-read --allow-write=./forge fountain.js",
 		"roha":{
-			"dependencies":["fountain","slopnet"]
+			"dependencies":["fountain","slopnet","slopcity"]
+		},
+		"slopfountain":{
+			"dependencies":["fountain","slop"]
 		}
 	}
 }

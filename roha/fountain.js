@@ -19,6 +19,7 @@ const rohaTitle="fountain "+fountainVersion+" ⛲ ";
 const terminalColumns=120;
 const statsColumn=50;
 const clipLog=1800;
+
 const defaultModel="deepseek-chat@deepseek";
 
 const rohaMihi="Welcome to nitrologic's Slop Fountain a many:many user model research project.";
@@ -29,12 +30,12 @@ const rohaGuide=[
 	"Tabs not spaces."
 ]
 
-const mutsInclude="Models under test include "
+const mutsInclude="models under test include "
 
 const username=Deno.env.get("USERNAME");
 const userdomain=Deno.env.get("USERDOMAIN").toLowerCase();
+
 const rohaUser=username+"@"+userdomain;
-const blobUser=userdomain;
 
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Please review modified source.";
@@ -66,10 +67,11 @@ let rohaHistory=[];
 let rohaModel="mut";	//mut name excludes preview version details
 
 const flagNames={
+	squash : "squash message sequences in output",
 	reasonoutloud : "echo chain of thought",
 	tools : "enable model tool interface",
 	commitonstart : "commit shared files on start",
-	saveonexit : " save conversation history on exit",	
+	saveonexit : " save conversation history on exit",
 	ansi : "markdown ANSI rendering",
 	verbose : "emit debug information",
 	broken : "ansi background blocks",
@@ -92,6 +94,7 @@ const emptyRoha={
 		saveonexit:false,
 		ansi:true,
 		verbose:false,
+		squash:false,
 		broken:false,
 		logging:false,
 		debugging:false,
@@ -159,7 +162,7 @@ async function readSlop(slopPipe){
 	if (n !== null) {
 		const received = rxBuffer.subarray(0, n);
 		const message = decoder.decode(received);
-		echo("readSlop", message);		
+		echo("readSlop", message);
 		// TODO: document me
 		self.postMessage({rx:message});
 	}
@@ -290,10 +293,14 @@ function listHistory(){
 
 function logHistory(){
 	const wide=terminalColumns;
-	const flat=squashMessages(rohaHistory);
-	for(let i=0;i<flat.length;i++){
-		const item=flat[i];
-		const iii=String(i).padStart(3,"0");
+	let history=rohaHistory;
+	if(roha.config.squash){
+		history=squashMessages(rohaHistory);
+	}	
+	for(let i=0;i<history.length;i++){
+		const item=history[i];
+		const index=i;//item.index;
+		const iii=String(index).padStart(3,"0");
 		const spend=item.price?(item.emoji+" "+item.price.toFixed(4)) :"";
 		const seconds=item.elapsed?(item.elapsed.toFixed(2)+"s"):"";
 		echo(iii,item.role,item.name||item.title||"???",spend,seconds);
@@ -311,7 +318,7 @@ function rohaPush(content,username){
 
 resetHistory();
 
-// roha	
+// roha
 
 const rohaTools=[{
 	type: "function",
@@ -403,12 +410,21 @@ function print(){
 	}
 }
 
+function toString(arg){
+	if (typeof arg === 'object') {
+        return JSON.stringify(arg);
+    }
+	return String(arg).trimEnd();
+}
+
 function echo(){
 	const args=arguments.length?Array.from(arguments):[];
-	const lines=args.join(" ").split("\n");
-	for(const line of lines){
-		outputBuffer.push(line.trimEnd());
+	const lines=[];
+	for(const arg of args){
+		const line=toString(arg);
+		lines.push(line);
 	}
+	outputBuffer.push(lines.join(" "));
 }
 
 function debug(title,value){
@@ -438,7 +454,7 @@ async function flush() {
 	for (const mutline of printBuffer) {
 		const mut=mutline.model;
 		const line=mutline.line;
-		console.log(line);		
+		console.log(line);
 		await log(line,mut);
 		await sleep(delay)
 	}
@@ -690,13 +706,14 @@ function specModel(model,account){
 	roha.mut[name]=info;
 }
 
-async function aboutModel(name){
-	const info=(name in modelRates)?modelRates[name]:null;
+async function aboutModel(modelname){
+	const mut=mutName(modelname);
+	const info=(modelname in modelRates)?modelRates[modelname]:null;
 	const rate=info?info.pricing||[]:[];
-	const rates=[];
-	const mut=mutName(name);
-	for(let i=0;i<rate.length;i++) rates.push(rate[i].toFixed(2));
-	echo("model:",mut,"tool",grokFunctions,"rates",rates.join(","));
+	const id=(info?info.id:0)||0;
+//	const rates=[];
+//	for(let i=0;i<rate.length;i++) rates.push("$"+rate[i].toFixed(2));
+	echo("model",{id,mut,modelname,rate});
 	if(info){
 		if(info.purpose)echo("purpose:",info.purpose);
 		if(info.press)echo("press:",info.press);
@@ -706,42 +723,46 @@ async function aboutModel(name){
 }
 
 function mutName(modelname){
-	const modelAccount=grokModel.split("@");
+	const modelAccount=modelname.split("@");
 	const path=modelAccount[0];
 	const provider=modelAccount[1];
 	const account=modelAccounts[provider];
 	const emoji=(account&&account.emoji)?account.emoji:"";
-	let names=path.split("/");
-	let name=names.pop();
-	let namebits=name.split("-");	//preview");
-	let mut=namebits[0]+namebits[1]+" "+emoji;
+	const names=path.split("/");
+	const name=names.pop().replace("gpt-","");
+	const namebits=name.split("-");	//preview");
+	const mut=namebits[0]+namebits[1]+" "+emoji;
+	return mut;
 }
 
 async function resetModel(modelname){
 	grokModel=modelname;
 	const modelAccount=grokModel.split("@");
-	let path=modelAccount[0];
-	let provider=modelAccount[1];
+	const path=modelAccount[0];
+	const provider=modelAccount[1];
 	const account=modelAccounts[provider];
 	grokAccount=account;
+/*
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"";
 	let names=path.split("/");
 	let name=names.pop();
 	let namebits=name.split("-");	//preview");
 	let mut=namebits[0]+namebits[1];
+*/
+	const mut=mutName(modelname);
 	rohaModel=mut;
-	grokFunctions=false;
-	const content=mutsInclude+modelname+" "+account.emoji+" "+balance;
+	grokFunctions=true;
+	const content=mutsInclude+mut;
 	rohaHistory.push({role:"system",content});
 //	rohaHistory.push({role:"system",title:userdomain,content});
-	await aboutModel(name);
+	await aboutModel(modelname);
 }
 
 function dropShares(){
 	let dirty=false;
 	for(const item of rohaHistory){
-		if(item.role==="user" && item.name==="forge"){
+		if(item.role==="user" && item.name==="payload"){
 			item.user="forge";
 			item.content="dropped share";
 			dirty=true;
@@ -1111,17 +1132,17 @@ const textExtensions=[
 
 async function shareBlob(path,size,tag){
 	const extension=path.split(".").pop().toLowerCase();
-	const mimeType=fileType(extension);	
+	const mimeType=fileType(extension);
 	const metadata=JSON.stringify({ path:path,length:size,type:mimeType,tag });
-	rohaPush(metadata,blobUser);
+	rohaPush(metadata,"blob");
 	// TODO: test for imageExtensions
 	if (textExtensions.includes(extension)) {
 		const content=await Deno.readTextFile(path);
-		rohaPush(content,blobUser);
+		rohaPush(content,"payload");
 	} else {
 		const data=await Deno.readFile(path);
 		const base64=encodeBase64(data);
-		rohaPush(`File content: MIME=${mimeType}, Base64=${base64}`, blobUser);
+		rohaPush(`File content: MIME=${mimeType}, Base64=${base64}`, "payload");
 	}
 	return true;
 }
@@ -1608,7 +1629,7 @@ async function onCall(toolCall) {
 			echo("Fetching image:", fileName);
 			let path="media/"+fileName;
 			const data=await Deno.readFile(path);
-			const base64=encodeBase64(data);			
+			const base64=encodeBase64(data);
 			return { success: true, path: fileName, Base64:base64 };
 		case "annotate_forge":
 			try {
@@ -1723,10 +1744,43 @@ function strictHistory(history){
 	return list;
 }
 
+function multiHistory(history){
+	const list=[];
+	for(const _item of history){
+		const item={..._item};
+		switch(item.role){
+			case "system":
+				list.push({role:"system",content:item.content});
+				break;
+			case "assistant":
+				if(item.tool_calls){
+					list.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
+				}else{
+					list.push({role:"assistant",content:item.content});
+				}
+				break;
+			case "user":{
+					const name=item.name||"anon";
+					const text="["+name+"] "+item.content;
+					const content=[{type:"text",text}];
+					list.push({role:item.role,content});
+				}
+				break;
+			case "tool":
+				list.push({...item});
+				//({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
+				break;
+		}
+	}
+	return list;
+}
+
+
 async function relay(depth) {
 	const verbose=roha.config.verbose;
 	const info=(grokModel in modelRates)?modelRates[grokModel]:null;
 	const strictMode=info&&info.strict;
+	const multiMode=info&&info.multi;
 	let payload={};
 	let spend=0;
 	try {
@@ -1739,6 +1793,8 @@ async function relay(depth) {
 		payload={model};
 		if(strictMode){
 			payload.messages=strictHistory(rohaHistory);
+		}else if(multiMode){
+			payload.messages=multiHistory(rohaHistory)
 		}else{
 			payload.messages=[...rohaHistory];
 		}
@@ -1760,13 +1816,15 @@ async function relay(depth) {
 		if(roha.config.debugging){
 //			debug("payload",JSON.stringify(payload));
 			echo(JSON.stringify(payload,null,"\t"));
-		}		
+		}
 
 		// relay completions
 
-//		if(config.hasCache) payload.cache_tokens=true;
 		const completion=await endpoint.chat.completions.create(payload);
 		const elapsed=(performance.now()-now)/1000;
+
+		//	if(config.hasCache) payload.cache_tokens=true;
+
 		if (completion.model != model) {
 			echo("[relay model alert model:" + completion.model + " grokModel:" + grokModel + "]");
 //			grokModel=completion.model+"@"+account;
