@@ -1,4 +1,4 @@
-- payload image messages
+- pass image meta data 
 - slopnet telnet connections
 - tools read_time submit_file read_image connect_slopnet read_history read_git
 - slopstudio web connections

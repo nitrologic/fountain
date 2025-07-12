@@ -59,6 +59,12 @@
 		"press":"supporting up to 1 million tokens of context",
 		"reality":"suffers from clueless ideation"
 	},
+	"gpt-4.1-mini-2025-04-14@openai":{
+		"pricing":[0.40,0.10,1.60],
+		"multi":true,
+		"purpose":"image and text support",
+		"press":"a million tokens of context"
+	},
 	"o4-mini-2025-04-16@openai":{
 		"pricing":[1.10,0.275,4.40],
 		"cold":true,
@@ -91,7 +97,7 @@
 	},
 	"grok-2-vision-1212@xai":{
 		"pricing": [3.00, 0.75, 15.00],
-		"modalities": ["vision"],
+		"multi": true,
 		"purpose": "Image vision, text and code generation",
 		"reality": "Model under test."
 	},
@@ -129,7 +135,6 @@
 	},
 	"mistral-small-2506@mistral":{
 		"pricing":[0.50,1.50],
-		"notemp":false,
 		"strict":true,
 		"purpose":"lightweight multilingual reasoning"
 	}

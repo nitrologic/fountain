@@ -1,0 +1,9 @@
+/share fountain.js
+/share deno.json
+/share slopnet.ts
+/share slopcity.ts
+/share slop.ts
+/share slopdom.js
+/share slopstudio.js
+/share ../plan.txt
+

@@ -717,13 +717,14 @@ async function aboutModel(modelname){
 	const rate=info?info.pricing||[]:[];
 	const id=(info?info.id:0)||0;
 	const strict=info?info.strict||false:false;
+	const multi=info?info.multi||false:false;
 	const modelProvider=modelname.split("@");
 	const provider=modelProvider[1];
 	const account=modelAccounts[provider];
 	const emoji=account.emoji||"";
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"";
-	echo("model",{id,mut,emoji,modelname,rate,balance,strict});
+	echo("model",{id,mut,emoji,modelname,rate,balance,strict,multi});
 	if(roha.config.verbose && info){
 		if(info.purpose)echo("purpose:",info.purpose);
 		if(info.press)echo("press:",info.press);
@@ -736,7 +737,7 @@ function mutName(modelname){
 	const modelAccount=modelname.split("@");
 	const path=modelAccount[0];
 	const names=path.split("/");
-	const name=names.pop().replace("gpt-","");
+	const name=names.pop();//.replace("gpt-","");
 	const namebits=name.split("-");	//preview");
 	const mut=namebits[0]+(namebits[1]||"")+(namebits[2]||"");
 	return mut;
@@ -764,7 +765,7 @@ async function resetModel(modelname){
 function dropShares(){
 	let dirty=false;
 	for(const item of rohaHistory){
-		if(item.role==="user" && item.name==="content"){
+		if(item.role==="user" && (item.name==="content" || item.name==="image")){
 			item.name="fountain";
 			item.content="dropped share";
 			dirty=true;
@@ -1150,7 +1151,7 @@ async function shareBlob(path,size,tag){
 	} else {
 		const data=await Deno.readFile(path);
 		const base64=encodeBase64(data);
-		rohaPush(`File content: MIME=${mimeType}, Base64=${base64}`, "content");
+		rohaPush(base64,"image");
 	}
 	return true;
 }
@@ -1511,12 +1512,17 @@ async function callCommand(command) {
 							let attr=(name==grokModel)?"*":" ";
 							let mut=(name in roha.mut)?roha.mut[name]:emptyMUT;
 							mut.name=name;
-							let flag=(mut.hasForge) ? "𝆑" : "";
-							let notes=mut.notes.join(" ");
+							let notes=[...mut.notes];
 							let rated=name in modelRates?modelRates[name]:null;
+
+							if(mut.hasForge) notes.push("𝆑");
+							if(rated&&rated.cold) notes.push("Cold");
+							if(rated&&rated.multi) notes.push("Multi");
+							if(rated&&rated.strict) notes.push("Strict");
+
 							if(rated || all){
 								let pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
-								echo(i,attr,name,flag,mut.relays|0,notes,pricing);
+								echo(i,attr,name,"{"+notes.join(",")+"}",mut.relays|0,pricing);
 							}
 						}
 						listCommand="model";
@@ -1766,6 +1772,7 @@ function strictHistory(history){
 
 function multiHistory(history){
 	const list=[];
+	let blobType="";
 	for(const _item of history){
 		const item={..._item};
 		switch(item.role){
@@ -1780,6 +1787,25 @@ function multiHistory(history){
 				}
 				break;
 			case "user":{
+					if(item.name=="blob"){
+						const blob=JSON.parse(item.content);
+						blobType=blob.type;
+						continue;
+					}
+					if(item.name=="image"){
+						const type=blobType;
+						if(type=="image/jpeg"||type=="image/png"){
+							const url="data:"+type+";base64,"+item.content;
+							const detail="high";
+							const content=[{type:"image_url",image_url:{url,detail}}];
+							list.push({role:item.role,content});
+							continue;
+						}
+
+					}
+					if(item.name=="content"){
+						// TODO: support other encodings
+					}
 					const name=item.name||"anon";
 					const text="["+name+"] "+item.content;
 					const content=[{type:"text",text}];
@@ -1809,6 +1835,7 @@ async function relay(depth) {
 		const model=modelAccount[0];
 		const account=modelAccount[1];
 		const endpoint=rohaEndpoint[account];
+		const config=modelAccounts[account];
 	// prepare payload
 		payload={model};
 		if(strictMode){
@@ -1858,6 +1885,7 @@ async function relay(depth) {
 		let usage=completion.usage;
 		let size=measure(rohaHistory);
 		let spent=[usage.prompt_tokens | 0,usage.completion_tokens | 0];
+		let emoji=config?(config.emoji||""):"";
 		grokUsage += spent[0]+spent[1];
 		if(grokModel in roha.mut){
 			let mut=roha.mut[grokModel];
@@ -1909,7 +1937,7 @@ async function relay(depth) {
 			cost="$"+spend.toFixed(3);
 		}
 		let temp=grokTemperature.toFixed(1)+"°";
-		let modelSpec=[rohaTitle,rohaModel,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
+		let modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
 		let status="["+modelSpec.join(" ")+"]";
 
 		if (roha.config.ansi)
@@ -2146,7 +2174,7 @@ let rohaNic=roha.config.nic||"nic";
 let rohaUser=username+"@"+userdomain;
 const shares=roha.sharedFiles.length;
 
-echo("user:",{rohaNic,rohaUser,shares})
+echo("user:",{nic:rohaNic,user:rohaUser,shares})
 echo("use /help for latest and exit to quit");
 //echo("");
 
