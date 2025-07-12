@@ -7,6 +7,8 @@ import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
+import {Anthropic } from "npm:@anthropic-ai/sdk";
+import { osType } from "https://deno.land/std@0.224.0/path/_os.ts";
 
 // Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
 
@@ -546,6 +548,94 @@ function prepareGeminiContent(payload){
 	}
 	return request;
 }
+//messages: [{ role: "user", content: "Hello, Claude" }],
+
+function prepareAnthropicContent(payload){
+	const result=[];
+	for(const item of payload.messages){
+		if(item.role=="user"){
+			result.push({role:"user",content:item.content});
+		}
+	}
+	return result;
+}
+
+async function connectAnthropic(account,config){
+	try{
+		const baseURL=config.url;
+		const apiKey=Deno.env.get(config.env);
+		if(!apiKey) return null;
+		const headers={
+			"x-api-key":apiKey,
+			"Content-Type": "application/json",
+			"anthropic-version": "2023-06-01"		
+		};
+		const response = await fetch(baseURL+"/models",{ method: "GET", headers });
+		if (!response.ok) {
+			console.info("connectAnthropic response",response)
+			return null;
+		}
+		const data=await response.json();
+		const list=[];
+		for(const model of data.data){
+			if(model.type=="model"){
+				list.push(model.id+"@"+account);
+			}else{
+				echo(model);
+			}
+		}
+		modelList.push(...list);
+		const sdk=new Anthropic({apiKey});
+
+		return {
+			sdk,
+			apiKey,
+			baseURL,
+			models: {
+				list: async () => models, // Return cached models or fetch fresh
+			},
+			chat: {
+				completions: {
+					create: async (payload) => {
+						const model=payload.model;
+						const messages=prepareAnthropicContent(payload);
+						const reply = await sdk.messages.create({
+ 							model,
+							max_tokens: 1024,
+							messages
+						});
+						//{"id":"msg_01XHRXEi1xkrCkvhXdU4hR67",
+						// "type":"message",
+						// "role":"assistant",
+						// "model":"claude-3-haiku-20240307",
+						// "content":[{"type":"text","text":"Hi there! How can I assist you today?"}],
+						// "stop_reason":"end_turn",
+						// "stop_sequence":null,
+						// "usage":{"input_tokens":8,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":13,"service_tier":"standard"}}
+						//echo(text);
+						const usage={
+							promptTokencount:reply.usage.input_tokens,
+							candidatesTokenCount:0,
+							thoughtsTokenCount:0,
+							totalTokenCount:reply.usage.output_tokens
+						};
+						return {
+							model,
+							choices:[
+								{message:{content:reply.content[0].text}}
+							],
+							usage
+						};
+					}
+				}
+			}
+		};
+	} catch (error) {
+		console.error("connectAnthropic error:",error.message);
+		return null;
+	}
+}
+
 
 async function connectGoogle(account,config){
 	try{
@@ -584,7 +674,6 @@ async function connectGoogle(account,config){
 						}
 						const text=await result.response.text();
 						const usage=result.response.usageMetadata||{};
-
 						return {
 							model:payload.model,
 							choices:[{message:{content:text}}],
@@ -697,11 +786,13 @@ async function connectAccount(account) {
 	const api= config.api;
 	switch(api){
 		case "OpenAI":
-			return await connectOpenAI(account,config)
+			return await connectOpenAI(account,config);
 		case "DeepSeek":
-			return await connectDeepSeek(account,config)
+			return await connectDeepSeek(account,config);
 		case "Google":
-			return await connectGoogle(account,config)
+			return await connectGoogle(account,config);
+		case "Anthropic":
+			return await connectAnthropic(account,config);
 	}
 	return null;
 }

@@ -41,5 +41,13 @@
 		"docs": "https://docs.mistral.ai/",
 		"api":"OpenAI",
 		"emoji":"🐡"
+	},
+	"anthropic":{
+		"currency": "USD",
+		"env": "ANTHROPIC_API_KEY",
+		"url": "https://api.anthropic.com/v1",
+		"docs": "https://https://docs.anthropic.com/en/home/",
+		"api": "Anthropic",
+		"emoji": "🤖"
 	}
 }
