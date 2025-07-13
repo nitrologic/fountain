@@ -1,0 +1,12 @@
+{
+    "OG":{
+        "name":"deepseek",
+        "model":"deepseek-chat@deepseek",
+        "teams":["mut"]
+    },
+    "kimi":{
+        "name":"kimi k2",
+        "model":"kimi-k2-0711-preview@moonshot",
+        "teams":["mut"]
+    }
+}

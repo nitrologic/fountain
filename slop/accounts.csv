@@ -1,10 +1,10 @@
-Account Name,Emoji,Locale,Docs,API
-deepseek,🐋,zh-CN,"https://api-docs.deepseek.com",DeepSeek
-xai,🚀,en-US,"https://x.ai/api",OpenAI
-openai,⚛,en-US,"https://platform.openai.com/docs",OpenAI
-gemini,🌟,en-US,"https://ai.google.dev/docs",Google
-alibaba,🐉,zh-CN,"https://help.aliyun.com/zh/dashscope/",OpenAI
-mistral,⚡️,fr-FR,"https://docs.mistral.ai/",OpenAI
-anthropic,🤖,en-US,"https://docs.anthropic.com/",Anthropic
-cohere,🧩,en-CA,"https://docs.cohere.com/",Cohere
-moonshot,🎯,zh-CN,"https://platform.moonshot.ai/docs/",OpenAI
+Account Name,Emoji,Locale,API,Model Count,Docs
+deepseek,🐋,zh-CN,DeepSeek,2,"https://api-docs.deepseek.com"
+alibaba,🐉,zh-CN,OpenAI,4,"https://help.aliyun.com/zh/dashscope/"
+moonshot,🎯,zh-CN,OpenAI,4,"https://platform.moonshot.ai/docs/"
+cohere,🧩,en-CA,Cohere,4,"https://docs.cohere.com/"
+mistral,⚡️,fr-FR,OpenAI,2,"https://docs.mistral.ai/"
+xai,🚀,en-US,OpenAI,7,"https://x.ai/api"
+openai,⚛,en-US,OpenAI,9,"https://platform.openai.com/docs"
+gemini,🌟,en-US,Google,3,"https://ai.google.dev/docs"
+anthropic,🤖,en-US,Anthropic,3,"https://docs.anthropic.com/"

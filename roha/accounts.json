@@ -2,6 +2,7 @@
 	"deepseek": {
 		"env": "DEEPSEEK_API_KEY",
 		"url": "https://api.deepseek.com",
+		"docs": "https://api-docs.deepseek.com",
 		"api": "DeepSeek",
 		"emoji": "🐋",
 		"locale": "zh-CN"
@@ -9,6 +10,7 @@
 	"xai": {
 		"env": "XAI_API_KEY",
 		"url": "https://api.x.ai/v1",
+		"docs": "https://docs.x.ai/docs/overview",
 		"api": "OpenAI",
 		"emoji": "🚀",
 		"locale": "en-US"
