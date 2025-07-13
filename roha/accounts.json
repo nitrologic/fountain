@@ -32,7 +32,7 @@
 		"env": "ALIBABA_API_KEY",
 		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
 		"api": "OpenAI",
-		"emoji":"🍊"
+		"emoji":"🐉"
 	},
 	"mistral":{
 		"currency": "USD",
@@ -40,7 +40,7 @@
 		"url": "https:/api.mistral.ai/v1",
 		"docs": "https://docs.mistral.ai/",
 		"api":"OpenAI",
-		"emoji":"🐡"
+		"emoji":"⚡️"
 	},
 	"anthropic":{
 		"currency": "USD",
@@ -49,5 +49,13 @@
 		"docs": "https://https://docs.anthropic.com/en/home/",
 		"api": "Anthropic",
 		"emoji": "🤖"
-	}
+	},
+	"cohere": {
+		"currency": "CAD",
+		"env": "COHERE_API_KEY",
+		"url": "https://api.cohere.com/v2",
+		"docs": "https://docs.cohere.com/reference/about",
+		"api": "Cohere",
+		"emoji": "🧠"
+	}	
 }

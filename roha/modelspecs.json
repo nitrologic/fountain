@@ -161,5 +161,17 @@
 	"claude-3-haiku-20240307@anthropic":{
 		"pricing":[0.80,4.0],
 		"purpose":"fast speeds, improved instruction following, and more accurate tool use"
+	},
+	"command-a-03-2025@cohere":{
+		"pricing":[0.50,2.0],
+		"purpose":"canadian something"
+	},
+	"command-r-plus-08-2024@cohere":{
+		"pricing":[0.50,2.0],
+		"purpose":"canadian 128K context window"
+	},
+	"command-r@cohere":{
+		"pricing":[0.50,2.0],
+		"purpose":"canadian 128K context window"
 	}
 }

@@ -8,7 +8,6 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import {Anthropic } from "npm:@anthropic-ai/sdk";
-import { osType } from "https://deno.land/std@0.224.0/path/_os.ts";
 
 // Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
 
@@ -304,7 +303,7 @@ function logHistory(){
 	let history=rohaHistory;
 	if(roha.config.squash){
 		history=squashMessages(rohaHistory);
-	}	
+	}
 	for(let i=0;i<history.length;i++){
 		const item=history[i];
 		const index=i;//item.index;
@@ -420,8 +419,8 @@ function print(){
 
 function toString(arg){
 	if (typeof arg === 'object') {
-        return JSON.stringify(arg);
-    }
+		return JSON.stringify(arg);
+	}
 	return String(arg);
 }
 
@@ -617,7 +616,7 @@ async function connectAnthropic(account,config){
 		const headers={
 			"x-api-key":apiKey,
 			"Content-Type": "application/json",
-			"anthropic-version": "2023-06-01"		
+			"anthropic-version": "2023-06-01"
 		};
 		const response = await fetch(baseURL+"/models",{ method: "GET", headers });
 		if (!response.ok) {
@@ -652,7 +651,7 @@ async function connectAnthropic(account,config){
 					create: async (payload) => {
 						const model=payload.model;
 						const system=anthropicSystem(payload);
-						const messages=anthropicMessages(payload);						
+						const messages=anthropicMessages(payload);
 						const request={model,max_tokens:1024,system,messages};
 						if (payload.tools) {
 							request.tools=anthropicTools(payload);
@@ -743,6 +742,130 @@ async function connectGoogle(account,config){
 		return null;
 	}
 }
+
+function specCohereModel(model,account){
+	if(roha.config.verbose) echo("[cohere] spec",model);
+	const name=model.name+"@"+account;
+	const exists=name in roha.mut;
+	const info=exists?roha.mut[name]:{name,notes:[],errors:[],relays:0,cost:0};
+	info.id=model.name;
+	info.object="model";
+	info.created="created";
+	info.owner="owner";
+	if (!info.notes) info.notes=[];
+	if (!info.errors) info.errors=[];
+//	echo("mut",name,info);
+	roha.mut[name]=info;
+}
+
+function prepareCohereRequest(payload){
+	const system=[];
+	const history=[];
+	for(const item of payload.messages){
+		const content=item.content;
+		switch(item.role){
+			case "system":
+				system.push({role:"system",content});
+				break;
+			case "user":
+				history.push({role:"user",content});
+				break;
+			case "assistant":
+				history.push({role:"assistant",content});
+				break;
+		}
+	}
+	const request={
+		stream:false,
+		model:payload.model,
+		messages:history
+	};
+	return request;
+}
+
+async function connectCohere(account,config) {
+	try{
+		const baseURL=config.url;
+		const apiKey=Deno.env.get(config.env);
+		if(!apiKey) return null;
+		const headers={
+			"Authorization":"Bearer "+apiKey,
+			"Content-Type":"application/json",
+			"Accept":"application/json",
+			"X-Client-Name": "fountain.js"
+		};
+		const response=await fetch(baseURL+"/models",{method:"GET",headers});
+		if (!response.ok) return null;
+		const reply=await response.json();
+//		echo(reply.models);
+		const list=[];
+		for (const model of reply.models) {
+			const name=model.name+"@"+account;
+			list.push(name);
+			specCohereModel(model,account);
+		}
+		list.sort();
+		modelList=modelList.concat(list);
+		return {
+			apiKey,
+			headers,
+			baseURL,
+			models: {
+				list: async () => models, // Return cached models or fetch fresh
+			},
+			chat: {
+				completions: {
+					create: async (payload) => {
+						const model=payload.model;
+						const content=prepareCohereRequest(payload);
+						const url=baseURL+"/chat";
+						const usage={prompt_tokens:0,completion_tokens:0,total_tokens:0};
+						if(roha.config.verbose){
+							echo("[cohere] url",url);
+							echo("[cohere] content",content);
+							echo("[cohere] usage",usage);
+							echo("[cohere] headers",headers);
+						}
+						try{							
+							const response=await fetch(url,{method:"POST",headers,body:JSON.stringify(content)});
+							if(roha.config.verbose){
+								echo("[cohere] response.ok",response.ok);
+							}
+							if (response.ok) {
+								//[cohere] json 
+								// {"id":"5b7e6d03-d348-40b8-8178-a60ad55d792e","message":{"role":"assistant","content":[{"type":"text","text":"Hello! How can I assist you today?"}]},
+								// "finish_reason":"COMPLETE","usage":{"billed_units":{"input_tokens":1,"output_tokens":9},"tokens":{"input_tokens":496,"output_tokens":11}}}   
+								const reply=[];
+								const json=await response.json();
+								const role=json.message.role;
+								for(const item of json.message.content){
+									if(item.type=="text") reply.push(item.text);
+								}
+								const text=reply.join("\n");
+								// echo("[cohere]",text)
+								const tokens=json.usage.tokens;
+								const total_tokens=tokens.input_tokens+tokens.output_tokens;
+								const usage={prompt_tokens:tokens.input_tokens,completion_tokens:tokens.output_tokens,total_tokens};
+								return {model,choices:[{message:{content:text}}],usage};
+							}
+							echo("[cohere] status",response.status,response.statusText);
+							echo("[cohere] content",content);
+						}catch(e){
+							echo("[cohere] exception",e.message);
+						}
+						return {model,choices:[],usage};
+					},
+				},
+			},
+
+		}
+	} catch (error) {
+		echo(`Account ${account} fetch error: ${error.message}`);
+		return null;
+	}
+
+}
+
 
 async function connectDeepSeek(account,config) {
 	try{
@@ -844,6 +967,8 @@ async function connectAccount(account) {
 			return await connectGoogle(account,config);
 		case "Anthropic":
 			return await connectAnthropic(account,config);
+		case "Cohere":
+			return await connectCohere(account,config);
 	}
 	return null;
 }
@@ -867,7 +992,7 @@ function specModel(model,account){
 //	echo("statModel",name,JSON.stringify(model));
 	if (!info.notes) info.notes=[];
 	if (!info.errors) info.errors=[];
-	echo("mut",name,info);
+//	echo("mut",name,info);
 	roha.mut[name]=info;
 }
 
@@ -1154,7 +1279,7 @@ async function resetRoha(){
 	increment("resets");
 	await writeForge();
 	resetHistory();
-	resetModel(roha.model||defaultModel);
+	await resetModel(roha.model||defaultModel);
 	echo("resetRoha","All shares and history reset.");
 }
 
@@ -1666,7 +1791,8 @@ async function callCommand(command) {
 					if(name && name!="all"){
 						if(name.length&&!isNaN(name)) name=modelList[name|0];
 						if(modelList.includes(name)){
-							resetModel(name);
+							await resetModel(name);
+							await writeForge();
 						}
 					}else{
 						let all=name && name=="all";
@@ -2055,15 +2181,13 @@ async function relay(depth) {
 		let spent=[usage.prompt_tokens | 0,usage.completion_tokens | 0];
 		let emoji=config?(config.emoji||""):"";
 		grokUsage += spent[0]+spent[1];
-		echo("debugging spend 0",grokModel);
+//		echo("[relay] debugging spend 0",grokModel,usage);
 
 		if(grokModel in roha.mut){
 			let mut=roha.mut[grokModel];
 			mut.relays=(mut.relays || 0) + 1;
 			mut.elapsed=(mut.elapsed || 0) + elapsed;
-
-			echo("debugging spend 1",grokModel);
-
+//			echo("debugging spend 1",grokModel);
 			if(grokModel in modelSpecs){
 				const rate=modelSpecs[grokModel].pricing||[0,0];
 				const tokenRate=rate[0];
@@ -2185,10 +2309,10 @@ async function relay(depth) {
 			return spend;
 		}
 		//unhandled error line undefined 429 error:{"type":"error","error":{"type":"rate_limit_error",
-		const err=error.error.error;
+		const err=(error.error)?error.error.error:{};
 		if(err.type=="rate_limit_error"||err.type=="invalid_request_error"){
 			echo("Oops.",err.type,err.message);
-			echo(cleanupRequired);		
+			echo(cleanupRequired);
 			return spend;
 		}
 
@@ -2209,7 +2333,7 @@ async function relay(depth) {
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)
 
-		echo("unhandled error",error);
+		echo("unhandled error",error.message);
 
 		//		echo("unhandled error line",line);
 		if(verbose){
