@@ -189,5 +189,9 @@
 	"moonshot-v1-128k@moonshot":{
 		"pricing":[2.00,0.15,5.0],
 		"purpose":"chinese 128K context window"
+	},
+	"kimi-k2-0711-preview@moonshot":{
+		"pricing":[0.60,0.15,2.5],
+		"purpose":"chinese MoE 128K context window"
 	}
 }
