@@ -1,0 +1,10 @@
+Account Name,Emoji,Locale,Docs,API
+deepseek,🐋,zh-CN,"https://api-docs.deepseek.com",DeepSeek
+xai,🚀,en-US,"https://x.ai/api",OpenAI
+openai,⚛,en-US,"https://platform.openai.com/docs",OpenAI
+gemini,🌟,en-US,"https://ai.google.dev/docs",Google
+alibaba,🐉,zh-CN,"https://help.aliyun.com/zh/dashscope/",OpenAI
+mistral,⚡️,fr-FR,"https://docs.mistral.ai/",OpenAI
+anthropic,🤖,en-US,"https://docs.anthropic.com/",Anthropic
+cohere,🧩,en-CA,"https://docs.cohere.com/",Cohere
+moonshot,🎯,zh-CN,"https://platform.moonshot.ai/docs/",OpenAI

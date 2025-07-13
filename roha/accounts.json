@@ -1,69 +1,69 @@
 {
-	"deepseek":{
-		"currency":"CNY",
-		"env":"DEEPSEEK_API_KEY",
-		"url":"https://api.deepseek.com",
-		"api":"DeepSeek",
-		"emoji":"🐋"
+	"deepseek": {
+		"env": "DEEPSEEK_API_KEY",
+		"url": "https://api.deepseek.com",
+		"api": "DeepSeek",
+		"emoji": "🐋",
+		"locale": "zh-CN"
 	},
 	"xai": {
-		"currency": "USD",
 		"env": "XAI_API_KEY",
 		"url": "https://api.x.ai/v1",
-		"api":"OpenAI",
-		"emoji":"🚀"
+		"api": "OpenAI",
+		"emoji": "🚀",
+		"locale": "en-US"
 	},
 	"openai": {
-		"currency": "USD",
 		"env": "OPENAI_API_KEY",
 		"url": "https://api.openai.com/v1",
-		"api":"OpenAI",
-		"emoji": "⚛"
+		"api": "OpenAI",
+		"emoji": "⚛",
+		"locale": "en-US"
 	},
-	"gemini":{
-		"currency":"USD",
-		"env":"GEMINI_API_KEY",
-		"url":"https://generativelanguage.googleapis.com/v1alpha",
-		"api":"Google",
-		"emoji": "🌟"
+	"gemini": {
+		"env": "GEMINI_API_KEY",
+		"url": "https://generativelanguage.googleapis.com/v1alpha",
+		"api": "Google",
+		"emoji": "🌟",
+		"locale": "en-US"
 	},
-	"alibaba":{
-		"currency": "USD",
+	"alibaba": {
 		"env": "ALIBABA_API_KEY",
 		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
 		"api": "OpenAI",
-		"emoji":"🐉"
+		"emoji": "🐉",
+		"locale": "zh-CN"
 	},
-	"mistral":{
-		"currency": "USD",
+	"mistral": {
 		"env": "MISTRAL_API_KEY",
 		"url": "https:/api.mistral.ai/v1",
 		"docs": "https://docs.mistral.ai/",
-		"api":"OpenAI",
-		"emoji":"⚡️"
+		"api": "OpenAI",
+		"emoji": "⚡️",
+		"locale": "fr-FR"
 	},
-	"anthropic":{
-		"currency": "USD",
+	"anthropic": {
 		"env": "ANTHROPIC_API_KEY",
 		"url": "https://api.anthropic.com/v1",
-		"docs": "https://https://docs.anthropic.com/en/home/",
+		"docs": "https://docs.anthropic.com/en/home/",
 		"api": "Anthropic",
-		"emoji": "🤖"
+		"emoji": "🤖",
+		"locale": "en-US"
 	},
 	"cohere": {
-		"currency": "CAD",
 		"env": "COHERE_API_KEY",
 		"url": "https://api.cohere.com/v2",
 		"docs": "https://docs.cohere.com/reference/about",
 		"api": "Cohere",
-		"emoji": "🧩"
+		"emoji": "🧩",
+		"locale": "en-CA"
 	},
-	"moonshot":{
-		"currency": "CNY",
+	"moonshot": {
 		"env": "MOONSHOT_API_KEY",
 		"url": "https://api.moonshot.ai/v1",
 		"docs": "https://platform.moonshot.ai/docs/",
 		"api": "OpenAI",
-		"emoji": "🎯"
+		"emoji": "🎯",
+		"locale": "zh-CN"
 	}
 }
