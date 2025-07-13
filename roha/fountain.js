@@ -76,7 +76,7 @@ const flagNames={
 	verbose : "emit debug information",
 	broken : "ansi background blocks",
 	logging : "log all output to file",
-	debugging : "temporary switch for emitting debug information",
+	debugging : "emit diagnostics",
 	pushonshare : "emit a /push after any /share",
 	rawprompt : "experimental rawmode stdin deno prompt replacement",
 	resetcounters : "factory reset when reset",
@@ -287,7 +287,7 @@ function listHistory(){
 		const clip=content.substring(0,wide);
 		const size="("+content.length+")";
 		const role=item.role.padEnd(12," ");
-		const name=(item.name||"forge").padEnd(15," ");
+		const name=(item.mut||item.name||item.title||"roha").padEnd(15," ");
 		const iii=String(i).padStart(3,"0");
 		const spend=item.price?(item.emoji+" "+item.price.toFixed(4)) :"";
 		const seconds=item.elapsed?(item.elapsed.toFixed(2)+"s"):"";
@@ -310,7 +310,7 @@ function logHistory(){
 		const iii=String(index).padStart(3,"0");
 		const spend=item.price?(item.emoji+" "+item.price.toFixed(4)) :"";
 		const seconds=item.elapsed?(item.elapsed.toFixed(2)+"s"):"";
-		echo(iii,item.role,item.name||item.title||"???",spend,seconds);
+		echo(iii,item.role,item.mut||item.name||item.title||"???",spend,seconds);
 		const content=readable(item.content).substring(0,clipLog);
 		echoContent(content,wide,3,2);
 	}
@@ -1054,18 +1054,23 @@ function mutName(modelname){
 }
 
 async function resetModel(modelname){
-	grokModel=modelname;
-	const modelAccount=grokModel.split("@");
+	const modelAccount=modelname.split("@");
 	const path=modelAccount[0];
 	const provider=modelAccount[1];
 	const account=modelAccounts[provider];
+	if(!account){
+		echo("[reset] account not found",modelname);
+		return;
+	}
+	grokModel=modelname;
 	grokAccount=account;
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
 	const mut=mutName(modelname);
 	rohaModel=mut;
 	grokFunctions=true;
-	const content=mutsInclude+modelname+" "+account.emoji+" "+balance;
+	// was modelname
+	const content=mutsInclude+mut+account.emoji+"("+balance+")";
 	// todo: enable title field
 	rohaHistory.push({role:"system",content});
 //	rohaHistory.push({role:"system",title:userdomain,content});
@@ -1786,16 +1791,17 @@ async function callCommand(command) {
 				}
 				break;
 			case "note":
+				// todo roha.mut[] -> roha.mutspec[]
 				if(grokModel in roha.mut){
-					const mut=roha.mut[grokModel];
+					const mutspec=roha.mut[grokModel];
 					const note=words.slice(1).join(" ");
 					if(note.length){
-						mut.notes.push(note);
+						mutspec.notes.push(note);
 						await writeForge();
 					}else{
-						const n=mut.notes.length;
+						const n=mutspec.notes.length;
 						for(let i=0;i<n;i++){
-							echo(i,mut.notes[i]);
+							echo(i,mutspec.notes[i]);
 						}
 					}
 				}
@@ -1823,19 +1829,19 @@ async function callCommand(command) {
 						for(let i=0;i<modelList.length;i++){
 							let name=modelList[i];
 							let attr=(name==grokModel)?"*":" ";
-							let mut=(name in roha.mut)?roha.mut[name]:emptyMUT;
-							mut.name=name;
-							let notes=[...mut.notes];
+							let mutspec=(name in roha.mut)?roha.mut[name]:emptyMUT;
+							mutspec.name=name;
+							let notes=[...mutspec.notes];
 							let rated=name in modelSpecs?modelSpecs[name]:null;
 
-							if(mut.hasForge) notes.push("𝆑");
+							if(mutspec.hasForge) notes.push("𝆑");
 							if(rated&&rated.cold) notes.push("Cold");
 							if(rated&&rated.multi) notes.push("Multi");
 							if(rated&&rated.strict) notes.push("Strict");
 
 							if(rated || all){
 								let pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
-								echo(i,attr,name,"{"+notes.join(",")+"}",mut.relays|0,pricing);
+								echo(i,attr,name,"{"+notes.join(",")+"}",mutspec.relays|0,pricing);
 							}
 						}
 						listCommand="model";
@@ -2140,21 +2146,27 @@ function multiHistory(history){
 	return list;
 }
 
+// fountain relay
+// returns spend
+// warning - tool_calls resolved with recursion
 
 async function relay(depth) {
+	const now=performance.now();
 	const verbose=roha.config.verbose;
 	const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 	const strictMode=info&&info.strict;
 	const multiMode=info&&info.multi;
-	let payload={};
+	const modelAccount=grokModel.split("@");
+	const model=modelAccount[0];
+	const account=modelAccount[1];
+	const endpoint=rohaEndpoint[account];
+	const config=modelAccounts[account];
+	const mut=mutName(model);
+	let payload={model,mut};
 	let spend=0;
+	let elapsed=0;
+	if(verbose)echo("[RELAY] ",depth,mut);
 	try {
-		const now=performance.now();
-		const modelAccount=grokModel.split("@");
-		const model=modelAccount[0];
-		const account=modelAccount[1];
-		const endpoint=rohaEndpoint[account];
-		const config=modelAccounts[account];
 	// prepare payload
 		payload={model};
 		if(strictMode){
@@ -2186,13 +2198,13 @@ async function relay(depth) {
 	// relay completions
 
 		const completion=await endpoint.chat.completions.create(payload);
-		const elapsed=(performance.now()-now)/1000;
+		
+		elapsed=(performance.now()-now)/1000;
 
 		//	if(config.hasCache) payload.cache_tokens=true;
 
 		if (completion.model != model) {
-			echo("[relay model alert model:" + completion.model + " grokModel:" + grokModel + "]");
-//			grokModel=completion.model+"@"+account;
+			echo("[RELAY] model reset",completion.model,model);
 			const name=completion.model+"@"+account;
 			resetModel(name);
 		}
@@ -2207,10 +2219,12 @@ async function relay(depth) {
 		grokUsage += spent[0]+spent[1];
 //		echo("[relay] debugging spend 0",grokModel,usage);
 
+		// todo roha.mut[] -> roha.mutspec[]
+
 		if(grokModel in roha.mut){
-			let mut=roha.mut[grokModel];
-			mut.relays=(mut.relays || 0) + 1;
-			mut.elapsed=(mut.elapsed || 0) + elapsed;
+			const mutspec=roha.mut[grokModel];
+			mutspec.relays=(mutspec.relays || 0) + 1;
+			mutspec.elapsed=(mutspec.elapsed || 0) + elapsed;
 //			echo("debugging spend 1",grokModel);
 			if(grokModel in modelSpecs){
 				const rate=modelSpecs[grokModel].pricing||[0,0];
@@ -2224,7 +2238,7 @@ async function relay(depth) {
 				}else{
 					spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6;
 				}
-				mut.cost+=spend;
+				mutspec.cost+=spend;
 				const lode=roha.lode[account];
 				if(lode) {
 					const credit=lode.credit||0;
@@ -2242,11 +2256,12 @@ async function relay(depth) {
 					echo("modelSpecs not found for",grokModel);
 				}
 			}
-			mut.prompt_tokens=(mut.prompt_tokens|0)+spent[0];
-			mut.completion_tokens=(mut.completion_tokens|0)+spent[1];
+			mutspec.prompt_tokens=(mutspec.prompt_tokens|0)+spent[0];
+			mutspec.completion_tokens=(mutspec.completion_tokens|0)+spent[1];
 			// TODO: explain hasForge false condition
-			if(useTools && mut.hasForge!==true){
-				mut.hasForge=true;
+			if(useTools && mutspec.hasForge!==true){
+				echo("[RELAY] cancelling forge for",mut);
+				mutspec.hasForge=true;
 				await writeForge();
 			}
 		}else{
@@ -2262,33 +2277,41 @@ async function relay(depth) {
 		if(spend) {
 			cost="$"+spend.toFixed(3);
 		}
-		let temp=grokTemperature.toFixed(1)+"°";
-		let modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
-		let status="["+modelSpec.join(" ")+"]";
 
-		if (roha.config.ansi)
-			echo(ansiDashBlock+status+ansiReset);
-		else
-			echo(status);
-		var replies=[];
+		const echostatus=(depth==0);
+		if(echostatus){
+			const temp=grokTemperature.toFixed(1)+"°";
+			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
+			const status="["+modelSpec.join(" ")+"]";
+			if (roha.config.ansi)
+				echo(ansiDashBlock+status+ansiReset);
+			else
+				echo(status);
+		}
+
+		const replies=[];
 		for (const choice of completion.choices) {
-			let calls=choice.message.tool_calls;
+			const calls=choice.message.tool_calls;
 			// choice has index message{role,content,refusal,annotations} finish_reason
 			if (calls) {
-				increment("calls");
-				debug("relay calls in progress",calls)
+				const count=increment("calls");
+				if(verbose) echo("[RELAY] calls in progress",depth,count)
+				// TODO: map toolcalls index
 				const toolCalls=calls.map((tool, index) => ({
 					id: tool.id,
 					type: "function",
 					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
 				}));
-				let content=choice.message.content || "";
-				rohaHistory.push({role:"assistant",name:payload.model,content,tool_calls: toolCalls});
+				const content=choice.message.content || "";
+				if(verbose)echo("[RELAY] pushing asssistant model",payload.model,mut);
+				rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls: toolCalls});
 				const toolResults=await processToolCalls(calls);
 				for (const result of toolResults) {
 					rohaHistory.push({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
 				}
-				await relay(depth+1); // Recursive call to process tool results
+				// TODO: here be dragons
+				const spent=await relay(depth+1); // Recursive call to process tool results
+				spend+=spent;
 			}
 			const reasoning=choice.message.reasoning_content;
 			if(reasoning && roha.config.reasonoutloud){
@@ -2311,15 +2334,9 @@ async function relay(depth) {
 				replies.push(reply);
 			}
 		}
-		const name=rohaModel||"mut1";
+//		const name=rohaModel||"mut1";
 		let content=replies.join("\n<eom>\n");
-		const ass={role:"assistant",name,content};
-		if(elapsed) {
-			ass.elapsed=elapsed;
-			ass.price=spend;
-			ass.emoji=grokAccount.emoji;
-		}
-		rohaHistory.push(ass);
+		rohaHistory.push({role:"assistant",name,mut,emoji,content,elapsed,price:spend});
 	} catch (error) {
 		let line=error.message || String(error);
 		if(line.includes("maximum prompt length")){
@@ -2332,7 +2349,14 @@ async function relay(depth) {
 			echo(cleanupRequired);
 			return spend;
 		}
-		//unhandled error line undefined 429 error:{"type":"error","error":{"type":"rate_limit_error",
+		//unhandled error 402
+		const HuggingFace402="You have exceeded your monthly included credits for Inference Providers. Subscribe to PRO to get 20x more monthly included credits."
+		if(line.includes(HuggingFace402)){
+			echo("[RELAY] depth",depth,line);
+			return spend;
+		}
+		//unhandled error line undefined 429 
+		// error:{"type":"error","error":{"type":"rate_limit_error",
 		const err=(error.error&&error.error.error)?error.error.error:{};
 		if(err.type=="rate_limit_error"||err.type=="invalid_request_error"){
 			echo("Oops.",err.type,err.message);
@@ -2365,6 +2389,7 @@ async function relay(depth) {
 			echo(JSON.stringify(payload));
 		}
 	}
+	return spend;
 }
 
 // while true promptForge, callCommand and solicit completion
