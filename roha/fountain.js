@@ -765,7 +765,7 @@ function prepareCohereRequest(payload){
 		const content=item.content;
 		switch(item.role){
 			case "system":
-				system.push({role:"system",content});
+				history.push({role:"system",content});
 				break;
 			case "user":
 				history.push({role:"user",content});
