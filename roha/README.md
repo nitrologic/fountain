@@ -12,6 +12,7 @@ Requires an api environment variable, see accounts.json for latest
 * ALIBABA_API_KEY
 * ANTHROPIC_API_KEY
 * COHERE_API_KEY
+* MOONSHOT_API_KEY
 
 # interface
 

@@ -19,23 +19,9 @@ Home of nitrologic slop fountain — a 4th generation of the roha foundry forge 
 | gemini       | 🌟    | en-US  | https://ai.google.dev/docs          | Google   |
 | anthropic    | 🤖    | en-US  | https://docs.anthropic.com/         | Anthropic |
 
-## latest
-
-Slop Items and Attachments
-
-"type": "input_image",
-"image_url": f"data:image/jpeg;base64,{base64_image}",
-
-
 ## developers
 
-
-
-
-### macos
-
-
-
+[slop fountaint](roha/README.md)
 
 # blog
 
