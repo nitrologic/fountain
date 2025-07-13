@@ -173,5 +173,9 @@
 	"command-r@cohere":{
 		"pricing":[0.50,2.0],
 		"purpose":"canadian 128K context window"
+	},
+	"command-a-vision@cohere":{
+		"pricing":[0.50,2.0],
+		"purpose":"canadian 128K context window"
 	}
 }

@@ -773,8 +773,14 @@ function prepareCohereRequest(payload){
 					continue;
 				}
 				if(item.name=="image"){
-//				history.push({role:"user",content});
+					const image_url={url:"https://jpeg.org/images/jpeg-home.jpg"}
+//					history.push({role:"user",content:[{type:"image_url",image_url}]});
 					continue;
+//					const mediatype=blob.type;
+//					const image_url={url:"data:"+mediatype+";base64,"+content};
+// [<media-type>][;base64],<data>"
+// TODO: url=data:[<media-type>][;base64],<data>
+//					history.push({role:"user",content:[{type:"image",data}]});
 				}
 				history.push({role:"user",content});
 				break;
@@ -799,8 +805,8 @@ async function connectCohere(account,config) {
 		const headers={
 			"Authorization":"Bearer "+apiKey,
 			"Content-Type":"application/json",
-			"Accept":"application/json",
-			"X-Client-Name": "fountain.js"
+			"Accept":"application/json"
+//			"X-Client-Name": "fountain.js"
 		};
 		const response=await fetch(baseURL+"/models",{method:"GET",headers});
 		if (!response.ok) return null;
@@ -831,7 +837,7 @@ async function connectCohere(account,config) {
 						if(roha.config.verbose){
 							echo("[cohere] url",url);
 							//echo("[cohere] content",content);
-							echo("[cohere] usage",usage);
+							//echo("[cohere] usage",usage);
 							echo("[cohere] headers",headers);
 						}
 						try{							
