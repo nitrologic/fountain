@@ -193,5 +193,9 @@
 	"kimi-k2-0711-preview@moonshot":{
 		"pricing":[0.60,0.15,2.5],
 		"purpose":"chinese MoE 128K context window"
+	},
+	"meta-llama/Llama-3.1-8B-Instruct@huggingface":{
+		"pricing":[0.60,0.15,2.5],
+		"purpose":"zuk llama"
 	}
 }

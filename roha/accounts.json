@@ -67,5 +67,13 @@
 		"api": "OpenAI",
 		"emoji": "🎯",
 		"locale": "zh-CN"
+	},
+	"huggingface":{
+		"env": "HUGGINGFACE_API_KEY",
+		"url": "https://router.huggingface.co/nscale/v1",
+		"docs":"https://huggingface.co/docs",
+		"api": "OpenAI",
+		"emoji": "🤗",
+		"locale": "en-US"		
 	}
 }
