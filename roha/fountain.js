@@ -785,7 +785,7 @@ function prepareCohereRequest(payload){
 				}
 				if(item.name=="image"){
 					const image_url={url:"https://jpeg.org/images/jpeg-home.jpg"}
-//					history.push({role:"user",content:[{type:"image_url",image_url}]});
+					history.push({role:"user",content:[{type:"image_url",image_url}]});
 					continue;
 //					const mediatype=blob.type;
 //					const image_url={url:"data:"+mediatype+";base64,"+content};
@@ -2333,7 +2333,7 @@ async function relay(depth) {
 			return spend;
 		}
 		//unhandled error line undefined 429 error:{"type":"error","error":{"type":"rate_limit_error",
-		const err=(error.error)?error.error.error:{};
+		const err=(error.error&&error.error.error)?error.error.error:{};
 		if(err.type=="rate_limit_error"||err.type=="invalid_request_error"){
 			echo("Oops.",err.type,err.message);
 			echo(cleanupRequired);
