@@ -759,8 +759,8 @@ function specCohereModel(model,account){
 }
 
 function prepareCohereRequest(payload){
-	const system=[];
 	const history=[];
+	let blob={};
 	for(const item of payload.messages){
 		const content=item.content;
 		switch(item.role){
@@ -768,6 +768,14 @@ function prepareCohereRequest(payload){
 				history.push({role:"system",content});
 				break;
 			case "user":
+				if(item.name=="blob"){
+					blob=JSON.parse(content);
+					continue;
+				}
+				if(item.name=="image"){
+//				history.push({role:"user",content});
+					continue;
+				}
 				history.push({role:"user",content});
 				break;
 			case "assistant":
@@ -822,7 +830,7 @@ async function connectCohere(account,config) {
 						const usage={prompt_tokens:0,completion_tokens:0,total_tokens:0};
 						if(roha.config.verbose){
 							echo("[cohere] url",url);
-							echo("[cohere] content",content);
+							//echo("[cohere] content",content);
 							echo("[cohere] usage",usage);
 							echo("[cohere] headers",headers);
 						}
