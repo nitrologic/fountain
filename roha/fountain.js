@@ -510,25 +510,39 @@ function prepareGeminiContent(payload){
 	const contents=[];
 	const sysparts=[];	// GenerateContentRequest systemInstruction content
 	let blob={};
-	for(const message of payload.messages){
-		switch(message.role){
+	const debug=roha.config.debug;
+	
+	if(debug) echo("[GEMINI] payload",payload);
+
+	for(const item of payload.messages){
+		if(debug) echo("[GEMINI] item",item);
+		const text=item.content;
+		if(debug) echo("[GEMINI] text",text);
+		switch(item.role){
 			case "system":
-				sysparts.push({text:message.content});
+				sysparts.push({text});
 				break;
-			case "user":
-				if(message.name=="blob"){
-					blob=JSON.parse(message.content);
-					continue;
+			case "user":{
+					if(item.name=="blob"){
+						blob=JSON.parse(content);
+						continue;
+					}
+					if(item.name=="image"){
+						const data=item.content;
+	//					contents.push({role:"user",parts:[{inlineData:{mimeType,data}}]});
+						continue;
+					}
+					//contents.push({text:message.content});
+					const parts=[];
+					for(const content of item.content){
+						parts.push({text:content.text});
+					}
+					contents.push({role:"user",parts});
+					//{role:"user",parts:[{text:content}]});
 				}
-				if(message.name=="image"){
-					const data=message.content;
-					contents.push({role:"user",parts:[{inlineData:{mimeType,data}}]});
-					continue;
-				}
-				contents.push({text:message.content});//{role:"user",parts:[{text:message.content}]});
 				break;
 			case "assistant":{
-					const ass={role:"model",parts:[{text:message.content}]}
+					const ass={role:"model",parts:[{text}]}
 					contents.push(ass);
 				}
 				break;
@@ -536,15 +550,12 @@ function prepareGeminiContent(payload){
 	}
 	// TODO: tools and toolsconfig support
 
-	const request={
-		contents,
-		systemInstruction:{
-			content:{role:"system",parts:sysparts}
-		}
-	};
-	if(roha.config.verbose){
-		debug("contentRequest",request);
-	}
+	//system_instruction
+
+	const request={model:payload.model,system_instruction:{parts:sysparts},contents};
+
+	if(debug) echo("[GEMINI] request",request);
+
 	return request;
 }
 //messages: [{ role: "user", content: "Hello, Claude" }],
@@ -718,10 +729,10 @@ async function connectGoogle(account,config){
 						const model=genAI.getGenerativeModel({model:payload.model});
 						const request=prepareGeminiContent(payload);
 						// TODO: hook up ,signal SingleRequestOptions parameter
+
+						if(roha.config.debugging) echo("[GEMINI] generateContent",request);
 						const result=await model.generateContent(request);
-						if(roha.config.verbose){
-							console.info("GoogleGenerativeAI result",result);
-						}
+						if(roha.config.debugging) echo("[GEMINI] result",result);
 						const text=await result.response.text();
 						const usage=result.response.usageMetadata||{};
 						return {
@@ -744,7 +755,7 @@ async function connectGoogle(account,config){
 }
 
 function specCohereModel(model,account){
-	if(roha.config.verbose) echo("[cohere] spec",model);
+	if(roha.config.debugging) echo("[cohere] spec",model);
 	const name=model.name+"@"+account;
 	const exists=name in roha.mut;
 	const info=exists?roha.mut[name]:{name,notes:[],errors:[],relays:0,cost:0};
@@ -834,7 +845,7 @@ async function connectCohere(account,config) {
 						const content=prepareCohereRequest(payload);
 						const url=baseURL+"/chat";
 						const usage={prompt_tokens:0,completion_tokens:0,total_tokens:0};
-						if(roha.config.verbose){
+						if(roha.config.debugging){
 							echo("[cohere] url",url);
 							//echo("[cohere] content",content);
 							//echo("[cohere] usage",usage);
@@ -842,7 +853,7 @@ async function connectCohere(account,config) {
 						}
 						try{							
 							const response=await fetch(url,{method:"POST",headers,body:JSON.stringify(content)});
-							if(roha.config.verbose){
+							if(roha.config.debugging){
 								echo("[cohere] response.ok",response.ok);
 							}
 							if (response.ok) {
@@ -1108,7 +1119,6 @@ async function saveHistory(name) {
 		let filename=(name||"transmission-"+timestamp)+".json";
 		let filePath=resolve(forgePath,filename);
 		let line="Saved session "+filename+".";
-
 //		rohaHistory.push({role:"system",title:"Fountain History Saved",content:line});
 		rohaHistory.push({role:"system",content:line});
 		await Deno.writeTextFile(filePath,JSON.stringify(rohaHistory,null,"\t"));

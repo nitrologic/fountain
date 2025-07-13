@@ -97,7 +97,7 @@
 		"reality":"A tendency to regurgitate Mr Creosote style."
 	},
 	"grok-2-vision-1212@xai":{
-		"pricing": [3.00, 0.75, 15.00],
+		"pricing": [2.00, 0.75, 10.00],
 		"multi": true,
 		"purpose": "Image vision, text and code generation",
 		"reality": "Model under test."
