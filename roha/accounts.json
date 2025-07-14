@@ -68,12 +68,29 @@
 		"emoji": "🎯",
 		"locale": "zh-CN"
 	},
+	"cerebras":{
+		"env": "HUGGINGFACE_API_KEY",
+		"url": "https://router.huggingface.co/cerebras/v1",
+		"docs":"https://huggingface.co/docs",
+		"api": "OpenAI",
+		"emoji": "🤗🐈",
+		"locale": "en-US"		
+	},
 	"nscale":{
 		"env": "HUGGINGFACE_API_KEY",
 		"url": "https://router.huggingface.co/nscale/v1",
 		"docs":"https://huggingface.co/docs",
 		"api": "OpenAI",
-		"emoji": "🤗",
+		"emoji": "🤗🦎",
 		"locale": "en-US"		
+	},
+	"hyperbolic":{
+		"env": "HUGGINGFACE_API_KEY",
+		"url": "https://router.huggingface.co/hyperbolic/v1",
+		"docs":"https://huggingface.co/docs",
+		"api": "OpenAI",
+		"emoji": "🤗🦎",
+		"locale": "en-US"		
+
 	}
 }

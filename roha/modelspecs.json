@@ -9,6 +9,26 @@
 		"purpose": "Advanced reasoning and problem-solving",
 		"press": "High-performance model for complex math, coding, and logical tasks."
 	},
+	"Qwen/Qwen2.5-VL-72B-Instruct@hyperbolic":{
+		"pricing": [0.55, 0.14, 2.19],
+		"purpose": "72B Multimodal"
+	},
+	"llama-3.3-70b@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 3.3"
+	},
+	"llama-4-scout-17b-16e-instruct@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 4"
+	},
+	"llama3.1-8b@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 3.1"
+	},
+	"qwen-3-32b@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted qwen 3"
+	},
 	"qwen-max@alibaba":{
 		"pricing": [1.60,6.40],
 		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
@@ -151,7 +171,8 @@
 		"pricing":[15.0,75.0],
 		"limit":[20000],
 		"multi":true,
-		"purpose":"frontier model for coding, agentic search, and creative writing"
+		"purpose":"frontier model for coding, agentic search, and creative writing",
+		"reality":"rate limited 20,000 input tokens per minute"
 	},
 	"claude-sonnet-4-20250514@anthropic":{
 		"pricing":[15.0,75.0],

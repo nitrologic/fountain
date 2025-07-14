@@ -11,11 +11,14 @@ import {Anthropic } from "npm:@anthropic-ai/sdk";
 
 // Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
 
+// tools:[read_time submit_file read_image connect_slopnet read_history read_git]
+
 // mut:{name,hasForge,notes:[],errors:[],relays:0,cost:0,elapsed:0}
 
 const fountainVersion="1.2.4";
+const fountainName="fountain "+fountainVersion;
 
-const rohaTitle="fountain "+fountainVersion+" ⛲ ";
+const rohaTitle=fountainName+" ⛲ ";
 
 const terminalColumns=120;
 const statsColumn=50;
@@ -256,9 +259,9 @@ function popHistory(){
 	return sessionStack.pop();
 }
 function resetHistory(){
-	rohaHistory=[{role:"system",title:rohaTitle,content:rohaMihi}];
+	rohaHistory=[{role:"system",title:"fountain",name:fountainName,content:rohaMihi}];
 	const guide=rohaGuide.join(" ");
-	if (guide) rohaHistory=[{role:"system",title:rohaTitle,content:guide}];
+	if (guide) rohaHistory=[{role:"system",title:"fountain",name:fountainName,content:guide}];
 }
 
 function echoContent(content,wide,left,right){
@@ -287,7 +290,7 @@ function listHistory(){
 		const clip=content.substring(0,wide);
 		const size="("+content.length+")";
 		const role=item.role.padEnd(12," ");
-		const name=(item.mut||item.name||item.title||"roha").padEnd(15," ");
+		const name=(item.mut||item.title||item.name||"roha").padEnd(15," ");
 		const iii=String(i).padStart(3,"0");
 		const spend=item.price?(item.emoji+" "+item.price.toFixed(4)) :"";
 		const seconds=item.elapsed?(item.elapsed.toFixed(2)+"s"):"";
@@ -310,7 +313,7 @@ function logHistory(){
 		const iii=String(index).padStart(3,"0");
 		const spend=item.price?(item.emoji+" "+item.price.toFixed(4)) :"";
 		const seconds=item.elapsed?(item.elapsed.toFixed(2)+"s"):"";
-		echo(iii,item.role,item.mut||item.name||item.title||"???",spend,seconds);
+		echo(iii,item.role,item.mut||item.title||item.name||"???",spend,seconds);
 		const content=readable(item.content).substring(0,clipLog);
 		echoContent(content,wide,3,2);
 	}
@@ -382,8 +385,15 @@ const rohaTools=[{
 	}
 }];
 
+// fountain utility functions
+
+async function fileLength(path) {
+	const stat=await Deno.stat(path);
+	return stat.size;
+}
+
 async function sleep(ms) {
-	await new Promise(function(resolve) {setTimeout(resolve, ms);});
+	await new Promise(function(awake) {setTimeout(awake, ms);});
 }
 
 function unitString(value,precision=2,type){
@@ -400,6 +410,7 @@ function unitString(value,precision=2,type){
 	}
 	return String(value)+type;
 }
+
 function measure(o){
 	const value=(typeof o==="string")?o.length:JSON.stringify(o).length;
 	return unitString(value,4,"B");
@@ -504,6 +515,8 @@ async function listModels(config){
 	return null;
 }
 
+// API support for openai deepseek gemini anthropic cohere 
+
 //https://ai.google.dev/gemini-api/docs/text-generation
 
 function prepareGeminiContent(payload){
@@ -593,21 +606,6 @@ function anthropicMessages(payload){
 	return messages;
 }
 
-/*
-const rohaTools=[{
-	type: "function",
-	function:{
-		name: "read_time",
-		description: "Returns current local time",
-		parameters: {
-			type: "object",
-			properties: {},
-			required: []
-		}
-	}
-},{
-*/
-
 function anthropicTools(payload){
 	const tools=[];
 	for(const tool of payload.tools){
@@ -688,15 +686,6 @@ async function connectAnthropic(account,config){
 		return null;
 	}
 }
-
-//{"id":"msg_01XHRXEi1xkrCkvhXdU4hR67",
-// "type":"message",
-// "role":"assistant",
-// "model":"claude-3-haiku-20240307",
-// "content":[{"type":"text","text":"Hi there! How can I assist you today?"}],
-// "stop_reason":"end_turn",
-// "stop_sequence":null,
-// "usage":{"input_tokens":8,"cache_creation_input_tokens":0,"cache_read_input_tokens":0,"output_tokens":13,"service_tier":"standard"}}
 
 async function connectGoogle(account,config){
 	try{
@@ -1004,6 +993,10 @@ function specAccount(account){
 	if(!(account in roha.lode)){
 		roha.lode[account]={name: account,url: endpoint.baseURL,env: config.env,credit: 0};
 	}
+	if(roha.config.verbose){
+		const lode=roha.lode[account];
+		echo("[FOUNTAIN] specAccount",account,lode);//endpoint);//config);
+	}
 }
 
 function specModel(model,account){
@@ -1070,7 +1063,8 @@ async function resetModel(modelname){
 	rohaModel=mut;
 	grokFunctions=true;
 	// was modelname
-	const content=mutsInclude+mut+account.emoji+"("+balance+")";
+	const content=mutsInclude+mut;
+	//+account.emoji+"("+balance+")";
 	// todo: enable title field
 	rohaHistory.push({role:"system",content});
 //	rohaHistory.push({role:"system",title:userdomain,content});
@@ -1131,7 +1125,7 @@ async function saveHistory(name) {
 		roha.saves.push(filename);
 		await writeForge();
 	} catch (error) {
-		console.error("Histroy save error",error.message);
+		echo("[FOUNTAIN] History save error",error.message);
 	}
 }
 
@@ -1142,8 +1136,8 @@ async function loadHistory(filename){
 		history=JSON.parse(fileContent);
 		echo("History restored from",filename);
 	} catch (error) {
-		console.error("Error restoring history:", error.message);
-		echo("History restore error",error.message);
+//		console.error("Error restoring history:", error.message);
+		echo("[FOUNTAIN] loadHistory error",error.message);
 		resetHistory()
 	}
 	return history;
@@ -1391,11 +1385,6 @@ async function promptForge(message) {
 	return result;
 }
 
-async function fileLength(path) {
-	const stat=await Deno.stat(path);
-	return stat.size;
-}
-
 async function addShare(share){
 	share.id="share"+increment("shares");
 	roha.sharedFiles.push(share);
@@ -1421,7 +1410,7 @@ async function shareDir(dir, tag) {
 				const hash=await hashFile(path);
 				await addShare({ path, size, modified, hash, tag });
 			} catch (error) {
-				echo("shareDir path",path,"error",error.message);
+				echo("[FOUNTAIN] shareDir error",path,error.message);
 				continue;
 			}
 		}
@@ -1514,19 +1503,19 @@ async function commitShares(tag) {
 				removedPaths.push(share.path);
 				dirty=true;
 			}
-			echo("commitShares path", share.path,"error", error.message);
+			echo("[FOUNTAIN] commitShares error",share.path,error.message);
 		}
 	}
 	if (removedPaths.length) {
 		roha.sharedFiles=validShares;
 		await writeForge();
-		echo("Removed invalid shares:", removedPaths.join(" "));
+		echo("[FOUNTAIN] commitShares removed", removedPaths.join(" "));
 	}
 	if (dirty && tag) {
 		rohaHistory.push({ role: "system", title:"Fountain Tool Hint", content: "Feel free to call annotate_forge to tag " + tag });
 	}
 	if (count && roha.config.verbose) {
-		echo("Updated files",count,"of",validShares.length);
+		echo("[FOUNTAIN] Updated files",count,"of",validShares.length);
 	}
 	return dirty;
 }
@@ -1924,7 +1913,7 @@ async function callCommand(command) {
 				return false; // Command not recognized
 		}
 	} catch (error) {
-		echo("callCommand",command,error.message);
+		echo("[FOUNTAIN] callCommand error",command,error.message);
 	}
 	increment("calls");
 	return dirty;
@@ -2036,7 +2025,9 @@ function squashMessages(history) {
 async function processToolCalls(calls) {
 	const results=[];
 	for (const tool of calls) {
+		const id=tool.id || !tool.function?.name
 		if (!tool.id || !tool.function?.name) {
+			echo("[processToolCalls] tool",tool);
 			results.push({
 				tool_call_id: tool.id || "unknown",
 				name: tool.function?.name || "unknown",
@@ -2054,12 +2045,15 @@ async function processToolCalls(calls) {
 				content: JSON.stringify(result || {success: false})
 			});
 		} catch (e) {
+			echo("processToolCalls] error",e);
+/*
 			results.push({
 				tool_call_id: tool.id,
 				name: tool.function.name,
 				content: JSON.stringify({error: e.message})
 			});
 			await log("processToolCalls failure");
+*/			
 			//`Tool call failed: ${tool.function.name} - ${e.message}`, "error");
 		}
 	}
@@ -2204,7 +2198,7 @@ async function relay(depth) {
 		//	if(config.hasCache) payload.cache_tokens=true;
 
 		if (completion.model != model) {
-			echo("[RELAY] model reset",completion.model,model);
+			echo("[RELAY] model reset",completion.model||"???",model);
 			const name=completion.model+"@"+account;
 			resetModel(name);
 		}
@@ -2260,7 +2254,7 @@ async function relay(depth) {
 			mutspec.completion_tokens=(mutspec.completion_tokens|0)+spent[1];
 			// TODO: explain hasForge false condition
 			if(useTools && mutspec.hasForge!==true){
-				echo("[RELAY] cancelling forge for",mut);
+				echo("[RELAY] enabling forge for",mut);
 				mutspec.hasForge=true;
 				await writeForge();
 			}
@@ -2296,23 +2290,39 @@ async function relay(depth) {
 			if (calls) {
 				const count=increment("calls");
 				if(verbose) echo("[RELAY] calls in progress",depth,count)
+
 				// TODO: map toolcalls index
+
 				const toolCalls=calls.map((tool, index) => ({
 					id: tool.id,
 					type: "function",
 					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
 				}));
-				const content=choice.message.content || "";
-				if(verbose)echo("[RELAY] pushing asssistant model",payload.model,mut);
-				rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls: toolCalls});
+				
 				const toolResults=await processToolCalls(calls);
 				for (const result of toolResults) {
-					rohaHistory.push({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
+
+					// kimi does not like this
+
+					const item={role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content};
+
+					if(verbose)echo("[RELAY] pushing tool result",item);
+					rohaHistory.push(item);
 				}
+
+				// new behavior, message content comes after tool reports
+
+				const content=choice.message.content;
+				if(content){
+					if(verbose)echo("[RELAY] pushing asssistant model",depth,payload.model,mut,content);
+//					rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
+				}
+
 				// TODO: here be dragons
 				const spent=await relay(depth+1); // Recursive call to process tool results
 				spend+=spent;
 			}
+
 			const reasoning=choice.message.reasoning_content;
 			if(reasoning && roha.config.reasonoutloud){
 				print("=== reasoning ===");
@@ -2324,6 +2334,7 @@ async function relay(depth) {
 				}
 				print("=================");
 			}
+
 			const reply=choice.message.content;
 			if(reply){
 				if (roha.config.ansi) {
@@ -2335,8 +2346,10 @@ async function relay(depth) {
 			}
 		}
 //		const name=rohaModel||"mut1";
-		let content=replies.join("\n<eom>\n");
-		rohaHistory.push({role:"assistant",name,mut,emoji,content,elapsed,price:spend});
+		if(replies.length){
+			let content=replies.join("\n<eom>\n");
+			rohaHistory.push({role:"assistant",name,mut,emoji,content,elapsed,price:spend});
+		}
 	} catch (error) {
 		let line=error.message || String(error);
 		if(line.includes("maximum prompt length")){
@@ -2349,13 +2362,11 @@ async function relay(depth) {
 			echo(cleanupRequired);
 			return spend;
 		}
-		//unhandled error 402
 		const HuggingFace402="You have exceeded your monthly included credits for Inference Providers. Subscribe to PRO to get 20x more monthly included credits."
 		if(line.includes(HuggingFace402)){
-			echo("[RELAY] depth",depth,line);
+			echo("[RELAY] Hugging Face Error depth",depth,line);
 			return spend;
 		}
-		//unhandled error line undefined 429 
 		// error:{"type":"error","error":{"type":"rate_limit_error",
 		const err=(error.error&&error.error.error)?error.error.error:{};
 		if(err.type=="rate_limit_error"||err.type=="invalid_request_error"){
@@ -2381,12 +2392,11 @@ async function relay(depth) {
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)
 
-		echo("unhandled error",error.message);
+		echo("[FOUNTAIN] unhandled error",error.message);
 
 		//		echo("unhandled error line",line);
 		if(verbose){
-			echo(String(error));
-			echo(JSON.stringify(payload));
+			echo("[FOUNTAIN] payload",JSON.stringify(payload,null,"\t"));
 		}
 	}
 	return spend;
@@ -2537,9 +2547,9 @@ await flush();
 
 let rohaNic=roha.config.nic||"nic";
 let rohaUser=username+"@"+userdomain;
-const shares=roha.sharedFiles.length;
+const sharecount=roha.sharedFiles?.length||0;
 
-echo("user:",{nic:rohaNic,user:rohaUser,shares})
+echo("user:",{nic:rohaNic,user:rohaUser,sharecount})
 echo("use /help for latest and exit to quit");
 //echo("");
 
