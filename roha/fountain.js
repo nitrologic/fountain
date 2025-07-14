@@ -11,7 +11,7 @@ import {Anthropic } from "npm:@anthropic-ai/sdk";
 
 // Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
 
-// tools:[read_time submit_file read_image connect_slopnet read_history read_git]
+// tools:[/time submit_file read_image connect_slopnet read_history read_git]
 
 // mut:{name,hasForge,notes:[],errors:[],relays:0,cost:0,elapsed:0}
 
@@ -519,14 +519,35 @@ async function listModels(config){
 	return null;
 }
 
-// API support for openai deepseek gemini anthropic cohere 
+// API support for openai deepseek gemini anthropic cohere
+
+// Google Gemini API
+
+// connectGoogle, prepareGeminiContent
 
 // https://ai.google.dev/gemini-api/docs/text-generation
 
-// warning - expects original fountain payload
+// warning - original payloads only
+// todo: guard against multiHistory content
+
+function geminiTools(payload){
+	const functions=[];
+	for(const tool of payload.tools){
+//		geminiTools(payload)
+//		debug("[GEMINI] tool",tool);
+		if(tool.type=="function"){
+			const f=tool.function;
+			const p=f.parameters;
+			const d={name:f.name,description:f.description,parameters:{type:p.type,properties:p.properties,required:p.required}};
+//			debug("[GEMINI] function",d);
+			functions.push(d);
+		}
+	}
+	return {functionDeclarations:functions};
+}
 
 function prepareGeminiContent(payload){
-	const debugging=roha.config.debugging;	
+	const debugging=roha.config.debugging;
 	if(debugging) echo("[GEMINI] payload",payload);
 	const contents=[];
 	const sysparts=[];	// GenerateContentRequest systemInstruction content
@@ -559,22 +580,185 @@ function prepareGeminiContent(payload){
 				}
 				break;
 			case "assistant":{
+				if(item.tool_call_id){
+					// todo - geminifi the tool result
+				}else{
 					const ass={role:"model",parts:[{text}]}
 					contents.push(ass);
+				}
+				}
+				break;
+			case "tool":{
+					const toolCallResult = {
+						functionResponse: {
+							name: item.name,
+							response: JSON.parse(item.content)
+						}
+					};
+					contents.push({ role: "user", parts: [toolCallResult] });
 				}
 				break;
 		}
 	}
+
+	// TODO: enable disable tools
 	// TODO: tools and toolsconfig support
+
+	const tools=payload.tools?geminiTools(payload):[];
 
 	//system_instruction
 
-	const request={model:payload.model,system_instruction:{parts:sysparts},contents};
+	const request={model:payload.model,system_instruction:{parts:sysparts},contents,tools};
 
 	if(debugging) debug("[GEMINI] request",request);
 
 	return request;
 }
+
+let geminiCallCount=0;
+
+async function connectGoogle(account,config){
+	try{
+		const baseURL=config.url;
+		const apiKey=Deno.env.get(config.env);
+		if(!apiKey) return null;
+		const response=await fetch(baseURL+"/models?key="+apiKey);
+		if (!response.ok) {
+			console.info("connectGoogle response",response)
+			return null;
+		}
+		const models=await response.json();
+		const list=[];
+		for(const model of models.models){
+			list.push(model.name+"@"+account);
+		}
+		modelList.push(...list);
+		const genAI=new GoogleGenerativeAI(apiKey);
+		return {
+			genAI,
+			apiKey,
+			baseURL,
+			modelList:list,
+			models: {
+				list: async () => models, // Return cached models or fetch fresh
+			},
+			chat: {
+				completions: {
+					create: async (payload) => {
+//						config: { systemInstruction: setup, maxOutputTokens: 500,temperature: 0.1, }
+						const model=genAI.getGenerativeModel({model:payload.model});
+						const request=prepareGeminiContent(payload);
+						// TODO: hook up ,signal SingleRequestOptions parameter
+						// if(roha.config.debugging) debug("[GEMINI] generateContent",request);
+						const result=await model.generateContent(request);
+						if(roha.config.verbose) echo("[GEMINI] result",result);
+						const text=await result.response.text();
+						const usage=result.response.usageMetadata||{};
+						const choices = [];
+						choices.push({message:{content:text}});
+						const calls = result.response.functionCalls(); // Get Gemini's raw function calls
+						if(calls){
+							const toolCalls = calls.map((call,index)=>({id:"call_"+(geminiCallCount++),type:"function",function:{name:call.name,arguments:JSON.stringify(call.args)}}));
+							choices[0].message.tool_calls=toolCalls;
+							debug("[GEMINI] toolCalls",toolCalls);
+//							for(const call of toolCalls){
+//								debug("[GEMINI] toolCall",call);
+//								choices.push({tool_calls:call});
+//							}
+						}
+						return {
+							model:payload.model,
+							choices,
+							usage:{
+								prompt_tokens:usage.promptTokenCount,
+								completion_tokens:usage.candidatesTokenCount+usage.thoughtsTokenCount,
+								total_tokens:usage.totalTokenCount
+							}
+						};
+					},
+				},
+			},
+		};
+	} catch (error) {
+		console.error("connectGoogle error:",error.message);
+		return null;
+	}
+}
+
+/*
+[GEMINI] function calls [{"name":"read_time","args":{}}]
+
+[GEMINI] result
+{
+	"response":{
+		"candidates":[
+		{
+		"content":{
+			"parts":[
+{
+"functionCall":{
+"name":"read_time",
+"args":{}
+},
+"thoughtSignature":"CqQBAVSoXO7q9hO4KnLYj5znB7rbY3bQZH1geNa34BhJHMVmUw6DT7oyyH104UWZSlSTQsgKlRLIfPVExf4/lto3Jp4Xdy+ywEU9WnlWWIYPVW7vl+hJVeqJOLH4GoGMyxy59xz9KA6/t5OiaROo4wIpmsFwrj1AqnsmCgO/6UzTaShKTjJrF+7Gr6ybHUblF7YDMZh8kvB02L8Evax8K7uzq4BdwwM="}],"role":"model"},"finishReason":"STOP","index":0}],"usageMetadata":{"promptTokenCount":225,"candidatesTokenCount":10,"totalTokenCount":268,"promptTokensDetails":[{"modality":"TEXT","tokenCount":225}],"thoughtsTokenCount":33},"modelVersion":"models/gemini-2.5-flash-preview-05-20","responseId":"5J50aOOxDdfVz7IP37C3sQ8"}}
+
+
+
+ "tools": [
+      {
+        "functionDeclarations": [
+          {
+            "name": "schedule_meeting",
+            "description": "Schedules a meeting with specified attendees at a given time and date.",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "attendees": {
+                  "type": "array",
+                  "items": {"type": "string"},
+                  "description": "List of people attending the meeting."
+                },
+                "date": {
+                  "type": "string",
+                  "description": "Date of the meeting (e.g., '2024-07-29')"
+                },
+                "time": {
+                  "type": "string",
+                  "description": "Time of the meeting (e.g., '15:00')"
+                },
+                "topic": {
+                  "type": "string",
+                  "description": "The subject or topic of the meeting."
+                }
+              },
+              "required": ["attendees", "date", "time", "topic"]
+            }
+          }
+        ]
+
+
+"tools": [
+{
+"type": "function",
+"function": {
+"name": "read_time",
+"description": "Returns current local time",
+"parameters": {
+"type": "object",
+"properties": {},
+"required": []
+}
+}
+},
+
+
+
+
+*/
+
+
+
+
 //messages: [{ role: "user", content: "Hello, Claude" }],
 
 function anthropicSystem(payload){
@@ -692,62 +876,6 @@ async function connectAnthropic(account,config){
 	}
 }
 
-async function connectGoogle(account,config){
-	try{
-		const baseURL=config.url;
-		const apiKey=Deno.env.get(config.env);
-		if(!apiKey) return null;
-		const response=await fetch(baseURL+"/models?key="+apiKey);
-		if (!response.ok) {
-			console.info("connectGoogle response",response)
-			return null;
-		}
-		const models=await response.json();
-		const list=[];
-		for(const model of models.models){
-			list.push(model.name+"@"+account);
-		}
-		modelList.push(...list);
-		const genAI=new GoogleGenerativeAI(apiKey);
-		return {
-			genAI,
-			apiKey,
-			baseURL,
-			modelList:list,
-			models: {
-				list: async () => models, // Return cached models or fetch fresh
-			},
-			chat: {
-				completions: {
-					create: async (payload) => {
-//						config: { systemInstruction: setup, maxOutputTokens: 500,temperature: 0.1, }
-						const model=genAI.getGenerativeModel({model:payload.model});
-						const request=prepareGeminiContent(payload);
-						// TODO: hook up ,signal SingleRequestOptions parameter
-						// if(roha.config.debugging) debug("[GEMINI] generateContent",request);
-						const result=await model.generateContent(request);
-						if(roha.config.debugging) echo("[GEMINI] result",result);
-						const text=await result.response.text();
-						const usage=result.response.usageMetadata||{};
-						return {
-							model:payload.model,
-							choices:[{message:{content:text}}],
-							usage:{
-								prompt_tokens:usage.promptTokenCount,
-								completion_tokens:usage.candidatesTokenCount+usage.thoughtsTokenCount,
-								total_tokens:usage.totalTokenCount
-							}
-						};
-					},
-				},
-			},
-		};
-	} catch (error) {
-		console.error("connectGoogle error:",error.message);
-		return null;
-	}
-}
-
 function specCohereModel(model,account){
 	if(roha.config.debugging) echo("[cohere] spec",model);
 	const name=model.name+"@"+account;
@@ -846,15 +974,15 @@ async function connectCohere(account,config) {
 							//echo("[cohere] usage",usage);
 							echo("[cohere] headers",headers);
 						}
-						try{							
+						try{
 							const response=await fetch(url,{method:"POST",headers,body:JSON.stringify(content)});
 							if(roha.config.debugging){
 								echo("[cohere] response.ok",response.ok);
 							}
 							if (response.ok) {
-								//[cohere] json 
+								//[cohere] json
 								// {"id":"5b7e6d03-d348-40b8-8178-a60ad55d792e","message":{"role":"assistant","content":[{"type":"text","text":"Hello! How can I assist you today?"}]},
-								// "finish_reason":"COMPLETE","usage":{"billed_units":{"input_tokens":1,"output_tokens":9},"tokens":{"input_tokens":496,"output_tokens":11}}}   
+								// "finish_reason":"COMPLETE","usage":{"billed_units":{"input_tokens":1,"output_tokens":9},"tokens":{"input_tokens":496,"output_tokens":11}}}
 								const reply=[];
 								const json=await response.json();
 								const role=json.message.role;
@@ -2054,7 +2182,7 @@ async function processToolCalls(calls) {
 				content: JSON.stringify({error: e.message})
 			});
 			await log("processToolCalls failure");
-*/			
+*/
 			//`Tool call failed: ${tool.function.name} - ${e.message}`, "error");
 		}
 	}
@@ -2350,11 +2478,13 @@ async function relay(depth) {
 					type: "function",
 					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
 				}));
-				
+
 				const toolResults=await processToolCalls(calls);
 				for (const result of toolResults) {
 					// kimi does not like this
 					// todo: mess with role tool
+					// todo: google needs user not assistant 
+					// todo: use assistant and modify in gemini tools 
 					const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content:result.content};
 					debug("item",item);
 					if(verbose)echo("[RELAY] pushing tool result",item);
