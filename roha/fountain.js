@@ -709,7 +709,7 @@ async function connectGoogle(account,config){
 			genAI,
 			apiKey,
 			baseURL,
-			modelList,
+			modelList:list,
 			models: {
 				list: async () => models, // Return cached models or fetch fresh
 			},
@@ -826,7 +826,7 @@ async function connectCohere(account,config) {
 			apiKey,
 			headers,
 			baseURL,
-			modelList,
+			modelList:list,
 			models: {
 				list: async () => models, // Return cached models or fetch fresh
 			},
