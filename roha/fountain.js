@@ -271,7 +271,7 @@ function echoContent(content,wide,left,right){
 	const indent=" ".repeat(left);
 	let cursor=0;
 	while(cursor<content.length){
-		const line=content.substring(cursor,cursor+chars);
+		let line=content.substring(cursor,cursor+chars);
 		let n=line.indexOf("\n");
 		if(n==-1) n=line.lastIndexOf(" ");
 		if(n!=-1) line=line.substring(0,n+1);
@@ -1735,8 +1735,10 @@ async function onAccount(args){
 		for(let i=0;i<list.length;i++){
 			const key=list[i];
 			if(key in roha.lode){
+				const endpoint=rohaEndpoint[key];
+				const models=endpoint?.modelList||[];
 				const lode=roha.lode[key];
-				const count=lode.models.length;
+				const count=models?.length|0;
 				echo(i,key,count,price(lode.credit));
 			}else{
 				echo(i,key);
@@ -2038,7 +2040,7 @@ async function callCommand(command) {
 				return false; // Command not recognized
 		}
 	} catch (error) {
-		echo("[FOUNTAIN] callCommand error",command,error.message);
+		echo("[FOUNTAIN] callCommand error",command,error.message,error.stack);
 	}
 	increment("calls");
 	return dirty;
@@ -2165,7 +2167,8 @@ async function processToolCalls(calls) {
 		try {
 			const result=await onCall(tool);
 			results.push({
-				tool_call_id: tool.id,
+// testing kimi				
+//				tool_call_id: tool.id,
 				name: tool.function.name,
 				content: JSON.stringify(result || {success: false})
 			});
@@ -2538,6 +2541,11 @@ async function relay(depth) {
 			echo("[RELAY] Hugging Face Error depth",depth,line);
 			return spend;
 		}
+		const KimiK2400="Your request exceeded model token limit";
+		if(line.includes(KimiK2400)){
+			echo("[RELAY] Kimi K2 Error depth",depth,line);
+			return spend;
+		}
 		// error:{"type":"error","error":{"type":"rate_limit_error",
 		const err=(error.error&&error.error.error)?error.error.error:{};
 		if(err.type=="rate_limit_error"||err.type=="invalid_request_error"){
@@ -2647,6 +2655,10 @@ async function chat() {
 	}
 }
 
+const areSame = (arr1, arr2) => {
+  return arr1&&arr2&&(arr1.length === arr2.length) && (arr1.every(item => arr2.includes(item)));
+};
+
 // forge uses rohaPath to boot
 
 let forgeExists=await pathExists(forgePath);
@@ -2678,6 +2690,11 @@ for(const account in modelAccounts){
 		}
 		rohaEndpoint[account]=endpoint;
 		specAccount(account);
+		const lode=roha.lode[account];
+		if(!areSame(lode.modelList,endpoint.modelList)){
+			echo("[FOUNTAIN] modifying modelList");
+			lode.modelList=endpoint.modelList;
+		}
 //		echo("[FOUNTAIN] endpoint modelList",endpoint.modelList);
 	}else{
 		echo("[FOUNTAIN] Endpoint failure for account",account);
