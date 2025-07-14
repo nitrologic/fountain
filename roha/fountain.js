@@ -1061,16 +1061,10 @@ async function resetModel(modelname){
 	}
 	grokModel=modelname;
 	grokAccount=account;
-	const lode=roha.lode[provider];
-	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
 	const mut=mutName(modelname);
 	rohaModel=mut;
 	grokFunctions=true;
-	// was modelname
 	const content=mutsInclude+mut;
-	//+account.emoji+"("+balance+")";
-	// todo: enable title field
-//	rohaHistory.push({role:"system",content});
 	rohaHistory.push({role:"system",title:userdomain,content});
 	await aboutModel(modelname);
 }
