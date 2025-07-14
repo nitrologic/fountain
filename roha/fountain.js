@@ -493,7 +493,7 @@ function wordWrap(text,cols=terminalColumns){
 	const result=[];
 	let pos=0;
 	while(pos<text.length){
-		const line=text.substring(pos,pos+cols);
+		let line=text.substring(pos,pos+cols);
 		let n=line.length;
 		if(n==cols){
 			let i=line.lastIndexOf(" ",n);
@@ -1117,8 +1117,9 @@ async function connectAccount(account) {
 function specAccount(account){
 	const config=modelAccounts[account];
 	const endpoint=rohaEndpoint[account];
+	const models=endpoint.models||[];
 	if(!(account in roha.lode)){
-		roha.lode[account]={name: account,url: endpoint.baseURL,env: config.env,credit: 0};
+		roha.lode[account]={name:account,url:endpoint.baseURL,env:config.env,credit:0,models};
 	}
 	if(roha.config.debugging){
 		const lode=roha.lode[account];
@@ -1375,7 +1376,7 @@ function mdToAnsi(md) {
 		}
 	}
 	if(poplast){
-		result.popLast();
+		result.pop();
 	}
 	result.push(ansiReset);
 	return result.join("\n");
@@ -1721,21 +1722,22 @@ async function onAccount(args){
 			name=lodeList[name|0];
 		}
 		specAccount(name);
-		let lode=roha.lode[name];
+		const lode=roha.lode[name];
 		const balance=lode.credit||0;
 		echo("Adjust",lode.name,"balance",price(balance));
 		creditCommand=(credit)=>creditAccount(credit,name);
 		await writeForge();
 	}else{
-		let list=[];
-		for(let key in modelAccounts){
+		const list=[];
+		for(const key in modelAccounts){
 			list.push(key);
 		}
 		for(let i=0;i<list.length;i++){
-			let key=list[i];
+			const key=list[i];
 			if(key in roha.lode){
-				let lode=roha.lode[key];
-				echo(i,key,price(lode.credit));
+				const lode=roha.lode[key];
+				const count=lode.models.length;
+				echo(i,key,count,price(lode.credit));
 			}else{
 				echo(i,key);
 			}
@@ -2412,7 +2414,7 @@ async function relay(depth) {
 					const credit=lode.credit||0;
 					lode.credit=credit-spend;
 					if (verbose) {
-						let summary="{account:"+account+",spent:"+spend.toFixed(4)+",balance:"+(lode.credit).toFixed(4)+"}";
+						const summary="{account:"+account+",spent:"+spend.toFixed(4)+",balance:"+(lode.credit).toFixed(4)+"}";
 						echo(summary);
 					}
 				}else{
@@ -2464,15 +2466,12 @@ async function relay(depth) {
 			if (calls) {
 				const count=increment("calls");
 				if(verbose) echo("[RELAY] calls in progress",depth,count)
-
 				// TODO: map toolcalls index
-
 				const toolCalls=calls.map((tool, index) => ({
 					id: tool.id,
 					type: "function",
 					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
 				}));
-
 				const toolResults=await processToolCalls(calls);
 				for (const result of toolResults) {
 					// kimi does not like this
@@ -2484,15 +2483,12 @@ async function relay(depth) {
 					if(verbose)echo("[RELAY] pushing tool result",item);
 					rohaHistory.push(item);
 				}
-
 				// new behavior, message content comes after tool reports
-
 				const content=choice.message.content;
 				if(content){
 					if(verbose)echo("[RELAY] pushing asssistant model",depth,payload.model,mut,content);
 //					rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
 				}
-
 				// warning - here be dragons
 				const spent=await relay(depth+1); // Recursive call to process tool results
 				spend+=spent;
@@ -2567,7 +2563,7 @@ async function relay(depth) {
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)
 
-		echo("[FOUNTAIN] unhandled error",error.message);
+		echo("[FOUNTAIN] unhandled error",error.message,JSON.stringify(error.stack));
 
 		//		echo("unhandled error line",line);
 		if(verbose){
@@ -2676,8 +2672,8 @@ for(const account in modelAccounts){
 //	const t=performance.now();
 	const endpoint=await connectAccount(account);
 	if(endpoint) {
+		const count=endpoint.modelList?.length||0;		//",endpoint.modelList
 		if(roha.config.verbose){
-			const count=endpoint.modelList?.length||0;		//",endpoint.modelList
 			echo("[FOUNTAIN] Connected",account,count);
 		}
 		rohaEndpoint[account]=endpoint;
