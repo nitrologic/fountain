@@ -271,7 +271,7 @@ function echoContent(content,wide,left,right){
 	const indent=" ".repeat(left);
 	let cursor=0;
 	while(cursor<content.length){
-		let line=content.substring(cursor,cursor+chars);
+		const line=content.substring(cursor,cursor+chars);
 		let n=line.indexOf("\n");
 		if(n==-1) n=line.lastIndexOf(" ");
 		if(n!=-1) line=line.substring(0,n+1);
@@ -493,7 +493,7 @@ function wordWrap(text,cols=terminalColumns){
 	const result=[];
 	let pos=0;
 	while(pos<text.length){
-		let line=text.substring(pos,pos+cols);
+		const line=text.substring(pos,pos+cols);
 		let n=line.length;
 		if(n==cols){
 			let i=line.lastIndexOf(" ",n);
@@ -521,14 +521,9 @@ async function listModels(config){
 
 // API support for openai deepseek gemini anthropic cohere
 
-// Google Gemini API
-
-// connectGoogle, prepareGeminiContent
-
 // https://ai.google.dev/gemini-api/docs/text-generation
 
-// warning - original payloads only
-// todo: guard against multiHistory content
+// todo: guard against multiHistory content - original payloads only
 
 function geminiTools(payload){
 	const functions=[];
@@ -560,6 +555,19 @@ function prepareGeminiContent(payload){
 			case "system":
 				sysparts.push({text});
 				break;
+			case "assistant":{
+				if(item.tool_call_id){
+					// todo - geminifi the tool result
+					const ass={role:"user",parts:[{text}]}
+					debug("[GEMINI] ass",ass);
+//					contents.push(ass);
+				}else{
+					const ass={role:"model",parts:[{text}]}
+					debug("[GEMINI] ass",ass);
+//					contents.push(ass);
+				}
+				}
+				break;
 			case "user":{
 					if(debugging) debug("[GEMINI] prepare",item);
 					if(item.name=="blob"){
@@ -579,23 +587,9 @@ function prepareGeminiContent(payload){
 					}
 				}
 				break;
-			case "assistant":{
-				if(item.tool_call_id){
-					// todo - geminifi the tool result
-				}else{
-					const ass={role:"model",parts:[{text}]}
-					contents.push(ass);
-				}
-				}
-				break;
 			case "tool":{
-					const toolCallResult = {
-						functionResponse: {
-							name: item.name,
-							response: JSON.parse(item.content)
-						}
-					};
-					contents.push({ role: "user", parts: [toolCallResult] });
+					const functionResponse={name:item.name,response:JSON.parse(text)};
+					contents.push({role:"user",parts:[{functionResponse}] });
 				}
 				break;
 		}
@@ -1245,7 +1239,7 @@ async function saveHistory(name) {
 		let timestamp=Math.floor(Date.now()/1000).toString(16);
 		let filename=(name||"transmission-"+timestamp)+".json";
 		let filePath=resolve(forgePath,filename);
-		let line="Saved session "+filename+".";
+		const line="Saved session "+filename+".";
 //		rohaHistory.push({role:"system",title:"Fountain History Saved",content:line});
 		rohaHistory.push({role:"system",title:"saveHistory",content:line});
 		await Deno.writeTextFile(filePath,JSON.stringify(rohaHistory,null,"\t"));
@@ -1486,7 +1480,7 @@ async function promptForge(message) {
 					break;
 				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
 					bytes.push(0x0D, 0x0A);
-					let line=decoder.decode(promptBuffer);
+					const line=decoder.decode(promptBuffer);
 					let n=line.length;
 					if (n > 0) {
 						promptBuffer=promptBuffer.slice(n);
@@ -2532,7 +2526,7 @@ async function relay(depth) {
 			rohaHistory.push({role:"assistant",name,mut,emoji,content,elapsed,price:spend});
 		}
 	} catch (error) {
-		let line=error.message || String(error);
+		const line=error.message || String(error);
 		if(line.includes("maximum prompt length")){
 			echo("Oops, maximum prompt length exceeded.");
 			echo(cleanupRequired);
@@ -2589,8 +2583,8 @@ async function relay(depth) {
 async function chat() {
 	dance:
 	while (true) {
-		let lines=[];
-		let images=[];
+		const lines=[];
+		const images=[];
 //		echo(ansiMoveToEnd);
 		while (true) {
 			await flush();
