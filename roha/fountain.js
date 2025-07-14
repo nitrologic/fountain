@@ -15,7 +15,7 @@ import {Anthropic } from "npm:@anthropic-ai/sdk";
 
 // mut:{name,hasForge,notes:[],errors:[],relays:0,cost:0,elapsed:0}
 
-const fountainVersion="1.2.4";
+const fountainVersion="1.2.5";
 const fountainName="fountain "+fountainVersion;
 
 const rohaTitle=fountainName+" ⛲ ";
@@ -26,7 +26,7 @@ const clipLog=1800;
 
 const defaultModel="deepseek-chat@deepseek";
 
-const rohaMihi="Welcome to nitrologic's Slop Fountain a many:many user model research project.";
+const rohaMihi="Welcome to the fountain, a many:many user model research project.";
 
 const rohaGuide=[
 	"As a guest assistant language model please be mindful of others, courteous and professional.",
@@ -259,9 +259,11 @@ function popHistory(){
 	return sessionStack.pop();
 }
 function resetHistory(){
-	rohaHistory=[{role:"system",title:"fountain",name:fountainName,content:rohaMihi}];
+	rohaHistory=[{role:"system",title:fountainName,content:rohaMihi}];
 	const guide=rohaGuide.join(" ");
-	if (guide) rohaHistory=[{role:"system",title:"fountain",name:fountainName,content:guide}];
+	if (guide) {
+		rohaHistory=[{role:"system",title:fountainName,content:guide}];
+	}
 }
 
 function echoContent(content,wide,left,right){
@@ -1068,8 +1070,8 @@ async function resetModel(modelname){
 	const content=mutsInclude+mut;
 	//+account.emoji+"("+balance+")";
 	// todo: enable title field
-	rohaHistory.push({role:"system",content});
-//	rohaHistory.push({role:"system",title:userdomain,content});
+//	rohaHistory.push({role:"system",content});
+	rohaHistory.push({role:"system",title:userdomain,content});
 	await aboutModel(modelname);
 }
 
@@ -1121,7 +1123,7 @@ async function saveHistory(name) {
 		let filePath=resolve(forgePath,filename);
 		let line="Saved session "+filename+".";
 //		rohaHistory.push({role:"system",title:"Fountain History Saved",content:line});
-		rohaHistory.push({role:"system",content:line});
+		rohaHistory.push({role:"system",title:"saveHistory",content:line});
 		await Deno.writeTextFile(filePath,JSON.stringify(rohaHistory,null,"\t"));
 		echo(line);
 		roha.saves.push(filename);
@@ -2304,16 +2306,10 @@ async function relay(depth) {
 				
 				const toolResults=await processToolCalls(calls);
 				for (const result of toolResults) {
-
 					// kimi does not like this
-
 					// todo: mess with role tool
-
-					const item={role:"user",tool_call_id:result.tool_call_id,name:result.name,content:result.content};
-
+					const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content:result.content};
 					debug("item",item);
-
-
 					if(verbose)echo("[RELAY] pushing tool result",item);
 					rohaHistory.push(item);
 				}
