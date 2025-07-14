@@ -91,7 +91,7 @@ const emptyConfig={
 	showWelcome:false,
 	reasonoutloud:false,
 	tools:true,
-	commitonstart:true,
+	commitonstart:false,
 	saveonexit:false,
 	ansi:true,
 	verbose:false,
@@ -652,7 +652,8 @@ async function connectAnthropic(account,config){
 			sdk,
 			apiKey,
 			baseURL,
-			modelList: {
+			modelList:list,
+			models: {
 				list: async () => models, // Return cached models or fetch fresh
 			},
 			chat: {
@@ -708,6 +709,7 @@ async function connectGoogle(account,config){
 			genAI,
 			apiKey,
 			baseURL,
+			modelList,
 			models: {
 				list: async () => models, // Return cached models or fetch fresh
 			},
@@ -824,6 +826,7 @@ async function connectCohere(account,config) {
 			apiKey,
 			headers,
 			baseURL,
+			modelList,
 			models: {
 				list: async () => models, // Return cached models or fetch fresh
 			},
@@ -903,6 +906,7 @@ async function connectDeepSeek(account,config) {
 		return {
 			apiKey,
 			baseURL,
+			modelList:list,
 			models: {
 				list: async () => models, // Return cached models or fetch fresh
 			},
@@ -967,9 +971,6 @@ async function connectOpenAI(account,config) {
 }
 
 async function connectAccount(account) {
-	if(roha.config.verbose){
-		echo("[FOUNTAIN] Connecting", account);
-	}
 	const config=modelAccounts[account];
 	if (!config) return null;
 	const api= config.api;
@@ -2133,6 +2134,7 @@ function multiHistory(history){
 				}
 				break;
 			case "tool":
+				// TODO: tool result history is ok
 				list.push({...item});
 				//({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
 				break;
@@ -2305,7 +2307,12 @@ async function relay(depth) {
 
 					// kimi does not like this
 
-					const item={role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content};
+					// todo: mess with role tool
+
+					const item={role:"user",tool_call_id:result.tool_call_id,name:result.name,content:result.content};
+
+					debug("item",item);
+
 
 					if(verbose)echo("[RELAY] pushing tool result",item);
 					rohaHistory.push(item);
@@ -2502,11 +2509,14 @@ for(const account in modelAccounts){
 //	const t=performance.now();
 	const endpoint=await connectAccount(account);
 	if(endpoint) {
+		if(roha.config.verbose){
+			const count=endpoint.modelList?.length||0;		//",endpoint.modelList
+			echo("[FOUNTAIN] Connected",account,count);
+		}
 		rohaEndpoint[account]=endpoint;
 		specAccount(account);
-		echo("[FOUNTAIN] endpoint modelList",endpoint.modelList);
 	}else{
-		echo("endpoint failure for account",account);
+		echo("[FOUNTAIN] Endpoint failure for account",account);
 	}
 }
 
