@@ -652,7 +652,7 @@ async function connectAnthropic(account,config){
 			sdk,
 			apiKey,
 			baseURL,
-			models: {
+			modelList: {
 				list: async () => models, // Return cached models or fetch fresh
 			},
 			chat: {
@@ -951,6 +951,7 @@ async function connectOpenAI(account,config) {
 			specModel(model,account);
 		}
 		list.sort();
+		endpoint.modelList=list;
 		modelList=modelList.concat(list);
 		return endpoint;
 	}catch(error){
@@ -967,7 +968,7 @@ async function connectOpenAI(account,config) {
 
 async function connectAccount(account) {
 	if(roha.config.verbose){
-		echo("Connecting to account:", account);
+		echo("[FOUNTAIN] Connecting", account);
 	}
 	const config=modelAccounts[account];
 	if (!config) return null;
@@ -993,7 +994,7 @@ function specAccount(account){
 	if(!(account in roha.lode)){
 		roha.lode[account]={name: account,url: endpoint.baseURL,env: config.env,credit: 0};
 	}
-	if(roha.config.verbose){
+	if(roha.config.debugging){
 		const lode=roha.lode[account];
 		echo("[FOUNTAIN] specAccount",account,lode);//endpoint);//config);
 	}
@@ -2497,14 +2498,13 @@ echo(rohaTitle,"running from "+rohaPath);
 await flush();
 await readForge();
 const rohaEndpoint={};
-for(let account in modelAccounts){
+for(const account in modelAccounts){
 //	const t=performance.now();
-	let endpoint=await connectAccount(account);
+	const endpoint=await connectAccount(account);
 	if(endpoint) {
 		rohaEndpoint[account]=endpoint;
 		specAccount(account);
-//		let elapsed=performance.now()-t;
-//		elapsed.toFixed(2)+"s"
+		echo("[FOUNTAIN] endpoint modelList",endpoint.modelList);
 	}else{
 		echo("endpoint failure for account",account);
 	}

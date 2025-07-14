@@ -9,6 +9,10 @@
 		"purpose": "Advanced reasoning and problem-solving",
 		"press": "High-performance model for complex math, coding, and logical tasks."
 	},
+	"meta-llama/Meta-Llama-3.1-405B-Instruct@hyperbolic":{
+		"pricing": [0.55, 2.19],
+		"purpose": "405B Multimodal"
+	},
 	"Qwen/Qwen2.5-VL-72B-Instruct@hyperbolic":{
 		"pricing": [0.55, 0.14, 2.19],
 		"purpose": "72B Multimodal"

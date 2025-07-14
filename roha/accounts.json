@@ -38,7 +38,7 @@
 	},
 	"mistral": {
 		"env": "MISTRAL_API_KEY",
-		"url": "https:/api.mistral.ai/v1",
+		"url": "https://api.mistral.ai/v1",
 		"docs": "https://docs.mistral.ai/",
 		"api": "OpenAI",
 		"emoji": "⚡️",
@@ -74,23 +74,22 @@
 		"docs":"https://huggingface.co/docs",
 		"api": "OpenAI",
 		"emoji": "🤗🐈",
-		"locale": "en-US"		
+		"locale": "en-US"
 	},
 	"nscale":{
 		"env": "HUGGINGFACE_API_KEY",
 		"url": "https://router.huggingface.co/nscale/v1",
 		"docs":"https://huggingface.co/docs",
 		"api": "OpenAI",
-		"emoji": "🤗🦎",
-		"locale": "en-US"		
+		"emoji": "🤗🌊",
+		"locale": "en-US"
 	},
 	"hyperbolic":{
 		"env": "HUGGINGFACE_API_KEY",
 		"url": "https://router.huggingface.co/hyperbolic/v1",
 		"docs":"https://huggingface.co/docs",
 		"api": "OpenAI",
-		"emoji": "🤗🦎",
-		"locale": "en-US"		
-
+		"emoji": "🤗🐴",
+		"locale": "en-US"
 	}
 }
