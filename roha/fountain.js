@@ -41,7 +41,7 @@ const userdomain=Deno.env.get("USERDOMAIN").toLowerCase();
 const userregion = Intl.DateTimeFormat().resolvedOptions();	//locale,timeZone;
 
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
-const warnDirty="Please review modified files, validate integrity of all functions and arguments.";
+const warnDirty="Please review any modified source or media.";
 const exitMessage="Ending session.";
 
 const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
@@ -448,10 +448,12 @@ function echo(){
 }
 
 function debug(title,value){
-	print(title);
 	if(roha.config.verbose){
 		const json=JSON.stringify(value);
-		echo(json);
+		echo(title,json);
+	}else{
+		// was print
+		echo(title);
 	}
 }
 
@@ -519,41 +521,41 @@ async function listModels(config){
 
 // API support for openai deepseek gemini anthropic cohere 
 
-//https://ai.google.dev/gemini-api/docs/text-generation
+// https://ai.google.dev/gemini-api/docs/text-generation
+
+// warning - expects original fountain payload
 
 function prepareGeminiContent(payload){
+	const debugging=roha.config.debugging;	
+	if(debugging) echo("[GEMINI] payload",payload);
 	const contents=[];
 	const sysparts=[];	// GenerateContentRequest systemInstruction content
 	let blob={};
-	const debug=roha.config.debug;
-	
-	if(debug) echo("[GEMINI] payload",payload);
-
 	for(const item of payload.messages){
-		if(debug) echo("[GEMINI] item",item);
+		if(debugging) echo("[GEMINI] item",item);
 		const text=item.content;
-		if(debug) echo("[GEMINI] text",text);
+		if(debugging) echo("[GEMINI] text",text);
 		switch(item.role){
 			case "system":
 				sysparts.push({text});
 				break;
 			case "user":{
+					if(debugging) debug("[GEMINI] prepare",item);
 					if(item.name=="blob"){
-						blob=JSON.parse(content);
+						blob=JSON.parse(text);
 						continue;
 					}
+					// should this be title?
 					if(item.name=="image"){
-						const data=item.content;
-	//					contents.push({role:"user",parts:[{inlineData:{mimeType,data}}]});
+						const mimeType=blob.type;
+						const data=text;
+						debug("[GEMINI] image",mimeType);
+						contents.push({role:"user",parts:[{inlineData:{mimeType,data}}]});
 						continue;
 					}
-					//contents.push({text:message.content});
-					const parts=[];
-					for(const content of item.content){
-						parts.push({text:content.text});
+					if(item.content?.length){
+						contents.push({role:"user",parts:[{text:item.content}]});
 					}
-					contents.push({role:"user",parts});
-					//{role:"user",parts:[{text:content}]});
 				}
 				break;
 			case "assistant":{
@@ -569,7 +571,7 @@ function prepareGeminiContent(payload){
 
 	const request={model:payload.model,system_instruction:{parts:sysparts},contents};
 
-	if(debug) echo("[GEMINI] request",request);
+	if(debugging) debug("[GEMINI] request",request);
 
 	return request;
 }
@@ -722,8 +724,7 @@ async function connectGoogle(account,config){
 						const model=genAI.getGenerativeModel({model:payload.model});
 						const request=prepareGeminiContent(payload);
 						// TODO: hook up ,signal SingleRequestOptions parameter
-
-						if(roha.config.debugging) echo("[GEMINI] generateContent",request);
+						// if(roha.config.debugging) debug("[GEMINI] generateContent",request);
 						const result=await model.generateContent(request);
 						if(roha.config.debugging) echo("[GEMINI] result",result);
 						const text=await result.response.text();
@@ -1025,13 +1026,14 @@ async function aboutModel(modelname){
 	const id=(info?info.id:0)||0;
 	const strict=info?info.strict||false:false;
 	const multi=info?info.multi||false:false;
+	const inline=info?info.inline||false:false;
 	const modelProvider=modelname.split("@");
 	const provider=modelProvider[1];
 	const account=modelAccounts[provider];
 	const emoji=account.emoji||"";
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
-	echo("model",{id,mut,emoji,rate,modelname,balance,strict,multi});
+	echo("model:",{id,mut,emoji,rate,modelname,balance,strict,multi,inline});
 	if(roha.config.verbose && info){
 		if(info.purpose)echo("purpose:",info.purpose);
 		if(info.press)echo("press:",info.press);
@@ -1824,6 +1826,7 @@ async function callCommand(command) {
 							if(mutspec.hasForge) notes.push("𝆑");
 							if(rated&&rated.cold) notes.push("Cold");
 							if(rated&&rated.multi) notes.push("Multi");
+							if(rated&&rated.inline) notes.push("Inline");
 							if(rated&&rated.strict) notes.push("Strict");
 
 							if(rated || all){
@@ -2110,7 +2113,7 @@ function multiHistory(history){
 						continue;
 					}
 					if(item.name=="image"){
-						const type=blobType;
+						const type=blobType.toLocaleLowerCase();
 						if(type=="image/jpeg"||type=="image/png"){
 							const url="data:"+type+";base64,"+item.content;
 							const detail="high";
@@ -2139,6 +2142,58 @@ function multiHistory(history){
 	return list;
 }
 
+
+function inlineHistory(history){
+	const list=[];
+	let blobType="";
+	for(const _item of history){
+		const item={..._item};
+		switch(item.role){
+			case "system":
+				list.push({role:"system",content:item.content});
+				break;
+			case "assistant":
+				if(item.tool_calls){
+					list.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
+				}else{
+					list.push({role:"assistant",content:item.content});
+				}
+				break;
+			case "user":{
+					if(item.name=="blob"){
+						const blob=JSON.parse(item.content);
+						blobType=blob.type;
+						continue;
+					}
+					if(item.name=="image"){
+						const type=blobType.toLocaleLowerCase();
+						if(type=="image/jpeg"||type=="image/png"){
+							const contents=[{parts:[{inlineData:{mimeType:type,data:item.content}}]}];
+							list.push({role:"user",contents});
+							continue;
+						}
+
+					}
+					if(item.name=="content"){
+						// TODO: support other encodings
+					}
+					const name=item.name||"anon";
+					const text="["+name+"] "+item.content;
+					const content=[{type:"text",text}];
+					list.push({role:item.role,content});
+				}
+				break;
+			case "tool":
+				// TODO: tool result history is ok
+				list.push({...item});
+				//({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
+				break;
+		}
+	}
+	return list;
+}
+
+
 // fountain relay
 // returns spend
 // warning - tool_calls resolved with recursion
@@ -2149,6 +2204,7 @@ async function relay(depth) {
 	const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 	const strictMode=info&&info.strict;
 	const multiMode=info&&info.multi;
+	const inlineMode=info&&info.inline;
 	const modelAccount=grokModel.split("@");
 	const model=modelAccount[0];
 	const account=modelAccount[1];
@@ -2158,13 +2214,14 @@ async function relay(depth) {
 	let payload={model,mut};
 	let spend=0;
 	let elapsed=0;
-	if(verbose)echo("[RELAY] ",depth,mut);
+//	if(verbose)echo("[RELAY] ",depth,mut);
 	try {
 	// prepare payload
 		payload={model};
 		if(strictMode){
 			payload.messages=strictHistory(rohaHistory);
 		}else if(multiMode){
+			// warning - not compatible with google generative ai api
 			payload.messages=multiHistory(rohaHistory)
 		}else{
 			payload.messages=[...rohaHistory];
@@ -2185,15 +2242,13 @@ async function relay(depth) {
 			payload.config={thinkingConfig:{thinkingBudget:grokThink}};
 		}
 		if(roha.config.debugging){
-			echo(JSON.stringify(payload,null,"\t"));
+			echo("[RELAY] payload",JSON.stringify(payload,null,"\t"));
 		}
 
-	// relay completions
+		// [RELAY] endpoint chat completions.create
 
 		const completion=await endpoint.chat.completions.create(payload);
-		
 		elapsed=(performance.now()-now)/1000;
-
 		//	if(config.hasCache) payload.cache_tokens=true;
 
 		if (completion.model != model) {
@@ -2204,21 +2259,19 @@ async function relay(depth) {
 		if (verbose) {
 			// echo("relay completion:" + JSON.stringify(completion, null, "\t"));
 		}
-		let system=completion.system_fingerprint;
-		let usage=completion.usage;
-		let size=measure(rohaHistory);
-		let spent=[usage.prompt_tokens | 0,usage.completion_tokens | 0];
-		let emoji=config?(config.emoji||""):"";
+		// const system=completion.system_fingerprint;
+		const usage=completion.usage;
+		const size=measure(rohaHistory);
+		const spent=[usage.prompt_tokens | 0,usage.completion_tokens | 0];
+		const emoji=config?(config.emoji||""):"";
 		grokUsage += spent[0]+spent[1];
-//		echo("[relay] debugging spend 0",grokModel,usage);
-
-		// todo roha.mut[] -> roha.mutspec[]
-
+		// echo("[relay] debugging spend 0",grokModel,usage);
+		// todo: roha.mut[] -> roha.mutspec[]
 		if(grokModel in roha.mut){
 			const mutspec=roha.mut[grokModel];
 			mutspec.relays=(mutspec.relays || 0) + 1;
 			mutspec.elapsed=(mutspec.elapsed || 0) + elapsed;
-//			echo("debugging spend 1",grokModel);
+			// echo("debugging spend 1",grokModel);
 			if(grokModel in modelSpecs){
 				const rate=modelSpecs[grokModel].pricing||[0,0];
 				const tokenRate=rate[0];
@@ -2316,7 +2369,7 @@ async function relay(depth) {
 //					rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
 				}
 
-				// TODO: here be dragons
+				// warning - here be dragons
 				const spent=await relay(depth+1); // Recursive call to process tool results
 				spend+=spent;
 			}

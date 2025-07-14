@@ -47,7 +47,8 @@
 	},
 	"qwen2-7b-instruct@alibaba":{
 		"pricing":[0.175,0.70],
-		"purpose":"Open source Qwen2 model"
+		"multi":true,
+		"purpose":"Open source Qwen2 model, failing multi image test"
 	},
 	"o3-2025-04-16@openai":{
 		"pricing":[2.00, 0.50, 8.00],
@@ -109,7 +110,6 @@
 	},
 	"models/gemini-2.5-flash-preview-05-20@gemini":{
 		"pricing":[0.15,0.15,0.60,3.50],
-		"multi":true,
 		"purpose":"Adaptive thinking, cost efficiency.",
 		"press":"The best price-to-performance ratio.",
 		"reality":"testing now, thinking budget say what now?"
