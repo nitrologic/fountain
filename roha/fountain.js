@@ -2515,6 +2515,7 @@ for(const account in modelAccounts){
 		}
 		rohaEndpoint[account]=endpoint;
 		specAccount(account);
+//		echo("[FOUNTAIN] endpoint modelList",endpoint.modelList);
 	}else{
 		echo("[FOUNTAIN] Endpoint failure for account",account);
 	}
