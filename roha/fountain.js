@@ -11,9 +11,22 @@ import {Anthropic } from "npm:@anthropic-ai/sdk";
 
 // Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
 
-// tools:[/time submit_file read_image connect_slopnet read_history read_git]
-
+// read_time fetch_file submit_file tag_slop
+//
+// fetch and submit file base is forge/
+//
 // mut:{name,hasForge,notes:[],errors:[],relays:0,cost:0,elapsed:0}
+
+// fountain.js relay 
+// with account config api and model info
+// sends payload 
+// for {model,mut} 
+// grokFunctions {tools}
+// !info.cold {temperature} 
+// info.max_tokens {max_tokens}   
+// grokThinking {config:{thinkingConfig:{thinkingBudget:grokThink}}}
+// logs response
+//
 
 const fountainVersion="1.2.5";
 const fountainName="fountain "+fountainVersion;
@@ -41,11 +54,14 @@ const userdomain=Deno.env.get("USERDOMAIN").toLowerCase();
 const userregion = Intl.DateTimeFormat().resolvedOptions();	//locale,timeZone;
 
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
-const warnDirty="Please review any modified source or media.";
+const warnDirty="Feel free to comment if shared files are new or different.";
 const exitMessage="Ending session.";
 
-const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# "
+const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# ";
+const rule50= "--------------------------------------------------";
+
 const pageBreak=break50+break50+break50;
+const pageRule=rule50+rule50+rule50;
 
 const slowMillis=25;
 const MaxFileSize=512*1024;
@@ -360,8 +376,8 @@ const rohaTools=[{
 },{
 	type: "function",
 	function:{
-		name: "fetch_image",
-		description: "Request an image to analyse",
+		name: "fetch_file",
+		description: "Request a file for analysis",
 		parameters: {
 			type: "object",
 			properties: {
@@ -373,13 +389,13 @@ const rohaTools=[{
 },{
 	type: "function",
 	function: {
-		name: "annotate_forge",
-		description: "Set description of any object",
+		name: "tag_slop",
+		description: "Attach description to code tag and share Fountain objects",
 		parameters: {
 			type: "object",
 			properties: {
 				name: { type: "string" },
-				type: { type:"string" , description:"forge category", enum:["code", "tag", "share"]},
+				type: { type:"string" , description:"forge category", enum:["code","session","share","lode"]},
 				description: { type: "string" }
 			},
 			required: ["name","type","description"]
@@ -1214,20 +1230,20 @@ function dropShares(){
 function listShare(){
 	const list=[];
 	let count=0;
-	let sorted=roha.sharedFiles.slice();
+	const sorted=roha.sharedFiles.slice();
 	sorted.sort((a, b) => b.size - a.size);
 	for (const share of sorted) {
-		let shared=(rohaShares.includes(share.path))?"*":"";
-		let tags="["+rohaTitle+" "+share.tag+"]";
-		let info=(share.description)?share.description:"";
-		echo((count++),share.path,share.size,shared,tags,info);
+		const shared=(rohaShares.includes(share.path))?"*":"";
+		const tags="["+rohaTitle+" "+share.tag+"]";
+		const detail=(share.description)?share.description:"";
+		echo((count++),share.path,share.size,shared,tags,detail);
 		list.push(share.id);
 	}
 	shareList=list;
 }
 
 async function listSaves(){
-	let saves=roha.saves||[];
+	const saves=roha.saves||[];
 	for(let i=0;i<saves.length;i++){
 		const path="forge/"+saves[i];
 		const length=await fileLength(path)||"-";
@@ -1237,9 +1253,9 @@ async function listSaves(){
 
 async function saveHistory(name) {
 	try {
-		let timestamp=Math.floor(Date.now()/1000).toString(16);
-		let filename=(name||"transmission-"+timestamp)+".json";
-		let filePath=resolve(forgePath,filename);
+		const timestamp=Math.floor(Date.now()/1000).toString(16);
+		const filename=(name||"transmission-"+timestamp)+".json";
+		const filePath=resolve(forgePath,filename);
 		const line="Saved session "+filename+".";
 //		rohaHistory.push({role:"system",title:"Fountain History Saved",content:line});
 		rohaHistory.push({role:"system",title:"saveHistory",content:line});
@@ -1950,7 +1966,7 @@ async function callCommand(command) {
 							let rated=name in modelSpecs?modelSpecs[name]:null;
 
 							if(mutspec.hasForge) notes.push("𝆑");
-							if(rated&&rated.cold) notes.push("Cold");
+							if(rated&&rated.cold) notes.push("🥶");
 							if(rated&&rated.multi) notes.push("Multi");
 							if(rated&&rated.inline) notes.push("Inline");
 							if(rated&&rated.strict) notes.push("Strict");
@@ -2090,10 +2106,10 @@ async function onCall(toolCall) {
 			roha.forge.push({name,path:filePath,type:args.contentType});
 			return { success: true, path: filePath };
 		}
-		case "fetch_image":{
+		case "fetch_file":{
 			const { fileName }=JSON.parse(toolCall.function.arguments || "{}");
-			echo("Fetching image:", fileName);
-			let path="media/"+fileName;
+			echo("Fetching file:", fileName);
+			const path="forge/"+fileName;
 			const data=await Deno.readFile(path);
 			const base64=encodeBase64(data);
 			return { success: true, path: fileName, Base64:base64 };
@@ -2376,7 +2392,8 @@ async function relay(depth) {
 
 		const completion=await endpoint.chat.completions.create(payload);
 		elapsed=(performance.now()-now)/1000;
-		//	if(config.hasCache) payload.cache_tokens=true;
+		
+		// if(config.hasCache) payload.cache_tokens=true;
 
 		if (completion.model != model) {
 			echo("[RELAY] model reset",completion.model||"???",model);
@@ -2455,7 +2472,7 @@ async function relay(depth) {
 		if(echostatus){
 			const temp=grokTemperature.toFixed(1)+"°";
 			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
-			const status="["+modelSpec.join(" ")+"]";
+			const status=pageRule+"\n["+modelSpec.join(" ")+"]";
 			if (roha.config.ansi)
 				echo(ansiDashBlock+status+ansiReset);
 			else
@@ -2554,9 +2571,10 @@ async function relay(depth) {
 			return spend;
 		}
 
-		//unhandled error line: 400 Unrecognized request argument supplied: cache_tokens
+		// Unrecognized request argument supplied: cache_tokens
+		const NoFunctions400="does not support Function Calling";
 		if(grokFunctions){
-			if(line.includes("does not support Function Calling")){
+			if(line.includes(NoFunctions400)){
 				if(grokModel in roha.mut) {
 					echo("mut",grokModel,"noFunctions",true);
 					roha.mut[grokModel].noFunctions=true;

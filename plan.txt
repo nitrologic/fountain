@@ -1,3 +1,4 @@
+- md three hyphen rules and pipe |||---||| tables
 - investigate embed api for cohere image data
 - investigate mistral ocr
 - pass image meta data 

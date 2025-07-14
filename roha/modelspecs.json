@@ -203,26 +203,31 @@
 		"pricing":[0.50,2.0],
 		"purpose":"canadian 128K context window"
 	},
-	"moonshot-v1-128k-vision-preview@moonshot":{
-		"pricing":[0.20,0.15,2.0],
-		"multi":true,
-		"purpose":"chinese 128K context window"
+	"moonshot-v1-128k-vision-preview@moonshot": {
+		"pricing": [0.20,0.15,2.0],
+		"multi": true,
+		"purpose": "High-res image recognition and analysis, 128K context window",
+		"press": "High-resolution image analysis for detailed recognition tasks."
 	},
-	"moonshot-v1-8k@moonshot":{
-		"pricing":[0.20,0.15,2.0],
-		"purpose":"chinese 8K context window"
+	"moonshot-v1-8k@moonshot": {
+		"pricing": [0.20,0.15,2.0],
+		"purpose": "Efficient real-time text processing, 8K context window",
+		"press": "Designed for efficient, real-time text processing."
 	},
-	"moonshot-v1-32k@moonshot":{
-		"pricing":[1.00,0.15,3.0],
-		"purpose":"chinese 32K context window"
+	"moonshot-v1-32k@moonshot": {
+		"pricing": [1.00,0.15,3.0],
+		"purpose": "Advanced text analysis, 32K context window",
+		"press": "Balancing performance and context for advanced text analysis."
 	},
-	"moonshot-v1-128k@moonshot":{
-		"pricing":[2.00,0.15,5.0],
-		"purpose":"chinese 128K context window"
+	"moonshot-v1-128k@moonshot": {
+		"pricing": [2.00,0.15,5.0],
+		"purpose": "Comprehensive text understanding, 128K context window",
+		"press": "Ideal for deep learning applications requiring comprehensive text understanding."
 	},
-	"kimi-k2-0711-preview@moonshot":{
-		"pricing":[0.60,0.15,2.5],
-		"purpose":"chinese MoE 128K context window"
+	"kimi-k2-0711-preview@moonshot": {
+		"pricing": [0.60,0.15,2.5],
+		"purpose": "Mixture of Experts model, 128K context window",
+		"press": "Enhanced accuracy through a Mixture of Experts approach."
 	},
 	"meta-llama/Llama-3.1-8B-Instruct@nscale":{
 		"pricing":[0.60,0.15,2.5],
