@@ -8,7 +8,9 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import {Anthropic } from "npm:@anthropic-ai/sdk";
-import { stringify } from "https://deno.land/x/openai@v4.69.0/internal/qs/stringify.ts";
+//import { stringify } from "https://deno.land/x/openai@v4.69.0/internal/qs/stringify.ts";
+//import { CHAR_0 } from "https://deno.land/std@0.224.0/path/_common/constants.ts";
+//import wcwidth from "npm:wcwidth";
 
 // Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
 
@@ -408,6 +410,47 @@ const rohaTools=[{
 
 // fountain utility functions
 
+// Define the ranges for single-width characters (including some emojis and symbols)
+const singleWidthRanges = [
+  [0x269B], // ⚛ Atom symbol
+  [0x1F3FB, 0x1F3FF], // Emoji modifiers
+  [0x1F9B0, 0x1F9B3], // Skin tone modifiers
+  [0x25FE, 0x25FF], // Geometric shapes
+];
+
+
+const isDoubleWidth = (() => {
+	const ranges = [
+		[0x1100, 0x115F],
+		[0x2329, 0x232A],
+		[0x2E80, 0x303E],
+		[0x3040, 0xA4CF],
+		[0xAC00, 0xD7A3],
+		[0xF900, 0xFAFF],
+		[0xFE10, 0xFE19],
+		[0xFE30, 0xFE6F],
+		[0xFF00, 0xFF60],
+		[0xFFE0, 0xFFE6],
+		[0x1F000, 0x1F02F],
+		[0x1F0A0, 0x1F0FF],
+		[0x1F100, 0x1F1FF],
+		[0x1F300, 0x1F9FF],
+		[0x20000, 0x2FFFD],
+		[0x30000, 0x3FFFD]
+	];
+	return cp =>
+		ranges.some(([s, e]) => cp >= s && cp <= e);
+})();
+
+function stringWidth(str) {
+	let w = 0;
+	for (const ch of str) {
+		w += isDoubleWidth(ch.codePointAt(0)) ? 2 : 1;
+	}
+	return w;
+}
+
+
 async function fileLength(path) {
 	const stat=await Deno.stat(path);
 	return stat.size;
@@ -471,7 +514,7 @@ function echo(){
 
 function echo_row(...cells){
 	const row = cells.map(String).join('|');
-    markdownBuffer.push(`|${row}|`);
+	markdownBuffer.push(`|${row}|`);
 }
 
 function debug(title,value){
@@ -738,36 +781,36 @@ async function connectGoogle(account,config){
 
 
  "tools": [
-      {
-        "functionDeclarations": [
-          {
-            "name": "schedule_meeting",
-            "description": "Schedules a meeting with specified attendees at a given time and date.",
-            "parameters": {
-              "type": "object",
-              "properties": {
-                "attendees": {
-                  "type": "array",
-                  "items": {"type": "string"},
-                  "description": "List of people attending the meeting."
-                },
-                "date": {
-                  "type": "string",
-                  "description": "Date of the meeting (e.g., '2024-07-29')"
-                },
-                "time": {
-                  "type": "string",
-                  "description": "Time of the meeting (e.g., '15:00')"
-                },
-                "topic": {
-                  "type": "string",
-                  "description": "The subject or topic of the meeting."
-                }
-              },
-              "required": ["attendees", "date", "time", "topic"]
-            }
-          }
-        ]
+	  {
+		"functionDeclarations": [
+		  {
+			"name": "schedule_meeting",
+			"description": "Schedules a meeting with specified attendees at a given time and date.",
+			"parameters": {
+			  "type": "object",
+			  "properties": {
+				"attendees": {
+				  "type": "array",
+				  "items": {"type": "string"},
+				  "description": "List of people attending the meeting."
+				},
+				"date": {
+				  "type": "string",
+				  "description": "Date of the meeting (e.g., '2024-07-29')"
+				},
+				"time": {
+				  "type": "string",
+				  "description": "Time of the meeting (e.g., '15:00')"
+				},
+				"topic": {
+				  "type": "string",
+				  "description": "The subject or topic of the meeting."
+				}
+			  },
+			  "required": ["attendees", "date", "time", "topic"]
+			}
+		  }
+		]
 
 
 "tools": [
@@ -1195,7 +1238,11 @@ async function aboutModel(modelname){
 	const emoji=account.emoji||"";
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
-	echo("model:",{id,mut,emoji,rate,modelname,balance,strict,multi,inline});
+	if(roha.config.verbose){
+		echo("model:",{id,mut,emoji,rate,modelname,balance,strict,multi,inline});
+	}else{
+		echo("model:",{mut,emoji,rate,balance});
+	}
 	if(roha.config.verbose && info){
 		if(info.purpose)echo("purpose:",info.purpose);
 		if(info.press)echo("press:",info.press);
@@ -1401,8 +1448,12 @@ function boxCells(widths,cells){
 	for(let i=0;i<widths.length;i++){
 		const w=widths[i].length;
 		// todo: clip string for tables or go multi line cells
-		const spaced=(" "+cells[i]||"").padEnd(w," ");
-		bits.push(spaced);
+		// todo: measure unicode emoji has 2x spacing
+		const cell=" "+cells[i]||"";
+		const wide=stringWidth(cell);
+		const pads=w-wide;
+		const padding=(pads>0)?" ".repeat(pads):"";
+		bits.push(cell+padding);
 	}
 	return v+bits.join(v)+v;
 }
@@ -2104,8 +2155,8 @@ async function callCommand(command) {
 							await writeForge();
 						}
 					}else{
-						echo_row("id ","*","name                   ","use ","price               ","","");
-						echo_row("---","-","-----------------------","----","--------------------","----","------------");
+						echo_row("id","*","name","use","price","","");
+						echo_row("-----","---","-----------------------","----","--------------------","------","-----------------");
 						const all=(name && name=="all");
 						for(let i=0;i<modelList.length;i++){
 							const modelname=modelList[i];
@@ -2115,7 +2166,7 @@ async function callCommand(command) {
 							const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 							mutspec.name=modelname;
 							const notes=[...mutspec.notes];
-							if(mutspec.hasForge) notes.push("🖇");
+							if(mutspec.hasForge) notes.push("🐸");
 							const rated=modelname in modelSpecs?modelSpecs[modelname]:{};
 							if(rated.cold) notes.push("🧊");
 							if(rated.multi) notes.push("🫐");
@@ -2132,7 +2183,7 @@ async function callCommand(command) {
 								const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
 								// todo: verbose use modelname
 //								echo(i,attr,emoji,mut,"{"+notes.join(",")+"}",mutspec.relays|0,pricing);
-								echo_row(i,attr,mut,mutspec.relays|0,pricing,emoji,notes.join(","));
+								echo_row(i,attr,mut,mutspec.relays|0,pricing,emoji,notes.join(" "));
 							}
 						}
 						listCommand="model";
@@ -2421,6 +2472,7 @@ function multiHistory(history){
 							const detail="high";
 							const content=[{type:"image_url",image_url:{url,detail}}];
 							list.push({role:item.role,content});
+							echo("[MULTI] image_url content attached to payload");
 							continue;
 						}
 
