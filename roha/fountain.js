@@ -8,6 +8,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import {Anthropic } from "npm:@anthropic-ai/sdk";
+import { stringify } from "https://deno.land/x/openai@v4.69.0/internal/qs/stringify.ts";
 
 // Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
 
@@ -17,13 +18,13 @@ import {Anthropic } from "npm:@anthropic-ai/sdk";
 //
 // mut:{name,hasForge,notes:[],errors:[],relays:0,cost:0,elapsed:0}
 
-// fountain.js relay 
+// fountain.js relay
 // with account config api and model info
-// sends payload 
-// for {model,mut} 
+// sends payload
+// for {model,mut}
 // grokFunctions {tools}
-// !info.cold {temperature} 
-// info.max_tokens {max_tokens}   
+// !info.cold {temperature}
+// info.max_tokens {max_tokens}
 // grokThinking {config:{thinkingConfig:{thinkingBudget:grokThink}}}
 // logs response
 //
@@ -463,6 +464,11 @@ function echo(){
 	outputBuffer.push(lines.join(" "));
 }
 
+function echo_row(...cells){
+	const row = cells.map(String).join('|');
+    outputBuffer.push(`|${row}|`);
+}
+
 function debug(title,value){
 	if(roha.config.verbose){
 		const json=JSON.stringify(value);
@@ -497,8 +503,14 @@ async function flush() {
 		await sleep(delay)
 	}
 	printBuffer=[];
+
+	const lines=outputBuffer.join("\n");
+	const ansi=mdToAnsi(lines);
+	console.log(ansi);
+
 	for (const line of outputBuffer) {
-		console.info(line);
+//		console.info(line);
+		// TODO: check flag
 		await log(line,"roha");
 		await sleep(delay);
 	}
@@ -1325,7 +1337,7 @@ const ansiReset="\x1b[0m";
 const ansiCodeTitle=ansiTealBG+ansiVividOrange;
 const ansiCodeBlock=ansiGreenBG+ansiWhite;
 const ansiReplyBlock=ansiGreyBG;
-const ansiDashBlock=ansiGreyBG;
+const ansiStatusBlock=ansiGreyBG;
 
 const ansiPop="\x1b[1;36m";
 
@@ -1340,10 +1352,15 @@ const restoreScroll=new Uint8Array([27, 91, 114]);
 const rohaPrompt=">";
 let colorCycle=0;
 
+// warning - do not call echo from here
+
 function mdToAnsi(md) {
 	const broken=roha.config.broken;
 	const lines=md.split("\n");
 	let inCode=false;
+	let inTable=false;
+	let headings=[];
+	let widths=[];
 	const result=broken?[ansiReplyBlock]:[];
 	let poplast=false;
 	for (let line of lines) {
@@ -1365,6 +1382,44 @@ function mdToAnsi(md) {
 				// rules
 				if(line.startsWith("---")||line.startsWith("***")||line.startsWith("___")){
 					line=pageBreak.substring(0,terminalColumns-1);
+				}
+				if(line.startsWith("|")){
+					const split=line.split("|");
+					const splits=split.length;
+					if(splits>2){
+						const trim=split.slice(1,splits);
+						if(!inTable) {
+							inTable=true;
+							headings=trim;
+						}else{
+							const spacer=(trim[0]||"").startsWith("-");
+							if(spacer){
+								widths=trim;
+								let wide=0;
+								for(let i=0;i<widths.length;i++){
+									const w=widths[i].length;
+									wide+=w+1;
+								}
+								line="".padEnd(wide,"@");
+							}else{
+								if(widths){
+									const cells=[];
+									for(let i=0;i<widths.length;i++){
+										const w=widths[i].length;
+										const spaced=(trim[i]||"").padEnd(w," ");
+										cells.push(spaced);
+									}
+									line=cells.join("");
+								}
+							}
+						}
+					}
+				}else{
+					if(inTable) {
+						inTable=false;
+						headings=[];
+						widths=[];
+					}
 				}
 				// headershow
 				const header=line.match(/^#+/);
@@ -1748,6 +1803,8 @@ async function onAccount(args){
 		for(const key in modelAccounts){
 			list.push(key);
 		}
+		echo_row("id","name","count","price");
+		echo_row("----","-------------","----","------");
 		for(let i=0;i<list.length;i++){
 			const key=list[i];
 			if(key in roha.lode){
@@ -1755,9 +1812,9 @@ async function onAccount(args){
 				const models=endpoint?.modelList||[];
 				const lode=roha.lode[key];
 				const count=models?.length|0;
-				echo(i,key,count,price(lode.credit));
+				echo_row(i,key,count,price(lode.credit));
 			}else{
-				echo(i,key);
+				echo_row(i,key);
 			}
 			lodeList=list;
 			listCommand="credit";
@@ -1956,24 +2013,34 @@ async function callCommand(command) {
 							await writeForge();
 						}
 					}else{
-						let all=name && name=="all";
+						echo_row("id","💫","emoji","name","notes","relays","pricing");
+						echo_row("---","--","----","---------","------","------","-------");
+						const all=(name && name=="all");
 						for(let i=0;i<modelList.length;i++){
-							let name=modelList[i];
-							let attr=(name==grokModel)?"*":" ";
-							let mutspec=(name in roha.mut)?roha.mut[name]:emptyMUT;
-							mutspec.name=name;
-							let notes=[...mutspec.notes];
-							let rated=name in modelSpecs?modelSpecs[name]:null;
-
-							if(mutspec.hasForge) notes.push("𝆑");
-							if(rated&&rated.cold) notes.push("🥶");
-							if(rated&&rated.multi) notes.push("Multi");
-							if(rated&&rated.inline) notes.push("Inline");
-							if(rated&&rated.strict) notes.push("Strict");
-
-							if(rated || all){
-								let pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
-								echo(i,attr,name,"{"+notes.join(",")+"}",mutspec.relays|0,pricing);
+							const modelname=modelList[i];
+							const attr=(modelname==grokModel)?"⭐":" ";
+							// mutspec from roha.mut
+							const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
+							mutspec.name=modelname;
+							const notes=[...mutspec.notes];
+							if(mutspec.hasForge) notes.push("🖇");
+							const rated=modelname in modelSpecs?modelSpecs[modelname]:{};
+							if(rated.cold) notes.push("🧊");
+							if(rated.multi) notes.push("🫐");
+							if(rated.inline) notes.push("Inline");
+							if(rated.strict) notes.push("🪨");
+							const priced=rated.pricing;
+							// account from modelProvder
+							const modelProvider=modelname.split("@");
+							const provider=modelProvider[1];
+							const account=modelAccounts[provider];
+							const emoji=account.emoji||"";
+							const mut=mutName(modelname);
+							if(priced || all){
+								const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
+								// todo: verbose use modelname
+//								echo(i,attr,emoji,mut,"{"+notes.join(",")+"}",mutspec.relays|0,pricing);
+								echo_row(i,attr,emoji,mut,"{"+notes.join(",")+"}",mutspec.relays|0,pricing);
 							}
 						}
 						listCommand="model";
@@ -2183,7 +2250,7 @@ async function processToolCalls(calls) {
 		try {
 			const result=await onCall(tool);
 			results.push({
-// testing kimi				
+// testing kimi
 //				tool_call_id: tool.id,
 				name: tool.function.name,
 				content: JSON.stringify(result || {success: false})
@@ -2392,7 +2459,7 @@ async function relay(depth) {
 
 		const completion=await endpoint.chat.completions.create(payload);
 		elapsed=(performance.now()-now)/1000;
-		
+
 		// if(config.hasCache) payload.cache_tokens=true;
 
 		if (completion.model != model) {
@@ -2468,13 +2535,14 @@ async function relay(depth) {
 			cost="$"+spend.toFixed(3);
 		}
 
+		// ansiStatusBlock status bar
 		const echostatus=(depth==0);
 		if(echostatus){
 			const temp=grokTemperature.toFixed(1)+"°";
 			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
-			const status=pageRule+"\n["+modelSpec.join(" ")+"]";
+			const status="\t["+modelSpec.join(" ")+"]";
 			if (roha.config.ansi)
-				echo(ansiDashBlock+status+ansiReset);
+				echo(ansiStatusBlock+status+ansiReset);
 			else
 				echo(status);
 		}
@@ -2496,8 +2564,8 @@ async function relay(depth) {
 				for (const result of toolResults) {
 					// kimi does not like this
 					// todo: mess with role tool
-					// todo: google needs user not assistant 
-					// todo: use assistant and modify in gemini tools 
+					// todo: google needs user not assistant
+					// todo: use assistant and modify in gemini tools
 					const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content:result.content};
 					debug("item",item);
 					if(verbose)echo("[RELAY] pushing tool result",item);

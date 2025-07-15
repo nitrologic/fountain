@@ -1,9 +1,11 @@
+- test tools read_time submit_file read_file
+- moonshot-a anthropic url api.moonshot.ai/anthropic
+- drop individual share by index
 - md three hyphen rules and pipe |||---||| tables
 - investigate embed api for cohere image data
 - investigate mistral ocr
 - pass image meta data 
 - slopnet telnet connections
-- tools read_time submit_file read_image connect_slopnet read_history read_git
 - slopstudio web connections
 - explore vector_store and fine tuning of models
 - support DeepSeek user balance https://api-docs.deepseek.com/api/get-user-balance
