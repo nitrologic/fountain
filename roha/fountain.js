@@ -58,8 +58,10 @@ const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Feel free to comment if shared files are new or different.";
 const exitMessage="Ending session.";
 
-const break50="#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+#+# #+# ";
-const rule50= "--------------------------------------------------";
+const boxChars=["┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
+
+const break50="─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴";
+const rule50= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
 
 const pageBreak=break50+break50+break50;
 const pageRule=rule50+rule50+rule50;
@@ -437,6 +439,7 @@ function measure(o){
 
 let outputBuffer=[];
 let printBuffer=[];
+let markdownBuffer=[];
 
 function print(){
 	const args=arguments.length?Array.from(arguments):[];
@@ -454,6 +457,8 @@ function toString(arg){
 	return String(arg);
 }
 
+// takes both markdown and plain
+
 function echo(){
 	const args=arguments.length?Array.from(arguments):[];
 	const lines=[];
@@ -466,7 +471,7 @@ function echo(){
 
 function echo_row(...cells){
 	const row = cells.map(String).join('|');
-    outputBuffer.push(`|${row}|`);
+    markdownBuffer.push(`|${row}|`);
 }
 
 function debug(title,value){
@@ -504,13 +509,19 @@ async function flush() {
 	}
 	printBuffer=[];
 
-	const lines=outputBuffer.join("\n");
-	const ansi=mdToAnsi(lines);
-	console.log(ansi);
+	const md=markdownBuffer.join("\n");
+	if(md.length){
+		if (roha.config.ansi) {
+			const ansi=mdToAnsi(md);
+			console.log(ansi+"🌟");
+		}else{
+			if(md.length) console.log(md);
+		}
+	}
+	markdownBuffer=[];
 
 	for (const line of outputBuffer) {
-//		console.info(line);
-		// TODO: check flag
+		console.log(line);
 		await log(line,"roha");
 		await sleep(delay);
 	}
@@ -1193,13 +1204,18 @@ async function aboutModel(modelname){
 	await writeForge();
 }
 
+//DeepSeek-R1-Distill-Llama-70B
+//Meta-Llama-3.1-8B-Instruct
 function mutName(modelname){
 	const modelAccount=modelname.split("@");
 	const path=modelAccount[0];
 	const names=path.split("/");
-	const name=names.pop();//.replace("gpt-","");
+	let name=names.pop();
+	name=name.replace("-R1-Distill-","-");
+	name=name.replace("Meta-Llama-","Llama");
 	const namebits=name.split("-");	//preview");
-	const mut=namebits[0]+(namebits[1]||"")+(namebits[2]||"");
+	let mut=namebits[0]+(namebits[1]||"")+(namebits[2]||"");
+	if(namebits[3]=="vision") mut+="vision";
 	return mut;
 }
 
@@ -1349,6 +1365,76 @@ const homeCursor=new Uint8Array([27, 91, 72]);
 const disableScroll=new Uint8Array([27, 91, 55, 59, 49, 59, 114]);
 const restoreScroll=new Uint8Array([27, 91, 114]);
 
+
+// box drawing code
+
+const TopLeft=0;
+const TopRight=1;
+const BottomLeft=2;
+const BottomRight=3;
+const Horizontal=4;
+const HorizontalDown=5;
+const HorizontalUp=6;
+const Vertical=7;
+const VerticalLeft=8;
+const VerticalRight=9;
+const Cross=10;
+
+function boxTop(widths){
+	const box=boxChars[0];
+	const h=box.charAt(Horizontal);
+	const hd=box.charAt(HorizontalDown);
+	const tl=box.charAt(TopLeft);
+	const tr=box.charAt(TopRight);
+	const bits=[];
+	for(const wid of widths){
+		const n=wid.length;
+		bits.push(h.repeat(n));
+	}
+	return tl+bits.join(hd)+tr;
+}
+
+function boxCells(widths,cells){
+	const box=boxChars[0];
+	const v=box.charAt(Vertical);
+	const bits=[];
+	for(let i=0;i<widths.length;i++){
+		const w=widths[i].length;
+		// todo: clip string for tables or go multi line cells
+		const spaced=(" "+cells[i]||"").padEnd(w," ");
+		bits.push(spaced);
+	}
+	return v+bits.join(v)+v;
+}
+
+function boxSplit(widths){
+	const box=boxChars[0];
+	const h=box.charAt(Horizontal);
+	const x=box.charAt(Cross);
+	const vr=box.charAt(VerticalRight);
+	const vl=box.charAt(VerticalLeft);
+	const bits=[];
+	for(let i=0;i<widths.length;i++){
+		const w=widths[i].length;
+		bits.push(h.repeat(w));
+	}
+	return vr+bits.join(x)+vl;
+}
+
+function boxBottom(widths){
+	const box=boxChars[0];
+	const h=box.charAt(Horizontal);
+	const hu=box.charAt(HorizontalUp);
+	const bl=box.charAt(BottomLeft);
+	const br=box.charAt(BottomRight);
+	const bits=[];
+	for(const wid of widths){
+		const n=wid.length;
+		bits.push(h.repeat(n));
+	}
+	return bl+bits.join(hu)+br;
+}
+
 const rohaPrompt=">";
 let colorCycle=0;
 
@@ -1365,8 +1451,8 @@ function mdToAnsi(md) {
 	let poplast=false;
 	for (let line of lines) {
 		line=line.trimEnd();
-		poplast=line.length==0;
 		const trim=line.trim();
+		poplast=line.length==0;
 		if (trim.startsWith("```")) {
 			inCode=!inCode;
 			if(inCode){
@@ -1384,38 +1470,38 @@ function mdToAnsi(md) {
 					line=pageBreak.substring(0,terminalColumns-1);
 				}
 				if(line.startsWith("|")){
+					if(headings.length&&widths.length){
+						result.push(boxSplit(widths));
+						headings=[];
+					}
 					const split=line.split("|");
 					const splits=split.length;
 					if(splits>2){
-						const trim=split.slice(1,splits);
+						let trim=split.slice(1,splits-1);
 						if(!inTable) {
 							inTable=true;
 							headings=trim;
+							continue;
 						}else{
 							const spacer=(trim[0]||"").startsWith("-");
 							if(spacer){
 								widths=trim;
+								result.push(boxTop(widths));
 								let wide=0;
 								for(let i=0;i<widths.length;i++){
 									const w=widths[i].length;
 									wide+=w+1;
 								}
-								line="".padEnd(wide,"@");
-							}else{
-								if(widths){
-									const cells=[];
-									for(let i=0;i<widths.length;i++){
-										const w=widths[i].length;
-										const spaced=(trim[i]||"").padEnd(w," ");
-										cells.push(spaced);
-									}
-									line=cells.join("");
-								}
+								trim=headings;
+							}
+							if(widths){
+								line=boxCells(widths,trim);
 							}
 						}
 					}
 				}else{
 					if(inTable) {
+						result.push(boxBottom(widths));
 						inTable=false;
 						headings=[];
 						widths=[];
@@ -1449,6 +1535,11 @@ function mdToAnsi(md) {
 	if(poplast){
 		result.pop();
 	}
+
+	if(inTable&&widths) {
+		result.push(boxBottom(widths));
+	}
+
 	result.push(ansiReset);
 	return result.join("\n");
 }
@@ -1803,8 +1894,8 @@ async function onAccount(args){
 		for(const key in modelAccounts){
 			list.push(key);
 		}
-		echo_row("id","name","count","price");
-		echo_row("----","-------------","----","------");
+		echo_row("id","name","llm","credit");
+		echo_row("----","-------------","----","----------");
 		for(let i=0;i<list.length;i++){
 			const key=list[i];
 			if(key in roha.lode){
@@ -2013,12 +2104,13 @@ async function callCommand(command) {
 							await writeForge();
 						}
 					}else{
-						echo_row("id","💫","emoji","name","notes","relays","pricing");
-						echo_row("---","--","----","---------","------","------","-------");
+						echo_row("id ","*","name                   ","use ","price               ","","");
+						echo_row("---","-","-----------------------","----","--------------------","----","------------");
 						const all=(name && name=="all");
 						for(let i=0;i<modelList.length;i++){
 							const modelname=modelList[i];
-							const attr=(modelname==grokModel)?"⭐":" ";
+							// todo: ⭐power
+							const attr=(modelname==grokModel)?"*":" ";
 							// mutspec from roha.mut
 							const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 							mutspec.name=modelname;
@@ -2040,7 +2132,7 @@ async function callCommand(command) {
 								const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
 								// todo: verbose use modelname
 //								echo(i,attr,emoji,mut,"{"+notes.join(",")+"}",mutspec.relays|0,pricing);
-								echo_row(i,attr,emoji,mut,"{"+notes.join(",")+"}",mutspec.relays|0,pricing);
+								echo_row(i,attr,mut,mutspec.relays|0,pricing,emoji,notes.join(","));
 							}
 						}
 						listCommand="model";
@@ -2540,7 +2632,7 @@ async function relay(depth) {
 		if(echostatus){
 			const temp=grokTemperature.toFixed(1)+"°";
 			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
-			const status="\t["+modelSpec.join(" ")+"]";
+			const status=" ["+modelSpec.join(" ")+"]";
 			if (roha.config.ansi)
 				echo(ansiStatusBlock+status+ansiReset);
 			else
@@ -2767,12 +2859,13 @@ await flush();
 await readForge();
 const rohaEndpoint={};
 for(const account in modelAccounts){
-//	const t=performance.now();
+	const t=performance.now();
 	const endpoint=await connectAccount(account);
+	const elapsed=(performance.now()-t)/1000;
 	if(endpoint) {
 		const count=endpoint.modelList?.length||0;		//",endpoint.modelList
 		if(roha.config.verbose){
-			echo("[FOUNTAIN] Connected",account,count);
+			echo("[FOUNTAIN] Connected",account,count,elapsed.toFixed(2)+"s");
 		}
 		rohaEndpoint[account]=endpoint;
 		specAccount(account);
