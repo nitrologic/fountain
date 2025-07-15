@@ -71,12 +71,31 @@ const MaxFileSize=512*1024;
 const appDir=Deno.cwd();
 const accountsPath=resolve(appDir,"accounts.json");
 const specsPath=resolve(appDir,"modelspecs.json");
+const emojiPath=resolve(appDir,"emoji.json");
 
 const forgePath=resolve(appDir,"forge");
 const rohaPath=resolve(forgePath,"forge.json");
 
 const modelAccounts=JSON.parse(await Deno.readTextFile(accountsPath));
 const modelSpecs=JSON.parse(await Deno.readTextFile(specsPath));
+
+const emojiSpec=JSON.parse(await Deno.readTextFile(emojiPath));
+const emojiIndex = {};
+
+emojiSpec.forEach(category => {
+	const wide = category.wide;
+	category.emoji.forEach(emoji => {
+		emojiIndex[emoji.emoji] = wide;
+	});
+});
+
+function stringwidth2(str) {
+	let width = 0;
+	for (const char of str) {
+		width += emojiIndex[char] || 1;
+	}
+	return width;
+}
 
 const decoder=new TextDecoder("utf-8");
 const encoder=new TextEncoder();
@@ -172,6 +191,7 @@ const rxBufferSize=1e6;
 
 const rxBuffer = new Uint8Array(rxBufferSize);
 
+// todo: encode slopPipe origin parameter
 async function writeSlop(slopPipe,data){
 	return await slopPipe.write(data);
 }
@@ -2680,8 +2700,9 @@ async function relay(depth) {
 		const echostatus=(depth==0);
 		if(echostatus){
 			const temp=grokTemperature.toFixed(1)+"°";
-			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,cost,size,elapsed.toFixed(2)+"s"];
-			const status=" ["+modelSpec.join(" ")+"]";
+			const forge = roha.config.tools? (grokFunctions ? "🐸" : "🚫") : "🚫";
+			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,forge,cost,size,elapsed.toFixed(2)+"s"];
+			const status=" "+modelSpec.join(" ")+" ";
 			if (roha.config.ansi)
 				echo(ansiStatusBlock+status+ansiReset);
 			else
