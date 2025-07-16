@@ -14,13 +14,10 @@ const vic12={
 	}
 };
 
-//const hlin="🟣".repeat(88)+"\n";
-//const scr=hlin.repeat(40);
-//console.log(scr);
-
 // grok code ahead
 
-const chars = ["🟣", "🔵", "🟢", "🟡", "🔴"];
+const dots = ["🟣", "🔵", "🟢", "🟡", "🔴"];
+
 let frame = 0;
 
 function generateFrame(char: string): string {
@@ -40,11 +37,11 @@ async function sleep(ms:number){
 
 async function animate() {
 	const startTime = Date.now();
-	const duration = 3000;
+	const duration = 12000;
 	const delay = 500;
 
 	while (Date.now() - startTime < duration) {
-		const currentChar = chars[frame % chars.length];
+		const currentChar = dots[frame % dots.length];
 		console.log(StartFrame+generateFrame(currentChar)+EndFrame);
 		frame++;
 		await sleep(delay);
