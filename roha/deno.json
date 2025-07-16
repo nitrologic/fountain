@@ -1,5 +1,6 @@
 {
 	"tasks":{
+		"vic12": "deno run --allow-read vic12.ts",
 		"slop": "deno run --allow-net --allow-env --allow-sys --allow-read slop.ts",
 		"slopcity": "deno run --allow-net --allow-env --allow-sys --allow-read slopcity.ts",
 		"slopnet": "deno run --allow-net --allow-env --allow-sys --allow-read slopnet.ts",
@@ -9,6 +10,9 @@
 		},
 		"slopfountain":{
 			"dependencies":["slop","fountain"]
+		},
+		"play":{
+			"dependencies":["vic12"]
 		}
 	}
 }

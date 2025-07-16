@@ -425,7 +425,7 @@ const emojiIndex = {};
 function parseUnicode(){
 	for(const group in unicodeSpec){
 		const keys = Object.keys(unicodeSpec[group].emoji);
-		if(roha.config.verbose) echo("[UNICODE]",group,keys.join(""));
+		if(roha.config.verbose) echo("[UNICODE]",group,keys.join(" "));
 	}
 }
 

@@ -21,3 +21,7 @@ Entries like "👷‍♂️" (U+1F477 U+200D U+2642 U+FE0F) correctly represent 
 Zero Width Joiner (ZWJ) sequence for gendered emoji, adhering to Unicode's 
 emoji sequence standards.
 
+
+			"👷‍♂️": {"char": "👷‍♂️", "codepoint": "1F477 200D 2642 FE0F", "name": "MAN CONSTRUCTION WORKER"},
+			"👷‍♀️": {"char": "👷‍♀️", "codepoint": "1F477 200D 2640 FE0F", "name": "WOMAN CONSTRUCTION WORKER"},
+
