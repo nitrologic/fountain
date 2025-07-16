@@ -9,6 +9,14 @@ import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import {Anthropic } from "npm:@anthropic-ai/sdk";
 
+// Bad emoji
+
+// ⚙️⚙️
+// 🏐🌊 
+
+// 𓆝 𓆟 𓆞 𓆝 𓆟 
+// ⚛ 
+
 // Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
 
 // read_time fetch_file submit_file tag_slop
@@ -54,6 +62,7 @@ const mutsInclude="models under test include "
 const username=Deno.env.get("USERNAME");
 const userdomain=Deno.env.get("USERDOMAIN").toLowerCase();
 const userregion = Intl.DateTimeFormat().resolvedOptions();	//locale,timeZone;
+const userterminal=Deno.env.get("TERM")||Deno.env.get("TERM_PROGRAM")||Deno.env.get("SESSIONNAME");
 
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Feel free to comment if shared files are new or different.";
@@ -73,7 +82,7 @@ const MaxFileSize=512*1024;
 const appDir=Deno.cwd();
 const accountsPath=resolve(appDir,"accounts.json");
 const specsPath=resolve(appDir,"modelspecs.json");
-const unicodePath=resolve(appDir,"unicode.json");
+const unicodePath=resolve(appDir,"slopspec.json");
 
 const forgePath=resolve(appDir,"forge");
 const rohaPath=resolve(forgePath,"forge.json");
@@ -1327,7 +1336,7 @@ function listShare(){
 	const sorted=roha.sharedFiles.slice();
 	sorted.sort((a, b) => b.size - a.size);
 	for (const share of sorted) {
-		const shared=(rohaShares.includes(share.path))?"*":"";
+		const shared=(rohaShares.includes(share.path))?"🔗":"";
 		const tags="["+rohaTitle+" "+share.tag+"]";
 		const detail=(share.description)?share.description:"";
 		echo((count++),share.path,share.size,shared,tags,detail);
@@ -1964,7 +1973,7 @@ async function onAccount(args){
 		for(const key in modelAccounts){
 			list.push(key);
 		}
-		echo_row("id","name","llm","credit");
+		echo_row("id","name","llm","🇦🇮","credit");
 		echo_row("----","-------------","----","----------");
 		for(let i=0;i<list.length;i++){
 			const key=list[i];
@@ -2175,13 +2184,13 @@ async function callCommand(command) {
 							await writeForge();
 						}
 					}else{
-						echo_row("id","*","name","🧮","💰","","");
-						echo_row("-----","---","-----------------------","----","--------------------","------","-----------------");
+						echo_row("id","model name","☐","📆","🧮","💰","🪣🧊🫐🪨");
+						echo_row("-----","-----------------------","---","----","--------------------","------","-----------------");
 						const all=(name && name=="all");
 						for(let i=0;i<modelList.length;i++){
 							const modelname=modelList[i];
 							// todo: ⭐power
-							const attr=(modelname==grokModel)?"*":" ";
+							const attr=(modelname==grokModel)?"☑":" ";
 							// mutspec from roha.mut
 							const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 							mutspec.name=modelname;
@@ -2203,7 +2212,7 @@ async function callCommand(command) {
 								const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
 								// todo: verbose use modelname
 //								echo(i,attr,emoji,mut,"{"+notes.join(",")+"}",mutspec.relays|0,pricing);
-								echo_row(i,attr,mut,mutspec.relays|0,pricing,emoji,notes.join(" "));
+								echo_row(i,mut,attr,mutspec.relays|0,pricing,emoji,notes.join(" "));
 							}
 						}
 						listCommand="model";
@@ -2846,7 +2855,7 @@ async function chat() {
 			await flush();
 			let line="";
 			if(listCommand){
-				line=await promptForge("#");
+				line=await promptForge(listCommand+" #");
 				if(!line.startsWith("/")){
 					if(line.length&&isFinite(line)){
 						let index=line|0;
@@ -2996,7 +3005,7 @@ let rohaNic=roha.config.nic||"nic";
 let rohaUser=username+"@"+userdomain;
 const sharecount=roha.sharedFiles?.length||0;
 
-echo("user:",{nic:rohaNic,user:rohaUser,sharecount})
+echo("user:",{nic:rohaNic,user:rohaUser,sharecount,userterminal})
 echo("use /help for latest and exit to quit");
 //echo("");
 

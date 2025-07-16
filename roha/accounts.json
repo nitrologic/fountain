@@ -19,7 +19,7 @@
 		"env": "OPENAI_API_KEY",
 		"url": "https://api.openai.com/v1",
 		"api": "OpenAI",
-		"emoji": "⚛",
+		"emoji": "🏐",
 		"locale": "en-US"
 	},
 	"gemini": {
@@ -73,7 +73,7 @@
 		"url": "https://router.huggingface.co/cerebras/v1",
 		"docs":"https://huggingface.co/docs",
 		"api": "OpenAI",
-		"emoji": "🤗🐈",
+		"emoji": "🤗𝐂",
 		"locale": "en-US"
 	},
 	"nscale":{
@@ -81,7 +81,7 @@
 		"url": "https://router.huggingface.co/nscale/v1",
 		"docs":"https://huggingface.co/docs",
 		"api": "OpenAI",
-		"emoji": "🤗🌊",
+		"emoji": "🤗𝐍",
 		"locale": "en-US"
 	},
 	"hyperbolic":{
@@ -89,7 +89,7 @@
 		"url": "https://router.huggingface.co/hyperbolic/v1",
 		"docs":"https://huggingface.co/docs",
 		"api": "OpenAI",
-		"emoji": "🤗🐴",
+		"emoji": "🤗𝐇",
 		"locale": "en-US"
 	}
 }
