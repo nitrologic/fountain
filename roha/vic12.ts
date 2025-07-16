@@ -32,6 +32,8 @@ function solidFrame(char: string): string {
 const ShowCursor = "\x1b[?25h"
 const HideCursor = "\x1b[?25l"
 
+const Background0="\x1b[48;2;⟨0⟩;⟨0⟩;⟨0⟩m"
+
 const Clear="\x1B[2J";
 const Home="\x1B[H";
 const StartFrame=Home+Clear;
@@ -64,6 +66,7 @@ async function animate() {
 	}
 }
 
+console.log(Background0);
 console.log(HideCursor);
 await animate();
 console.log(ShowCursor);
