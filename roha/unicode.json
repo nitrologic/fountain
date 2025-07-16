@@ -103,7 +103,17 @@
 		"subgroup": "game",
 		"wide": 2,
 		"emoji": {
-			"🃏": { "char": "🃏", "codepoint": "1F0CF", "name": "JOKER" }
+			"🎮": { "char": "🎮", "codepoint": "1F3AE", "name": "VIDEO GAME" },
+			"🕹️": { "char": "🕹️", "codepoint": "1F579 FE0F", "name": "JOYSTICK" },
+			"🎰": { "char": "🎰", "codepoint": "1F3B0", "name": "SLOT MACHINE" },
+			"🎲": { "char": "🎲", "codepoint": "1F3B2", "name": "GAME DIE" },
+			"🧩": { "char": "🧩", "codepoint": "1F9E9", "name": "PUZZLE PIECE" },
+			"🧸": { "char": "🧸", "codepoint": "1F9F8", "name": "TEDDY BEAR" },
+			"🀄": { "char": "🀄", "codepoint": "1F004", "name": "MAHJONG TILE RED DRAGON" },
+			"🃏": { "char": "🃏", "codepoint": "1F0CF", "name": "JOKER" },
+			"🪄": { "char": "🪄", "codepoint": "1FA84", "name": "MAGIC WAND" },
+			"🪅": { "char": "🪅", "codepoint": "1FA85", "name": "PIÑATA" },
+			"🪆": { "char": "🪆", "codepoint": "1FA86", "name": "NESTING DOLLS" }
 		}
 	},
 	"games": {
@@ -114,6 +124,7 @@
 			"🎮": { "char": "🎮", "codepoint": "1F3AE", "name": "VIDEO GAME" },
 			"🎲": { "char": "🎲", "codepoint": "1F3B2", "name": "GAME DIE" },
 			"🎯": { "char": "🎯", "codepoint": "1F3AF", "name": "DIRECT HIT" },
+			"🕹️": { "char": "🕹️", "codepoint": "1F579", "name": "JOYSTICK" },
 			"🪀": { "char": "🪀", "codepoint": "1FA80", "name": "YO-YO" },
 			"🪁": { "char": "🪁", "codepoint": "1FA81", "name": "KITE" },
 			"🧩": { "char": "🧩", "codepoint": "1F9E9", "name": "PUZZLE PIECE" }
@@ -145,7 +156,7 @@
 	},
 	"sport": {
 		"group": "Activities",
-		"subgroup": "sports",
+		"subgroup": "sport",
 		"wide": 2,
 		"emoji": {
 			"⚽️": {"char": "⚽️", "codepoint": "26BD FE0F", "name": "SOCCER BALL", "style": "EMOJI"},
@@ -174,7 +185,13 @@
 			"🥋": {"char": "🥋", "codepoint": "1F94B", "name": "MARTIAL ARTS UNIFORM", "style": "EMOJI"},
 			"🛷": {"char": "🛷", "codepoint": "1F6F7", "name": "SLED", "style": "EMOJI"},
 			"⛸️": {"char": "⛸️", "codepoint": "26F8 FE0F", "name": "ICE SKATE", "style": "EMOJI"},
-			"🎿": {"char": "🎿", "codepoint": "1F3BF", "name": "SKIS", "style": "EMOJI"}
+			"🎿": {"char": "🎿", "codepoint": "1F3BF", "name": "SKIS", "style": "EMOJI"},
+			"🪂": {"char": "🪂", "codepoint": "1FA82", "name": "PARACHUTE", "style": "EMOJI"},
+			"🥅": {"char": "🥅", "codepoint": "1F945", "name": "GOAL NET", "style": "EMOJI"},
+			"⛳": {"char": "⛳", "codepoint": "26F3", "name": "FLAG IN HOLE", "style": "EMOJI"},
+			"🎽": {"char": "🎽", "codepoint": "1F3BD", "name": "RUNNING SHIRT WITH SASH", "style": "EMOJI"},
+			"🛹": {"char": "🛹", "codepoint": "1F6F9", "name": "SKATEBOARD", "style": "EMOJI"},
+			"🛼": {"char": "🛼", "codepoint": "1F6FC", "name": "ROLLER SKATE", "style": "EMOJI"}			
 		}
 	},
 	"ground_transport": {
@@ -198,7 +215,29 @@
 			"🛴": { "char": "🦽", "codepoint": "1F9BD", "name": "WHEELCHAIR" },
 			"🦯": { "char": "🦯", "codepoint": "1F9AF", "name": "PROBE CANE" },
 			"🦽": { "char": "🦽", "codepoint": "1F9BD", "name": "WHEELCHAIR" },
-			"🦼": { "char": "🦼", "codepoint": "1F9BC", "name": "MOTORIZED WHEELCHAIR" }
+			"🦼": { "char": "🦼", "codepoint": "1F9BC", "name": "MOTORIZED WHEELCHAIR" },
+			"🚂": { "char": "🚂", "codepoint": "1F682", "name": "LOCOMOTIVE" },
+			"🚃": { "char": "🚃", "codepoint": "1F683", "name": "RAILWAY CAR" },
+			"🚄": { "char": "🚄", "codepoint": "1F684", "name": "HIGH-SPEED TRAIN" },
+			"🚅": { "char": "🚅", "codepoint": "1F685", "name": "BULLET TRAIN" },
+			"🚆": { "char": "🚆", "codepoint": "1F686", "name": "TRAIN" },
+			"🚇": { "char": "🚇", "codepoint": "1F687", "name": "METRO" },
+			"🚈": { "char": "🚈", "codepoint": "1F688", "name": "LIGHT RAIL" },
+			"🚉": { "char": "🚉", "codepoint": "1F689", "name": "STATION" },
+			"🚊": { "char": "🚊", "codepoint": "1F68A", "name": "TRAM" },
+			"🚋": { "char": "🚋", "codepoint": "1F68B", "name": "TRAM CAR" },
+			"🚍": { "char": "🚍", "codepoint": "1F68D", "name": "ONCOMING BUS" },
+			"🚎": { "char": "🚎", "codepoint": "1F68E", "name": "TROLLEYBUS" },
+			"🏍️": { "char": "🏍️", "codepoint": "1F3CD FE0F", "name": "MOTORCYCLE", "style": "EMOJI" },
+			"🛺": { "char": "🛺", "codepoint": "1F6FA", "name": "AUTO RICKSHAW" },
+			"🛹": { "char": "🛹", "codepoint": "1F6F9", "name": "SKATEBOARD" },
+			"🛼": { "char": "🛼", "codepoint": "1F6FC", "name": "ROLLER SKATE" },
+			"🚏": { "char": "🚏", "codepoint": "1F68F", "name": "BUS STOP" },
+			"🛣️": { "char": "🛣️", "codepoint": "1F6E3 FE0F", "name": "MOTORWAY", "style": "EMOJI" },
+			"🛤️": { "char": "🛤️", "codepoint": "1F6E4 FE0F", "name": "RAILWAY TRACK", "style": "EMOJI" },
+			"⛽": { "char": "⛽", "codepoint": "26FD", "name": "FUEL PUMP" },
+			"🚦": { "char": "🚦", "codepoint": "1F6A6", "name": "VERTICAL TRAFFIC LIGHT" },
+			"🛑": { "char": "🛑", "codepoint": "1F6D1", "name": "STOP SIGN" }
 		}
 	},
 	"water_transport": {
@@ -207,10 +246,14 @@
 		"wide": 2,
 		"emoji": {
 			"🛥️": { "char": "🛥️", "codepoint": "1F6A4 FE0F", "name": "MOTOR BOAT", "style": "EMOJI" },
-			"🚢": { "char": "🚢", "codepoint": "1F6A2", "name": "PASSENGER SHIP" },
+			"🚢": { "char": "🚢", "codepoint": "1F6A2", "name": "SHIP" },
 			"🚤": { "char": "🚤", "codepoint": "1F6A5", "name": "SPEEDBOAT" },
-			"⛵️": { "char": "⛵️", "codepoint": "26F5 FE0F", "name": "SAILBOAT", "style": "EMOJI" },
-			"🛶": { "char": "🛶", "codepoint": "1F6F6", "name": "CANOE" }
+			"⛴️": { "char": "⛴️", "codepoint": "26F4 FE0F", "name": "FERRY" },
+			"🛳️": { "char": "🛳️", "codepoint": "1F6F3 FE0F", "name": "PASSENGER SHIP" },
+			"⛵️": { "char": "⛵️", "codepoint": "26F5 FE0F", "name": "SAILBOAT" },
+			"🛶": { "char": "🛶", "codepoint": "1F6F6", "name": "CANOE" },
+			"🚣": { "char": "🚣", "codepoint": "1F6A3", "name": "ROWBOAT" },
+			"🛟": { "char": "🛟", "codepoint": "1F6DF", "name": "LIFE PRESERVER" }
 		}
 	},
 	"construction": {
@@ -362,8 +405,61 @@
 	"shapes": {
 		"group": "Symbols",
 		"subgroup": "shapes",
+		"wide": 2,
+		"emoji": {
+			"🔴": {"char": "🔴", "codepoint": "1F534", "name": "RED CIRCLE", "style": "EMOJI"},
+			"🟠": {"char": "🟠", "codepoint": "1F7E0", "name": "ORANGE CIRCLE", "style": "EMOJI"},
+			"🟡": {"char": "🟡", "codepoint": "1F7E1", "name": "YELLOW CIRCLE", "style": "EMOJI"},
+			"🟢": {"char": "🟢", "codepoint": "1F7E2", "name": "GREEN CIRCLE", "style": "EMOJI"},
+			"🔵": {"char": "🔵", "codepoint": "1F535", "name": "BLUE CIRCLE", "style": "EMOJI"},
+			"🟣": {"char": "🟣", "codepoint": "1F7E3", "name": "PURPLE CIRCLE", "style": "EMOJI"},
+			"🟤": {"char": "🟤", "codepoint": "1F7E4", "name": "BROWN CIRCLE", "style": "EMOJI"},
+			"⚫": {"char": "⚫", "codepoint": "26AB", "name": "MEDIUM BLACK CIRCLE", "style": "EMOJI"},
+			"⚪": {"char": "⚪", "codepoint": "26AA", "name": "MEDIUM WHITE CIRCLE", "style": "EMOJI"},
+			"🟥": {"char": "🟥", "codepoint": "1F7E5", "name": "RED SQUARE", "style": "EMOJI"},
+			"🟧": {"char": "🟧", "codepoint": "1F7E7", "name": "ORANGE SQUARE", "style": "EMOJI"},
+			"🟨": {"char": "🟨", "codepoint": "1F7E8", "name": "YELLOW SQUARE", "style": "EMOJI"},
+			"🟩": {"char": "🟩", "codepoint": "1F7E9", "name": "GREEN SQUARE", "style": "EMOJI"},
+			"🟦": {"char": "🟦", "codepoint": "1F7EA", "name": "BLUE SQUARE", "style": "EMOJI"},
+			"🟪": {"char": "🟪", "codepoint": "1F7EB", "name": "PURPLE SQUARE", "style": "EMOJI"},
+			"🟫": {"char": "🟫", "codepoint": "1F7EC", "name": "BROWN SQUARE", "style": "EMOJI"},
+			"⬛": {"char": "⬛", "codepoint": "2B1B", "name": "BLACK LARGE SQUARE", "style": "EMOJI"},
+			"⬜": {"char": "⬜", "codepoint": "2B1C", "name": "WHITE LARGE SQUARE", "style": "EMOJI"},
+			"◼️": {"char": "◼️", "codepoint": "25FC", "name": "BLACK MEDIUM SQUARE", "style": "EMOJI"},
+			"◻️": {"char": "◻️", "codepoint": "25FB", "name": "WHITE MEDIUM SQUARE", "style": "EMOJI"},
+			"▪️": {"char": "▪️", "codepoint": "25AA", "name": "BLACK SMALL SQUARE", "style": "EMOJI"},
+			"▫️": {"char": "▫️", "codepoint": "25AB", "name": "WHITE SMALL SQUARE", "style": "EMOJI"},
+			"🔶": {"char": "🔶", "codepoint": "1F536", "name": "LARGE ORANGE DIAMOND", "style": "EMOJI"},
+			"🔷": {"char": "🔷", "codepoint": "1F537", "name": "LARGE BLUE DIAMOND", "style": "EMOJI"},
+			"🔸": {"char": "🔸", "codepoint": "1F538", "name": "SMALL ORANGE DIAMOND", "style": "EMOJI"},
+			"🔹": {"char": "🔹", "codepoint": "1F539", "name": "SMALL BLUE DIAMOND", "style": "EMOJI"},
+			"💠": {"char": "💠", "codepoint": "1F4A0", "name": "DIAMOND WITH A DOT", "style": "EMOJI"},
+			"🔺": {"char": "🔺", "codepoint": "1F53A", "name": "RED TRIANGLE POINTED UP", "style": "EMOJI"},
+			"🔻": {"char": "🔻", "codepoint": "1F53B", "name": "RED TRIANGLE POINTED DOWN", "style": "EMOJI"},
+			"🔘": {"char": "🔘", "codepoint": "1F518", "name": "RADIO BUTTON", "style": "EMOJI"},
+			"🔳": {"char": "🔳", "codepoint": "1F533", "name": "WHITE SQUARE BUTTON manipulable", "style": "EMOJI"},
+			"🔲": {"char": "🔲", "codepoint": "1F532", "name": "BLACK SQUARE BUTTON manipulable", "style": "EMOJI"}
+		}
+	},
+	"plain-shapes": {
+		"group": "Symbols",
+		"subgroup": "shapes",
 		"wide": 1,
 		"emoji": {
+			"■": {"char": "■", "codepoint": "25A0", "name": "BLACK SQUARE", "style": "TEXT"},
+			"□": {"char": "□", "codepoint": "25A1", "name": "WHITE SQUARE", "style": "TEXT"},
+			"▲": {"char": "▲", "codepoint": "25B2", "name": "BLACK UP-POINTING TRIANGLE", "style": "TEXT"},
+			"●": {"char": "●", "codepoint": "25CF", "name": "BLACK CIRCLE", "style": "TEXT"},
+			"○": {"char": "○", "codepoint": "25CB", "name": "WHITE CIRCLE", "style": "TEXT"},
+			"△": {"char": "△", "codepoint": "25B3", "name": "WHITE UP-POINTING TRIANGLE", "style": "TEXT"},
+			"◆": {"char": "◆", "codepoint": "25C6", "name": "BLACK DIAMOND", "style": "TEXT"},
+			"◇": {"char": "◇", "codepoint": "25C7", "name": "WHITE DIAMOND", "style": "TEXT"},
+			"★": {"char": "★", "codepoint": "2605", "name": "BLACK STAR", "style": "TEXT"},
+			"☆": {"char": "☆", "codepoint": "2606", "name": "WHITE STAR", "style": "TEXT"},
+			"✓": {"char": "✓", "codepoint": "2713", "name": "CHECK MARK", "style": "TEXT"},
+			"✗": {"char": "✗", "codepoint": "2717", "name": "BALLOT X", "style": "TEXT"},
+			"◾": {"char": "◾", "codepoint": "25FE", "name": "BLACK MEDIUM-SMALL SQUARE", "style": "TEXT"},
+			"◽": {"char": "◽", "codepoint": "25FD", "name": "WHITE MEDIUM-SMALL SQUARE", "style": "TEXT"},
 			"■": {"char": "■", "codepoint": "25A0", "name": "BLACK SQUARE", "style": "TEXT"},
 			"□": {"char": "□", "codepoint": "25A1", "name": "WHITE SQUARE", "style": "TEXT"},
 			"▲": {"char": "▲", "codepoint": "25B2", "name": "BLACK UP-POINTING TRIANGLE", "style": "TEXT"},
@@ -425,8 +521,21 @@
 			"╫": {"char": "╫", "codepoint": "256B", "name": "BOX DRAWINGS VERTICAL DOUBLE AND HORIZONTAL SINGLE"}
 		}
 	},
+	"plain-dice": {
+		"group": "plain-symbols",
+		"subgroup": "dice",
+		"wide": 1,
+		"emoji": {
+			"⚀": {"char": "⚀", "codepoint": "2680", "name": "DIE FACE-1"},
+			"⚁": {"char": "⚁", "codepoint": "2681", "name": "DIE FACE-2"},
+			"⚂": {"char": "⚂", "codepoint": "2682", "name": "DIE FACE-3"},
+			"⚃": {"char": "⚃", "codepoint": "2683", "name": "DIE FACE-4"},
+			"⚄": {"char": "⚄", "codepoint": "2684", "name": "DIE FACE-5"},
+			"⚅": {"char": "⚅", "codepoint": "2685", "name": "DIE FACE-6"}
+		}
+	},
 	"plain-mahjong": {
-		"group": "plain-game",
+		"group": "plain-symbols",
 		"subgroup": "mahjong",
 		"wide": 1,
 		"emoji": {
@@ -477,7 +586,7 @@
 		}
 	},
 	"plain-cards": {
-		"group": "plain-game",
+		"group": "plain-symbols",
 		"subgroup": "cards",
 		"wide": 1,
 		"emoji": {

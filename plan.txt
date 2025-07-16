@@ -1,3 +1,5 @@
+- alibaba thinking prices
+- non ansi tables
 - test tools read_time submit_file read_file
 - moonshot-a anthropic url api.moonshot.ai/anthropic
 - drop individual share by index
