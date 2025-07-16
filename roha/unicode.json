@@ -11,11 +11,11 @@
 			"🧻": {"char": "🧻", "codepoint": "1F9FB", "name": "ROLL OF PAPER", "style": "EMOJI"},
 			"🧼": {"char": "🧼", "codepoint": "1F9FC", "name": "SOAP", "style": "EMOJI"},
 			"🪣": {"char": "🪣", "codepoint": "1FAA3", "name": "BUCKET", "style": "EMOJI"},
-			"🪠": {"char": "🪠", "codepoint": "1FAA0", "name": "PLUNGER", "style": "EMOJI"},
-			"🪤": {"char": "🪤", "codepoint": "1FAA4", "name": "MOUSE TRAP", "style": "EMOJI"},
 			"🪥": {"char": "🪥", "codepoint": "1FAA5", "name": "TOOTHBRUSH", "style": "EMOJI"},
 			"🧽": {"char": "🧽", "codepoint": "1F9FD", "name": "SPONGE", "style": "EMOJI"},
-			"🪒": {"char": "🪒", "codepoint": "1FA92", "name": "RAZOR", "style": "EMOJI"}
+			"🪒": {"char": "🪒", "codepoint": "1FA92", "name": "RAZOR", "style": "EMOJI"},
+			"🪠": {"char": "🪠", "codepoint": "1FAA0 FE0F", "name": "PLUNGER", "style": "EMOJI"},
+			"🪤": {"char": "🪤", "codepoint": "1FAA4 FE0F", "name": "MOUSE TRAP", "style": "EMOJI"}
 		}
 	},
 	"light-video": {
@@ -26,12 +26,12 @@
 			"💡": {"char": "💡", "codepoint": "1F4A1", "name": "LIGHT BULB", "style": "EMOJI"},
 			"🔦": {"char": "🔦", "codepoint": "1F526", "name": "FLASHLIGHT", "style": "EMOJI"},
 			"🪔": {"char": "🪔", "codepoint": "1FA94", "name": "DIYA LAMP", "style": "EMOJI"},
-			"🕯️": {"char": "🕯️", "codepoint": "1F56F FE0F", "name": "CANDLE", "style": "EMOJI"},
 			"🎥": {"char": "🎥", "codepoint": "1F3A5", "name": "MOVIE CAMERA", "style": "EMOJI"},
 			"📹": {"char": "📹", "codepoint": "1F4F9", "name": "VIDEO CAMERA", "style": "EMOJI"},
 			"📺": {"char": "📺", "codepoint": "1F4FA", "name": "TELEVISION", "style": "EMOJI"},
 			"📷": {"char": "📷", "codepoint": "1F4F7", "name": "CAMERA", "style": "EMOJI"},
 			"📸": {"char": "📸", "codepoint": "1F4F8", "name": "CAMERA WITH FLASH", "style": "EMOJI"},
+			"🕯️": {"char": "🕯️", "codepoint": "1F56F FE0F", "name": "CANDLE", "style": "EMOJI"},
 			"📽️": {"char": "📽️", "codepoint": "1F4FD FE0F", "name": "FILM PROJECTOR", "style": "EMOJI"},
 			"🎞️": {"char": "🎞️", "codepoint": "1F39E FE0F", "name": "FILM FRAMES", "style": "EMOJI"}
 		}
@@ -87,7 +87,7 @@
 			"🎸": {"char": "🎸", "codepoint": "1F3B8", "name": "GUITAR"},
 			"🎺": {"char": "🎺", "codepoint": "1F3BA", "name": "TRUMPET"},
 			"🎻": {"char": "🎻", "codepoint": "1F3BB", "name": "VIOLIN"},
-			"🪗": {"char": "🪗", "codepoint": "1FA97", "name": "ACCORDION"},
+			"🪕": {"char": "🪕", "codepoint": "1FA95", "name": "BANJO"},
 			"🥁": {"char": "🥁", "codepoint": "1F941", "name": "DRUM"},
 			"📯": {"char": "📯", "codepoint": "1F4EF", "name": "POSTAL HORN"},
 			"🔈": {"char": "🔈", "codepoint": "1F508", "name": "SPEAKER"},
@@ -95,7 +95,13 @@
 			"🔊": {"char": "🔊", "codepoint": "1F50A", "name": "SPEAKER WITH THREE SOUND WAVES"},
 			"🎤": {"char": "🎤", "codepoint": "1F3A4", "name": "MICROPHONE"},
 			"🎧": {"char": "🎧", "codepoint": "1F3A7", "name": "HEADPHONE"},
-			"📻": {"char": "📻", "codepoint": "1F4FB", "name": "RADIO"}
+			"📻": {"char": "📻", "codepoint": "1F4FB", "name": "RADIO"},
+			"🎙️": {"char": "🎙️", "codepoint": "1F399 FE0F", "name": "STUDIO MICROPHONE", "style": "EMOJI"},
+			"🎚️": {"char": "🎚️", "codepoint": "1F39A FE0F", "name": "LEVEL SLIDER"},
+			"🎛️": {"char": "🎛️", "codepoint": "1F39B FE0F", "name": "CONTROL KNOBS"},
+			"🪘": {"char": "🪘", "codepoint": "1FA98 FE0F", "name": "LONG DRUM", "style": "EMOJI"},
+			"🪈": {"char": "🪈", "codepoint": "1FA88 FE0F", "name": "FLUTE", "style": "EMOJI"},
+			"🪗": {"char": "🪗", "codepoint": "1FA97 FE0F", "name": "ACCORDION", "style": "EMOJI"}
 		}
 	},
 	"game":{
@@ -191,7 +197,7 @@
 			"⛳": {"char": "⛳", "codepoint": "26F3", "name": "FLAG IN HOLE", "style": "EMOJI"},
 			"🎽": {"char": "🎽", "codepoint": "1F3BD", "name": "RUNNING SHIRT WITH SASH", "style": "EMOJI"},
 			"🛹": {"char": "🛹", "codepoint": "1F6F9", "name": "SKATEBOARD", "style": "EMOJI"},
-			"🛼": {"char": "🛼", "codepoint": "1F6FC", "name": "ROLLER SKATE", "style": "EMOJI"}			
+			"🛼": {"char": "🛼", "codepoint": "1F6FC", "name": "ROLLER SKATE", "style": "EMOJI"}
 		}
 	},
 	"ground_transport": {
@@ -361,7 +367,9 @@
 			"🧺": {"char": "🧺", "codepoint": "1F9FA", "name": "BASKET"},
 			"🧻": {"char": "🧻", "codepoint": "1F9FB", "name": "ROLL OF PAPER"},
 			"📌": {"char": "📌", "codepoint": "1F4CC", "name": "PUSHPIN"},
-			"📍": {"char": "📍", "codepoint": "1F4CD", "name": "ROUND PUSHPIN"}
+			"📍": {"char": "📍", "codepoint": "1F4CD", "name": "ROUND PUSHPIN"},
+			"🔔": {"char": "🔔", "codepoint": "1F514", "name": "BELL"},
+			"🔕": {"char": "🔕", "codepoint": "1F515", "name": "BELL WITH CANCELLATION STROKE"}
 		}
 	},
 	"time": {

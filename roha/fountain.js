@@ -2399,8 +2399,8 @@ async function processToolCalls(calls) {
 	const results=[];
 	for (const tool of calls) {
 		const id=tool.id || !tool.function?.name
+		echo("[RELAY] processToolCalls",id,tool);
 		if (!tool.id || !tool.function?.name) {
-			echo("[processToolCalls] tool",tool);
 			results.push({
 				tool_call_id: tool.id || "unknown",
 				name: tool.function?.name || "unknown",
@@ -2413,8 +2413,8 @@ async function processToolCalls(calls) {
 		try {
 			const result=await onCall(tool);
 			results.push({
-// testing kimi
-//				tool_call_id: tool.id,
+				// todo: fix for testing kimi
+				tool_call_id: tool.id,
 				name: tool.function.name,
 				content: JSON.stringify(result || {success: false})
 			});
@@ -2626,6 +2626,7 @@ async function relay(depth) {
 
 		// if(config.hasCache) payload.cache_tokens=true;
 
+		// TODO: detect -latest modelnames rerouting to real instances
 		if (completion.model != model) {
 			echo("[RELAY] model reset",completion.model||"???",model);
 			const name=completion.model+"@"+account;
