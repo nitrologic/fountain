@@ -15,3 +15,9 @@ I am sorry, I cannot list all face emojis. My capabilities are limited to the fu
 `cc0a704746f6f2037e41f13d07175f16965b3efb4b601ade38c7a6a9c1ad547c` ✅ |
 | forge.json | `C:/nitrologic/fountain/roha/forge/forge.json` | 93 055 B |
 `85c28216854ca39eafc24851591772f7b1b5e414e6a1f415721be9d9689214ee` ✅ |
+
+
+Entries like "👷‍♂️" (U+1F477 U+200D U+2642 U+FE0F) correctly represent a 
+Zero Width Joiner (ZWJ) sequence for gendered emoji, adhering to Unicode's 
+emoji sequence standards.
+

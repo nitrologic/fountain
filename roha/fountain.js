@@ -33,6 +33,8 @@ const fountainName="fountain "+fountainVersion;
 
 const rohaTitle=fountainName+" ⛲ ";
 
+const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};		//🚫"};
+
 const terminalColumns=120;
 const statsColumn=50;
 const clipLog=1800;
@@ -71,23 +73,14 @@ const MaxFileSize=512*1024;
 const appDir=Deno.cwd();
 const accountsPath=resolve(appDir,"accounts.json");
 const specsPath=resolve(appDir,"modelspecs.json");
-const emojiPath=resolve(appDir,"emoji.json");
+const unicodePath=resolve(appDir,"unicode.json");
 
 const forgePath=resolve(appDir,"forge");
 const rohaPath=resolve(forgePath,"forge.json");
 
 const modelAccounts=JSON.parse(await Deno.readTextFile(accountsPath));
 const modelSpecs=JSON.parse(await Deno.readTextFile(specsPath));
-
-const emojiSpec=JSON.parse(await Deno.readTextFile(emojiPath));
-const emojiIndex = {};
-
-emojiSpec.forEach(category => {
-	const wide = category.wide;
-	category.emoji.forEach(emoji => {
-		emojiIndex[emoji.emoji] = wide;
-	});
-});
+const unicodeSpec=JSON.parse(await Deno.readTextFile(unicodePath));
 
 function stringwidth2(str) {
 	let width = 0;
@@ -426,6 +419,15 @@ const rohaTools=[{
 }];
 
 // fountain utility functions
+
+const emojiIndex = {};
+
+function parseUnicode(){
+	for(const group in unicodeSpec){
+		const keys = Object.keys(unicodeSpec[group].emoji);
+		if(roha.config.verbose) echo("[UNICODE]",group,keys.join(""));
+	}
+}
 
 // Define the ranges for single-width characters (including some emojis and symbols)
 const singleWidthRanges = [
@@ -2164,6 +2166,7 @@ async function callCommand(command) {
 				}
 				break;
 			case "model":{
+				// TODO: refactor this gigantic block 
 					let name=words[1];
 					if(name && name!="all"){
 						if(name.length&&!isNaN(name)) name=modelList[name|0];
@@ -2172,7 +2175,7 @@ async function callCommand(command) {
 							await writeForge();
 						}
 					}else{
-						echo_row("id","*","name","use","price","","");
+						echo_row("id","*","name","🧮","💰","","");
 						echo_row("-----","---","-----------------------","----","--------------------","------","-----------------");
 						const all=(name && name=="all");
 						for(let i=0;i<modelList.length;i++){
@@ -2183,7 +2186,7 @@ async function callCommand(command) {
 							const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 							mutspec.name=modelname;
 							const notes=[...mutspec.notes];
-							if(mutspec.hasForge) notes.push("🐸");
+							if(mutspec.hasForge) notes.push("🪣");
 							const rated=modelname in modelSpecs?modelSpecs[modelname]:{};
 							if(rated.cold) notes.push("🧊");
 							if(rated.multi) notes.push("🫐");
@@ -2700,7 +2703,7 @@ async function relay(depth) {
 		const echostatus=(depth==0);
 		if(echostatus){
 			const temp=grokTemperature.toFixed(1)+"°";
-			const forge = roha.config.tools? (grokFunctions ? "🐸" : "🚫") : "🚫";
+			const forge = roha.config.tools? (grokFunctions ? "🪣" : "🐸") : "🪠";
 			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,forge,cost,size,elapsed.toFixed(2)+"s"];
 			const status=" "+modelSpec.join(" ")+" ";
 			if (roha.config.ansi)
@@ -2983,6 +2986,9 @@ if(roha.config){
 }else{
 	roha.config={};
 }
+await flush();
+
+parseUnicode();
 await flush();
 
 let rohaNic=roha.config.nic||"nic";
