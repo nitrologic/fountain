@@ -1,15 +1,14 @@
 // vic12.ts - a 12 bit slop machine
 // Copyright (c) 2025 Simon Armstrong
-
-import { sleep } from "https://deno.land/x/openai@v4.69.0/core.ts";
-
 // All rights reserved
 
-// 88 x 40 = 3520 pixel display
+// 96 x 64 = hires 
+// 88 x 40 = medium 3520 pixels
+// 44 x 24 = lores 1056 pixels
 
 const vic12={
 	spec:{
-		resolution:[88,40],
+		resolution:[44,24],
 		aspect:{pal:[1,1]}
 	}
 };
