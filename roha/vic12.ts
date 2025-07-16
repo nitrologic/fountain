@@ -17,13 +17,20 @@ const vic12={
 
 const dots = ["🟣", "🔵", "🟢", "🟡", "🔴"];
 
-let frame = 0;
+const boxChars=["┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
 
-function generateFrame(char: string): string {
+const wbox=["┌─","─┐","└─","─┘","──","┬─","┴─","│ ","┤ ","├─","┼┼"];
+
+let frameCount = 0;
+
+function solidFrame(char: string): string {
 	const res=vic12.spec.resolution;
 	const hlin=char.repeat(res[0])+"\n";
 	return hlin.repeat(res[1]);
 }
+
+const ShowCursor = "\x1b[?25h"
+const HideCursor = "\x1b[?25l"
 
 const Clear="\x1B[2J";
 const Home="\x1B[H";
@@ -34,18 +41,29 @@ async function sleep(ms:number){
 	await new Promise((resolve) => setTimeout(resolve,ms));
 }
 
-async function animate() {
-	const startTime = Date.now();
-	const duration = 12000;
-	const delay = 500;
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
-	while (Date.now() - startTime < duration) {
-		const currentChar = dots[frame % dots.length];
-		console.log(StartFrame+generateFrame(currentChar)+EndFrame);
-		frame++;
-		await sleep(delay);
-	}
-	console.log("Animation complete!");
+async function flipFrame(frame:string){
+	await Deno.stdout.write(encoder.encode(StartFrame + frame));
 }
 
-animate();
+async function animate() {
+	const startTime = Date.now();
+	const duration = 7000;
+	const delay = 500;
+	while (true) {
+		const elapsed=Date.now() - startTime;
+		if(elapsed > duration) break;
+		const currentChar = dots[frameCount % dots.length];
+		const frame=solidFrame(currentChar);
+//		console.log(StartFrame+frame);
+		await flipFrame(frame);
+		frameCount++;
+		await sleep(delay);
+	}
+}
+
+console.log(HideCursor);
+await animate();
+console.log(ShowCursor);
