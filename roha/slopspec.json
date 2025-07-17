@@ -702,7 +702,7 @@
 	},
 	"plain-shapes": {
 		"group": "Symbols",
-		"tags": ["shapes","plain"],
+		"tags": ["shapes","astronomical","plain"],
 		"wide": 1,
 		"emoji": {
 			"■": {"char": "■", "codepoint": "25A0", "name": "BLACK SQUARE"},
@@ -734,7 +734,24 @@
 			"⏼": {"char": "⏼", "codepoint": "23FC", "name": "POWER ON-OFF SYMBOL"},
 			"⏽": {"char": "⏽", "codepoint": "23FD", "name": "POWER ON SYMBOL"},
 			"⏾": {"char": "⏾", "codepoint": "23FE", "name": "POWER SLEEP SYMBOL"},
-			"◾": {"char": "◾", "codepoint": "25FE", "name": "BLACK MEDIUM-SMALL SQUARE"}
+			"◾": {"char": "◾", "codepoint": "25FE", "name": "BLACK MEDIUM-SMALL SQUARE"},
+			"☉": {"char": "☉", "codepoint": "2609", "name": "SUN"},
+			"☿": {"char": "☿", "codepoint": "263F", "name": "MERCURY"},
+			"♀": {"char": "♀", "codepoint": "2640", "name": "FEMALE SIGN"},
+			"♁": {"char": "♁", "codepoint": "2641", "name": "EARTH"},
+			"♂": {"char": "♂", "codepoint": "2642", "name": "MALE SIGN"},
+			"♃": {"char": "♃", "codepoint": "2643", "name": "JUPITER"},
+			"♄": {"char": "♄", "codepoint": "2644", "name": "SATURN"},
+			"♅": {"char": "♅", "codepoint": "2645", "name": "URANUS"},
+			"♆": {"char": "♆", "codepoint": "2646", "name": "NEPTUNE"},
+			"♇": {"char": "♇", "codepoint": "2647", "name": "PLUTO"},
+			"☽": {"char": "☽", "codepoint": "263D", "name": "FIRST QUARTER MOON"},
+			"☉": {"char": "☉", "codepoint": "2609", "name": "SUN"},
+			"♈": {"char": "♈", "codepoint": "2648", "name": "ARIES"},
+			"♠": {"char": "♠", "codepoint": "2660", "name": "BLACK SPADE SUIT"},
+			"♣": {"char": "♣", "codepoint": "2663", "name": "BLACK CLUB SUIT"},
+			"♥": {"char": "♥", "codepoint": "2665", "name": "BLACK HEART SUIT"},
+			"♦": {"char": "♦", "codepoint": "2666", "name": "BLACK DIAMOND SUIT"}
 		}
 	},
 	"plain-block-drawing": {

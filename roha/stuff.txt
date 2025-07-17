@@ -1,3 +1,56 @@
+"group": "Symbols",
+	"tags": ["drawing", "diagrams", "plain"],
+	"wide": 1,
+	"emoji": {
+		"⌂": {"char": "⌂", "codepoint": "2302", "name": "HOUSE"},
+		"⌘": {"char": "⌘", "codepoint": "2318", "name": "PLACE OF INTEREST SIGN"},
+		"⎈": {"char": "⎈", "codepoint": "2388", "name": "HELM SYMBOL"},
+		"⏏": {"char": "⏏", "codepoint": "23CF", "name": "EJECT SYMBOL"},
+
+
+	// Geometric Shapes Extended
+
+	// Technical Symbols
+
+
+	// Miscellaneous Symbols
+
+	// Arrows Extended
+	"⇐": {"char": "⇐", "codepoint": "21D0", "name": "LEFTWARDS DOUBLE ARROW"},
+	"⇑": {"char": "⇑", "codepoint": "21D1", "name": "UPWARDS DOUBLE ARROW"},
+	"⇒": {"char": "⇒", "codepoint": "21D2", "name": "RIGHTWARDS DOUBLE ARROW"},
+	"⇓": {"char": "⇓", "codepoint": "21D3", "name": "DOWNWARDS DOUBLE ARROW"},
+	"⇔": {"char": "⇔", "codepoint": "21D4", "name": "LEFT RIGHT DOUBLE ARROW"},
+	"⇕": {"char": "⇕", "codepoint": "21D5", "name": "UP DOWN DOUBLE ARROW"},
+	"⇖": {"char": "⇖", "codepoint": "21D6", "name": "NORTH WEST DOUBLE ARROW"},
+	"⇗": {"char": "⇗", "codepoint": "21D7", "name": "NORTH EAST DOUBLE ARROW"},
+	"⇘": {"char": "⇘", "codepoint": "21D8", "name": "SOUTH EAST DOUBLE ARROW"},
+	"⇙": {"char": "⇙", "codepoint": "21D9", "name": "SOUTH WEST DOUBLE ARROW"},
+
+	// Braille Patterns (sample)
+	"⠁": {"char": "⠁", "codepoint": "2801", "name": "BRAILLE PATTERN DOTS-1"},
+	"⠂": {"char": "⠂", "codepoint": "2802", "name": "BRAILLE PATTERN DOTS-2"},
+	"⠃": {"char": "⠃", "codepoint": "2803", "name": "BRAILLE PATTERN DOTS-12"},
+	"⠄": {"char": "⠄", "codepoint": "2804", "name": "BRAILLE PATTERN DOTS-3"},
+	"⠅": {"char": "⠅", "codepoint": "2805", "name": "BRAILLE PATTERN DOTS-13"},
+
+	// Weather Symbols
+	"☀": {"char": "☀", "codepoint": "2600", "name": "BLACK SUN WITH RAYS"},
+	"☁": {"char": "☁", "codepoint": "2601", "name": "CLOUD"},
+	"☂": {"char": "☂", "codepoint": "2602", "name": "UMBRELLA"},
+	"☃": {"char": "☃", "codepoint": "2603", "name": "SNOWMAN"},
+	"☔": {"char": "☔", "codepoint": "2614", "name": "UMBRELLA WITH RAIN DROPS"},
+	"⛅": {"char": "⛅", "codepoint": "26C5", "name": "SUN BEHIND CLOUD"},
+
+	// Astronomical Symbols
+
+	// Miscellaneous Technical
+  }
+}
+
+
+
+
 	"plain-alphanum-circle": {
 		"group": "plain-symbols",
 		"tags": ["alphanum", "plain"],
@@ -421,11 +474,11 @@ account openai spent $387.2016 balance $-1918.9323 ¤[15589,47]
 [gpt-4.1-nano-2025-04-14@openai 0.8° $387.202 64.50KB 1.06s]
 
 [{
-    "id":"call_2IF9zfYjImHGhaQioGRPSjSx",
-    "type":"function",
-    "function":{
-        "name":"annotate_forge",
-        "arguments":"{\"name\":\"spend calculation line\",\"type\":\"code\",\"description\":\"Logging for detailed spend calculation including prompt tokens, completion tokens, cached tokens, and their respective rates.\"}"}}]
+	"id":"call_2IF9zfYjImHGhaQioGRPSjSx",
+	"type":"function",
+	"function":{
+		"name":"annotate_forge",
+		"arguments":"{\"name\":\"spend calculation line\",\"type\":\"code\",\"description\":\"Logging for detailed spend calculation including prompt tokens, completion tokens, cached tokens, and their respective rates.\"}"}}]
 tooling 1
 account openai spent $387.2016 balance $-2306.1339 ¤[15654,57]
 {"cached_tokens":15488,"audio_tokens":0}
