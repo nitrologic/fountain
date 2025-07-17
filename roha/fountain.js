@@ -546,7 +546,7 @@ function echo(){
 
 function echo_row(...cells){
 	const row = cells.map(String).join('|');
-	markdownBuffer.push(`|${row}|`);
+	markdownBuffer.push("|"+row+"|");
 }
 
 function debug(title,value){

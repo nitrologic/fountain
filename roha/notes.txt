@@ -1,3 +1,10 @@
+- If you're working in an environment that supports ES6+ (like Deno, Node.js, or modern browsers), template
+literals (`|${row}|`) are generally preferred.
+- If you prefer readability or are working in an older JS environment, string concatenation (`"|" + row + "|"`)
+is fine.
+
+
+
 "group": "Symbols",
 	"tags": ["drawing", "diagrams", "plain"],
 	"wide": 1,
@@ -47,9 +54,6 @@
 	// Miscellaneous Technical
   }
 }
-
-
-
 
 	"plain-alphanum-circle": {
 		"group": "plain-symbols",
@@ -180,6 +184,8 @@
 			"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"}
 		}
 	},
+
+	⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`
 
 
 		if(info && !info.strict){
