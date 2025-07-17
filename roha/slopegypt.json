@@ -1,4 +1,16 @@
 {
+	"𓀀": {
+		"codepoint": "U+13000",
+		"char": "𓀀",
+		"gardiner": "A001",
+		"def": {
+			"picto": "seated man",
+			"use": ["ideographic", "classifier"],
+			"ideo": "man, person, self",
+			"classifier": ["male", "person", "occupations"]
+		},
+		"detail": "The basic hieroglyph for 'man' or 'person'. Used as a classifier for male individuals, occupations, and in first-person pronouns. Often appears in words like 's' (man) and personal names."
+	},
 	"𓀠": {
 		"codepoint": "U+13020",
 		"char": "𓀠",
@@ -46,6 +58,109 @@
 			"classifier": ["quality", "perfection"]
 		},
 		"detail": "Used phonetically as 'nfr' and ideographically to represent 'good, beautiful, perfect.' Occasionally serves as a classifier in words denoting quality or perfection, such as in 'nfrw' (beauty)."
+	},
+	"𓀿": {
+		"codepoint": "U+1303F",
+		"char": "𓀿",
+		"gardiner": "A051",
+		"def": {
+				"picto": "man lying on bed",
+				"use": ["ideographic", "classifier"],
+				"ideo": "lying down, sleeping, sick",
+				"classifier": ["sleep", "illness", "rest", "death"]
+		},
+		"detail": "Depicts a person lying horizontally on a bed. Used as a classifier for words related to sleeping, illness, rest, or death. Common in words like 'sḏr' (to lie down, sleep)."
+	},
+	"𓁀": {
+		"codepoint": "U+13040",
+		"char": "𓁀",
+		"gardiner": "A052",
+		"def": {
+				"picto": "mummy on bier",
+				"use": ["ideographic", "classifier"],
+				"ideo": "mummy, dead person",
+				"classifier": ["death", "mummification", "burial"]
+		},
+		"detail": "Shows a mummified body lying on a funerary bier or table. Used as a classifier for words related to death, mummification, and burial practices. Appears in funerary texts and words like 'sꜥḥ' (mummy)."
+	},
+	"𓅷": {
+		"codepoint": "U+13177",
+		"char": "𓅷",
+		"gardiner": "G038",
+		"def": {
+			"picto": "duck",
+			"use": ["phonetic"],
+			"phono": "gb"
+		},
+		"detail": "Used phonetically for the biliteral 'gb', appearing in words like 'Geb' (the earth god) and other terms containing this sound value."
+	},
+	"𓅸": {
+		"codepoint": "U+13178",
+		"char": "𓅸",
+		"gardiner": "G039",
+		"def": {
+			"picto": "three ducklings",
+			"use": ["phonetic", "ideographic"],
+			"phono": "ṯꜣw",
+			"ideo": "young, offspring"
+		},
+		"detail": "Used phonetically for 'ṯꜣw' and can represent concepts of youth, offspring, or young animals. The plural nature of the glyph emphasizes multiple young or small things."
+	},
+	"𓆛": {
+		"codepoint": "U+1319B",
+		"char": "𓆛",
+		"gardiner": "K001",
+		"def": {
+			"picto": "tilapia fish",
+			"use": ["phonetic", "ideographic"],
+			"phono": "jn",
+			"ideo": "fish, tilapia"
+		},
+		"detail": "Represents a tilapia fish. Used phonetically for 'jn' and appears in words related to fish or containing this sound value."
+	},
+	"𓆜": {
+		"codepoint": "U+1319C",
+		"char": "𓆜",
+		"gardiner": "K002",
+		"def": {
+			"picto": "barbel fish",
+			"use": ["phonetic"],
+			"phono": "bw"
+		},
+		"detail": "Depicts a barbel fish. Functions phonetically for 'bw', often used in negative constructions and words containing this sound."
+	},
+	"𓆝": {
+		"codepoint": "U+1319D",
+		"char": "𓆝",
+		"gardiner": "K003",
+		"def": {
+			"picto": "mullet fish",
+			"use": ["phonetic"],
+			"phono": "ꜥḏ"
+		},
+		"detail": "Shows a mullet fish. Used phonetically for 'ꜥḏ' in various Egyptian words."
+	},
+	"𓆞": {
+		"codepoint": "U+1319E",
+		"char": "𓆞",
+		"gardiner": "K004",
+		"def": {
+			"picto": "elephant-snout fish",
+			"use": ["phonetic"],
+			"phono": "ẖꜣ"
+		},
+		"detail": "Represents an elephant-snout fish (Mormyrus). Used phonetically for 'ẖꜣ'."
+	},
+	"𓆟": {
+		"codepoint": "U+1319F",
+		"char": "𓆟",
+		"gardiner": "K005",
+		"def": {
+			"picto": "petrocephalus fish",
+			"use": ["phonetic"],
+			"phono": "bs"
+		},
+		"detail": "Depicts a petrocephalus fish. Functions as a phonetic sign for 'bs'."
 	},
 	"𓉐": {
 		"codepoint": "U+13250",

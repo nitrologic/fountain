@@ -185,6 +185,7 @@
 	},
 	"claude-3-haiku-20240307@anthropic":{
 		"pricing":[0.80,4.0],
+		"strict":true,
 		"purpose":"fast speeds, improved instruction following, and more accurate tool use"
 	},
 	"command-a-03-2025@cohere":{
