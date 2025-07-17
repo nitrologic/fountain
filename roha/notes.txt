@@ -1,18 +1,299 @@
-- If you're working in an environment that supports ES6+ (like Deno, Node.js, or modern browsers), template
-literals (`|${row}|`) are generally preferred.
-- If you prefer readability or are working in an older JS environment, string concatenation (`"|" + row + "|"`)
-is fine.
+		"oldversion":{
+			"𓅀": {"char": "𓅀", "codepoint": "13140", "name": "Vulture (Akhom)"},
+			"𓅃": {"char": "𓅃", "codepoint": "13143", "name": "Quail chick"},
+			"𓅄": {"char": "𓅄", "codepoint": "13144", "name": "Sparrow"},
+			"𓅅": {"char": "𓅅", "codepoint": "13145", "name": "Duck"},
+			"𓅆": {"char": "𓅆", "codepoint": "13146", "name": "Owl"},
+			"𓅇": {"char": "𓅇", "codepoint": "13147", "name": "Falcon on perch"},
+			"𓅈": {"char": "𓅈", "codepoint": "13148", "name": "Swallow"},
+			"𓅉": {"char": "𓅉", "codepoint": "13149", "name": "Crane"},
+			"𓅊": {"char": "𓅊", "codepoint": "1314A", "name": "Heron"},
+			"𓅋": {"char": "𓅋", "codepoint": "1314B", "name": "Plover"},
+			"𓅌": {"char": "𓅌", "codepoint": "1314C", "name": "Lapwing"},
+			"𓅍": {"char": "𓅍", "codepoint": "1314D", "name": "Ibis"},
+			"𓅎": {"char": "𓅎", "codepoint": "1314E", "name": "Hoopoe"},
+			"𓅏": {"char": "𓅏", "codepoint": "1314F", "name": "Eagle"},
+			"𓅐": {"char": "𓅐", "codepoint": "13150", "name": "Hawk"},
+			"𓅑": {"char": "𓅑", "codepoint": "13151", "name": "Kite"},
+			"𓅒": {"char": "𓅒", "codepoint": "13152", "name": "Crow"},
+			"𓅓": {"char": "𓅓", "codepoint": "13153", "name": "Ostrich"},
+			"𓅔": {"char": "𓅔", "codepoint": "13154", "name": "Goose"},
+			"𓅕": {"char": "𓅕", "codepoint": "13155", "name": "Swan"},
+			"𓅖": {"char": "𓅖", "codepoint": "13156", "name": "Cormorant"},
+			"𓅗": {"char": "𓅗", "codepoint": "13157", "name": "Pelican"},
+			"𓅘": {"char": "𓅘", "codepoint": "13158", "name": "Stork"},
+			"𓅙": {"char": "𓅙", "codepoint": "13159", "name": "Flamingo"},
+			"𓅚": {"char": "𓅚", "codepoint": "1315A", "name": "Pigeon"},
+			"𓅛": {"char": "𓅛", "codepoint": "1315B", "name": "Dove"},
+			"𓅜": {"char": "𓅜", "codepoint": "1315C", "name": "Horus falcon"},
+			"𓅝": {"char": "𓅝", "codepoint": "1315D", "name": "Vulture with spread wings"},
+			"𓅞": {"char": "𓅞", "codepoint": "1315E", "name": "Bird with human head"},
+			"𓅟": {"char": "𓅟", "codepoint": "1315F", "name": "Ba bird (soul)"},
+			"𓅠": {"char": "𓅠", "codepoint": "13160", "name": "Bird with ankh"},
+			"𓅡": {"char": "𓅡", "codepoint": "13161", "name": "Bird with was scepter"},
+			"𓅢": {"char": "𓅢", "codepoint": "13162", "name": "Bird with sun disk"},
+			"𓅣": {"char": "𓅣", "codepoint": "13163", "name": "Bird with feather"},
+			"𓅤": {"char": "𓅤", "codepoint": "13164", "name": "Flying bird"},
+			"𓅥": {"char": "𓅥", "codepoint": "13165", "name": "Perched bird"},
+			"𓅦": {"char": "𓅦", "codepoint": "13166", "name": "Bird in nest"},
+			"𓅧": {"char": "𓅧", "codepoint": "13167", "name": "Bird with fish"},
+			"𓅨": {"char": "𓅨", "codepoint": "13168", "name": "Bird with snake"},
+			"𓅩": {"char": "𓅩", "codepoint": "13169", "name": "Bird with lotus"},
+			"𓅪": {"char": "𓅪", "codepoint": "1316A", "name": "Bird with papyrus"},
+			"𓅫": {"char": "𓅫", "codepoint": "1316B", "name": "Bird with reed"},
+			"𓅬": {"char": "𓅬", "codepoint": "1316C", "name": "Bird with palm branch"},
+			"𓅭": {"char": "𓅭", "codepoint": "1316D", "name": "Bird with ankh and was"},
+			"𓅮": {"char": "𓅮", "codepoint": "1316E", "name": "Bird with djed pillar"},
+			"𓅯": {"char": "𓅯", "codepoint": "1316F", "name": "Bird with shen ring"},
+			"𓅰": {"char": "𓅰", "codepoint": "13170", "name": "Bird with crook and flail"},
+			"𓅱": {"char": "𓅱", "codepoint": "13171", "name": "Quail chick (letter W)"},
+			"𓅲": {"char": "𓅲", "codepoint": "13172", "name": "Bird with two heads"},
+			"𓅳": {"char": "𓅳", "codepoint": "13173", "name": "Bird with three heads"},
+			"𓅴": {"char": "𓅴", "codepoint": "13174", "name": "Winged bird"},
+			"𓅵": {"char": "𓅵", "codepoint": "13175", "name": "Bird with human arms"},
+			"𓅶": {"char": "𓅶", "codepoint": "13176", "name": "Bird with offerings"},
+			"𓅷": {"char": "𓅷", "codepoint": "13177", "name": "Sacred ibis"}
 
 
 
-"group": "Symbols",
+// bad terminal emoji - ⚙️⚙️
+
+// 𓆝 𓆟 𓆞 𓆝 𓆟
+// ⚛
+
+// read_time fetch_file submit_file tag_slop
+//
+// fetch and submit file base is forge/
+//
+// mut:{name,hasForge,notes:[],errors:[],relays:0,cost:0,elapsed:0}
+
+// fountain.js relay
+// with account config api and model info
+// sends payload
+// for {model,mut}
+// grokFunctions {tools}
+// !info.cold {temperature}
+// info.max_tokens {max_tokens}
+// grokThinking {config:{thinkingConfig:{thinkingBudget:grokThink}}}
+// logs response
+//
+
+��
+𓅀
+
+{
+  "A": {
+    "name": "Man and His Occupations",
+    "description": "Signs depicting human figures, actions, or roles such as seated man, king, or soldier.",
+    "count": 59
+  },
+  "B": {
+    "name": "Woman and Her Occupations",
+    "description": "Signs of women, female roles, or activities like seated woman or queen.",
+    "count": 7
+  },
+  "C": {
+    "name": "Anthropomorphic Deities",
+    "description": "Deities with human-like forms, such as gods like Osiris or Horus.",
+    "count": 11
+  },
+  "D": {
+    "name": "Parts of the Human Body",
+    "description": "Body parts like eye, hand, or leg.",
+    "count": 63
+  },
+  "E": {
+    "name": "Mammals",
+    "description": "Mammalian animals, including cat, lion, or cow.",
+    "count": 34
+  },
+  "F": {
+    "name": "Parts of Mammals",
+    "description": "Animal body parts such as horn or tail.",
+    "count": 31
+  },
+  "G": {
+    "name": "Birds",
+    "description": "Bird species and related signs, like owl or vulture.",
+    "count": 54
+  },
+  "H": {
+    "name": "Parts of Birds",
+    "description": "Bird body parts, such as wing or feather.",
+    "count": 8
+  },
+  "I": {
+    "name": "Amphibious Animals, Reptiles, etc.",
+    "description": "Reptiles and amphibians, like snake or crocodile.",
+    "count": 15
+  },
+  "K": {
+    "name": "Fish and Parts of Fish",
+    "description": "Fish and fish-related signs, such as fish or fin.",
+    "count": 7
+  },
+  "L": {
+    "name": "Invertebrates and Lesser Animals",
+    "description": "Insects and small creatures, like bee or scorpion.",
+    "count": 7
+  },
+  "M": {
+    "name": "Trees and Plants",
+    "description": "Vegetation, such as reed or lotus.",
+    "count": 44
+  },
+  "N": {
+    "name": "Sky, Earth, Water",
+    "description": "Natural features like sky, mountain, or water.",
+    "count": 42
+  },
+  "O": {
+    "name": "Buildings, Parts of Buildings, etc.",
+    "description": "Architectural elements, such as house or pyramid.",
+    "count": 51
+  },
+  "P": {
+    "name": "Ships, Parts of Ships, etc.",
+    "description": "Watercraft and related signs, like boat or sail.",
+    "count": 11
+  },
+  "Q": {
+    "name": "Domestic and Funerary Furniture",
+    "description": "Household items, such as chair or bed.",
+    "count": 7
+  },
+  "R": {
+    "name": "Temple Furniture and Sacred Emblems",
+    "description": "Religious objects, like altar or ankh.",
+    "count": 25
+  },
+  "S": {
+    "name": "Crowns, Dress, Staves, etc.",
+    "description": "Regalia and symbols of power, such as crown or scepter.",
+    "count": 45
+  },
+  "T": {
+    "name": "Warfare, Hunting, Butchery",
+    "description": "Weapons and tools, like bow or knife.",
+    "count": 35
+  },
+  "U": {
+    "name": "Agriculture, Crafts, and Professions",
+    "description": "Tools and activities, such as plow or adze.",
+    "count": 41
+  },
+  "V": {
+    "name": "Rope, Fiber, Baskets, Bags, etc.",
+    "description": "Cordage and containers, like rope or basket.",
+    "count": 39
+  },
+  "W": {
+    "name": "Vessels of Stone and Earthenware",
+    "description": "Containers, such as jar or pot.",
+    "count": 25
+  },
+  "X": {
+    "name": "Loaves and Cakes",
+    "description": "Bread and food items, like loaf.",
+    "count": 8
+  },
+  "Y": {
+    "name": "Writings, Games, Music",
+    "description": "Cultural objects, such as scroll or harp.",
+    "count": 8
+  },
+  "Z": {
+    "name": "Strokes, Signs Derived from Hieratic, Geometrical Figures",
+    "description": "Lines and shapes, like single stroke.",
+    "count": 11
+  },
+  "AA": {
+    "name": "Unclassified",
+    "description": "Miscellaneous signs not fitting other categories.",
+    "count": 31
+  }
+}
+
+
+{
+	"A-Man": "𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏𓀐𓀑𓀒𓀓𓀔𓀕𓀖𓀗𓀘𓀙𓀚𓀛𓀜𓀝𓀞𓀟𓀠𓀡𓀢𓀣𓀤𓀥𓀦𓀧𓀨𓀩𓀪𓀫𓀬𓀭𓀮𓀯𓀰𓀱𓀲𓀳𓀴𓀵𓀶𓀷𓀸𓀹𓀺𓀻𓀼𓀽𓀾𓀿𓁀",
+	"B-Woman": "𓁁𓁂𓁃𓁄𓁅",
+	"C-AnthropomorphicDeities": "𓁆𓁇𓁈𓁉𓁊𓁋𓁌𓁍𓁎𓁏𓁐𓁑𓁒𓁓𓁔𓁕𓁖𓁗𓁘𓁙",
+	"D-BodyParts": "𓁚𓁛𓁜𓁝𓁞𓁟𓁠𓁡𓁢𓁣𓁤𓁥𓁦𓁧𓁨𓁩𓁪𓁫𓁬𓁭𓁮𓁯𓁰𓁱𓁲𓁳𓁴𓁵𓁶𓁷𓁸𓁹𓁺𓁻𓁼𓁽𓁾𓁿𓂀𓂁𓂂𓂃𓂄𓂅𓂆𓂇𓂈𓂉𓂊𓂋",
+	"E-Mammals": "𓂌𓂍𓂎𓂏𓂐𓂑𓂒𓂓𓂔𓂕𓂖𓂗𓂘𓂙𓂚𓂛𓂜𓂝𓂞𓂟𓂠𓂡𓂢𓂣𓂤",
+	"F-MammalParts": "𓂥𓂦𓂧𓂨𓂩𓂪𓂫𓂬𓂭𓂮𓂯𓂰𓂱𓂲𓂳𓂴𓂵𓂶𓂷𓂸𓂹𓂺𓂻𓂼𓂽",
+	"G-Birds": "𓂾𓂿𓃀𓃁𓃂𓃃𓃄𓃅𓃆𓃇𓃈𓃉𓃊𓃋𓃌𓃍𓃎𓃏𓃐𓃑𓃒𓃓𓃔𓃕𓃖𓃗𓃘𓃙𓃚",
+	"H-BirdParts": "𓃛𓃜𓃝𓃞𓃟𓃠𓃡𓃢𓃣",
+	"I-Reptiles": "𓃤𓃥𓃦𓃧𓃨𓃩𓃪𓃫𓃬𓃭𓃮𓃯𓃰𓃱𓃲𓃳𓃴𓃵",
+	"K-Fish": "𓃶𓃷𓃸𓃹𓃺",𓅀
+	"L-Invertebrates": "𓃻𓃼𓃽𓃾𓃿𓄀",
+	"M-Plants": "𓄁𓄂𓄃𓄄𓄅𓄆𓄇𓄈𓄉𓄊𓄋𓄌𓄍𓄎𓄏𓄐𓄑𓄒𓄓𓄔𓄕𓄖𓄗𓄘𓄙𓄚𓄛𓄜𓄝𓄞𓄟𓄠𓄡𓄢𓄣𓄤𓄥𓄦𓄧𓄨",
+	"N-Nature": "𓄩𓄪𓄫𓄬𓄭𓄮𓄯𓄰𓄱𓄲𓄳𓄴𓄵𓄶𓄷𓄸𓄹𓄺𓄻𓄼𓄽𓄾𓄿𓅀𓅁𓅂𓅃𓅄𓅅𓅆𓅇",
+	"O-Buildings": "𓅈𓅉𓅊𓅋𓅌𓅍𓅎𓅏𓅐𓅑𓅒𓅓𓅔𓅕𓅖𓅗𓅘𓅙𓅚𓅛𓅜𓅝𓅞𓅟𓅠𓅡𓅢𓅣𓅤𓅥𓅦𓅧𓅨𓅩𓅪𓅫𓅬𓅭𓅮𓅯𓅰𓅱",
+	"P-Boats": "𓅲𓅳𓅴𓅵𓅶𓅷𓅸",
+	"Q-Furniture": "𓅹𓅺𓅻𓅼𓅽𓅾𓅿",
+	"R-TempleFurniture": "𓆀𓆁𓆂𓆃𓆄𓆅𓆆𓆇𓆈𓆉𓆊𓆋",
+	"S-CrownsDress": "𓆌𓆍𓆎𓆏𓆐𓆑𓆒𓆓𓆔𓆕𓆖𓆗𓆘𓆙𓆚𓆛𓆜𓆝𓆞𓆟𓆠𓆡",
+	"T-WarfareHunting": "𓆢𓆣𓆤𓆥𓆦𓆧𓆨𓆩𓆪𓆫𓆬𓆭",
+	"U-AgricultureCrafts": "𓆮𓆯𓆰𓆱𓆲𓆳𓆴𓆵𓆶𓆷𓆸𓆹𓆺𓆻𓆼𓆽𓆾𓆿𓇀𓇁𓇂𓇃𓇄𓇅𓇆𓇇",
+	"V-BasketsRope": "𓇈𓇉𓇊𓇋𓇌𓇍𓇎𓇏𓇐𓇑𓇒𓇓𓇔𓇕𓇖𓇗𓇘𓇙𓇚𓇛𓇜𓇝𓇞𓇟𓇠𓇡𓇢𓇣𓇤𓇥𓇦𓇧𓇨𓇩𓇪",
+	"W-Pots": "𓇫𓇬𓇭𓇮𓇯𓇰𓇱𓇲𓇳𓇴𓇵𓇶",
+	"X-Bread": "𓇷𓇸𓇹𓇺",
+	"Y-WritingMusic": "𓇻𓇼𓇽𓇾𓇿𓈀𓈁",
+	"Z-LinesHieratic": "𓈂𓈃𓈄𓈅𓈆𓈇𓈈𓈉𓈊𓈋",
+	"AA-Unclassified": "𓈌𓈍𓈎𓈏𓈐𓈑𓈒𓈓𓈔𓈕𓈖𓈗𓈘𓈙𓈚𓈛"
+}
+
+	{
+	"A": "𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏𓀐𓀑𓀒𓀓𓀔𓀕𓀖𓀗𓀘𓀙𓀚𓀛𓀜𓀝𓀞𓀟𓀠𓀡𓀢𓀣𓀤𓀥𓀦𓀧𓀨𓀩𓀪𓀫𓀬𓀭𓀮𓀯𓀰𓀱𓀲𓀳𓀴𓀵𓀶𓀷𓀸𓀹𓀺𓀻𓀼𓀽𓀾𓀿𓁀",
+	"B": "𓁁𓁂𓁃𓁄𓁅",
+	"C": "𓁆𓁇𓁈𓁉𓁊𓁋𓁌𓁍𓁎𓁏𓁐𓁑𓁒𓁓𓁔𓁕𓁖𓁗𓁘𓁙",
+	"D": "𓁚𓁛𓁜𓁝𓁞𓁟𓁠𓁡𓁢𓁣𓁤𓁥𓁦𓁧𓁨𓁩𓁪𓁫𓁬𓁭𓁮𓁯𓁰𓁱𓁲𓁳𓁴𓁵𓁶𓁷𓁸𓁹𓁺𓁻𓁼𓁽𓁾𓁿𓂀𓂁𓂂𓂃𓂄𓂅𓂆𓂇𓂈𓂉𓂊𓂋",
+	"E": "𓂌𓂍𓂎𓂏𓂐𓂑𓂒𓂓𓂔𓂕𓂖𓂗𓂘𓂙𓂚𓂛𓂜𓂝𓂞𓂟𓂠𓂡𓂢𓂣𓂤",
+	"F": "𓂥𓂦𓂧𓂨𓂩𓂪𓂫𓂬𓂭𓂮𓂯𓂰𓂱𓂲𓂳𓂴𓂵𓂶𓂷𓂸𓂹𓂺𓂻𓂼𓂽",
+	"G": "𓂾𓂿𓃀𓃁𓃂𓃃𓃄𓃅𓃆𓃇𓃈𓃉𓃊𓃋𓃌𓃍𓃎𓃏𓃐𓃑𓃒𓃓𓃔𓃕𓃖𓃗𓃘𓃙𓃚",
+	"H": "𓃛𓃜𓃝𓃞𓃟𓃠𓃡𓃢𓃣",
+	"I": "𓃤𓃥𓃦𓃧𓃨𓃩𓃪𓃫𓃬𓃭𓃮𓃯𓃰𓃱𓃲𓃳𓃴𓃵",
+	"K": "𓃶𓃷𓃸𓃹𓃺",
+	"L": "𓃻𓃼𓃽𓃾𓃿𓄀",
+	"M": "𓄁𓄂𓄃𓄄𓄅𓄆𓄇𓄈𓄉𓄊𓄋𓄌𓄍𓄎𓄏𓄐𓄑𓄒𓄓𓄔𓄕𓄖𓄗𓄘𓄙𓄚𓄛𓄜𓄝𓄞𓄟𓄠𓄡𓄢𓄣𓄤𓄥𓄦𓄧𓄨",
+	"N": "𓄩𓄪𓄫𓄬𓄭𓄮𓄯𓄰𓄱𓄲𓄳𓄴𓄵𓄶𓄷𓄸𓄹𓄺𓄻𓄼𓄽𓄾𓄿𓅀𓅁𓅂𓅃𓅄𓅅𓅆𓅇",
+	"O": "𓅈𓅉𓅊𓅋𓅌𓅍𓅎𓅏𓅐𓅑𓅒𓅓𓅔𓅕𓅖𓅗𓅘𓅙𓅚𓅛𓅜𓅝𓅞𓅟𓅠𓅡𓅢𓅣𓅤𓅥𓅦𓅧𓅨𓅩𓅪𓅫𓅬𓅭𓅮𓅯𓅰𓅱",
+	"P": "𓅲𓅳𓅴𓅵𓅶𓅷𓅸",
+	"Q": "𓅹𓅺𓅻𓅼𓅽𓅾𓅿",
+	"R": "𓆀𓆁𓆂𓆃𓆄𓆅𓆆𓆇𓆈𓆉𓆊𓆋",
+	"S": "𓆌𓆍𓆎𓆏𓆐𓆑𓆒𓆓𓆔𓆕𓆖𓆗𓆘𓆙𓆚𓆛𓆜𓆝𓆞𓆟𓆠𓆡",
+	"T": "𓆢𓆣𓆤𓆥𓆦𓆧𓆨𓆩𓆪𓆫𓆬𓆭",
+	"U": "𓆮𓆯𓆰𓆱𓆲𓆳𓆴𓆵𓆶𓆷𓆸𓆹𓆺𓆻𓆼𓆽𓆾𓆿𓇀𓇁𓇂𓇃𓇄𓇅𓇆𓇇",
+	"V": "𓇈𓇉𓇊𓇋𓇌𓇍𓇎𓇏𓇐𓇑𓇒𓇓𓇔𓇕𓇖𓇗𓇘𓇙𓇚𓇛𓇜𓇝𓇞𓇟𓇠𓇡𓇢𓇣𓇤𓇥𓇦𓇧𓇨𓇩𓇪",
+	"W": "𓇫𓇬𓇭𓇮𓇯𓇰𓇱𓇲𓇳𓇴𓇵𓇶",
+	"X": "𓇷𓇸𓇹𓇺",
+	"Y": "𓇻𓇼𓇽𓇾𓇿𓈀𓈁",
+	"Z": "𓈂𓈃𓈄𓈅𓈆𓈇𓈈𓈉𓈊𓈋",
+	"AA": "𓈌𓈍𓈎𓈏𓈐𓈑𓈒𓈓𓈔𓈕𓈖𓈗𓈘𓈙𓈚𓈛",
+	"Extended": "𓈜𓈝𓈞𓈟𓈠𓈡𓈢𓈣𓈤𓈥𓈦𓈧𓈨𓈩𓈪𓈫𓈬𓈭𓈮𓈯𓈰𓈱𓈲𓈳𓈴𓈵𓈶𓈷𓈸𓈹𓈺𓈻𓈼𓈽𓈾𓈿𓉀𓉁𓉂𓉃𓉄𓉅𓉆𓉇𓉈𓉉𓉊𓉋𓉌𓉍𓉎𓉏𓉐𓉑𓉒𓉓𓉔𓉕𓉖𓉗𓉘𓉙𓉚𓉛𓉜𓉝𓉞𓉟𓉠𓉡𓉢𓉣𓉤𓉥𓉦𓉧𓉨𓉩𓉪𓉫𓉬𓉭𓉮𓉯𓉰𓉱𓉲𓉳𓉴𓉵𓉶𓉷𓉸𓉹𓉺𓉻𓉼𓉽𓉾𓉿𓊀𓊁𓊂𓊃𓊄𓊅𓊆𓊇𓊈𓊉𓊊𓊋𓊌𓊍𓊎𓊏𓊐𓊑𓊒𓊓𓊔𓊕𓊖𓊗𓊘𓊙𓊚𓊛𓊜𓊝𓊞𓊟𓊠𓊡𓊢𓊣𓊤𓊥𓊦𓊧𓊨𓊩𓊪𓊫𓊬𓊭𓊮𓊯𓊰𓊱𓊲𓊳𓊴𓊵𓊶𓊷𓊸𓊹𓊺𓊻𓊼𓊽𓊾𓊿𓋀𓋁𓋂𓋃𓋄𓋅𓋆𓋇𓋈𓋉𓋊𓋋𓋌𓋍𓋎𓋏𓋐𓋑𓋒𓋓𓋔𓋕𓋖𓋗𓋘𓋙𓋚𓋛𓋜𓋝𓋞𓋟𓋠𓋡𓋢𓋣𓋤𓋥𓋦𓋧𓋨𓋩𓋪𓋫𓋬𓋭𓋮𓋯𓋰𓋱𓋲𓋳𓋴𓋵𓋶𓋷𓋸𓋹𓋺𓋻𓋼𓋽𓋾𓋿𓌀𓌁𓌂𓌃𓌄𓌅𓌆𓌇𓌈𓌉𓌊𓌋𓌌𓌍𓌎𓌏𓌐𓌑𓌒𓌓𓌔𓌕𓌖𓌗𓌘𓌙𓌚𓌛𓌜𓌝𓌞𓌟𓌠𓌡𓌢𓌣𓌤𓌥𓌦𓌧𓌨𓌩𓌪𓌫𓌬𓌭𓌮𓌯𓌰𓌱𓌲𓌳𓌴𓌵𓌶𓌷𓌸𓌹𓌺𓌻𓌼𓌽𓌾𓌿𓍀𓍁𓍂𓍃𓍄𓍅𓍆𓍇𓍈𓍉𓍊𓍋𓍌𓍍𓍎𓍏𓍐𓍑𓍒𓍓𓍔𓍕𓍖𓍗𓍘𓍙𓍚𓍛𓍜𓍝𓍞𓍟𓍠𓍡𓍢𓍣𓍤𓍥𓍦𓍧𓍨𓍩𓍪𓍫𓍬𓍭𓍮𓍯𓍰𓍱𓍲𓍳𓍴𓍵𓍶𓍷𓍸𓍹𓍺𓍻𓍼𓍽𓍾𓍿𓎀𓎁𓎂𓎃𓎄𓎅𓎆𓎇𓎈𓎉𓎊𓎋𓎌𓎍𓎎𓎏𓎐𓎑𓎒𓎓𓎔𓎕𓎖𓎗𓎘𓎙𓎚𓎛𓎜𓎝𓎞𓎟𓎠𓎡𓎢𓎣𓎤𓎥𓎦𓎧𓎨𓎩𓎪𓎫𓎬𓎭𓎮𓎯𓎰𓎱𓎲𓎳𓎴𓎵𓎶𓎷𓎸𓎹𓎺𓎻𓎼𓎽𓎾𓎿𓏀𓏁𓏂𓏃𓏄𓏅𓏆𓏇𓏈𓏉𓏊𓏋𓏌𓏍𓏎𓏏𓏐𓏑𓏒𓏓𓏔𓏕𓏖𓏗𓏘𓏙𓏚𓏛𓏜𓏝𓏞𓏟𓏠𓏡𓏢𓏣𓏤𓏥𓏦𓏧𓏨𓏩𓏪𓏫𓏬𓏭𓏮𓏯𓏰𓏱𓏲𓏳𓏴𓏵𓏶𓏷𓏸𓏹𓏺𓏻𓏼𓏽𓏾𓏿𓐀𓐁𓐂𓐃𓐄𓐅𓐆𓐇𓐈𓐉𓐊𓐋𓐌𓐍𓐎𓐏𓐐𓐑𓐒𓐓𓐔𓐕𓐖𓐗𓐘𓐙𓐚𓐛𓐜𓐝𓐞𓐟𓐠𓐡𓐢𓐣𓐤𓐥𓐦𓐧𓐨𓐩𓐪𓐫𓐬𓐭𓐮𓐯𓐰𓐱𓐲𓐳𓐴𓐵𓐶𓐷𓐸𓐹𓐺𓐻𓐼𓐽𓐾𓐿𓑀𓑁𓑂𓑃𓑄𓑅𓑆𓑇𓑈𓑉𓑊𓑋𓑌𓑍𓑎𓑏𓑐𓑑𓑒𓑓𓑔𓑕𓑖𓑗𓑘𓑙𓑚𓑛𓑜𓑝𓑞𓑟𓑠𓑡𓑢𓑣𓑤𓑥𓑦𓑧𓑨𓑩𓑪𓑫𓑬𓑭𓑮𓑯𓑰𓑱𓑲𓑳𓑴𓑵𓑶𓑷𓑸𓑹𓑺𓑻𓑼𓑽𓑾𓑿𓒀𓒁𓒂𓒃𓒄𓒅𓒆𓒇𓒈𓒉𓒊𓒋𓒌𓒍𓒎𓒏𓒐𓒑𓒒𓒓𓒔𓒕𓒖𓒗𓒘𓒙𓒚𓒛𓒜𓒝𓒞𓒟𓒠𓒡𓒢𓒣𓒤𓒥𓒦𓒧𓒨𓒩𓒪𓒫𓒬𓒭𓒮𓒯"
+	}
+
+
+	{
+	"hieroglyphs": "𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏𓀐𓀑𓀒𓀓𓀔𓀕𓀖𓀗𓀘𓀙𓀚𓀛𓀜𓀝𓀞𓀟𓀠𓀡𓀢𓀣𓀤𓀥𓀦𓀧𓀨𓀩𓀪𓀫𓀬𓀭𓀮𓀯𓀰𓀱𓀲𓀳𓀴𓀵𓀶𓀷𓀸𓀹𓀺𓀻𓀼𓀽𓀾𓀿𓁀𓁁𓁂𓁃𓁄𓁅𓁆𓁇𓁈𓁉𓁊𓁋𓁌𓁍𓁎𓁏𓁐𓁑𓁒𓁓𓁔𓁕𓁖𓁗𓁘𓁙𓁚𓁛𓁜𓁝𓁞𓁟𓁠𓁡𓁢𓁣𓁤𓁥𓁦𓁧𓁨𓁩𓁪𓁫𓁬𓁭𓁮𓁯𓁰𓁱𓁲𓁳𓁴𓁵𓁶𓁷𓁸𓁹𓁺𓁻𓁼𓁽𓁾𓁿𓂀𓂁𓂂𓂃𓂄𓂅𓂆𓂇𓂈𓂉𓂊𓂋𓂌𓂍𓂎𓂏𓂐𓂑𓂒𓂓𓂔𓂕𓂖𓂗𓂘𓂙𓂚𓂛𓂜𓂝𓂞𓂟𓂠𓂡𓂢𓂣𓂤𓂥𓂦𓂧𓂨𓂩𓂪𓂫𓂬𓂭𓂮𓂯𓂰𓂱𓂲𓂳𓂴𓂵𓂶𓂷𓂸𓂹𓂺𓂻𓂼𓂽𓂾𓂿𓃀𓃁𓃂𓃃𓃄𓃅𓃆𓃇𓃈𓃉𓃊𓃋𓃌𓃍𓃎𓃏𓃐𓃑𓃒𓃓𓃔𓃕𓃖𓃗𓃘𓃙𓃚𓃛𓃜𓃝𓃞𓃟𓃠𓃡𓃢𓃣𓃤𓃥𓃦𓃧𓃨𓃩𓃪𓃫𓃬𓃭𓃮𓃯𓃰𓃱𓃲𓃳𓃴𓃵𓃶𓃷𓃸𓃹𓃺𓃻𓃼𓃽𓃾𓃿𓄀𓄁𓄂𓄃𓄄𓄅𓄆𓄇𓄈𓄉𓄊𓄋𓄌𓄍𓄎𓄏𓄐𓄑𓄒𓄓𓄔𓄕𓄖𓄗𓄘𓄙𓄚𓄛𓄜𓄝𓄞𓄟𓄠𓄡𓄢𓄣𓄤𓄥𓄦𓄧𓄨𓄩𓄪𓄫𓄬𓄭𓄮𓄯𓄰𓄱𓄲𓄳𓄴𓄵𓄶𓄷𓄸𓄹𓄺𓄻𓄼𓄽𓄾𓄿𓅀𓅁𓅂𓅃𓅄𓅅𓅆𓅇𓅈𓅉𓅊𓅋𓅌𓅍𓅎𓅏𓅐𓅑𓅒𓅓𓅔𓅕𓅖𓅗𓅘𓅙𓅚𓅛𓅜𓅝𓅞𓅟𓅠𓅡𓅢𓅣𓅤𓅥𓅦𓅧𓅨𓅩𓅪𓅫𓅬𓅭𓅮𓅯𓅰𓅱𓅲𓅳𓅴𓅵𓅶𓅷𓅸𓅹𓅺𓅻𓅼𓅽𓅾𓅿𓆀𓆁𓆂𓆃𓆄𓆅𓆆𓆇𓆈𓆉𓆊𓆋𓆌𓆍𓆎𓆏𓆐𓆑𓆒𓆓𓆔𓆕𓆖𓆗𓆘𓆙𓆚𓆛𓆜𓆝𓆞𓆟𓆠𓆡𓆢𓆣𓆤𓆥𓆦𓆧𓆨𓆩𓆪𓆫𓆬𓆭𓆮𓆯𓆰𓆱𓆲𓆳𓆴𓆵𓆶𓆷𓆸𓆹𓆺𓆻𓆼𓆽𓆾𓆿𓇀𓇁𓇂𓇃𓇄𓇅𓇆𓇇𓇈𓇉𓇊𓇋𓇌𓇍𓇎𓇏𓇐𓇑𓇒𓇓𓇔𓇕𓇖𓇗𓇘𓇙𓇚𓇛𓇜𓇝𓇞𓇟𓇠𓇡𓇢𓇣𓇤𓇥𓇦𓇧𓇨𓇩𓇪𓇫𓇬𓇭𓇮𓇯𓇰𓇱𓇲𓇳𓇴𓇵𓇶𓇷𓇸𓇹𓇺𓇻𓇼𓇽𓇾𓇿𓈀𓈁𓈂𓈃𓈄𓈅𓈆𓈇𓈈𓈉𓈊𓈋𓈌𓈍𓈎𓈏𓈐𓈑𓈒𓈓𓈔𓈕𓈖𓈗𓈘𓈙𓈚𓈛𓈜𓈝𓈞𓈟𓈠𓈡𓈢𓈣𓈤𓈥𓈦𓈧𓈨𓈩𓈪𓈫𓈬𓈭𓈮𓈯𓈰𓈱𓈲𓈳𓈴𓈵𓈶𓈷𓈸𓈹𓈺𓈻𓈼𓈽𓈾𓈿𓉀𓉁𓉂𓉃𓉄𓉅𓉆𓉇𓉈𓉉𓉊𓉋𓉌𓉍𓉎𓉏𓉐𓉑𓉒𓉓𓉔𓉕𓉖𓉗𓉘𓉙𓉚𓉛𓉜𓉝𓉞𓉟𓉠𓉡𓉢𓉣𓉤𓉥𓉦𓉧𓉨𓉩𓉪𓉫𓉬𓉭𓉮𓉯𓉰𓉱𓉲𓉳𓉴𓉵𓉶𓉷𓉸𓉹𓉺𓉻𓉼𓉽𓉾𓉿𓊀𓊁𓊂𓊃𓊄𓊅𓊆𓊇𓊈𓊉𓊊𓊋𓊌𓊍𓊎𓊏𓊐𓊑𓊒𓊓𓊔𓊕𓊖𓊗𓊘𓊙𓊚𓊛𓊜𓊝𓊞𓊟𓊠𓊡𓊢𓊣𓊤𓊥𓊦𓊧𓊨𓊩𓊪𓊫𓊬𓊭𓊮𓊯𓊰𓊱𓊲𓊳𓊴𓊵𓊶𓊷𓊸𓊹𓊺𓊻𓊼𓊽𓊾𓊿𓋀𓋁𓋂𓋃𓋄𓋅𓋆𓋇𓋈𓋉𓋊𓋋𓋌𓋍𓋎𓋏𓋐𓋑𓋒𓋓𓋔𓋕𓋖𓋗𓋘𓋙𓋚𓋛𓋜𓋝𓋞𓋟𓋠𓋡𓋢𓋣𓋤𓋥𓋦𓋧𓋨𓋩𓋪𓋫𓋬𓋭𓋮𓋯𓋰𓋱𓋲𓋳𓋴𓋵𓋶𓋷𓋸𓋹𓋺𓋻𓋼𓋽𓋾𓋿𓌀𓌁𓌂𓌃𓌄𓌅𓌆𓌇𓌈𓌉𓌊𓌋𓌌𓌍𓌎𓌏𓌐𓌑𓌒𓌓𓌔𓌕𓌖𓌗𓌘𓌙𓌚𓌛𓌜𓌝𓌞𓌟𓌠𓌡𓌢𓌣𓌤𓌥𓌦𓌧𓌨𓌩𓌪𓌫𓌬𓌭𓌮𓌯𓌰𓌱𓌲𓌳𓌴𓌵𓌶𓌷𓌸𓌹𓌺𓌻𓌼𓌽𓌾𓌿𓍀𓍁𓍂𓍃𓍄𓍅𓍆𓍇𓍈𓍉𓍊𓍋𓍌𓍍𓍎𓍏𓍐𓍑𓍒𓍓𓍔𓍕𓍖𓍗𓍘𓍙𓍚𓍛𓍜𓍝𓍞𓍟𓍠𓍡𓍢𓍣𓍤𓍥𓍦𓍧𓍨𓍩𓍪𓍫𓍬𓍭𓍮𓍯𓍰𓍱𓍲𓍳𓍴𓍵𓍶𓍷𓍸𓍹𓍺𓍻𓍼𓍽𓍾𓍿𓎀𓎁𓎂𓎃𓎄𓎅𓎆𓎇𓎈𓎉𓎊𓎋𓎌𓎍𓎎𓎏𓎐𓎑𓎒𓎓𓎔𓎕𓎖𓎗𓎘𓎙𓎚𓎛𓎜𓎝𓎞𓎟𓎠𓎡𓎢𓎣𓎤𓎥𓎦𓎧𓎨𓎩𓎪𓎫𓎬𓎭𓎮𓎯𓎰𓎱𓎲𓎳𓎴𓎵𓎶𓎷𓎸𓎹𓎺𓎻𓎼𓎽𓎾𓎿𓏀𓏁𓏂𓏃𓏄𓏅𓏆𓏇𓏈𓏉𓏊𓏋𓏌𓏍𓏎𓏏𓏐𓏑𓏒𓏓𓏔𓏕𓏖𓏗𓏘𓏙𓏚𓏛𓏜𓏝𓏞𓏟𓏠𓏡𓏢𓏣𓏤𓏥𓏦𓏧𓏨𓏩𓏪𓏫𓏬𓏭𓏮𓏯𓏰𓏱𓏲𓏳𓏴𓏵𓏶𓏷𓏸𓏹𓏺𓏻𓏼𓏽𓏾𓏿𓐀𓐁𓐂𓐃𓐄𓐅𓐆𓐇𓐈𓐉𓐊𓐋𓐌𓐍𓐎𓐏𓐐𓐑𓐒𓐓𓐔𓐕𓐖𓐗𓐘𓐙𓐚𓐛𓐜𓐝𓐞𓐟𓐠𓐡𓐢𓐣𓐤𓐥𓐦𓐧𓐨𓐩𓐪𓐫𓐬𓐭𓐮𓐯𓐰𓐱𓐲𓐳𓐴𓐵𓐶𓐷𓐸𓐹𓐺𓐻𓐼𓐽𓐾𓐿𓑀𓑁𓑂𓑃𓑄𓑅𓑆𓑇𓑈𓑉𓑊𓑋𓑌𓑍𓑎𓑏𓑐𓑑𓑒𓑓𓑔𓑕𓑖𓑗𓑘𓑙𓑚𓑛𓑜𓑝𓑞𓑟𓑠𓑡𓑢𓑣𓑤𓑥𓑦𓑧𓑨𓑩𓑪𓑫𓑬𓑭𓑮𓑯𓑰𓑱𓑲𓑳𓑴𓑵𓑶𓑷𓑸𓑹𓑺𓑻𓑼𓑽𓑾𓑿𓒀𓒁𓒂𓒃𓒄𓒅𓒆𓒇𓒈𓒉𓒊𓒋𓒌𓒍𓒎𓒏𓒐𓒑𓒒𓒓𓒔𓒕𓒖𓒗𓒘𓒙𓒚𓒛𓒜𓒝𓒞𓒟𓒠𓒡𓒢𓒣𓒤𓒥𓒦𓒧𓒨𓒩𓒪𓒫𓒬𓒭𓒮𓒯"
+	}
+
+	- If you're working in an environment that supports ES6+ (like Deno, Node.js, or modern browsers), template
+	literals (`|${row}|`) are generally preferred.
+	- If you prefer readability or are working in an older JS environment, string concatenation (`"|" + row + "|"`)
+	is fine.
+
+
+
+	"group": "Symbols",
 	"tags": ["drawing", "diagrams", "plain"],
 	"wide": 1,
 	"emoji": {
-		"⌂": {"char": "⌂", "codepoint": "2302", "name": "HOUSE"},
-		"⌘": {"char": "⌘", "codepoint": "2318", "name": "PLACE OF INTEREST SIGN"},
-		"⎈": {"char": "⎈", "codepoint": "2388", "name": "HELM SYMBOL"},
-		"⏏": {"char": "⏏", "codepoint": "23CF", "name": "EJECT SYMBOL"},
+	"⌂": {"char": "⌂", "codepoint": "2302", "name": "HOUSE"},
+	"⌘": {"char": "⌘", "codepoint": "2318", "name": "PLACE OF INTEREST SIGN"},
+	"⎈": {"char": "⎈", "codepoint": "2388", "name": "HELM SYMBOL"},
+	"⏏": {"char": "⏏", "codepoint": "23CF", "name": "EJECT SYMBOL"},
 
 
 	// Geometric Shapes Extended
@@ -52,317 +333,317 @@ is fine.
 	// Astronomical Symbols
 
 	// Miscellaneous Technical
-  }
-}
+	}
+	}
 
 	"plain-alphanum-circle": {
-		"group": "plain-symbols",
-		"tags": ["alphanum", "plain"],
-		"wide": 1,
-		"emoji": {
-			"①": {"char": "①", "codepoint": "2460", "name": "CIRCLED DIGIT ONE"},
-			"②": {"char": "②", "codepoint": "2461", "name": "CIRCLED DIGIT TWO"},
-			"③": {"char": "③", "codepoint": "2462", "name": "CIRCLED DIGIT THREE"},
-			"④": {"char": "④", "codepoint": "2463", "name": "CIRCLED DIGIT FOUR"},
-			"⑤": {"char": "⑤", "codepoint": "2464", "name": "CIRCLED DIGIT FIVE"},
-			"⑥": {"char": "⑥", "codepoint": "2465", "name": "CIRCLED DIGIT SIX"},
-			"⑦": {"char": "⑦", "codepoint": "2466", "name": "CIRCLED DIGIT SEVEN"},
-			"⑧": {"char": "⑧", "codepoint": "2467", "name": "CIRCLED DIGIT EIGHT"},
-			"⑨": {"char": "⑨", "codepoint": "2468", "name": "CIRCLED DIGIT NINE"},
-			"⑩": {"char": "⑩", "codepoint": "2469", "name": "CIRCLED DIGIT TEN"},
-			"Ⓐ": {"char": "Ⓐ", "codepoint": "24B6", "name": "CIRCLED LATIN CAPITAL LETTER A"},
-			"Ⓑ": {"char": "Ⓑ", "codepoint": "24B7", "name": "CIRCLED LATIN CAPITAL LETTER B"},
-			"Ⓒ": {"char": "Ⓒ", "codepoint": "24B8", "name": "CIRCLED LATIN CAPITAL LETTER C"},
-			"Ⓓ": {"char": "Ⓓ", "codepoint": "24B9", "name": "CIRCLED LATIN CAPITAL LETTER D"},
-			"Ⓔ": {"char": "Ⓔ", "codepoint": "24BA", "name": "CIRCLED LATIN CAPITAL LETTER E"},
-			"Ⓕ": {"char": "Ⓕ", "codepoint": "24BB", "name": "CIRCLED LATIN CAPITAL LETTER F"},
-			"Ⓖ": {"char": "Ⓖ", "codepoint": "24BC", "name": "CIRCLED LATIN CAPITAL LETTER G"},
-			"Ⓗ": {"char": "Ⓗ", "codepoint": "24BD", "name": "CIRCLED LATIN CAPITAL LETTER H"},
-			"Ⓘ": {"char": "Ⓘ", "codepoint": "24BE", "name": "CIRCLED LATIN CAPITAL LETTER I"},
-			"Ⓙ": {"char": "Ⓙ", "codepoint": "24BF", "name": "CIRCLED LATIN CAPITAL LETTER J"}
-		}
+	"group": "plain-symbols",
+	"tags": ["alphanum", "plain"],
+	"wide": 1,
+	"emoji": {
+	"①": {"char": "①", "codepoint": "2460", "name": "CIRCLED DIGIT ONE"},
+	"②": {"char": "②", "codepoint": "2461", "name": "CIRCLED DIGIT TWO"},
+	"③": {"char": "③", "codepoint": "2462", "name": "CIRCLED DIGIT THREE"},
+	"④": {"char": "④", "codepoint": "2463", "name": "CIRCLED DIGIT FOUR"},
+	"⑤": {"char": "⑤", "codepoint": "2464", "name": "CIRCLED DIGIT FIVE"},
+	"⑥": {"char": "⑥", "codepoint": "2465", "name": "CIRCLED DIGIT SIX"},
+	"⑦": {"char": "⑦", "codepoint": "2466", "name": "CIRCLED DIGIT SEVEN"},
+	"⑧": {"char": "⑧", "codepoint": "2467", "name": "CIRCLED DIGIT EIGHT"},
+	"⑨": {"char": "⑨", "codepoint": "2468", "name": "CIRCLED DIGIT NINE"},
+	"⑩": {"char": "⑩", "codepoint": "2469", "name": "CIRCLED DIGIT TEN"},
+	"Ⓐ": {"char": "Ⓐ", "codepoint": "24B6", "name": "CIRCLED LATIN CAPITAL LETTER A"},
+	"Ⓑ": {"char": "Ⓑ", "codepoint": "24B7", "name": "CIRCLED LATIN CAPITAL LETTER B"},
+	"Ⓒ": {"char": "Ⓒ", "codepoint": "24B8", "name": "CIRCLED LATIN CAPITAL LETTER C"},
+	"Ⓓ": {"char": "Ⓓ", "codepoint": "24B9", "name": "CIRCLED LATIN CAPITAL LETTER D"},
+	"Ⓔ": {"char": "Ⓔ", "codepoint": "24BA", "name": "CIRCLED LATIN CAPITAL LETTER E"},
+	"Ⓕ": {"char": "Ⓕ", "codepoint": "24BB", "name": "CIRCLED LATIN CAPITAL LETTER F"},
+	"Ⓖ": {"char": "Ⓖ", "codepoint": "24BC", "name": "CIRCLED LATIN CAPITAL LETTER G"},
+	"Ⓗ": {"char": "Ⓗ", "codepoint": "24BD", "name": "CIRCLED LATIN CAPITAL LETTER H"},
+	"Ⓘ": {"char": "Ⓘ", "codepoint": "24BE", "name": "CIRCLED LATIN CAPITAL LETTER I"},
+	"Ⓙ": {"char": "Ⓙ", "codepoint": "24BF", "name": "CIRCLED LATIN CAPITAL LETTER J"}
+	}
 	},
 
 	"plain-pixels": {
-		"group": "Symbols",
-		"tags": ["drawing","plain","win_nt"],
-		"wide": 1,
-		"emoji": {
-			"🬀": {"char":"🬀","codepoint":"1FB00","name":"BLOCK SEXTANT-1"},
-			"🬁": {"char":"🬁","codepoint":"1FB01","name":"BLOCK SEXTANT-2"},
-			"🬂": {"char":"🬂","codepoint":"1FB02","name":"BLOCK SEXTANT-12"},
-			"🬃": {"char":"🬃","codepoint":"1FB03","name":"BLOCK SEXTANT-3"},
-			"🬄": {"char":"🬄","codepoint":"1FB04","name":"BLOCK SEXTANT-13"},
-			"🬅": {"char":"🬅","codepoint":"1FB05","name":"BLOCK SEXTANT-23"},
-			"🬆": {"char":"🬆","codepoint":"1FB06","name":"BLOCK SEXTANT-123"},
-			"🬇": {"char":"🬇","codepoint":"1FB07","name":"BLOCK SEXTANT-4"},
-			"🬈": {"char":"🬈","codepoint":"1FB08","name":"BLOCK SEXTANT-14"},
-			"🬉": {"char":"🬉","codepoint":"1FB09","name":"BLOCK SEXTANT-24"},
-			"🬊": {"char":"🬊","codepoint":"1FB0A","name":"BLOCK SEXTANT-124"},
-			"🬋": {"char":"🬋","codepoint":"1FB0B","name":"BLOCK SEXTANT-34"},
-			"🬌": {"char":"🬌","codepoint":"1FB0C","name":"BLOCK SEXTANT-134"},
-			"🬍": {"char":"🬍","codepoint":"1FB0D","name":"BLOCK SEXTANT-234"},
-			"🬎": {"char":"🬎","codepoint":"1FB0E","name":"BLOCK SEXTANT-1234"},
-			"🬏": {"char":"🬏","codepoint":"1FB0F","name":"BLOCK SEXTANT-5"},
-			"🬐": {"char":"🬐","codepoint":"1FB10","name":"BLOCK SEXTANT-15"},
-			"🬑": {"char":"🬑","codepoint":"1FB11","name":"BLOCK SEXTANT-25"},
-			"🬒": {"char":"🬒","codepoint":"1FB12","name":"BLOCK SEXTANT-125"},
-			"🬓": {"char":"🬓","codepoint":"1FB13","name":"BLOCK SEXTANT-35"},
-			"🬔": {"char":"🬔","codepoint":"1FB14","name":"BLOCK SEXTANT-135"},
-			"🬕": {"char":"🬕","codepoint":"1FB15","name":"BLOCK SEXTANT-235"},
-			"🬖": {"char":"🬖","codepoint":"1FB16","name":"BLOCK SEXTANT-1235"},
-			"🬗": {"char":"🬗","codepoint":"1FB17","name":"BLOCK SEXTANT-45"},
-			"🬘": {"char":"🬘","codepoint":"1FB18","name":"BLOCK SEXTANT-145"},
-			"🬙": {"char":"🬙","codepoint":"1FB19","name":"BLOCK SEXTANT-245"},
-			"🬚": {"char":"🬚","codepoint":"1FB1A","name":"BLOCK SEXTANT-1245"},
-			"🬛": {"char":"🬛","codepoint":"1FB1B","name":"BLOCK SEXTANT-345"},
-			"🬜": {"char":"🬜","codepoint":"1FB1C","name":"BLOCK SEXTANT-1345"},
-			"🬝": {"char":"🬝","codepoint":"1FB1D","name":"BLOCK SEXTANT-2345"},
-			"🬞": {"char":"🬞","codepoint":"1FB1E","name":"BLOCK SEXTANT-12345"},
-			"🬟": {"char":"🬟","codepoint":"1FB1F","name":"BLOCK SEXTANT-6"},
-			"🬠": {"char":"🬠","codepoint":"1FB20","name":"BLOCK SEXTANT-16"},
-			"🬡": {"char":"🬡","codepoint":"1FB21","name":"BLOCK SEXTANT-26"},
-			"🬢": {"char":"🬢","codepoint":"1FB22","name":"BLOCK SEXTANT-126"},
-			"🬣": {"char":"🬣","codepoint":"1FB23","name":"BLOCK SEXTANT-36"},
-			"🬤": {"char":"🬤","codepoint":"1FB24","name":"BLOCK SEXTANT-136"},
-			"🬥": {"char":"🬥","codepoint":"1FB25","name":"BLOCK SEXTANT-236"},
-			"🬦": {"char":"🬦","codepoint":"1FB26","name":"BLOCK SEXTANT-1236"},
-			"🬧": {"char":"🬧","codepoint":"1FB27","name":"BLOCK SEXTANT-46"},
-			"🬨": {"char":"🬨","codepoint":"1FB28","name":"BLOCK SEXTANT-146"},
-			"🬩": {"char":"🬩","codepoint":"1FB29","name":"BLOCK SEXTANT-246"},
-			"🬪": {"char":"🬪","codepoint":"1FB2A","name":"BLOCK SEXTANT-1246"},
-			"🬫": {"char":"🬫","codepoint":"1FB2B","name":"BLOCK SEXTANT-346"},
-			"🬬": {"char":"🬬","codepoint":"1FB2C","name":"BLOCK SEXTANT-1346"},
-			"🬭": {"char":"🬭","codepoint":"1FB2D","name":"BLOCK SEXTANT-2346"},
-			"🬮": {"char":"🬮","codepoint":"1FB2E","name":"BLOCK SEXTANT-12346"},
-			"🬯": {"char":"🬯","codepoint":"1FB2F","name":"BLOCK SEXTANT-56"},
-			"🬰": {"char":"🬰","codepoint":"1FB30","name":"BLOCK SEXTANT-156"},
-			"🬱": {"char":"🬱","codepoint":"1FB31","name":"BLOCK SEXTANT-256"},
-			"🬲": {"char":"🬲","codepoint":"1FB32","name":"BLOCK SEXTANT-1256"},
-			"🬳": {"char":"🬳","codepoint":"1FB33","name":"BLOCK SEXTANT-356"},
-			"🬴": {"char":"🬴","codepoint":"1FB34","name":"BLOCK SEXTANT-1356"},
-			"🬵": {"char":"🬵","codepoint":"1FB35","name":"BLOCK SEXTANT-2356"},
-			"🬶": {"char":"🬶","codepoint":"1FB36","name":"BLOCK SEXTANT-12356"},
-			"🬷": {"char":"🬷","codepoint":"1FB37","name":"BLOCK SEXTANT-456"},
-			"🬸": {"char":"🬸","codepoint":"1FB38","name":"BLOCK SEXTANT-1456"},
-			"🬹": {"char":"🬹","codepoint":"1FB39","name":"BLOCK SEXTANT-2456"},
-			"🬺": {"char":"🬺","codepoint":"1FB3A","name":"BLOCK SEXTANT-12456"},
-			"🬻": {"char":"🬻","codepoint":"1FB3B","name":"BLOCK SEXTANT-3456"},
-			"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
-			"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
-			"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
-			"🬷": {"char":"🬷","codepoint":"1FB37","name":"BLOCK SEXTANT-456"},
-			"🬸": {"char":"🬸","codepoint":"1FB38","name":"BLOCK SEXTANT-1456"},
-			"🬹": {"char":"🬹","codepoint":"1FB39","name":"BLOCK SEXTANT-2456"},
-			"🬺": {"char":"🬺","codepoint":"1FB3A","name":"BLOCK SEXTANT-12456"},
-			"🬻": {"char":"🬻","codepoint":"1FB3B","name":"BLOCK SEXTANT-3456"},
-			"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
-			"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
-			"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
-			"🬸": {"char":"🬸","codepoint":"1FB38","name":"BLOCK SEXTANT-1456"},
-			"🬹": {"char":"🬹","codepoint":"1FB39","name":"BLOCK SEXTANT-2456"},
-			"🬺": {"char":"🬺","codepoint":"1FB3A","name":"BLOCK SEXTANT-12456"},
-			"🬻": {"char":"🬻","codepoint":"1FB3B","name":"BLOCK SEXTANT-3456"},
-			"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
-			"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
-			"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
-			"🬹": {"char":"🬹","codepoint":"1FB39","name":"BLOCK SEXTANT-2456"},
-			"🬺": {"char":"🬺","codepoint":"1FB3A","name":"BLOCK SEXTANT-12456"},
-			"🬻": {"char":"🬻","codepoint":"1FB3B","name":"BLOCK SEXTANT-3456"},
-			"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
-			"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
-			"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
-			"🬺": {"char":"🬺","codepoint":"1FB3A","name":"BLOCK SEXTANT-12456"},
-			"🬻": {"char":"🬻","codepoint":"1FB3B","name":"BLOCK SEXTANT-3456"},
-			"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
-			"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
-			"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
-			"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
-			"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
-			"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
-			"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
-			"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"}
-		}
+	"group": "Symbols",
+	"tags": ["drawing","plain","win_nt"],
+	"wide": 1,
+	"emoji": {
+	"🬀": {"char":"🬀","codepoint":"1FB00","name":"BLOCK SEXTANT-1"},
+	"🬁": {"char":"🬁","codepoint":"1FB01","name":"BLOCK SEXTANT-2"},
+	"🬂": {"char":"🬂","codepoint":"1FB02","name":"BLOCK SEXTANT-12"},
+	"🬃": {"char":"🬃","codepoint":"1FB03","name":"BLOCK SEXTANT-3"},
+	"🬄": {"char":"🬄","codepoint":"1FB04","name":"BLOCK SEXTANT-13"},
+	"🬅": {"char":"🬅","codepoint":"1FB05","name":"BLOCK SEXTANT-23"},
+	"🬆": {"char":"🬆","codepoint":"1FB06","name":"BLOCK SEXTANT-123"},
+	"🬇": {"char":"🬇","codepoint":"1FB07","name":"BLOCK SEXTANT-4"},
+	"🬈": {"char":"🬈","codepoint":"1FB08","name":"BLOCK SEXTANT-14"},
+	"🬉": {"char":"🬉","codepoint":"1FB09","name":"BLOCK SEXTANT-24"},
+	"🬊": {"char":"🬊","codepoint":"1FB0A","name":"BLOCK SEXTANT-124"},
+	"🬋": {"char":"🬋","codepoint":"1FB0B","name":"BLOCK SEXTANT-34"},
+	"🬌": {"char":"🬌","codepoint":"1FB0C","name":"BLOCK SEXTANT-134"},
+	"🬍": {"char":"🬍","codepoint":"1FB0D","name":"BLOCK SEXTANT-234"},
+	"🬎": {"char":"🬎","codepoint":"1FB0E","name":"BLOCK SEXTANT-1234"},
+	"🬏": {"char":"🬏","codepoint":"1FB0F","name":"BLOCK SEXTANT-5"},
+	"🬐": {"char":"🬐","codepoint":"1FB10","name":"BLOCK SEXTANT-15"},
+	"🬑": {"char":"🬑","codepoint":"1FB11","name":"BLOCK SEXTANT-25"},
+	"🬒": {"char":"🬒","codepoint":"1FB12","name":"BLOCK SEXTANT-125"},
+	"🬓": {"char":"🬓","codepoint":"1FB13","name":"BLOCK SEXTANT-35"},
+	"🬔": {"char":"🬔","codepoint":"1FB14","name":"BLOCK SEXTANT-135"},
+	"🬕": {"char":"🬕","codepoint":"1FB15","name":"BLOCK SEXTANT-235"},
+	"🬖": {"char":"🬖","codepoint":"1FB16","name":"BLOCK SEXTANT-1235"},
+	"🬗": {"char":"🬗","codepoint":"1FB17","name":"BLOCK SEXTANT-45"},
+	"🬘": {"char":"🬘","codepoint":"1FB18","name":"BLOCK SEXTANT-145"},
+	"🬙": {"char":"🬙","codepoint":"1FB19","name":"BLOCK SEXTANT-245"},
+	"🬚": {"char":"🬚","codepoint":"1FB1A","name":"BLOCK SEXTANT-1245"},
+	"🬛": {"char":"🬛","codepoint":"1FB1B","name":"BLOCK SEXTANT-345"},
+	"🬜": {"char":"🬜","codepoint":"1FB1C","name":"BLOCK SEXTANT-1345"},
+	"🬝": {"char":"🬝","codepoint":"1FB1D","name":"BLOCK SEXTANT-2345"},
+	"🬞": {"char":"🬞","codepoint":"1FB1E","name":"BLOCK SEXTANT-12345"},
+	"🬟": {"char":"🬟","codepoint":"1FB1F","name":"BLOCK SEXTANT-6"},
+	"🬠": {"char":"🬠","codepoint":"1FB20","name":"BLOCK SEXTANT-16"},
+	"🬡": {"char":"🬡","codepoint":"1FB21","name":"BLOCK SEXTANT-26"},
+	"🬢": {"char":"🬢","codepoint":"1FB22","name":"BLOCK SEXTANT-126"},
+	"🬣": {"char":"🬣","codepoint":"1FB23","name":"BLOCK SEXTANT-36"},
+	"🬤": {"char":"🬤","codepoint":"1FB24","name":"BLOCK SEXTANT-136"},
+	"🬥": {"char":"🬥","codepoint":"1FB25","name":"BLOCK SEXTANT-236"},
+	"🬦": {"char":"🬦","codepoint":"1FB26","name":"BLOCK SEXTANT-1236"},
+	"🬧": {"char":"🬧","codepoint":"1FB27","name":"BLOCK SEXTANT-46"},
+	"🬨": {"char":"🬨","codepoint":"1FB28","name":"BLOCK SEXTANT-146"},
+	"🬩": {"char":"🬩","codepoint":"1FB29","name":"BLOCK SEXTANT-246"},
+	"🬪": {"char":"🬪","codepoint":"1FB2A","name":"BLOCK SEXTANT-1246"},
+	"🬫": {"char":"🬫","codepoint":"1FB2B","name":"BLOCK SEXTANT-346"},
+	"🬬": {"char":"🬬","codepoint":"1FB2C","name":"BLOCK SEXTANT-1346"},
+	"🬭": {"char":"🬭","codepoint":"1FB2D","name":"BLOCK SEXTANT-2346"},
+	"🬮": {"char":"🬮","codepoint":"1FB2E","name":"BLOCK SEXTANT-12346"},
+	"🬯": {"char":"🬯","codepoint":"1FB2F","name":"BLOCK SEXTANT-56"},
+	"🬰": {"char":"🬰","codepoint":"1FB30","name":"BLOCK SEXTANT-156"},
+	"🬱": {"char":"🬱","codepoint":"1FB31","name":"BLOCK SEXTANT-256"},
+	"🬲": {"char":"🬲","codepoint":"1FB32","name":"BLOCK SEXTANT-1256"},
+	"🬳": {"char":"🬳","codepoint":"1FB33","name":"BLOCK SEXTANT-356"},
+	"🬴": {"char":"🬴","codepoint":"1FB34","name":"BLOCK SEXTANT-1356"},
+	"🬵": {"char":"🬵","codepoint":"1FB35","name":"BLOCK SEXTANT-2356"},
+	"🬶": {"char":"🬶","codepoint":"1FB36","name":"BLOCK SEXTANT-12356"},
+	"🬷": {"char":"🬷","codepoint":"1FB37","name":"BLOCK SEXTANT-456"},
+	"🬸": {"char":"🬸","codepoint":"1FB38","name":"BLOCK SEXTANT-1456"},
+	"🬹": {"char":"🬹","codepoint":"1FB39","name":"BLOCK SEXTANT-2456"},
+	"🬺": {"char":"🬺","codepoint":"1FB3A","name":"BLOCK SEXTANT-12456"},
+	"🬻": {"char":"🬻","codepoint":"1FB3B","name":"BLOCK SEXTANT-3456"},
+	"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
+	"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
+	"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
+	"🬷": {"char":"🬷","codepoint":"1FB37","name":"BLOCK SEXTANT-456"},
+	"🬸": {"char":"🬸","codepoint":"1FB38","name":"BLOCK SEXTANT-1456"},
+	"🬹": {"char":"🬹","codepoint":"1FB39","name":"BLOCK SEXTANT-2456"},
+	"🬺": {"char":"🬺","codepoint":"1FB3A","name":"BLOCK SEXTANT-12456"},
+	"🬻": {"char":"🬻","codepoint":"1FB3B","name":"BLOCK SEXTANT-3456"},
+	"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
+	"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
+	"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
+	"🬸": {"char":"🬸","codepoint":"1FB38","name":"BLOCK SEXTANT-1456"},
+	"🬹": {"char":"🬹","codepoint":"1FB39","name":"BLOCK SEXTANT-2456"},
+	"🬺": {"char":"🬺","codepoint":"1FB3A","name":"BLOCK SEXTANT-12456"},
+	"🬻": {"char":"🬻","codepoint":"1FB3B","name":"BLOCK SEXTANT-3456"},
+	"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
+	"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
+	"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
+	"🬹": {"char":"🬹","codepoint":"1FB39","name":"BLOCK SEXTANT-2456"},
+	"🬺": {"char":"🬺","codepoint":"1FB3A","name":"BLOCK SEXTANT-12456"},
+	"🬻": {"char":"🬻","codepoint":"1FB3B","name":"BLOCK SEXTANT-3456"},
+	"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
+	"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
+	"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
+	"🬺": {"char":"🬺","codepoint":"1FB3A","name":"BLOCK SEXTANT-12456"},
+	"🬻": {"char":"🬻","codepoint":"1FB3B","name":"BLOCK SEXTANT-3456"},
+	"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
+	"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
+	"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
+	"🬼": {"char":"🬼","codepoint":"1FB3C","name":"BLOCK SEXTANT-13456"},
+	"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
+	"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"},
+	"🬽": {"char":"🬽","codepoint":"1FB3D","name":"BLOCK SEXTANT-23456"},
+	"🬾": {"char":"🬾","codepoint":"1FB3E","name":"BLOCK SEXTANT-123456"}
+	}
 	},
 
 	⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`⚠️`
 
 
-		if(info && !info.strict){
-			// TODO: should this info be available to all? 
-			// these fields hidden for strict mistral
+	if(info && !info.strict){
+	// TODO: should this info be available to all? 
+	// these fields hidden for strict mistral
 
 
 	if(info && info.strict){
-		rohaHistory.push({role:"user",content:content});
+	rohaHistory.push({role:"user",content:content});
 	}else{
 
-				if(info && info.strict){
-					rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});
-				}else{
+	if(info && info.strict){
+	rohaHistory.push({role:"assistant",content,tool_calls: toolCalls});
+	}else{
 
 
 
-* 11 disorder : allow /dos command to run shell : false
-* 12 versioning : allow multiple versions in share history : false
+	* 11 disorder : allow /dos command to run shell : false
+	* 12 versioning : allow multiple versions in share history : false
 
 
-### /dos
+	### /dos
 
-Begin a session with host Operating System shell.
+	Begin a session with host Operating System shell.
 
 
-async function shareFile(path,tag) {
+	async function shareFile(path,tag) {
 	let fileContent=null;
 	try {
-		const fileSize=await fileLength(path);
-		if(fileSize>MaxFileSize) throw(filesize);
-		fileContent = await Deno.readFile(path);
+	const fileSize=await fileLength(path);
+	if(fileSize>MaxFileSize) throw(filesize);
+	fileContent = await Deno.readFile(path);
 	} catch (error) {
-		echo("shareFile failure path",path,"error",error);
-		return;
+	echo("shareFile failure path",path,"error",error);
+	return;
 	}
 	if(path.endsWith("rules.txt")){
-		let lines=decoder.decode(fileContent).split("\n");
-		for(let line of lines ){
-			if (line) rohaHistory.push({role:"system",content: line});
-		}
-	}else{
-		const length=fileContent.length;
-		if(length>0 && length<MaxFileSize){
-			const extension = path.split(".").pop();
-			const type = fileType(extension);
-			if (textExtensions.includes(extension)) {
-				let txt = decoder.decode(fileContent);
-				if(txt.length){
-					let metadata=JSON.stringify({path,length,type,tag});
-					rohaPush(metadata);
-					rohaPush(txt,"forge");
-				}
-			}else{
-				const base64Encoded = btoa(String.fromCharCode(...new Uint8Array(fileContent)));
-				const mimeType = fileType(extension);
-				let metadata=JSON.stringify({path,length,type,mimeType,tag});
-				rohaPush(metadata);
-				let binary=`File content: MIME=${mimeType}, Base64=${base64Encoded}`;
-				rohaPush(binary,"forge");
-			}
-		}
+	let lines=decoder.decode(fileContent).split("\n");
+	for(let line of lines ){
+	if (line) rohaHistory.push({role:"system",content: line});
 	}
-//	if(roha.config.verbose)echo("roha shared file " + path);
+	}else{
+	const length=fileContent.length;
+	if(length>0 && length<MaxFileSize){
+	const extension = path.split(".").pop();
+	const type = fileType(extension);
+	if (textExtensions.includes(extension)) {
+	let txt = decoder.decode(fileContent);
+	if(txt.length){
+	let metadata=JSON.stringify({path,length,type,tag});
+	rohaPush(metadata);
+	rohaPush(txt,"forge");
+	}
+	}else{
+	const base64Encoded = btoa(String.fromCharCode(...new Uint8Array(fileContent)));
+	const mimeType = fileType(extension);
+	let metadata=JSON.stringify({path,length,type,mimeType,tag});
+	rohaPush(metadata);
+	let binary=`File content: MIME=${mimeType}, Base64=${base64Encoded}`;
+	rohaPush(binary,"forge");
+	}
+	}
+	}
+	//	if(roha.config.verbose)echo("roha shared file " + path);
 	if (!rohaShares.includes(path)) rohaShares.push(path);
 
 	if (roha.config.pushonshare) {
-		await commitShares(tag);
+	await commitShares(tag);
 	}
-}
+	}
 
 
-async function isolateCode(path,cwd) {
+	async function isolateCode(path,cwd) {
 	try {
-		const readAllow = `--allow-read=${cwd}`;
-		const writeAllow = `--allow-write=${cwd}`;
-		const cmd = ["deno", "run", "--no-remote", readAllow, writeAllow, path];
-		const process = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
-		const [stdout, stderr] = await Promise.all([process.output(), process.stderrOutput()]);
-		const status = await process.status();
-		process.close();
-		return {
-			success: status.success,
-			output: new TextDecoder().decode(stdout),
-			error: new TextDecoder().decode(stderr)
-		};
+	const readAllow = `--allow-read=${cwd}`;
+	const writeAllow = `--allow-write=${cwd}`;
+	const cmd = ["deno", "run", "--no-remote", readAllow, writeAllow, path];
+	const process = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
+	const [stdout, stderr] = await Promise.all([process.output(), process.stderrOutput()]);
+	const status = await process.status();
+	process.close();
+	return {
+	success: status.success,
+	output: new TextDecoder().decode(stdout),
+	error: new TextDecoder().decode(stderr)
+	};
 	} catch (err) {
-		return { success: false, output: "", error: err.message };
+	return { success: false, output: "", error: err.message };
 	}
-}
+	}
 
 
 	disorder : "allow /dos command to run shell",
 
 
-// a work in progess file watcher
-// callers to addShare expected to await writeForge after
+	// a work in progess file watcher
+	// callers to addShare expected to await writeForge after
 
-const eventList=[];
+	const eventList=[];
 
-async function watchPaths(paths,handler){
+	async function watchPaths(paths,handler){
 	const watcher = Deno.watchFs(paths,{recursive:false});
 	for await (const event of watcher) {
-		eventList.push(event);
+	eventList.push(event);
 	}
-}
+	}
 
 
 
-// runDOS spawnDENO runDENO and runCode are retired until further notice
-// linter is on, constification continues
-// avoid raw ansi in function code
+	// runDOS spawnDENO runDENO and runCode are retired until further notice
+	// linter is on, constification continues
+	// avoid raw ansi in function code
 
-// binaries are available on github
-//
-// https://github.com/nitrologic/forge/releases
-//
-// or install deno and run from source https://deno.com/
-//
-// deno run --allow-run --allow-env --allow-net --allow-read --allow-write forge.js
+	// binaries are available on github
+	//
+	// https://github.com/nitrologic/forge/releases
+	//
+	// or install deno and run from source https://deno.com/
+	//
+	// deno run --allow-run --allow-env --allow-net --allow-read --allow-write forge.js
 
 
-// multi process model under test prompt replacement
+	// multi process model under test prompt replacement
 
-async function pipe(stream, tag) {
+	async function pipe(stream, tag) {
 	const raw = new Uint8Array(1024);
 	let buffer="";
 	while (true) {
-		const n = await stream.read(raw);
-		if (n === null) break;
-		buffer+=decoder.decode(raw.subarray(0,n));
-		echo("[" + tag + "]",buffer.trimEnd());
-		buffer="";
-		await flush();
+	const n = await stream.read(raw);
+	if (n === null) break;
+	buffer+=decoder.decode(raw.subarray(0,n));
+	echo("[" + tag + "]",buffer.trimEnd());
+	buffer="";
+	await flush();
 	}
-}
+	}
 
 
-		if(!roha.band) roha.band={};
+	if(!roha.band) roha.band={};
 
 
-			case "dos":
-//				await runDOS(words);
-				break;
-			case "band":
-				listBand();
-				break;
+	case "dos":
+	//				await runDOS(words);
+	break;
+	case "band":
+	listBand();
+	break;
 
 
-band:{},
+	band:{},
 
-function addBand(){
+	function addBand(){
 	const id="member"+increment("members");
 	roha.band[id]={};
-}
+	}
 
-function listBand(){
+	function listBand(){
 	const band=[];
 	for(let id in roha.band){
-		const member=roha.band[id];
-		band.push(member);
+	const member=roha.band[id];
+	band.push(member);
 	}
 	band.push("add");
 	for(let i=0;i<band.length;i++){
-		echo(i,band[i]);
+	echo(i,band[i]);
 	}
 	memberList=band;
-}
+	}
 
 
-// debugstuff
-// await openWithDefaultApp("foundry.json");
-// await runCode("isolation/test.js","isolation");
+	// debugstuff
+	// await openWithDefaultApp("foundry.json");
+	// await runCode("isolation/test.js","isolation");
 
 
-/*
-async function runDOS(args) {
+	/*
+	async function runDOS(args) {
 	if(!roha.config.disorder) return;
 	const shell = Deno.build.os === "windows" ? "cmd" : "bash";
 	const cmd = [shell, ...args.slice(1)];
@@ -375,118 +656,118 @@ async function runDOS(args) {
 	p.close();
 	Deno.stdin.setRaw(oldRaw);
 	echo("Returned to Forge");
-}
+	}
 
-async function runDeno(path, cwd) {
+	async function runDeno(path, cwd) {
 	try {
-		const r = `--allow-read=${cwd}`;
-		const w = `--allow-write=${cwd}`;
-		const cmd = ["deno", "run", "--no-remote", r, w, path];
-		const p = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
-		const a = pipe(p.stdout, "out");
-		const b = pipe(p.stderr, "err");
-		const c = p.status();
-		await Promise.all([a, b, c]);
-		p.close();
-		return { ok: true, content: "done" };
+	const r = `--allow-read=${cwd}`;
+	const w = `--allow-write=${cwd}`;
+	const cmd = ["deno", "run", "--no-remote", r, w, path];
+	const p = Deno.run({ cmd, stdout: "piped", stderr: "piped" });
+	const a = pipe(p.stdout, "out");
+	const b = pipe(p.stderr, "err");
+	const c = p.status();
+	await Promise.all([a, b, c]);
+	p.close();
+	return { ok: true, content: "done" };
 	} catch (e) {
-		return { ok: false, error: e.message };
+	return { ok: false, error: e.message };
 	}
-}
+	}
 
-// dream on gpt-4.1...
-async function spawnDeno(path, cwd) {
+	// dream on gpt-4.1...
+	async function spawnDeno(path, cwd) {
 	try{
-		const cmd = ["deno", "run", "--no-remote", `--allow-read=${cwd}`, `--allow-write=${cwd}`, path];
-		const proc = await Deno.spawn(cmd, { stdout: "piped", stderr: "piped" });
-		const a = pipe(proc.stdout, "out");
-		const b = pipe(proc.stderr, "err");
-		const c = proc.status;
-		await Promise.all([a, b, c]);
-		proc.stdout.close();
-		proc.stderr.close();
-		proc.close();
-		return {ok:true,content:"done"};
+	const cmd = ["deno", "run", "--no-remote", `--allow-read=${cwd}`, `--allow-write=${cwd}`, path];
+	const proc = await Deno.spawn(cmd, { stdout: "piped", stderr: "piped" });
+	const a = pipe(proc.stdout, "out");
+	const b = pipe(proc.stderr, "err");
+	const c = proc.status;
+	await Promise.all([a, b, c]);
+	proc.stdout.close();
+	proc.stderr.close();
+	proc.close();
+	return {ok:true,content:"done"};
 	}catch(error){
-		return {ok:false,error};
+	return {ok:false,error};
 	}
-}
+	}
 
-async function runCode(){
+	async function runCode(){
 	let result = await runDeno("isolation/test.js", "isolation");
 	if (result.ok) {
-		echo("[isolation] runCode ran result:"+result.content);
+	echo("[isolation] runCode ran result:"+result.content);
 	} else {
-		echo("Error:", result.error);
+	echo("Error:", result.error);
 	}
-}
-*/
+	}
+	*/
 
 
-async function getBalance(words){
+	async function getBalance(words){
 	const account=(words.length > 1)?words[1]:grokModel.split("@")[1];
 	const config = modelAccounts[account];
 	if (!config) {
-		echo(`Account ${account} not found`);
-		return;
+	echo(`Account ${account} not found`);
+	return;
 	}
 	const apiKey = Deno.env.get(config.env);
 	if(!apiKey){
-		echo(`Account ${account} key not found`);
-		return;
+	echo(`Account ${account} key not found`);
+	return;
 	}
 	try {
-		const response = await fetch(config.url+"/organization/credits", {
-			headers: { "Authorization": `Bearer ${apiKey}` }
-		});
-		const data = await response.text();
-		echo(data);
-//		echo(`Balance for ${account}: $${data.available_credits} ${data.currency}`);
+	const response = await fetch(config.url+"/organization/credits", {
+	headers: { "Authorization": `Bearer ${apiKey}` }
+	});
+	const data = await response.text();
+	echo(data);
+	//		echo(`Balance for ${account}: $${data.available_credits} ${data.currency}`);
 	} catch (error) {
-		echo(`Error retrieving balance: ${error.message}`);
+	echo(`Error retrieving balance: ${error.message}`);
 	}
-}
+	}
 
 
-# 0
-model: deepseek-chat@deepseek tool true rates 0.27,1.10
-purpose: General conversation and text generation
-> hi deepseek!
-+
-unhandled error line: 400 An assistant message with 'tool_calls' must be followed by tool messages responding to each 'tool_call_id', The following tool_call_ids did not have response messages: unknown
-Error: 400 An assistant message with 'tool_calls' must be followed by tool messages responding to each 'tool_call_id', The following tool_call_ids did not have response messages: unknown
->
+	# 0
+	model: deepseek-chat@deepseek tool true rates 0.27,1.10
+	purpose: General conversation and text generation
+	> hi deepseek!
+	+
+	unhandled error line: 400 An assistant message with 'tool_calls' must be followed by tool messages responding to each 'tool_call_id', The following tool_call_ids did not have response messages: unknown
+	Error: 400 An assistant message with 'tool_calls' must be followed by tool messages responding to each 'tool_call_id', The following tool_call_ids did not have response messages: unknown
+	>
 
 
 
 
-> no its all good, lets just chat
-+
-Great! I'm here to chat. What would you like to talk about today?
+	> no its all good, lets just chat
+	+
+	Great! I'm here to chat. What would you like to talk about today?
 
-account openai spent $384.0016 balance $-1531.7307 ¤[15525,18]
-{"cached_tokens":15360,"audio_tokens":0}
-[gpt-4.1-nano-2025-04-14@openai 0.8° $384.002 64.26KB 0.79s]
-> maybe I should add some logging for this line
-+ spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6+cached*cacheRate;
-+
-relay calls in progress
-I've added a log annotation for that spend calculation line to help you track detailed information about the prompt
-tokens, completion tokens, cached tokens, and their respective rates. Would you like me to help you implement the
-actual logging code, or do you want to proceed with something else?
+	account openai spent $384.0016 balance $-1531.7307 ¤[15525,18]
+	{"cached_tokens":15360,"audio_tokens":0}
+	[gpt-4.1-nano-2025-04-14@openai 0.8° $384.002 64.26KB 0.79s]
+	> maybe I should add some logging for this line
+	+ spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6+cached*cacheRate;
+	+
+	relay calls in progress
+	I've added a log annotation for that spend calculation line to help you track detailed information about the prompt
+	tokens, completion tokens, cached tokens, and their respective rates. Would you like me to help you implement the
+	actual logging code, or do you want to proceed with something else?
 
-account openai spent $387.2016 balance $-1918.9323 ¤[15589,47]
-{"cached_tokens":15488,"audio_tokens":0}
-[gpt-4.1-nano-2025-04-14@openai 0.8° $387.202 64.50KB 1.06s]
+	account openai spent $387.2016 balance $-1918.9323 ¤[15589,47]
+	{"cached_tokens":15488,"audio_tokens":0}
+	[gpt-4.1-nano-2025-04-14@openai 0.8° $387.202 64.50KB 1.06s]
 
-[{
+	[{
 	"id":"call_2IF9zfYjImHGhaQioGRPSjSx",
 	"type":"function",
 	"function":{
-		"name":"annotate_forge",
-		"arguments":"{\"name\":\"spend calculation line\",\"type\":\"code\",\"description\":\"Logging for detailed spend calculation including prompt tokens, completion tokens, cached tokens, and their respective rates.\"}"}}]
-tooling 1
-account openai spent $387.2016 balance $-2306.1339 ¤[15654,57]
-{"cached_tokens":15488,"audio_tokens":0}
-[gpt-4.1-nano-2025-04-14@openai 0.8° $387.202 64.99KB 0.96s]
+	"name":"annotate_forge",
+	"arguments":"{\"name\":\"spend calculation line\",\"type\":\"code\",\"description\":\"Logging for detailed spend calculation including prompt tokens, completion tokens, cached tokens, and their respective rates.\"}"}}]
+	tooling 1
+	account openai spent $387.2016 balance $-2306.1339 ¤[15654,57]
+	{"cached_tokens":15488,"audio_tokens":0}
+	[gpt-4.1-nano-2025-04-14@openai 0.8° $387.202 64.99KB 0.96s]
 

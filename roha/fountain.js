@@ -9,38 +9,16 @@ import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import {Anthropic } from "npm:@anthropic-ai/sdk";
 
-const env=Deno.env;
-
-// bad terminal emoji - ⚙️⚙️
-
-// 𓆝 𓆟 𓆞 𓆝 𓆟
-// ⚛
-
 // Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
 
-// read_time fetch_file submit_file tag_slop
-//
-// fetch and submit file base is forge/
-//
-// mut:{name,hasForge,notes:[],errors:[],relays:0,cost:0,elapsed:0}
-
-// fountain.js relay
-// with account config api and model info
-// sends payload
-// for {model,mut}
-// grokFunctions {tools}
-// !info.cold {temperature}
-// info.max_tokens {max_tokens}
-// grokThinking {config:{thinkingConfig:{thinkingBudget:grokThink}}}
-// logs response
-//
+const env=Deno.env;
 
 const fountainVersion="1.2.5";
 const fountainName="fountain "+fountainVersion;
 
 const rohaTitle=fountainName+" ⛲ ";
 
-const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};		//🚫"};
+const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};
 
 const terminalColumns=120;
 const statsColumn=50;

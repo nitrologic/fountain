@@ -1,0 +1,190 @@
+{
+	"A": {
+		"name": "Man and His Occupations",
+		"description": "Signs depicting human figures, actions, or roles such as seated man, king, or soldier.",
+		"count": 59
+	},
+	"B": {
+		"name": "Woman and Her Occupations",
+		"description": "Signs of women, female roles, or activities like seated woman or queen.",
+		"count": 7
+	},
+	"C": {
+		"name": "Anthropomorphic Deities",
+		"description": "Deities with human-like forms, such as gods like Osiris or Horus.",
+		"count": 11
+	},
+	"D": {
+		"name": "Parts of the Human Body",
+		"description": "Body parts like eye, hand, or leg.",
+		"count": 63
+	},
+	"E": {
+		"name": "Mammals",
+		"description": "Mammalian animals, including cat, lion, or cow.",
+		"count": 34
+	},
+	"F": {
+		"name": "Parts of Mammals",
+		"description": "Animal body parts such as horn or tail.",
+		"count": 31,
+		"emoji":{
+		}
+	},
+	"G": {
+		"name": "Birds",
+		"description": "Bird species and related signs, like owl or vulture.",
+		"count": 54,
+		"emoji": {
+			"𓄿": {"char": "𓄿", "codepoint": "1313F", "gardiner": "G1", "name": "Vulture (Akhom)"},
+			"𓅃": {"char": "𓅃", "codepoint": "13143", "gardiner": "G43", "name": "Quail chick"},
+			"𓅄": {"char": "𓅄", "codepoint": "13144", "gardiner": "G44", "name": "Sparrow"},
+			"𓅅": {"char": "𓅅", "codepoint": "13145", "gardiner": "G45", "name": "Duck"},
+			"𓅆": {"char": "𓅆", "codepoint": "13146", "gardiner": "G46", "name": "Owl"},
+			"𓅇": {"char": "𓅇", "codepoint": "13147", "gardiner": "G47", "name": "Falcon on perch"},
+			"𓅈": {"char": "𓅈", "codepoint": "13148", "gardiner": "G48", "name": "Swallow"},
+			"𓅉": {"char": "𓅉", "codepoint": "13149", "gardiner": "G49", "name": "Crane"},
+			"𓅊": {"char": "𓅊", "codepoint": "1314A", "gardiner": "G50", "name": "Heron"},
+			"𓅋": {"char": "𓅋", "codepoint": "1314B", "gardiner": "G51", "name": "Plover"},
+			"𓅌": {"char": "𓅌", "codepoint": "1314C", "gardiner": "G52", "name": "Lapwing"},
+			"𓅍": {"char": "𓅍", "codepoint": "1314D", "gardiner": "G53", "name": "Ibis"},
+			"𓅎": {"char": "𓅎", "codepoint": "1314E", "gardiner": "G54", "name": "Hoopoe"},
+			"𓅏": {"char": "𓅏", "codepoint": "1314F", "gardiner": "G55", "name": "Eagle"},
+			"𓅐": {"char": "𓅐", "codepoint": "13150", "gardiner": "G56", "name": "Hawk"},
+			"𓅑": {"char": "𓅑", "codepoint": "13151", "gardiner": "G57", "name": "Kite"},
+			"𓅒": {"char": "𓅒", "codepoint": "13152", "gardiner": "G58", "name": "Crow"},
+			"𓅓": {"char": "𓅓", "codepoint": "13153", "gardiner": "G59", "name": "Ostrich"},
+			"𓅔": {"char": "𓅔", "codepoint": "13154", "gardiner": "G60", "name": "Goose"},
+			"𓅕": {"char": "𓅕", "codepoint": "13155", "gardiner": "G61", "name": "Swan"},
+			"𓅖": {"char": "𓅖", "codepoint": "13156", "gardiner": "G62", "name": "Cormorant"},
+			"𓅗": {"char": "𓅗", "codepoint": "13157", "gardiner": "G63", "name": "Pelican"},
+			"𓅘": {"char": "𓅘", "codepoint": "13158", "gardiner": "G64", "name": "Stork"},
+			"𓅙": {"char": "𓅙", "codepoint": "13159", "gardiner": "G65", "name": "Flamingo"},
+			"𓅚": {"char": "𓅚", "codepoint": "1315A", "gardiner": "G66", "name": "Pigeon"},
+			"𓅛": {"char": "𓅛", "codepoint": "1315B", "gardiner": "G67", "name": "Dove"},
+			"𓅜": {"char": "𓅜", "codepoint": "1315C", "gardiner": "G68", "name": "Horus falcon"},
+			"𓅝": {"char": "𓅝", "codepoint": "1315D", "gardiner": "G69", "name": "Vulture with spread wings"},
+			"𓅞": {"char": "𓅞", "codepoint": "1315E", "gardiner": "G70", "name": "Bird with human head"},
+			"𓅟": {"char": "𓅟", "codepoint": "1315F", "gardiner": "G71", "name": "Ba bird (soul)"},
+			"𓅠": {"char": "𓅠", "codepoint": "13160", "gardiner": "G72", "name": "Bird with ankh"},
+			"𓅡": {"char": "𓅡", "codepoint": "13161", "gardiner": "G73", "name": "Bird with was scepter"},
+			"𓅢": {"char": "𓅢", "codepoint": "13162", "gardiner": "G74", "name": "Bird with sun disk"},
+			"𓅣": {"char": "𓅣", "codepoint": "13163", "gardiner": "G75", "name": "Bird with feather"},
+			"𓅤": {"char": "𓅤", "codepoint": "13164", "gardiner": "G76", "name": "Flying bird"},
+			"𓅥": {"char": "𓅥", "codepoint": "13165", "gardiner": "G77", "name": "Perched bird"},
+			"𓅦": {"char": "𓅦", "codepoint": "13166", "gardiner": "G78", "name": "Bird in nest"},
+			"𓅧": {"char": "𓅧", "codepoint": "13167", "gardiner": "G79", "name": "Bird with fish"},
+			"𓅨": {"char": "𓅨", "codepoint": "13168", "gardiner": "G80", "name": "Bird with snake"},
+			"𓅩": {"char": "𓅩", "codepoint": "13169", "gardiner": "G81", "name": "Bird with lotus"},
+			"𓅪": {"char": "𓅪", "codepoint": "1316A", "gardiner": "G82", "name": "Bird with papyrus"},
+			"𓅫": {"char": "𓅫", "codepoint": "1316B", "gardiner": "G83", "name": "Bird with reed"},
+			"𓅬": {"char": "𓅬", "codepoint": "1316C", "gardiner": "G84", "name": "Bird with palm branch"},
+			"𓅭": {"char": "𓅭", "codepoint": "1316D", "gardiner": "G85", "name": "Bird with ankh and was"},
+			"𓅮": {"char": "𓅮", "codepoint": "1316E", "gardiner": "G86", "name": "Bird with djed pillar"},
+			"𓅯": {"char": "𓅯", "codepoint": "1316F", "gardiner": "G87", "name": "Bird with shen ring"},
+			"𓅰": {"char": "𓅰", "codepoint": "13170", "gardiner": "G88", "name": "Bird with crook and flail"},
+			"𓅱": {"char": "𓅱", "codepoint": "13171", "gardiner": "G89", "name": "Quail chick (letter W)"},
+			"𓅲": {"char": "𓅲", "codepoint": "13172", "gardiner": "G90", "name": "Bird with two heads"},
+			"𓅳": {"char": "𓅳", "codepoint": "13173", "gardiner": "G91", "name": "Bird with three heads"},
+			"𓅴": {"char": "𓅴", "codepoint": "13174", "gardiner": "G92", "name": "Winged bird"},
+			"𓅵": {"char": "𓅵", "codepoint": "13175", "gardiner": "G93", "name": "Bird with human arms"},
+			"𓅶": {"char": "𓅶", "codepoint": "13176", "gardiner": "G94", "name": "Bird with offerings"},
+			"𓅷": {"char": "𓅷", "codepoint": "13177", "gardiner": "G95", "name": "Sacred ibis"}
+		}
+	},
+	"H": {
+		"name": "Parts of Birds",
+		"description": "Bird body parts, such as wing or feather.",
+		"count": 8
+	},
+	"I": {
+		"name": "Amphibious Animals, Reptiles, etc.",
+		"description": "Reptiles and amphibians, like snake or crocodile.",
+		"count": 15
+	},
+	"K": {
+		"name": "Fish and Parts of Fish",
+		"description": "Fish and fish-related signs, such as fish or fin.",
+		"count": 7
+	},
+	"L": {
+		"name": "Invertebrates and Lesser Animals",
+		"description": "Insects and small creatures, like bee or scorpion.",
+		"count": 7
+	},
+	"M": {
+		"name": "Trees and Plants",
+		"description": "Vegetation, such as reed or lotus.",
+		"count": 44
+	},
+	"N": {
+		"name": "Sky, Earth, Water",
+		"description": "Natural features like sky, mountain, or water.",
+		"count": 42
+	},
+	"O": {
+		"name": "Buildings, Parts of Buildings, etc.",
+		"description": "Architectural elements, such as house or pyramid.",
+		"count": 51
+	},
+	"P": {
+		"name": "Ships, Parts of Ships, etc.",
+		"description": "Watercraft and related signs, like boat or sail.",
+		"count": 11
+	},
+	"Q": {
+		"name": "Domestic and Funerary Furniture",
+		"description": "Household items, such as chair or bed.",
+		"count": 7
+	},
+	"R": {
+		"name": "Temple Furniture and Sacred Emblems",
+		"description": "Religious objects, like altar or ankh.",
+		"count": 25
+	},
+	"S": {
+		"name": "Crowns, Dress, Staves, etc.",
+		"description": "Regalia and symbols of power, such as crown or scepter.",
+		"count": 45
+	},
+	"T": {
+		"name": "Warfare, Hunting, Butchery",
+		"description": "Weapons and tools, like bow or knife.",
+		"count": 35
+	},
+	"U": {
+		"name": "Agriculture, Crafts, and Professions",
+		"description": "Tools and activities, such as plow or adze.",
+		"count": 41
+	},
+	"V": {
+		"name": "Rope, Fiber, Baskets, Bags, etc.",
+		"description": "Cordage and containers, like rope or basket.",
+		"count": 39
+	},
+	"W": {
+		"name": "Vessels of Stone and Earthenware",
+		"description": "Containers, such as jar or pot.",
+		"count": 25
+	},
+	"X": {
+		"name": "Loaves and Cakes",
+		"description": "Bread and food items, like loaf.",
+		"count": 8
+	},
+	"Y": {
+		"name": "Writings, Games, Music",
+		"description": "Cultural objects, such as scroll or harp.",
+		"count": 8
+	},
+	"Z": {
+		"name": "Strokes, Signs Derived from Hieratic, Geometrical Figures",
+		"description": "Lines and shapes, like single stroke.",
+		"count": 11
+	},
+	"AA": {
+		"name": "Unclassified",
+		"description": "Miscellaneous signs not fitting other categories.",
+		"count": 31
+	}
+}
