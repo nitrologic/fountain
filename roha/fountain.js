@@ -9,13 +9,12 @@ import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import {Anthropic } from "npm:@anthropic-ai/sdk";
 
-// Bad emoji
+const env=Deno.env;
 
-// ⚙️⚙️
-// 🏐🌊 
+// bad terminal emoji - ⚙️⚙️
 
-// 𓆝 𓆟 𓆞 𓆝 𓆟 
-// ⚛ 
+// 𓆝 𓆟 𓆞 𓆝 𓆟
+// ⚛
 
 // Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
 
@@ -59,10 +58,11 @@ const rohaGuide=[
 
 const mutsInclude="models under test include "
 
-const username=Deno.env.get("USERNAME");
-const userdomain=Deno.env.get("USERDOMAIN").toLowerCase();
-const userregion = Intl.DateTimeFormat().resolvedOptions();	//locale,timeZone;
-const userterminal=Deno.env.get("TERM")||Deno.env.get("TERM_PROGRAM")||Deno.env.get("SESSIONNAME");
+const username=env.get("USERNAME");
+const userdomain=env.get("USERDOMAIN").toLowerCase();
+const userregion = Intl.DateTimeFormat().resolvedOptions();
+
+const userterminal=env.get("TERM")||env.get("TERM_PROGRAM")||env.get("SESSIONNAME")||"VOID";
 
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Feel free to comment if shared files are new or different.";
@@ -90,6 +90,15 @@ const rohaPath=resolve(forgePath,"forge.json");
 const modelAccounts=JSON.parse(await Deno.readTextFile(accountsPath));
 const modelSpecs=JSON.parse(await Deno.readTextFile(specsPath));
 const unicodeSpec=JSON.parse(await Deno.readTextFile(unicodePath));
+
+const emojiIndex = {};
+
+function parseUnicode(){
+	for(const group in unicodeSpec){
+		const keys = Object.keys(unicodeSpec[group].emoji);
+		echo("[UNICODE]",group,keys.join(" "));
+	}
+}
 
 function stringwidth2(str) {
 	let width = 0;
@@ -129,7 +138,7 @@ const flagNames={
 const emptyConfig={
 	showWelcome:false,
 	reasonoutloud:false,
-	tools:true,
+	tools:false,
 	commitonstart:false,
 	saveonexit:false,
 	ansi:true,
@@ -429,15 +438,6 @@ const rohaTools=[{
 
 // fountain utility functions
 
-const emojiIndex = {};
-
-function parseUnicode(){
-	for(const group in unicodeSpec){
-		const keys = Object.keys(unicodeSpec[group].emoji);
-		if(roha.config.verbose) echo("[UNICODE]",group,keys.join(" "));
-	}
-}
-
 // Define the ranges for single-width characters (including some emojis and symbols)
 const singleWidthRanges = [
   [0x269B], // ⚛ Atom symbol
@@ -446,6 +446,8 @@ const singleWidthRanges = [
   [0x25FE, 0x25FF], // Geometric shapes
 ];
 
+// here be dragons
+// emoji wide char groups may need cludge for abnormal plungers
 
 const isDoubleWidth = (() => {
 	const ranges = [
@@ -469,6 +471,8 @@ const isDoubleWidth = (() => {
 	return cp =>
 		ranges.some(([s, e]) => cp >= s && cp <= e);
 })();
+
+// here be dragons - emoji widths based on userterminal may be required
 
 function stringWidth(str) {
 	let w = 0;
@@ -724,7 +728,7 @@ let geminiCallCount=0;
 async function connectGoogle(account,config){
 	try{
 		const baseURL=config.url;
-		const apiKey=Deno.env.get(config.env);
+		const apiKey=env.get(config.env);
 		if(!apiKey) return null;
 		const response=await fetch(baseURL+"/models?key="+apiKey);
 		if (!response.ok) {
@@ -912,7 +916,7 @@ function anthropicTools(payload){
 async function connectAnthropic(account,config){
 	try{
 		const baseURL=config.url;
-		const apiKey=Deno.env.get(config.env);
+		const apiKey=env.get(config.env);
 		if(!apiKey) return null;
 		const headers={
 			"x-api-key":apiKey,
@@ -1037,7 +1041,7 @@ function prepareCohereRequest(payload){
 async function connectCohere(account,config) {
 	try{
 		const baseURL=config.url;
-		const apiKey=Deno.env.get(config.env);
+		const apiKey=env.get(config.env);
 		if(!apiKey) return null;
 		const headers={
 			"Authorization":"Bearer "+apiKey,
@@ -1122,7 +1126,7 @@ async function connectCohere(account,config) {
 async function connectDeepSeek(account,config) {
 	try{
 		const baseURL=config.url;
-		const apiKey=Deno.env.get(config.env);
+		const apiKey=env.get(config.env);
 		if(!apiKey) return null;
 		const headers={Authorization:"Bearer "+apiKey,"Content-Type":"application/json"};
 		const response=await fetch(baseURL+"/models",{method:"GET",headers});
@@ -1170,7 +1174,7 @@ async function connectDeepSeek(account,config) {
 
 async function connectOpenAI(account,config) {
 	try{
-		const apiKey=Deno.env.get(config.env);
+		const apiKey=env.get(config.env);
 		const endpoint=new OpenAI({ apiKey, baseURL: config.url });
 		if(roha.config.debugging){
 			for(const [key, value] of Object.entries(endpoint)){
@@ -1469,15 +1473,30 @@ function boxTop(widths){
 	return tl+bits.join(hd)+tr;
 }
 
+// dash: "---- ---- ---- ----"
+// array: [1,2,0.3]
+// result: 1.00 2.00 0.30
+function dashString(dash,array){
+	const dashes=dash.split(" ");
+	return array.map((v, i) => {
+		const w = dashes[i]?.length ?? 1;
+		const ch = ['-', '·'][i % 2] || '-'; // simple pattern; extend as needed
+		const n  = Math.round(v * w);
+		return ch.repeat(Math.max(0, n));
+	});
+}
+
 function boxCells(widths,cells){
 	const box=boxChars[0];
 	const v=box.charAt(Vertical);
 	const bits=[];
 	for(let i=0;i<widths.length;i++){
 		const w=widths[i].length;
-		// todo: clip string for tables or go multi line cells
-		// todo: measure unicode emoji has 2x spacing
-		const cell=" "+cells[i]||"";
+		const c=cells[i];
+		const value=(Array.isArray(c))?dashString(widths[i],c):(c||"");
+// todo: clip string for tables or go multi line cells?
+		const indent=(w>2)?" ":"";
+		const cell=indent+value;
 		const wide=stringWidth(cell);
 		const pads=w-wide;
 		const padding=(pads>0)?" ".repeat(pads):"";
@@ -1867,7 +1886,8 @@ async function commitShares(tag) {
 				removedPaths.push(share.path);
 				dirty=true;
 			}
-			echo("[FOUNTAIN] commitShares error",share.path,error.message);
+			echo("[FOUNTAIN] commitShares path",share.path);
+			echo("[FOUNTAIN] commitShares error",error.message);
 		}
 	}
 	if (removedPaths.length) {
@@ -2047,6 +2067,9 @@ async function callCommand(command) {
 	let words=command.split(" ");
 	try {
 		switch (words[0]) {
+			case "spec":
+				parseUnicode();
+				break;
 			case "listen":
 				listenService();
 				break;
@@ -2175,7 +2198,7 @@ async function callCommand(command) {
 				}
 				break;
 			case "model":{
-				// TODO: refactor this gigantic block 
+				// TODO: refactor this gigantic block
 					let name=words[1];
 					if(name && name!="all"){
 						if(name.length&&!isNaN(name)) name=modelList[name|0];
@@ -2185,7 +2208,7 @@ async function callCommand(command) {
 						}
 					}else{
 						echo_row("id","model name","☐","📆","🧮","💰","🪣🧊🫐🪨");
-						echo_row("-----","-----------------------","---","----","--------------------","------","-----------------");
+						echo_row("-----","-----------------------","--","-----","---- ---- ---- ---- ----","------","-----------------");
 						const all=(name && name=="all");
 						for(let i=0;i<modelList.length;i++){
 							const modelname=modelList[i];
@@ -2856,7 +2879,7 @@ async function chat() {
 			let line="";
 			if(listCommand){
 				line=await promptForge(listCommand+" #");
-				if(!line.startsWith("/")){
+				if(line.startsWith("//")||!line.startsWith("/")){
 					if(line.length&&isFinite(line)){
 						let index=line|0;
 						await callCommand(listCommand+" "+index);
@@ -2867,7 +2890,7 @@ async function chat() {
 				listCommand="";
 			}else if(creditCommand){
 				line=await promptForge("$");
-				if(!line.startsWith("/")){
+				if(line.startsWith("//")||!line.startsWith("/")){
 					if(line.length&&isFinite(line)){
 						await creditCommand(line);
 					}
@@ -2891,7 +2914,7 @@ async function chat() {
 				break dance;
 			}
 
-			if (line.startsWith("/")) {
+			if (line.startsWith("/")&&!line.startsWith("//")) {
 				const command=line.substring(1).trim();
 				let dirty=await callCommand(command);
 				if(dirty){
@@ -2998,14 +3021,17 @@ if(roha.config){
 }
 await flush();
 
-parseUnicode();
+if(roha.config.debugging){
+	parseUnicode();
+}
+
 await flush();
 
 let rohaNic=roha.config.nic||"nic";
 let rohaUser=username+"@"+userdomain;
 const sharecount=roha.sharedFiles?.length||0;
 
-echo("user:",{nic:rohaNic,user:rohaUser,sharecount,userterminal})
+echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
 //echo("");
 
