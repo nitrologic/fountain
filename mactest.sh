@@ -2,7 +2,7 @@ lsof -i :8000
 pushd roha
 export USERNAME="$USER"
 export USERDOMAIN=$(scutil --get LocalHostName)
-deno --version
-# deno task slopfountain
-deno task play
+# deno --version
+deno task slopfountain
+#deno task play
 popd
