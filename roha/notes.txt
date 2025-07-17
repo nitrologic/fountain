@@ -1,3 +1,469 @@
+
+"𓀡":{"char": "𓀡", "codepoint": "13021", "id":"A029", "name":"upside down man","detail":"often used as a classifier denoting the state of being inverted or dead"},
+Egyptian Hieroglyph A029
+—which is described as “classifier upside down man” (transliteration sḫd) 
+en.wikipedia.org
++4
+unicode.org
++4
+egyptianhieroglyphs.net
++4
+.
+
+In simpler terms, it represents an upside-down man, 
+often used as a classifier denoting the state of being inverted or dead. 
+You were totally right! Let me know if you'd like info on related hieroglyphs or their use in ancient texts.
+
+"man":"𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏𓀐𓀑𓀒𓀓𓀔𓀕𓀖𓀗𓀘𓀙𓀚𓀛𓀜𓀝𓀞𓀟𓀠𓀡𓀢𓀣𓀤𓀥𓀦𓀧𓀨𓀩𓀪𓀫𓀬𓀭𓀮𓀯𓀰𓀱𓀲𓀳𓀴𓀵𓀶𓀷𓀸𓀹𓀺𓀻𓀼𓀽𓀾
+𓀿𓁀𓁁𓁂𓁃𓁄𓁅𓁆𓁇𓁈𓁉𓁊𓁋𓁌𓁍𓁎𓁏𓁐𓁑𓁒𓁓𓁔𓁕𓁖𓁗𓁘𓁙𓁚𓁛𓁜𓁝𓁞𓁟𓁠𓁡𓁢𓁣𓁤𓁥𓁦𓁧𓁨𓁩𓁪𓁫𓁬𓁭𓁮𓁯𓁰𓁱𓁲𓁳𓁴𓁵𓁶𓁷𓁸
+𓁹𓁺𓁻𓁼𓁽𓁾𓁿𓂀𓂁𓂂𓂃𓂄𓂅𓂆𓂇𓂈𓂉𓂊𓂋𓂌𓂍𓂎𓂏𓂐𓂑𓂒
+𓂓𓂔𓂕𓂖𓂗𓂘𓂙𓂚𓂛𓂜𓂝𓂞𓂟𓂠𓂡𓂢𓂣𓂤𓂥𓂦𓂧𓂨𓂩𓂪𓂫𓂬
+"fingers":"𓂭𓂮𓂯𓂰𓂱𓂲𓂳𓂴𓂵𓂶𓂷𓂸𓂹𓂺",
+𓂻𓂼𓂽𓂾𓂿𓃀𓃁𓃂𓃃𓃄𓃅𓃆𓃇𓃈𓃉𓃊𓃋𓃌𓃍𓃎𓃏𓃐𓃑
+𓃒𓃓𓃔𓃕𓃖𓃗𓃘𓃙𓃚𓃛𓃜𓃝𓃞𓃟𓃠𓃡𓃢𓃣𓃤𓃥𓃦𓃧𓃨𓃩𓃪𓃫𓃬𓃭𓃮𓃯𓃰𓃱𓃲𓃳𓃴𓃵𓃶𓃷𓃸𓃹𓃺𓃻𓃼𓃽𓃾𓃿
+𓄀𓄁𓄂𓄃𓄄𓄅𓄆𓄇𓄈𓄉𓄊𓄋𓄌𓄍𓄎𓄏𓄐𓄑𓄒𓄓𓄔𓄕𓄖𓄗𓄘𓄙𓄚𓄛𓄜𓄝𓄞𓄟𓄠𓄡𓄢𓄣𓄤𓄥𓄦𓄧𓄨𓄩𓄪𓄫𓄬𓄭𓄮𓄯𓄰𓄱𓄲𓄳𓄴𓄵𓄶𓄷𓄸𓄹𓄺𓄻𓄼𓄽
+𓄾𓄿𓅀𓅁𓅂𓅃𓅄𓅅𓅆𓅇𓅈𓅉𓅊𓅋𓅌𓅍𓅎𓅏𓅐𓅑𓅒𓅓𓅔𓅕𓅖𓅗𓅘𓅙𓅚𓅛𓅜𓅝𓅞𓅟𓅠𓅡𓅢𓅣𓅤𓅥𓅦𓅧𓅨𓅩𓅪𓅫𓅬𓅭𓅮𓅯𓅰
+𓅱𓅲𓅳𓅴𓅵𓅶𓅷𓅸𓅹𓅺𓅻𓅼𓅽𓅾𓅿𓆀𓆁𓆂𓆃𓆄𓆅𓆆𓆇𓆈𓆉𓆊𓆋𓆌𓆍𓆎𓆏𓆐𓆑𓆒𓆓𓆔𓆕𓆖𓆗𓆘𓆙𓆚𓆛𓆜𓆝𓆞𓆟𓆠𓆡𓆢𓆣𓆤𓆥
+𓆦𓆧𓆨𓆩𓆪𓆫𓆬𓆭𓆮𓆯𓆰𓆱𓆲𓆳𓆴𓆵𓆶𓆷𓆸𓆹𓆺𓆻𓆼𓆽𓆾𓆿𓇀𓇁𓇂𓇃𓇄𓇅𓇆𓇇𓇈𓇉𓇊𓇋𓇌𓇍𓇎𓇏𓇐𓇑𓇒𓇓𓇔𓇕𓇖𓇗𓇘𓇙𓇚𓇛𓇜𓇝𓇞𓇟𓇠𓇡𓇢𓇣𓇤𓇥𓇦𓇧𓇨
+𓇩𓇪𓇫𓇬𓇭𓇮𓇯𓇰𓇱𓇲𓇳𓇴𓇵𓇶𓇷𓇸𓇹𓇺𓇻𓇼𓇽𓇾𓇿𓈀𓈁𓈂𓈃𓈄𓈅𓈆𓈇𓈈𓈉𓈊𓈋𓈌𓈍𓈎𓈏𓈐𓈑𓈒𓈓𓈔𓈕𓈖𓈗𓈘𓈙𓈚𓈛𓈜𓈝𓈞𓈟
+"L":"𓈠𓈡𓈢𓈣𓈤𓈥𓈦𓈧𓈨𓈩𓈪𓈫𓈬𓈭𓈮𓈯𓈰𓈱𓈲𓈳𓈴𓈵𓈶𓈷𓈸𓈹𓈺𓈻𓈼𓈽𓈾𓈿𓉀𓉁𓉂𓉃𓉄𓉅𓉆𓉇𓉈𓉉𓉊𓉋𓉌𓉍𓉎𓉏",
+𓉐𓉑𓉒𓉓𓉔𓉕𓉖𓉗𓉘𓉙𓉚𓉛𓉜𓉝𓉞𓉟𓉠𓉡𓉢𓉣𓉤𓉥𓉦𓉧𓉨𓉩𓉪𓉫𓉬𓉭𓉮𓉯𓉰𓉱𓉲𓉳𓉴𓉵𓉶𓉷𓉸𓉹𓉺𓉻𓉼𓉽𓉾𓉿𓊀𓊁𓊂𓊃𓊄𓊅𓊆𓊇𓊈𓊉𓊊
+𓊋𓊌𓊍𓊎𓊏𓊐𓊑𓊒𓊓𓊔𓊕𓊖𓊗𓊘𓊙𓊚𓊛𓊜𓊝𓊞𓊟𓊠𓊡𓊢𓊣𓊤𓊥𓊦𓊧𓊨𓊩𓊪𓊫𓊬𓊭𓊮𓊯𓊰𓊱𓊲𓊳𓊴𓊵𓊶𓊷𓊸𓊹𓊺𓊻𓊼𓊽𓊾𓊿𓋀𓋁𓋂𓋃𓋄𓋅𓋆𓋇𓋈
+𓋉𓋊𓋋𓋌𓋍𓋎𓋏𓋐𓋑𓋒𓋓𓋔𓋕𓋖𓋗𓋘𓋙𓋚𓋛𓋜𓋝𓋞𓋟𓋠𓋡𓋢𓋣𓋤𓋥𓋦𓋧𓋨𓋩𓋪𓋫𓋬𓋭𓋮𓋯𓋰𓋱𓋲𓋳𓋴𓋵𓋶𓋷𓋸𓋹𓋺𓋻𓋼𓋽𓋾𓋿𓌀𓌁𓌂𓌃𓌄𓌅𓌆
+𓌇𓌈𓌉𓌊𓌋𓌌𓌍𓌎𓌏𓌐𓌑𓌒𓌓𓌔𓌕𓌖𓌗𓌘𓌙𓌚𓌛𓌜𓌝𓌞𓌟𓌠𓌡𓌢𓌣𓌤𓌥𓌦𓌧𓌨𓌩𓌪𓌫𓌬𓌭𓌮𓌯𓌰𓌱𓌲𓌳𓌴𓌵𓌶𓌷𓌸𓌹𓌺𓌻𓌼𓌽𓌾𓌿𓍀
+𓍁𓍂𓍃𓍄𓍅𓍆𓍇𓍈𓍉𓍊𓍋𓍌𓍍𓍎𓍏𓍐𓍑𓍒𓍓𓍔𓍕𓍖𓍗𓍘𓍙𓍚𓍛𓍜𓍝𓍞𓍟𓍠𓍡𓍢𓍣𓍤𓍥𓍦𓍧𓍨𓍩𓍪𓍫𓍬𓍭𓍮𓍯𓍰𓍱𓍲𓍳𓍴𓍵𓍶𓍷𓍸𓍹𓍺𓍻𓍼𓍽𓍾𓍿𓎀
+𓎁𓎂𓎃𓎄𓎅𓎆𓎇𓎈𓎉𓎊𓎋𓎌𓎍𓎎𓎏𓎐𓎑𓎒𓎓𓎔𓎕𓎖𓎗𓎘𓎙𓎚𓎛𓎜𓎝𓎞𓎟𓎠𓎡𓎢𓎣𓎤𓎥𓎦𓎧𓎨𓎩𓎪𓎫𓎬𓎭𓎮𓎯𓎰𓎱𓎲𓎳𓎴𓎵𓎶𓎷𓎸𓎹
+𓎺𓎻𓎼𓎽𓎾𓎿𓏀𓏁𓏂𓏃𓏄𓏅𓏆𓏇𓏈𓏉𓏊𓏋𓏌𓏍𓏎𓏏𓏐𓏑𓏒𓏓𓏔𓏕𓏖𓏗𓏘𓏙𓏚𓏛𓏜𓏝𓏞𓏟𓏠𓏡𓏢𓏣𓏤𓏥𓏦𓏧𓏨𓏩𓏪𓏫𓏬𓏭𓏮𓏯𓏰𓏱𓏲𓏳𓏴𓏵𓏶𓏷𓏸𓏹𓏺𓏻𓏼𓏽𓏾𓏿𓐀𓐁𓐂𓐃𓐄𓐅𓐆𓐇𓐈𓐉𓐊𓐋𓐌
+𓐍𓐎𓐏𓐐𓐑𓐒𓐓𓐔𓐕𓐖𓐗𓐘𓐙𓐚𓐛𓐜𓐝𓐞𓐟𓐠𓐡𓐢𓐣𓐤𓐥𓐦𓐧𓐨𓐩𓐪𓐫𓐬𓐭𓐮
+𓐯",
+
+𓅷𓅸𓅸𓅸𓅸
+𓅹𓅹𓅹𓅹𓅹
+𓅺
+𓅼𓅽𓅘𓅙𓅚𓅛𓅜𓅝
+𓅞𓅟𓅠𓅡𓅢𓅣𓅤𓅥𓅦
+𓅧𓅨𓅩𓅪𓅫𓅬𓅭𓅮𓅯𓅰
+𓅻
+
+𓅱𓅲𓅳
+𓅴𓅵
+𓅶
+
+
+𓅘𓅙𓅚𓅛𓅜𓅝
+𓅞𓅟𓅠𓅡𓅢
+𓅣𓅤𓅥𓅦
+𓅧𓅨𓅩𓅪𓅫
+𓅬𓅭𓅮𓅯𓅰
+𓅱𓅲𓅳𓅴𓅵𓅶
+𓅷𓅸𓅹
+𓅺𓅻𓅼𓅽
+𓂶
+
+"all":
+"𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏𓀐𓀑𓀒𓀓𓀔𓀕𓀖𓀗𓀘𓀙𓀚𓀛𓀜𓀝𓀞𓀟𓀠𓀡𓀢𓀣𓀤𓀥𓀦𓀧𓀨𓀩𓀪𓀫𓀬𓀭𓀮𓀯𓀰𓀱𓀲𓀳𓀴𓀵𓀶𓀷𓀸𓀹𓀺𓀻𓀼𓀽𓀾𓀿𓁀𓁁𓁂𓁃𓁄𓁅𓁆𓁇𓁈𓁉𓁊𓁋𓁌𓁍𓁎𓁏𓁐𓁑𓁒𓁓𓁔𓁕𓁖𓁗𓁘𓁙𓁚𓁛𓁜𓁝𓁞𓁟𓁠𓁡𓁢𓁣𓁤𓁥𓁦𓁧𓁨𓁩𓁪𓁫𓁬𓁭𓁮𓁯𓁰𓁱𓁲𓁳𓁴𓁵𓁶𓁷𓁸𓁹𓁺𓁻𓁼𓁽𓁾𓁿𓂀𓂁𓂂𓂃𓂄𓂅𓂆𓂇𓂈𓂉𓂊𓂋𓂌𓂍𓂎𓂏𓂐𓂑𓂒𓂓𓂔𓂕𓂖𓂗𓂘𓂙𓂚𓂛𓂜𓂝𓂞𓂟𓂠𓂡𓂢𓂣𓂤𓂥𓂦𓂧𓂨𓂩𓂪𓂫𓂬𓂭𓂮𓂯𓂰𓂱𓂲𓂳𓂴𓂵𓂶𓂷𓂸𓂹𓂺𓂻𓂼𓂽𓂾𓂿𓃀𓃁𓃂𓃃𓃄𓃅𓃆𓃇𓃈𓃉𓃊𓃋𓃌𓃍𓃎𓃏𓃐𓃑𓃒𓃓𓃔𓃕𓃖𓃗𓃘𓃙𓃚𓃛𓃜𓃝𓃞𓃟𓃠𓃡𓃢𓃣𓃤𓃥𓃦𓃧𓃨𓃩𓃪𓃫𓃬𓃭𓃮𓃯𓃰𓃱𓃲𓃳𓃴𓃵𓃶𓃷𓃸𓃹𓃺𓃻𓃼𓃽𓃾𓃿𓄀𓄁𓄂𓄃𓄄𓄅𓄆𓄇𓄈𓄉𓄊𓄋𓄌𓄍𓄎𓄏𓄐𓄑𓄒𓄓𓄔𓄕𓄖𓄗𓄘𓄙𓄚𓄛𓄜𓄝𓄞𓄟𓄠𓄡𓄢𓄣𓄤𓄥𓄦𓄧𓄨𓄩𓄪𓄫𓄬𓄭𓄮𓄯𓄰𓄱𓄲𓄳𓄴𓄵𓄶𓄷𓄸𓄹𓄺𓄻𓄼𓄽𓄾𓄿𓅀𓅁𓅂𓅃𓅄𓅅𓅆𓅇𓅈𓅉𓅊𓅋𓅌𓅍𓅎𓅏𓅐𓅑𓅒𓅓𓅔𓅕𓅖𓅗𓅘𓅙𓅚𓅛𓅜𓅝𓅞𓅟𓅠𓅡𓅢𓅣𓅤𓅥𓅦𓅧𓅨𓅩𓅪𓅫𓅬𓅭𓅮𓅯𓅰𓅱𓅲𓅳𓅴𓅵𓅶𓅷𓅸𓅹𓅺𓅻𓅼𓅽𓅾𓅿𓆀𓆁𓆂𓆃𓆄𓆅𓆆𓆇𓆈𓆉𓆊𓆋𓆌𓆍𓆎𓆏𓆐𓆑𓆒𓆓𓆔𓆕𓆖𓆗𓆘𓆙𓆚𓆛𓆜𓆝𓆞𓆟𓆠𓆡𓆢𓆣𓆤𓆥𓆦𓆧𓆨𓆩𓆪𓆫𓆬𓆭𓆮𓆯𓆰𓆱𓆲𓆳𓆴𓆵𓆶𓆷𓆸𓆹𓆺𓆻𓆼𓆽𓆾𓆿𓇀𓇁𓇂𓇃𓇄𓇅𓇆𓇇𓇈𓇉𓇊𓇋𓇌𓇍𓇎𓇏𓇐𓇑𓇒𓇓𓇔𓇕𓇖𓇗𓇘𓇙𓇚𓇛𓇜𓇝𓇞𓇟𓇠𓇡𓇢𓇣𓇤𓇥𓇦𓇧𓇨𓇩𓇪𓇫𓇬𓇭𓇮𓇯𓇰𓇱𓇲𓇳𓇴𓇵𓇶𓇷𓇸𓇹𓇺𓇻𓇼𓇽𓇾𓇿𓈀𓈁𓈂𓈃𓈄𓈅𓈆𓈇𓈈𓈉𓈊𓈋𓈌𓈍𓈎𓈏𓈐𓈑𓈒𓈓𓈔𓈕𓈖𓈗𓈘𓈙𓈚𓈛𓈜𓈝𓈞𓈟𓈠𓈡𓈢𓈣𓈤𓈥𓈦𓈧𓈨𓈩𓈪𓈫𓈬𓈭𓈮𓈯𓈰𓈱𓈲𓈳𓈴𓈵𓈶𓈷𓈸𓈹𓈺𓈻𓈼𓈽𓈾𓈿𓉀𓉁𓉂𓉃𓉄𓉅𓉆𓉇𓉈𓉉𓉊𓉋𓉌𓉍𓉎𓉏𓉐𓉑𓉒𓉓𓉔𓉕𓉖𓉗𓉘𓉙𓉚𓉛𓉜𓉝𓉞𓉟𓉠𓉡𓉢𓉣𓉤𓉥𓉦𓉧𓉨𓉩𓉪𓉫𓉬𓉭𓉮𓉯𓉰𓉱𓉲𓉳𓉴𓉵𓉶𓉷𓉸𓉹𓉺𓉻𓉼𓉽𓉾𓉿𓊀𓊁𓊂𓊃𓊄𓊅𓊆𓊇𓊈𓊉𓊊𓊋𓊌𓊍𓊎𓊏𓊐𓊑𓊒𓊓𓊔𓊕𓊖𓊗𓊘𓊙𓊚𓊛𓊜𓊝𓊞𓊟𓊠𓊡𓊢𓊣𓊤𓊥𓊦𓊧𓊨𓊩𓊪𓊫𓊬𓊭𓊮𓊯𓊰𓊱𓊲𓊳𓊴𓊵𓊶𓊷𓊸𓊹𓊺𓊻𓊼𓊽𓊾𓊿𓋀𓋁𓋂𓋃𓋄𓋅𓋆𓋇𓋈𓋉𓋊𓋋𓋌𓋍𓋎𓋏𓋐𓋑𓋒𓋓𓋔𓋕𓋖𓋗𓋘𓋙𓋚𓋛𓋜𓋝𓋞𓋟𓋠𓋡𓋢𓋣𓋤𓋥𓋦𓋧𓋨𓋩𓋪𓋫𓋬𓋭𓋮𓋯𓋰𓋱𓋲𓋳𓋴𓋵𓋶𓋷𓋸𓋹𓋺𓋻𓋼𓋽𓋾𓋿𓌀𓌁𓌂𓌃𓌄𓌅𓌆𓌇𓌈𓌉𓌊𓌋𓌌𓌍𓌎𓌏𓌐𓌑𓌒𓌓𓌔𓌕𓌖𓌗𓌘𓌙𓌚𓌛𓌜𓌝𓌞𓌟𓌠𓌡𓌢𓌣𓌤𓌥𓌦𓌧𓌨𓌩𓌪𓌫𓌬𓌭𓌮𓌯𓌰𓌱𓌲𓌳𓌴𓌵𓌶𓌷𓌸𓌹𓌺𓌻𓌼𓌽𓌾𓌿𓍀𓍁𓍂𓍃𓍄𓍅𓍆𓍇𓍈𓍉𓍊𓍋𓍌𓍍𓍎𓍏𓍐𓍑𓍒𓍓𓍔𓍕𓍖𓍗𓍘𓍙𓍚𓍛𓍜𓍝𓍞𓍟𓍠𓍡𓍢𓍣𓍤𓍥𓍦𓍧𓍨𓍩𓍪𓍫𓍬𓍭𓍮𓍯𓍰𓍱𓍲𓍳𓍴𓍵𓍶𓍷𓍸𓍹𓍺𓍻𓍼𓍽𓍾𓍿𓎀𓎁𓎂𓎃𓎄𓎅𓎆𓎇𓎈𓎉𓎊𓎋𓎌𓎍𓎎𓎏𓎐𓎑𓎒𓎓𓎔𓎕𓎖𓎗𓎘𓎙𓎚𓎛𓎜𓎝𓎞𓎟𓎠𓎡𓎢𓎣𓎤𓎥𓎦𓎧𓎨𓎩𓎪𓎫𓎬𓎭𓎮𓎯𓎰𓎱𓎲𓎳𓎴𓎵𓎶𓎷𓎸𓎹𓎺𓎻𓎼𓎽𓎾𓎿𓏀𓏁𓏂𓏃𓏄𓏅𓏆𓏇𓏈𓏉𓏊𓏋𓏌𓏍𓏎𓏏𓏐𓏑𓏒𓏓𓏔𓏕𓏖𓏗𓏘𓏙𓏚𓏛𓏜𓏝𓏞𓏟𓏠𓏡𓏢𓏣𓏤𓏥𓏦𓏧𓏨𓏩𓏪𓏫𓏬𓏭𓏮𓏯𓏰𓏱𓏲𓏳𓏴𓏵𓏶𓏷𓏸𓏹𓏺𓏻𓏼𓏽𓏾𓏿𓐀𓐁𓐂𓐃𓐄𓐅𓐆𓐇𓐈𓐉𓐊𓐋𓐌𓐍𓐎𓐏𓐐𓐑𓐒𓐓𓐔𓐕𓐖𓐗𓐘𓐙𓐚𓐛𓐜𓐝𓐞𓐟𓐠𓐡𓐢𓐣𓐤𓐥𓐦𓐧𓐨𓐩𓐪𓐫𓐬𓐭𓐮𓐯",
+
+
+{
+	"A": "𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏𓀐𓀑𓀒𓀓𓀔𓀕𓀖𓀗𓀘𓀙𓀚𓀛𓀜𓀝𓀞𓀟𓀠𓀡𓀢𓀣𓀤𓀥𓀦𓀧𓀨𓀩𓀪𓀫𓀬𓀭𓀮𓀯𓀰𓀱𓀲𓀳𓀴𓀵𓀶𓀷𓀸𓀹𓀺𓀻𓀼𓀽𓀾𓀿𓁀𓁁𓁂𓁃𓁄𓁅𓁆𓁇𓁈𓁉𓁊𓁋",
+	"B": "𓁌𓁍𓁎𓁏𓁐𓁑𓁒",
+	"C": "𓁓𓁔𓁕𓁖𓁗𓁘𓁙𓁚𓁛𓁜𓁝𓁞𓁟𓁠𓁡𓁢𓁣𓁤𓁥𓁦",
+	"D": "𓁧𓁨𓁩𓁪𓁫𓁬𓁭𓁮𓁯𓁰𓁱𓁲𓁳𓁴𓁵𓁶𓁷𓁸𓁹𓁺𓁻𓁼𓁽𓁾𓁿𓂀𓂁𓂂𓂃𓂄𓂅𓂆𓂇𓂈𓂉𓂊𓂋𓂌𓂍𓂎𓂏𓂐𓂑𓂒𓂓𓂔𓂕𓂖𓂗𓂘𓂙𓂚𓂛𓂜𓂝𓂞𓂟𓂠𓂡𓂢𓂣𓂤𓂥",
+}
+
+"𓀀": {"char": "𓀀", "codepoint": "13000", "name": "Seated Man"},
+"𓀀": {"char": "𓀀", "codepoint": "13000", "name": "Seated Man"},
+
+
+{
+	"A": {
+		"name": "Man and His Occupations",
+		"description": "Signs depicting human figures, actions, or roles such as seated man, king, or soldier.",
+		"count": 59
+	},
+	"B": {
+		"name": "Woman and Her Occupations",
+		"description": "Signs of women, female roles, or activities like seated woman or queen.",
+		"count": 7
+	},
+	"C": {
+		"name": "Anthropomorphic Deities",
+		"description": "Deities with human-like forms, such as gods like Osiris or Horus.",
+		"count": 11
+	},
+	"D": {
+		"name": "Parts of the Human Body",
+		"description": "Body parts like eye, hand, or leg.",
+		"count": 63,
+		"emoji": {
+			"𓁽": {"char": "𓁽", "codepoint": "1309D", "gardiner": "D1", "name": "Head"},
+			"𓁾": {"char": "𓁾", "codepoint": "1309E", "gardiner": "D2", "name": "Face"},
+			"𓁿": {"char": "𓁿", "codepoint": "1309F", "gardiner": "D3", "name": "Head with hair"},
+			"𓂀": {"char": "𓂀", "codepoint": "130A0", "gardiner": "D4", "name": "Eye"},
+			"𓂁": {"char": "𓂁", "codepoint": "130A1", "gardiner": "D5", "name": "Weeping eye"},
+			"𓂂": {"char": "𓂂", "codepoint": "130A2", "gardiner": "D6", "name": "Eye with makeup"},
+			"𓂃": {"char": "𓂃", "codepoint": "130A3", "gardiner": "D7", "name": "Eyebrow"},
+			"𓂄": {"char": "𓂄", "codepoint": "130A4", "gardiner": "D8", "name": "Eye enclosed"},
+			"𓂅": {"char": "𓂅", "codepoint": "130A5", "gardiner": "D9", "name": "Cheek mark"},
+			"𓂆": {"char": "𓂆", "codepoint": "130A6", "gardiner": "D10", "name": "Eye of Horus"},
+			"𓂇": {"char": "𓂇", "codepoint": "130A7", "gardiner": "D11", "name": "Part of Eye of Horus"},
+			"𓂈": {"char": "𓂈", "codepoint": "130A8", "gardiner": "D12", "name": "Part of Eye of Horus"},
+			"𓂉": {"char": "𓂉", "codepoint": "130A9", "gardiner": "D13", "name": "Part of Eye of Horus"},
+			"𓂊": {"char": "𓂊", "codepoint": "130AA", "gardiner": "D14", "name": "Part of Eye of Horus"},
+			"𓂋": {"char": "𓂋", "codepoint": "130AB", "gardiner": "D15", "name": "Part of Eye of Horus"},
+			"𓂌": {"char": "𓂌", "codepoint": "130AC", "gardiner": "D16", "name": "Part of Eye of Horus"},
+			"𓂍": {"char": "𓂍", "codepoint": "130AD", "gardiner": "D17", "name": "Part of Eye of Horus"},
+			"𓂎": {"char": "𓂎", "codepoint": "130AE", "gardiner": "D18", "name": "Ear"},
+			"𓂏": {"char": "𓂏", "codepoint": "130AF", "gardiner": "D19", "name": "Nose"},
+			"𓂐": {"char": "𓂐", "codepoint": "130B0", "gardiner": "D20", "name": "Nose with air"},
+			"𓂑": {"char": "𓂑", "codepoint": "130B1", "gardiner": "D21", "name": "Mouth"},
+			"𓂒": {"char": "𓂒", "codepoint": "130B2", "gardiner": "D22", "name": "Mouth with two strokes"},
+			"𓂓": {"char": "𓂓", "codepoint": "130B3", "gardiner": "D23", "name": "Mouth with three strokes"},
+			"𓂔": {"char": "𓂔", "codepoint": "130B4", "gardiner": "D24", "name": "Upper lip with teeth"},
+			"𓂕": {"char": "𓂕", "codepoint": "130B5", "gardiner": "D25", "name": "Lips joined"},
+			"𓂖": {"char": "𓂖", "codepoint": "130B6", "gardiner": "D26", "name": "Spittle"},
+			"𓂗": {"char": "𓂗", "codepoint": "130B7", "gardiner": "D27", "name": "Breast"},
+			"𓂘": {"char": "𓂘", "codepoint": "130B8", "gardiner": "D28", "name": "Two arms raised"},
+			"𓂙": {"char": "𓂙", "codepoint": "130B9", "gardiner": "D29", "name": "Two arms with power staff"},
+			"𓂚": {"char": "𓂚", "codepoint": "130BA", "gardiner": "D30", "name": "Two arms with shield"},
+			"𓂛": {"char": "𓂛", "codepoint": "130BB", "gardiner": "D31", "name": "Two arms with flagellum"},
+			"𓂜": {"char": "𓂜", "codepoint": "130BC", "gardiner": "D32", "name": "Arms embracing"},
+			"𓂝": {"char": "𓂝", "codepoint": "130BD", "gardiner": "D33", "name": "Arms in opposition"},
+			"𓂞": {"char": "𓂞", "codepoint": "130BE", "gardiner": "D34", "name": "Arms with hands empty"},
+			"𓂟": {"char": "𓂟", "codepoint": "130BF", "gardiner": "D35", "name": "Arms negating"},
+			"𓂠": {"char": "𓂠", "codepoint": "130C0", "gardiner": "D36", "name": "Forearm"},
+			"𓂡": {"char": "𓂡", "codepoint": "130C1", "gardiner": "D37", "name": "Forearm with bread"},
+			"𓂢": {"char": "𓂢", "codepoint": "130C2", "gardiner": "D38", "name": "Forearm offering"},
+			"𓂣": {"char": "𓂣", "codepoint": "130C3", "gardiner": "D39", "name": "Forearm with bowl"},
+			"𓂤": {"char": "𓂤", "codepoint": "130C4", "gardiner": "D40", "name": "Forearm with stick"},
+			"𓂥": {"char": "𓂥", "codepoint": "130C5", "gardiner": "D41", "name": "Forearm bent"},
+			"𓂦": {"char": "𓂦", "codepoint": "130C6", "gardiner": "D42", "name": "Arm with mace"},
+			"𓂧": {"char": "𓂧", "codepoint": "130C7", "gardiner": "D43", "name": "Arm with flail"},
+			"𓂨": {"char": "𓂨", "codepoint": "130C8", "gardiner": "D44", "name": "Arm with staff"},
+			"𓂩": {"char": "𓂩", "codepoint": "130C9", "gardiner": "D45", "name": "Arm with sekhem scepter"},
+			"𓂪": {"char": "𓂪", "codepoint": "130CA", "gardiner": "D46", "name": "Hand"},
+			"𓂫": {"char": "𓂫", "codepoint": "130CB", "gardiner": "D47", "name": "Hand with droplets"},
+			"𓂬": {"char": "𓂬", "codepoint": "130CC", "gardiner": "D48", "name": "Hand variant"},
+			"𓂭": {"char": "𓂭", "codepoint": "130CD", "gardiner": "D49", "name": "Fist"},
+			"𓂮": {"char": "𓂮", "codepoint": "130CE", "gardiner": "D50", "name": "Finger"},
+			"𓂯": {"char": "𓂯", "codepoint": "130CF", "gardiner": "D51", "name": "Forearm with hand horizontal"},
+			"𓂰": {"char": "𓂰", "codepoint": "130D0", "gardiner": "D52", "name": "Phallus"},
+			"𓂱": {"char": "𓂱", "codepoint": "130D1", "gardiner": "D53", "name": "Phallus with emission"},
+			"𓂲": {"char": "𓂲", "codepoint": "130D2", "gardiner": "D54", "name": "Legs walking"},
+			"𓂳": {"char": "𓂳", "codepoint": "130D3", "gardiner": "D55", "name": "Legs walking backward"},
+			"𓂴": {"char": "𓂴", "codepoint": "130D4", "gardiner": "D56", "name": "Leg"},
+			"𓂵": {"char": "𓂵", "codepoint": "130D5", "gardiner": "D57", "name": "Leg with knife"},
+			"𓂶": {"char": "𓂶", "codepoint": "130D6", "gardiner": "D58", "name": "Foot"},
+			"𓂷": {"char": "𓂷", "codepoint": "130D7", "gardiner": "D59", "name": "Foot with forearm"},
+			"𓂸": {"char": "𓂸", "codepoint": "130D8", "gardiner": "D60", "name": "Foot under leg"},
+			"𓂹": {"char": "𓂹", "codepoint": "130D9", "gardiner": "D61", "name": "Three toes"},
+			"𓂺": {"char": "𓂺", "codepoint": "130DA", "gardiner": "D62", "name": "Toe"},
+			"𓂻": {"char": "𓂻", "codepoint": "130DB", "gardiner": "D63", "name": "Bone with meat"}
+		}
+	},
+	"E": {
+		"name": "Mammals",
+		"description": "Mammalian animals, including cat, lion, or cow.",
+		"count": 34,
+		"emoji":{
+			"𓃜": {"char": "𓃜", "codepoint": "130DC", "gardiner": "E1", "name": "Bull"},
+			"𓃝": {"char": "𓃝", "codepoint": "130DD", "gardiner": "E2", "name": "Bull (variant)"},
+			"𓃞": {"char": "𓃞", "codepoint": "130DE", "gardiner": "E3", "name": "Calf"},
+			"𓃟": {"char": "𓃟", "codepoint": "130DF", "gardiner": "E4", "name": "Donkey"},
+			"𓃠": {"char": "𓃠", "codepoint": "130E0", "gardiner": "E5", "name": "Kid"},
+			"𓃡": {"char": "𓃡", "codepoint": "130E1", "gardiner": "E6", "name": "Horse"},
+			"𓃢": {"char": "𓃢", "codepoint": "130E2", "gardiner": "E7", "name": "Ram"},
+			"𓃣": {"char": "𓃣", "codepoint": "130E3", "gardiner": "E8", "name": "Goat"},
+			"𓃤": {"char": "𓃤", "codepoint": "130E4", "gardiner": "E9", "name": "Pig"},
+			"𓃥": {"char": "𓃥", "codepoint": "130E5", "gardiner": "E10", "name": "Cat"},
+			"𓃦": {"char": "𓃦", "codepoint": "130E6", "gardiner": "E11", "name": "Monkey"},
+			"𓃧": {"char": "𓃧", "codepoint": "130E7", "gardiner": "E12", "name": "Baboon"},
+			"𓃨": {"char": "𓃨", "codepoint": "130E8", "gardiner": "E13", "name": "Hippopotamus"},
+			"𓃩": {"char": "𓃩", "codepoint": "130E9", "gardiner": "E14", "name": "Elephant"},
+			"𓃪": {"char": "𓃪", "codepoint": "130EA", "gardiner": "E15", "name": "Giraffe"},
+			"𓃫": {"char": "𓃫", "codepoint": "130EB", "gardiner": "E16", "name": "Oryx"},
+			"𓃬": {"char": "𓃬", "codepoint": "130EC", "gardiner": "E17", "name": "Gazelle"},
+			"𓃭": {"char": "𓃭", "codepoint": "130ED", "gardiner": "E18", "name": "Ibex"},
+			"𓃮": {"char": "𓃮", "codepoint": "130EE", "gardiner": "E19", "name": "Dog"},
+			"𓃯": {"char": "𓃯", "codepoint": "130EF", "gardiner": "E20", "name": "Set animal"},
+			"𓃰": {"char": "𓃰", "codepoint": "130F0", "gardiner": "E21", "name": "Jackal"},
+			"𓃱": {"char": "𓃱", "codepoint": "130F1", "gardiner": "E22", "name": "Fox"},
+			"𓃲": {"char": "𓃲", "codepoint": "130F2", "gardiner": "E23", "name": "Panther"},
+			"𓃳": {"char": "𓃳", "codepoint": "130F3", "gardiner": "E24", "name": "Leopard"},
+			"𓃴": {"char": "𓃴", "codepoint": "130F4", "gardiner": "E25", "name": "Hare"},
+			"𓃵": {"char": "𓃵", "codepoint": "130F5", "gardiner": "E26", "name": "Hedgehog"},
+			"𓃶": {"char": "𓃶", "codepoint": "130F6", "gardiner": "E27", "name": "Cow"},
+			"𓃷": {"char": "𓃷", "codepoint": "130F7", "gardiner": "E28", "name": "Cow suckling calf"},
+			"𓃸": {"char": "𓃸", "codepoint": "130F8", "gardiner": "E29", "name": "Lion"},
+			"𓃹": {"char": "𓃹", "codepoint": "130F9", "gardiner": "E30", "name": "Recumbent lion"},
+			"𓃺": {"char": "𓃺", "codepoint": "130FA", "gardiner": "E31", "name": "Forepart of lion"},
+			"𓃻": {"char": "𓃻", "codepoint": "130FB", "gardiner": "E32", "name": "Hippopotamus (variant)"},
+			"𓃼": {"char": "𓃼", "codepoint": "130FC", "gardiner": "E33", "name": "Monkey standing"},
+			"𓃽": {"char": "𓃽", "codepoint": "130FD", "gardiner": "E34", "name": "Baboon sitting"}
+		}
+	},
+	"F": {
+		"name": "Parts of Mammals",
+		"description": "Animal body parts such as horn or tail.",
+		"count": 32,
+		"emoji": {
+			"𓃾": {"char": "𓃾", "codepoint": "130FE", "gardiner": "F1", "name": "Head of ox"},
+			"𓃿": {"char": "𓃿", "codepoint": "130FF", "gardiner": "F2", "name": "Head of long-horned bull"},
+			"𓄀": {"char": "𓄀", "codepoint": "13100", "gardiner": "F3", "name": "Head of leopard"},
+			"𓄁": {"char": "𓄁", "codepoint": "13101", "gardiner": "F4", "name": "Forepart of lion"},
+			"𓄂": {"char": "𓄂", "codepoint": "13102", "gardiner": "F5", "name": "Head of hippopotamus"},
+			"𓄃": {"char": "𓄃", "codepoint": "13103", "gardiner": "F6", "name": "Forepart of hippopotamus"},
+			"𓄄": {"char": "𓄄", "codepoint": "13104", "gardiner": "F7", "name": "Head of ram"},
+			"𓄅": {"char": "𓄅", "codepoint": "13105", "gardiner": "F8", "name": "Head of leopard (again?)"},
+			"𓄆": {"char": "𓄆", "codepoint": "13106", "gardiner": "F9", "name": "Forepart of hare"},
+			"𓄇": {"char": "𓄇", "codepoint": "13107", "gardiner": "F10", "name": "Head and neck of animal"},
+			"𓄈": {"char": "𓄈", "codepoint": "13108", "gardiner": "F11", "name": "Head and neck of vulture"},
+			"𓄉": {"char": "𓄉", "codepoint": "13109", "gardiner": "F12", "name": "Uraeus and neck"},
+			"𓄊": {"char": "𓄊", "codepoint": "1310A", "gardiner": "F13", "name": "Horn"},
+			"𓄋": {"char": "𓄋", "codepoint": "1310B", "gardiner": "F14", "name": "Horn and arm"},
+			"𓄌": {"char": "𓄌", "codepoint": "1310C", "gardiner": "F15", "name": "Tusk"},
+			"𓄍": {"char": "𓄍", "codepoint": "1310D", "gardiner": "F16", "name": "Horn (variant)"},
+			"𓄎": {"char": "𓄎", "codepoint": "1310E", "gardiner": "F17", "name": "Two horns"},
+			"𓄏": {"char": "𓄏", "codepoint": "1310F", "gardiner": "F18", "name": "Tusk (variant)"},
+			"𓄐": {"char": "𓄐", "codepoint": "13110", "gardiner": "F19", "name": "Jawbone"},
+			"𓄑": {"char": "𓄑", "codepoint": "13111", "gardiner": "F20", "name": "Tongue"},
+			"𓄒": {"char": "𓄒", "codepoint": "13112", "gardiner": "F21", "name": "Ear of ox"},
+			"𓄓": {"char": "𓄓", "codepoint": "13113", "gardiner": "F22", "name": "Hind leg of ox"},
+			"𓄔": {"char": "𓄔", "codepoint": "13114", "gardiner": "F23", "name": "Foreleg of ox"},
+			"𓄕": {"char": "𓄕", "codepoint": "13115", "gardiner": "F24", "name": "Foreleg (variant)"},
+			"𓄖": {"char": "𓄖", "codepoint": "13116", "gardiner": "F25", "name": "Leg with knife"},
+			"𓄗": {"char": "𓄗", "codepoint": "13117", "gardiner": "F26", "name": "Hide with arrow"},
+			"𓄘": {"char": "𓄘", "codepoint": "13118", "gardiner": "F27", "name": "Spotted hide"},
+			"𓄙": {"char": "𓄙", "codepoint": "13119", "gardiner": "F28", "name": "Hide (variant)"},
+			"𓄚": {"char": "𓄚", "codepoint": "1311A", "gardiner": "F29", "name": "Tail"},
+			"𓄛": {"char": "𓄛", "codepoint": "1311B", "gardiner": "F30", "name": "Drops of liquid (blood?)"},
+			"𓄜": {"char": "𓄜", "codepoint": "1311C", "gardiner": "F31", "name": "Three fox skins tied together"}
+		}
+	},
+	"G": {
+		"name": "Birds",
+		"description": "Bird species and related signs, like owl or vulture.",
+		"count": 54,
+		"emoji": {
+			"𓄿": {"char": "𓄿", "codepoint": "1313F", "gardiner": "G1", "name": "Egyptian vulture"},
+			"𓅀": {"char": "𓅀", "codepoint": "13140", "gardiner": "G2", "name": "Two Egyptian vultures"},
+			"𓅁": {"char": "𓅁", "codepoint": "13141", "gardiner": "G3", "name": "Egyptian vulture and reed-leaf"},
+			"𓅂": {"char": "𓅂", "codepoint": "13142", "gardiner": "G4", "name": "Guinea-fowl"},
+			"𓅃": {"char": "𓅃", "codepoint": "13143", "gardiner": "G5", "name": "Horus falcon"},
+			"𓅄": {"char": "𓅄", "codepoint": "13144", "gardiner": "G6", "name": "Falcon on crescent"},
+			"𓅅": {"char": "𓅅", "codepoint": "13145", "gardiner": "G7", "name": "Falcon with sun"},
+			"𓅆": {"char": "𓅆", "codepoint": "13146", "gardiner": "G7A", "name": "Falcon with feather"},
+			"𓅇": {"char": "𓅇", "codepoint": "13147", "gardiner": "G8", "name": "Falcon in Sokar bark"},
+			"𓅈": {"char": "𓅈", "codepoint": "13148", "gardiner": "G9", "name": "Falcon with sun and cobra"},
+			"𓅉": {"char": "𓅉", "codepoint": "13149", "gardiner": "G10", "name": "Horus as falcon"},
+			"𓅊": {"char": "𓅊", "codepoint": "1314A", "gardiner": "G11", "name": "Falcon on standard"},
+			"𓅋": {"char": "𓅋", "codepoint": "1314B", "gardiner": "G12", "name": "Falcon on collar of beads"},
+			"𓅌": {"char": "𓅌", "codepoint": "1314C", "gardiner": "G13", "name": "Falcon on boat"},
+			"𓅍": {"char": "𓅍", "codepoint": "1314D", "gardiner": "G14", "name": "Vulture"},
+			"𓅎": {"char": "𓅎", "codepoint": "1314E", "gardiner": "G15", "name": "Vulture with flail"},
+			"𓅏": {"char": "𓅏", "codepoint": "1314F", "gardiner": "G16", "name": "Vulture and cobra on baskets"},
+			"𓅐": {"char": "𓅐", "codepoint": "13150", "gardiner": "G17", "name": "Owl"},
+			"𓅑": {"char": "𓅑", "codepoint": "13151", "gardiner": "G18", "name": "Two owls"},
+			"𓅒": {"char": "𓅒", "codepoint": "13152", "gardiner": "G19", "name": "Owl and forearm"},
+			"𓅓": {"char": "𓅓", "codepoint": "13153", "gardiner": "G20", "name": "Owl and forearm with conical loaf"},
+			"𓅔": {"char": "𓅔", "codepoint": "13154", "gardiner": "G21", "name": "Guinea-fowl"},
+			"𓅕": {"char": "𓅕", "codepoint": "13155", "gardiner": "G22", "name": "Hoopoe"},
+			"𓅖": {"char": "𓅖", "codepoint": "13156", "gardiner": "G23", "name": "Lapwing"},
+			"𓅗": {"char": "𓅗", "codepoint": "13157", "gardiner": "G24", "name": "Lapwing with twisted wick"},
+			"𓅘": {"char": "𓅘", "codepoint": "13158", "gardiner": "G25", "name": "Crested bird (Akhet)"},
+			"𓅙": {"char": "𓅙", "codepoint": "13159", "gardiner": "G26", "name": "Sacred ibis on standard"},
+			"𓅚": {"char": "𓅚", "codepoint": "1315A", "gardiner": "G26A", "name": "Sacred ibis"},
+			"𓅛": {"char": "𓅛", "codepoint": "1315B", "gardiner": "G27", "name": "Flamingo"},
+			"𓅜": {"char": "𓅜", "codepoint": "1315C", "gardiner": "G28", "name": "Glossy ibis"},
+			"𓅝": {"char": "𓅝", "codepoint": "1315D", "gardiner": "G29", "name": "Saddle-billed stork"},
+			"𓅞": {"char": "𓅞", "codepoint": "1315E", "gardiner": "G30", "name": "Three saddle-billed storks"},
+			"𓅟": {"char": "𓅟", "codepoint": "1315F", "gardiner": "G31", "name": "Heron"},
+			"𓅠": {"char": "𓅠", "codepoint": "13160", "gardiner": "G32", "name": "Heron on perch"},
+			"𓅡": {"char": "𓅡", "codepoint": "13161", "gardiner": "G33", "name": "Plover"},
+			"𓅢": {"char": "𓅢", "codepoint": "13162", "gardiner": "G34", "name": "Plover with worm"},
+			"𓅣": {"char": "𓅣", "codepoint": "13163", "gardiner": "G35", "name": "Cormorant"},
+			"𓅤": {"char": "𓅤", "codepoint": "13164", "gardiner": "G36", "name": "Swallow"},
+			"𓅥": {"char": "𓅥", "codepoint": "13165", "gardiner": "G37", "name": "Sparrow"},
+			"𓅦": {"char": "𓅦", "codepoint": "13166", "gardiner": "G38", "name": "White-fronted goose"},
+			"𓅧": {"char": "𓅧", "codepoint": "13167", "gardiner": "G39", "name": "Pintail duck"},
+			"𓅨": {"char": "𓅨", "codepoint": "13168", "gardiner": "G40", "name": "Duck flying"},
+			"𓅩": {"char": "𓅩", "codepoint": "13169", "gardiner": "G41", "name": "Plucked bird falling"},
+			"𓅪": {"char": "𓅪", "codepoint": "1316A", "gardiner": "G42", "name": "Wader holding claw"},
+			"𓅫": {"char": "𓅫", "codepoint": "1316B", "gardiner": "G43", "name": "Quail chick"},
+			"𓅬": {"char": "𓅬", "codepoint": "1316C", "gardiner": "G44", "name": "Two quail chicks"},
+			"𓅭": {"char": "𓅭", "codepoint": "1316D", "gardiner": "G45", "name": "Three quail chicks"},
+			"𓅮": {"char": "𓅮", "codepoint": "1316E", "gardiner": "G46", "name": "Egyptian vulture (black variant)"},
+			"𓅯": {"char": "𓅯", "codepoint": "1316F", "gardiner": "G47", "name": "Duckling"},
+			"𓅰": {"char": "𓅰", "codepoint": "13170", "gardiner": "G48", "name": "Three ducklings in nest"},
+			"𓅱": {"char": "𓅱", "codepoint": "13171", "gardiner": "G49", "name": "Bird pecking at fish"},
+			"𓅲": {"char": "𓅲", "codepoint": "13172", "gardiner": "G50", "name": "Bird with serpent"},
+			"𓅳": {"char": "𓅳", "codepoint": "13173", "gardiner": "G51", "name": "Bird hieroglyph in inscription"},
+			"𓅴": {"char": "𓅴", "codepoint": "13174", "gardiner": "G52", "name": "Goose pecking"},
+			"𓅵": {"char": "𓅵", "codepoint": "13175", "gardiner": "G53", "name": "Human-headed bird (Ba)"},
+			"𓅶": {"char": "𓅶", "codepoint": "13176", "gardiner": "G54", "name": "Trussed goose"}
+		}
+	},
+	"H": {
+		"name": "Parts of Birds",
+		"description": "Bird body parts, such as wing or feather.",
+		"count": 8
+	},
+	"I": {
+		"name": "Amphibious Animals, Reptiles, etc.",
+		"description": "Reptiles and amphibians, like snake or crocodile.",
+		"count": 15
+	},
+	"K": {
+		"name": "Fish and Parts of Fish",
+		"description": "Fish and fish-related signs, such as fish or fin.",
+		"count": 6,
+		"emoji": {
+			"𓆛": {"char": "𓆛", "codepoint": "1319B", "gardiner": "K1", "name": "Tilapia fish"},
+			"𓆜": {"char": "𓆜", "codepoint": "1319C", "gardiner": "K2", "name": "Barbel fish"},
+			"𓆝": {"char": "𓆝", "codepoint": "1319D", "gardiner": "K3", "name": "Mullet fish"},
+			"𓆞": {"char": "𓆞", "codepoint": "1319E", "gardiner": "K4", "name": "Oxyrhynchus fish"},
+			"𓆟": {"char": "𓆟", "codepoint": "1319F", "gardiner": "K5", "name": "Petr fish"},
+			"𓆠": {"char": "𓆠", "codepoint": "131A0", "gardiner": "K6", "name": "Fish scale"}
+		}
+	},
+	"L": {
+		"name": "Invertebrates and Lesser Animals",
+		"description": "Insects and small creatures, like bee or scorpion.",
+		"count": 7,
+		"emoji":{
+			"𓆡": {"char": "𓆡", "codepoint": "131A1", "gardiner": "L1", "name": "Beetle"},
+			"𓆢": {"char": "𓆢", "codepoint": "131A2", "gardiner": "L2", "name": "Bee"},
+			"𓆣": {"char": "𓆣", "codepoint": "131A3", "gardiner": "L3", "name": "Fly"},
+			"𓆤": {"char": "𓆤", "codepoint": "131A4", "gardiner": "L4", "name": "Centipede"},
+			"𓆥": {"char": "𓆥", "codepoint": "131A5", "gardiner": "L5", "name": "Shell"},
+			"𓆦": {"char": "𓆦", "codepoint": "131A6", "gardiner": "L6", "name": "Scorpion"},
+			"𓆧": {"char": "𓆧", "codepoint": "131A7", "gardiner": "L7", "name": "Scorpion (variant)"}
+		}
+	},
+	"M": {
+		"name": "Trees and Plants",
+		"description": "Vegetation, such as reed or lotus.",
+		"count": 44,
+		"emoji": {
+			"𓆨": {"char": "𓆨", "codepoint": "131A8", "gardiner": "M1", "name": "Tree"},
+			"𓆩": {"char": "𓆩", "codepoint": "131A9", "gardiner": "M2", "name": "Flower"},
+			"𓆪": {"char": "𓆪", "codepoint": "131AA", "gardiner": "M3", "name": "Wood"},
+			"𓆫": {"char": "𓆫", "codepoint": "131AB", "gardiner": "M4", "name": "Combination of flower and forearm"},
+			"𓆬": {"char": "𓆬", "codepoint": "131AC", "gardiner": "M5", "name": "Combination of flower and snake"},
+			"𓆭": {"char": "𓆭", "codepoint": "131AD", "gardiner": "M6", "name": "Combination of flower and reed"},
+			"𓆮": {"char": "𓆮", "codepoint": "131AE", "gardiner": "M7", "name": "Combination of flower and papyrus"},
+			"𓆯": {"char": "𓆯", "codepoint": "131AF", "gardiner": "M8", "name": "Pool with lotus flowers"},
+			"𓆰": {"char": "𓆰", "codepoint": "131B0", "gardiner": "M9", "name": "Lotus flower"},
+			"𓆱": {"char": "𓆱", "codepoint": "131B1", "gardiner": "M10", "name": "Combination of lotus and reed"},
+			"𓆲": {"char": "𓆲", "codepoint": "131B2", "gardiner": "M11", "name": "Clump of papyrus"},
+			"𓆳": {"char": "𓆳", "codepoint": "131B3", "gardiner": "M12", "name": "Clump of papyrus with cobra"},
+			"𓆴": {"char": "𓆴", "codepoint": "131B4", "gardiner": "M13", "name": "Papyrus stem"},
+			"𓆵": {"char": "𓆵", "codepoint": "131B5", "gardiner": "M14", "name": "Combination of papyrus and arm"},
+			"𓆶": {"char": "𓆶", "codepoint": "131B6", "gardiner": "M15", "name": "Papyrus clump in water"},
+			"𓆷": {"char": "𓆷", "codepoint": "131B7", "gardiner": "M16", "name": "Papyrus clump (low)"},
+			"𓆸": {"char": "𓆸", "codepoint": "131B8", "gardiner": "M17", "name": "Reed leaf"},
+			"𓆹": {"char": "𓆹", "codepoint": "131B9", "gardiner": "M18", "name": "Two reed leaves"},
+			"𓆺": {"char": "𓆺", "codepoint": "131BA", "gardiner": "M19", "name": "Pestle and mortar"},
+			"𓆻": {"char": "𓆻", "codepoint": "131BB", "gardiner": "M20", "name": "Reed rushes with green shoots"},
+			"𓆼": {"char": "𓆼", "codepoint": "131BC", "gardiner": "M21", "name": "Plant with long stalk"},
+			"𓆽": {"char": "𓆽", "codepoint": "131BD", "gardiner": "M22", "name": "Rush"},
+			"𓆾": {"char": "𓆾", "codepoint": "131BE", "gardiner": "M23", "name": "Sedge"},
+			"𓆿": {"char": "𓆿", "codepoint": "131BF", "gardiner": "M24", "name": "Combination of sedge and forearm"},
+			"𓇀": {"char": "𓇀", "codepoint": "131C0", "gardiner": "M25", "name": "Combination of sedge and signs"},
+			"𓇁": {"char": "𓇁", "codepoint": "131C1", "gardiner": "M26", "name": "Sedge flowering"},
+			"𓇂": {"char": "𓇂", "codepoint": "131C2", "gardiner": "M27", "name": "Combination of flowering sedge and cobra"},
+			"𓇃": {"char": "𓇃", "codepoint": "131C3", "gardiner": "M28", "name": "Tree branch"},
+			"𓇄": {"char": "𓇄", "codepoint": "131C4", "gardiner": "M29", "name": "Pod"},
+			"𓇅": {"char": "𓇅", "codepoint": "131C5", "gardiner": "M30", "name": "Root"},
+			"𓇆": {"char": "𓇆", "codepoint": "131C6", "gardiner": "M31", "name": "Rhizome"},
+			"𓇇": {"char": "𓇇", "codepoint": "131C7", "gardiner": "M32", "name": "Bulb"},
+			"𓇈": {"char": "𓇈", "codepoint": "131C8", "gardiner": "M33", "name": "Grain"},
+			"𓇉": {"char": "𓇉", "codepoint": "131C9", "gardiner": "M34", "name": "Emmer"},
+			"𓇊": {"char": "𓇊", "codepoint": "131CA", "gardiner": "M35", "name": "Heap of grain"},
+			"𓇋": {"char": "𓇋", "codepoint": "131CB", "gardiner": "M36", "name": "Bundle of flax stems"},
+			"𓇌": {"char": "𓇌", "codepoint": "131CC", "gardiner": "M37", "name": "Flax stem"},
+			"𓇍": {"char": "𓇍", "codepoint": "131CD", "gardiner": "M38", "name": "Flax bale"},
+			"𓇎": {"char": "𓇎", "codepoint": "131CE", "gardiner": "M39", "name": "Bundle of flax"},
+			"𓇏": {"char": "𓇏", "codepoint": "131CF", "gardiner": "M40", "name": "Reed bundle"},
+			"𓇐": {"char": "𓇐", "codepoint": "131D0", "gardiner": "M41", "name": "Wood log"},
+			"𓇑": {"char": "𓇑", "codepoint": "131D1", "gardiner": "M42", "name": "Flower stem"},
+			"𓇒": {"char": "𓇒", "codepoint": "131D2", "gardiner": "M43", "name": "Vine on trellis"},
+			"𓇓": {"char": "𓇓", "codepoint": "131D3", "gardiner": "M44", "name": "Thorny branch"}
+		}
+	},
+	"N": {
+		"name": "Sky, Earth, Water",
+		"description": "Natural features like sky, mountain, or water.",
+		"count": 42
+	},
+	"O": {
+		"name": "Buildings, Parts of Buildings, etc.",
+		"description": "Architectural elements, such as house or pyramid.",
+		"count": 51
+	},
+	"P": {
+		"name": "Ships, Parts of Ships, etc.",
+		"description": "Watercraft and related signs, like boat or sail.",
+		"count": 11
+	},
+	"Q": {
+		"name": "Domestic and Funerary Furniture",
+		"description": "Household items, such as chair or bed.",
+		"count": 7
+	},
+	"R": {
+		"name": "Temple Furniture and Sacred Emblems",
+		"description": "Religious objects, like altar or ankh.",
+		"count": 25
+	},
+	"S": {
+		"name": "Crowns, Dress, Staves, etc.",
+		"description": "Regalia and symbols of power, such as crown or scepter.",
+		"count": 45
+	},
+	"T": {
+		"name": "Warfare, Hunting, Butchery",
+		"description": "Weapons and tools, like bow or knife.",
+		"count": 35
+	},
+	"U": {
+		"name": "Agriculture, Crafts, and Professions",
+		"description": "Tools and activities, such as plow or adze.",
+		"count": 41
+	},
+	"V": {
+		"name": "Rope, Fiber, Baskets, Bags, etc.",
+		"description": "Cordage and containers, like rope or basket.",
+		"count": 39
+	},
+	"W": {
+		"name": "Vessels of Stone and Earthenware",
+		"description": "Containers, such as jar or pot.",
+		"count": 25
+	},
+	"X": {
+		"name": "Loaves and Cakes",
+		"description": "Bread and food items, like loaf.",
+		"count": 8
+	},
+	"Y": {
+		"name": "Writings, Games, Music",
+		"description": "Cultural objects, such as scroll or harp.",
+		"count": 8
+	},
+	"Z": {
+		"name": "Strokes, Signs Derived from Hieratic, Geometrical Figures",
+		"description": "Lines and shapes, like single stroke.",
+		"count": 11
+	},
+	"AA": {
+		"name": "Unclassified",
+		"description": "Miscellaneous signs not fitting other categories.",
+		"count": 31
+	}
+}
+
+
 𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓉵𓉵𓉵𓉵𓉵𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴
 
 U+1300x	𓀀	𓀁	𓀂	𓀃	𓀄	𓀅	𓀆	𓀇	𓀈	𓀉	𓀊	𓀋	𓀌	𓀍	𓀎	𓀏
