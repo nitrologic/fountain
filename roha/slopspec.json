@@ -1188,7 +1188,7 @@
 			"⛅": {"char": "⛅", "codepoint": "26C5", "name": "SUN BEHIND CLOUD"}
 		}
 	},
-	"plain-hieroglyphs":{
+	"plain-hieroglyph":{
 		"group": "plain-symbols",
 		"tags": ["hieroglyphs", "plain"],
 		"wide": 1,
@@ -1234,5 +1234,35 @@
 			"𓌉": {"char": "𓌉", "codepoint": "13309", "name": "Sandal"},
 			"𓏌": {"char": "𓏌", "codepoint": "133CC", "name": "Knot of Isis (Tyet)"}
 		}
-	}
+	},
+	"plain-hieroglyph-animals": {
+		"group": "plain-symbols",
+		"tags": ["egyptian", "animals", "hieroglyphs", "plain"],
+		"wide": 1,
+		"emoji": {
+			"𓃱": {"char": "𓃱", "codepoint": "130F1", "name": "EGYPTIAN HIEROGLYPH E006 (GIRAFFE)"},
+			
+			"𓃴": {"char": "𓃴", "codepoint": "130F4", "name": "EGYPTIAN HIEROGLYPH E028 (GAZELLE)"},
+			"𓃠": {"char": "𓃠", "codepoint": "130E0", "name": "EGYPTIAN HIEROGLYPH E013 (CAT)"},
+
+			"𓃡": {"char": "𓃡", "codepoint": "130E1", "name": "EGYPTIAN HIEROGLYPH E014 (DOG)"},
+			"𓃦": {"char": "𓃦", "codepoint": "130E6", "name": "EGYPTIAN HIEROGLYPH E016 (HYENA)"},
+			"𓃸": {"char": "𓃸", "codepoint": "130F8", "name": "EGYPTIAN HIEROGLYPH E032 (MONKEY)"},
+			"𓃷": {"char": "𓃷", "codepoint": "130F7", "name": "EGYPTIAN HIEROGLYPH E031 (BABOON)"},
+			"𓃟": {"char": "𓃟", "codepoint": "130DF", "name": "EGYPTIAN HIEROGLYPH E012 (PIG)"},
+			"𓃥": {"char": "𓃥", "codepoint": "130E5", "name": "EGYPTIAN HIEROGLYPH E015 (JACKAL)"},
+			"𓃬": {"char": "𓃬", "codepoint": "130EC", "name": "EGYPTIAN HIEROGLYPH E001 (LION)"},
+			"𓃮": {"char": "𓃮", "codepoint": "130EE", "name": "EGYPTIAN HIEROGLYPH E003 (LEOPARD)"},
+			"𓃲": {"char": "𓃲", "codepoint": "130F2", "name": "EGYPTIAN HIEROGLYPH E009 (ORYX)"},
+			"𓃗": {"char": "𓃗", "codepoint": "130D7", "name": "EGYPTIAN HIEROGLYPH E005 (HORSE)"},
+			"𓃘": {"char": "𓃘", "codepoint": "130D8", "name": "EGYPTIAN HIEROGLYPH E007 (DONKEY)"},
+			"𓃒": {"char": "𓃒", "codepoint": "130D2", "name": "EGYPTIAN HIEROGLYPH E001 (BULL)"},
+			"𓃚": {"char": "𓃚", "codepoint": "130DA", "name": "EGYPTIAN HIEROGLYPH E008 (KID)"},
+			"𓃔": {"char": "𓃔", "codepoint": "130D4", "name": "EGYPTIAN HIEROGLYPH E003 (CALF)"},
+			"𓃖": {"char": "𓃖", "codepoint": "130D6", "name": "EGYPTIAN HIEROGLYPH E005 (SUCKLING)"},
+			"𓃯": {"char": "𓃯", "codepoint": "130EF", "name": "EGYPTIAN HIEROGLYPH E004 (HIPPO)"},
+
+			"𓃰": {"char": "𓃰", "codepoint": "130F0", "name": "EGYPTIAN HIEROGLYPH E005 (ELEPHANT)"}
+		}
+	}	
 }
