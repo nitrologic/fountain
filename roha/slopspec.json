@@ -684,6 +684,8 @@
 			"⚛️": {"char": "⚛️", "codepoint": "269B FE0F", "name": "Atom Symbol"},
 			"🕉️": {"char": "🕉️", "codepoint": "1F549 FE0F", "name": "Om Symbol"},
 			"✡️": {"char": "✡️", "codepoint": "2721 FE0F", "name": "Star of David"},
+			"⛎": {"char": "⛎", "codepoint": "26CE", "name": "Ophiuchus"},
+			"🕎": {"char": "🕎", "codepoint": "1F54E", "name": "Menorah"},
 			"♈": {"char": "♈", "codepoint": "2648", "name": "Aries"},
 			"♉": {"char": "♉", "codepoint": "2649", "name": "Taurus"},
 			"♊": {"char": "♊", "codepoint": "264A", "name": "Gemini"},
@@ -695,8 +697,7 @@
 			"♐": {"char": "♐", "codepoint": "2650", "name": "Sagittarius"},
 			"♑": {"char": "♑", "codepoint": "2651", "name": "Capricorn"},
 			"♒": {"char": "♒", "codepoint": "2652", "name": "Aquarius"},
-			"♓": {"char": "♓", "codepoint": "2653", "name": "Pisces"},
-			"⛎": {"char": "⛎", "codepoint": "26CE", "name": "Ophiuchus"}
+			"♓": {"char": "♓", "codepoint": "2653", "name": "Pisces"}
 		}
 	},
 	"plain-shapes": {
@@ -714,10 +715,26 @@
 			"◇": {"char": "◇", "codepoint": "25C7", "name": "WHITE DIAMOND"},
 			"★": {"char": "★", "codepoint": "2605", "name": "BLACK STAR"},
 			"☆": {"char": "☆", "codepoint": "2606", "name": "WHITE STAR"},
+			"◽": {"char": "◽", "codepoint": "25FD", "name": "WHITE MEDIUM-SMALL SQUARE"},
+			"◢": {"char": "◢", "codepoint": "25E2", "name": "BLACK LOWER RIGHT TRIANGLE"},
+			"◣": {"char": "◣", "codepoint": "25E3", "name": "BLACK LOWER LEFT TRIANGLE"},
+			"◤": {"char": "◤", "codepoint": "25E4", "name": "BLACK UPPER LEFT TRIANGLE"},
+			"◥": {"char": "◥", "codepoint": "25E5", "name": "BLACK UPPER RIGHT TRIANGLE"},
+			"◧": {"char": "◧", "codepoint": "25E7", "name": "SQUARE WITH LEFT HALF BLACK"},
+			"◨": {"char": "◨", "codepoint": "25E8", "name": ""},
+			"◩": {"char": "◩", "codepoint": "25E9", "name": ""},
+			"◪": {"char": "◪", "codepoint": "25EA", "name": ""},
+			"◫": {"char": "◫", "codepoint": "25EB", "name": ""},
+			"⌨": {"char": "⌨", "codepoint": "2328", "name": "KEYBOARD"},
+			"⏚": {"char": "⏚", "codepoint": "23DA", "name": "EARTH GROUND"},
+			"⏧": {"char": "⏧", "codepoint": "23E7", "name": "ELECTRICAL INTERSECTION"},
 			"✓": {"char": "✓", "codepoint": "2713", "name": "CHECK MARK"},
 			"✗": {"char": "✗", "codepoint": "2717", "name": "BALLOT X"},
-			"◾": {"char": "◾", "codepoint": "25FE", "name": "BLACK MEDIUM-SMALL SQUARE"},
-			"◽": {"char": "◽", "codepoint": "25FD", "name": "WHITE MEDIUM-SMALL SQUARE"}
+			"⏻": {"char": "⏻", "codepoint": "23FB", "name": "POWER SYMBOL"},
+			"⏼": {"char": "⏼", "codepoint": "23FC", "name": "POWER ON-OFF SYMBOL"},
+			"⏽": {"char": "⏽", "codepoint": "23FD", "name": "POWER ON SYMBOL"},
+			"⏾": {"char": "⏾", "codepoint": "23FE", "name": "POWER SLEEP SYMBOL"},
+			"◾": {"char": "◾", "codepoint": "25FE", "name": "BLACK MEDIUM-SMALL SQUARE"}
 		}
 	},
 	"plain-block-drawing": {
@@ -851,7 +868,18 @@
 			"↶": {"char": "↶", "codepoint": "21B6", "name": "ANTICLOCKWISE TOP SEMICIRCLE ARROW"},
 			"↷": {"char": "↷", "codepoint": "21B7", "name": "CLOCKWISE TOP SEMICIRCLE ARROW"},
 			"↸": {"char": "↸", "codepoint": "21B8", "name": "NORTH WEST ARROW TO LONG BAR"},
-			"↹": {"char": "↹", "codepoint": "21B9", "name": "LEFTWARDS ARROW TO BAR OVER RIGHTWARDS ARROW TO BAR"}
+			"↹": {"char": "↹", "codepoint": "21B9", "name": "LEFTWARDS ARROW TO BAR OVER RIGHTWARDS ARROW TO BAR"},
+
+			"⇐": {"char": "⇐", "codepoint": "21D0", "name": "LEFTWARDS DOUBLE ARROW"},
+			"⇑": {"char": "⇑", "codepoint": "21D1", "name": "UPWARDS DOUBLE ARROW"},
+			"⇒": {"char": "⇒", "codepoint": "21D2", "name": "RIGHTWARDS DOUBLE ARROW"},
+			"⇓": {"char": "⇓", "codepoint": "21D3", "name": "DOWNWARDS DOUBLE ARROW"},
+			"⇔": {"char": "⇔", "codepoint": "21D4", "name": "LEFT RIGHT DOUBLE ARROW"},
+			"⇕": {"char": "⇕", "codepoint": "21D5", "name": "UP DOWN DOUBLE ARROW"},
+			"⇖": {"char": "⇖", "codepoint": "21D6", "name": "NORTH WEST DOUBLE ARROW"},
+			"⇗": {"char": "⇗", "codepoint": "21D7", "name": "NORTH EAST DOUBLE ARROW"},
+			"⇘": {"char": "⇘", "codepoint": "21D8", "name": "SOUTH EAST DOUBLE ARROW"},
+			"⇙": {"char": "⇙", "codepoint": "21D9", "name": "SOUTH WEST DOUBLE ARROW"}
 		}
 	},
 	"plain-math": {
@@ -1129,6 +1157,19 @@
 			"♭": {"char": "♭", "codepoint": "266D", "name": "MUSIC FLAT SIGN"},
 			"♮": {"char": "♮", "codepoint": "266E", "name": "MUSIC NATURAL SIGN"},
 			"♯": {"char": "♯", "codepoint": "266F", "name": "MUSIC SHARP SIGN"}
+		}
+	},
+	"plain-weather":{
+		"group": "plain-symbols",
+		"tags": ["music", "plain"],
+		"wide": 1,
+		"emoji": {
+			"☀": {"char": "☀", "codepoint": "2600", "name": "BLACK SUN WITH RAYS"},
+			"☁": {"char": "☁", "codepoint": "2601", "name": "CLOUD"},
+			"☂": {"char": "☂", "codepoint": "2602", "name": "UMBRELLA"},
+			"☃": {"char": "☃", "codepoint": "2603", "name": "SNOWMAN"},
+			"☔": {"char": "☔", "codepoint": "2614", "name": "UMBRELLA WITH RAIN DROPS"},
+			"⛅": {"char": "⛅", "codepoint": "26C5", "name": "SUN BEHIND CLOUD"}
 		}
 	}
 }
