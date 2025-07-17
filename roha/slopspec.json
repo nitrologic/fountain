@@ -1187,6 +1187,52 @@
 			"☔": {"char": "☔", "codepoint": "2614", "name": "UMBRELLA WITH RAIN DROPS"},
 			"⛅": {"char": "⛅", "codepoint": "26C5", "name": "SUN BEHIND CLOUD"}
 		}
+	},
+	"plain-hieroglyphs":{
+		"group": "plain-symbols",
+		"tags": ["hieroglyphs", "plain"],
+		"wide": 1,
+		"emoji": {
+			"𓄿": {"char": "𓄿", "codepoint": "1313F", "name": "Vulture"},
+			"𓇳": {"char": "𓇳", "codepoint": "131F3", "name": "Sun"},
+			"𓈖": {"char": "𓈖", "codepoint": "13216", "name": "Water"},
+			"𓉗": {"char": "𓉗", "codepoint": "13257", "name": "Two Reed Leaves"},
+			"𓍯": {"char": "𓍯", "codepoint": "1336F", "name": "Eye of Horus"},
+			"𓋹": {"char": "𓋹", "codepoint": "132F9", "name": "Ankh (Cross of Life)"},
+			"𓇋": {"char": "𓇋", "codepoint": "131CB", "name": "Reed Leaf"},
+			"𓆓": {"char": "𓆓", "codepoint": "13193", "name": "Mouth"},
+			"𓇅": {"char": "𓇅", "codepoint": "131C5", "name": "Falcon"},
+			"𓆣": {"char": "𓆣", "codepoint": "131A3", "name": "Scarab Beetle"},
+			"𓏏": {"char": "𓏏", "codepoint": "133CF", "name": "Loaf of Bread"},
+			"𓊵": {"char": "𓊵", "codepoint": "132B5", "name": "Lotus Flower"},
+			"𓅱": {"char": "𓅱", "codepoint": "13171", "name": "Quail Chick"},
+			"𓍛": {"char": "𓍛", "codepoint": "1335B", "name": "Djed Pillar"},
+			"𓆄": {"char": "𓆄", "codepoint": "13184", "name": "Owl"},
+			"𓎛": {"char": "𓎛", "codepoint": "1339B", "name": "Twisted Flax"},
+			"𓊹": {"char": "𓊹", "codepoint": "132B9", "name": "God"},
+			"𓄂": {"char": "𓄂", "codepoint": "13102", "name": "Sedge"},
+			"𓁹": {"char": "𓁹", "codepoint": "13079", "name": "Eye"},
+			"𓇳": {"char": "𓇳", "codepoint": "131F3", "name": "Sun Disk"},
+			"𓈙": {"char": "𓈙", "codepoint": "13219", "name": "Hill"},
+			"𓊵": {"char": "𓊵", "codepoint": "132B5", "name": "Lotus"},
+			"𓌳": {"char": "𓌳", "codepoint": "13333", "name": "Was Scepter"},
+			"𓏛": {"char": "𓏛", "codepoint": "133DB", "name": "Shen Ring"},
+			"𓇹": {"char": "𓇹", "codepoint": "131F9", "name": "Moon"},
+			"𓆭": {"char": "𓆭", "codepoint": "131AD", "name": "Tree"},
+			"𓇅": {"char": "𓇅", "codepoint": "131C5", "name": "Horus Falcon"},
+			"𓍝": {"char": "𓍝", "codepoint": "1335D", "name": "Uraeus (Cobra)"},
+			"𓊵": {"char": "𓊵", "codepoint": "132B5", "name": "Lotus Bud"},
+			"𓈗": {"char": "𓈗", "codepoint": "13217", "name": "Ripple of Water"},
+			"𓄿": {"char": "𓄿", "codepoint": "1313F", "name": "Akhom (Vulture)"},
+			"𓇓": {"char": "𓇓", "codepoint": "131D3", "name": "King of Upper Egypt"},
+			"𓇔": {"char": "𓇔", "codepoint": "131D4", "name": "King of Lower Egypt"},
+			"𓄤": {"char": "𓄤", "codepoint": "13124", "name": "Heart"},
+			"𓇼": {"char": "𓇼", "codepoint": "131FC", "name": "Star"},
+			"𓍑": {"char": "𓍑", "codepoint": "13351", "name": "Feather"},
+			"𓇯": {"char": "𓇯", "codepoint": "131EF", "name": "Sky"},
+			"𓈎": {"char": "𓈎", "codepoint": "1320E", "name": "Basket"},
+			"𓌉": {"char": "𓌉", "codepoint": "13309", "name": "Sandal"},
+			"𓏌": {"char": "𓏌", "codepoint": "133CC", "name": "Knot of Isis (Tyet)"}
+		}
 	}
 }
-

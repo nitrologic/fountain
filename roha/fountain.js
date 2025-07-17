@@ -2207,8 +2207,8 @@ async function callCommand(command) {
 							await writeForge();
 						}
 					}else{
-						echo_row("id","model name","☐","📆","🧮","💰","🪣🧊🫐🪨");
-						echo_row("-----","-----------------------","--","-----","---- ---- ---- ---- ----","------","-----------------");
+						echo_row("id","☐","model name","📆","🧮","💰","🪣🧊🫐🪨");
+						echo_row("-----","--","-----------------------","-----","---- ---- ---- ---- ----","------","-----------------");
 						const all=(name && name=="all");
 						for(let i=0;i<modelList.length;i++){
 							const modelname=modelList[i];
@@ -2235,7 +2235,7 @@ async function callCommand(command) {
 								const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
 								// todo: verbose use modelname
 //								echo(i,attr,emoji,mut,"{"+notes.join(",")+"}",mutspec.relays|0,pricing);
-								echo_row(i,mut,attr,mutspec.relays|0,pricing,emoji,notes.join(" "));
+								echo_row(i,attr,mut,mutspec.relays|0,pricing,emoji,notes.join(" "));
 							}
 						}
 						listCommand="model";
