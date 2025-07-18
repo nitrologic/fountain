@@ -3020,6 +3020,7 @@ if(roha.config.debugging){
 }
 
 const slops=[];
+const slopFrames=[];
 const slopnames=await readFileNames(slopPath,".slop.ts");
 for(const name of slopnames){
 	const path=slopPath+"/"+name;
@@ -3029,7 +3030,17 @@ for(const name of slopnames){
 	const worker=new Worker(url,{type: "module"});
 	worker.onmessage = (message) => {
 		const payload=message.data;
-		echo("[SLOP]",name,payload);	
+		switch(payload.event){
+			case "tick":
+				if(payload.frame){
+					slopFrames.push({payload,name});
+					echo(payload.frame);
+				}
+				break;
+			default:
+				echo("[SLOP]",name,payload);
+				break;
+		}
 	}
 	slops.push(worker);
 }
