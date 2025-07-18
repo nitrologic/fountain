@@ -1,6 +1,8 @@
-// fountain.js - A research tool for smelting large language models.
+// fountain.js - A research tool for dunking large language models.
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
+
+// ⛲ 𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴 𓅠
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
@@ -51,8 +53,17 @@ const boxChars=["┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣
 const break50="─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴";
 const rule50= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
 
-const Clear="\x1B[2J";
-const Home="\x1B[H";
+const AnsiBlankLine="\x1B[0K";
+const AnsiClear="\x1B[2J";
+const AnsiHome="\x1B[H";
+const AnsiCursor="\x1B[";
+
+function AnsiPrompt(){
+	const size=Deno.consoleSize();                                                                                                                                                   
+	const row=size.rows;
+	return AnsiCursor + row + ";1H" + AnsiBlankLine;
+}
+
 const SaveCursorA = "\x1B[s";
 const RestoreCursorA = "\x1B[u";
 
@@ -1700,28 +1711,31 @@ function resolvePath(dir,filename){
 // arrow navigation and tab completion incoming
 // a reminder to enable rawprompt for new modes
 
-let promptBuffer=new Uint8Array(0);
-
 // new version with timeout
+//const promptTimeout = new AbortController();
+//const text=SaveCursorA + AnsiHome + AnsiClear + frame + RestoreCursorA;
+
+let promptBuffer=new Uint8Array(0);
 let slopFrame=0;
 const reader=Deno.stdin.readable.getReader();
 const writer=Deno.stdout.writable.getWriter();
-const promptTimeout = new AbortController();
 async function refreshBackground(ms,prompt) {
 	await new Promise(resolve => setTimeout(resolve, ms));
 	const line=decoder.decode(promptBuffer);
 	if(slopFrames.length&&slopFrame!=slopFrames.length){
 		slopFrame=slopFrames.length;
 		const frame=slopFrames[slopFrame-1];
-//		const text=SaveCursorA + Home + Clear + frame + RestoreCursorA;
-		const text=Home + Home + frame + line;//[0K
-		Deno.stdout.write(encoder.encode(text));
+//		const message=AnsiHome + frame + AnsiCursor + row + ";1H\n" + prompt+line;
+		const message=AnsiHome + frame + AnsiPrompt() + prompt + line;
+		await writer.write(encoder.encode(message));
+		await writer.ready;
 	}
 }
+// promptForge 𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴 𓅠
 async function promptForge(message) {
 	if(!roha.config.rawprompt) return prompt(message);
 	let result="";
-	if (message) {
+	if(message){
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
@@ -1730,9 +1744,9 @@ async function promptForge(message) {
 	}
 	Deno.stdin.setRaw(true);
 	let busy=true;
-	const timer = setInterval(() => { 
+	const timer = setInterval(async() => {
 		const line=decoder.decode(promptBuffer);
-		refreshBackground(5,line);
+		await refreshBackground(5,message+line);
 	}, 1000);
 	while (busy) {
 		try {
@@ -3142,9 +3156,14 @@ let rohaNic=roha.config.nic||"nic";
 let rohaUser=username+"@"+userdomain;
 const sharecount=roha.sharedFiles?.length||0;
 
+let termSize = Deno.consoleSize();
+
+echo("Deno.consoleSize",termSize);
+
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
 //echo("");
+
 
 if(roha.config.listenonstart){
 	listenService();
