@@ -62,6 +62,7 @@ const accountsPath=resolve(appDir,"accounts.json");
 const specsPath=resolve(appDir,"modelspecs.json");
 const unicodePath=resolve(appDir,"slopspec.json");
 
+const slopPath=resolve(appDir,"../slop");
 const forgePath=resolve(appDir,"forge");
 const rohaPath=resolve(forgePath,"forge.json");
 
@@ -549,6 +550,21 @@ async function log(lines,id){
 		let path=resolve(forgePath,"forge.log");
 		await Deno.writeTextFile(path,list.join(),{append:true});
 	}
+}
+
+async function readFileNames(path,suffix){
+	const result=[];
+	try {
+	for await (const entry of Deno.readDir(path)) {
+		if (entry.isFile && entry.name.endsWith(suffix)) {
+			if(roha.config.verbose) echo("readDir",path,entry);
+			result.push(entry.name);
+		}
+	}
+	} catch (error) {
+		echo("Error reading directory:", error);
+	}
+	return result;
 }
 
 async function flush() {
@@ -3001,6 +3017,21 @@ await flush();
 
 if(roha.config.debugging){
 	parseUnicode();
+}
+
+const slops=[];
+const slopnames=await readFileNames(slopPath,".slop.ts");
+for(const name of slopnames){
+	const path=slopPath+"/"+name;
+	const len=await fileLength(path);
+	echo("[SLOP] running slop",name,len);
+	const url="file:///"+path;
+	const worker=new Worker(url,{type: "module"});
+	worker.onmessage = (message) => {
+		const payload=message.data;
+		echo("[SLOP]",name,payload);	
+	}
+	slops.push(worker);
 }
 
 await flush();
