@@ -287,18 +287,17 @@
 			"🐸": {"char": "🐸", "codepoint": "1F438", "name": "FROG"},
 			"🐰": {"char": "🐰", "codepoint": "1F430", "name": "RABBIT FACE"},
 			"🐭": {"char": "🐭", "codepoint": "1F42D", "name": "MOUSE FACE"},
-			"🐷": {"char": "🐷", "codepoint": "1F437", "name": "PIG FACE"},
-			"🐽": {"char": "🐽", "codepoint": "1F43D", "name": "PIG NOSE"},
 			"🐯": {"char": "🐯", "codepoint": "1F42F", "name": "TIGER FACE"},
 			"🐱": {"char": "🐱", "codepoint": "1F431", "name": "CAT FACE"},
 			"🐶": {"char": "🐶", "codepoint": "1F436", "name": "DOG FACE"},
 			"🐵": {"char": "🐵", "codepoint": "1F435", "name": "MONKEY FACE"},
+			"🐥": {"char": "🐥", "codepoint": "1F425", "name": "FRONT-FACING BABY CHICK"},
+			"🐷": {"char": "🐷", "codepoint": "1F437", "name": "PIG FACE"},
+			"🐽": {"char": "🐽", "codepoint": "1F43D", "name": "PIG NOSE"},
 			"🐲": {"char": "🐲", "codepoint": "1F432", "name": "DRAGON FACE"},
 			"🐴": {"char": "🐴", "codepoint": "1F434", "name": "HORSE FACE"},
-			"🐾": {"char": "🐾", "codepoint": "1F43E", "name": "PAW PRINTS"},
 			"🐕‍🦺": {"char": "🐕‍🦺", "codepoint": "1F415 200D 1F9BA", "name": "SERVICE DOG"},
 			"🦮": {"char": "🦮", "codepoint": "1F9AE", "name": "GUIDE DOG"},
-			"🐥": {"char": "🐥", "codepoint": "1F425", "name": "FRONT-FACING BABY CHICK"},
 			"🐢": {"char": "🐢", "codepoint": "1F422", "name": "TURTLE"},
 			"🦎": {"char": "🦎", "codepoint": "1F98E", "name": "LIZARD"},
 			"🐍": {"char": "🐍", "codepoint": "1F40D", "name": "SNAKE"},
@@ -308,6 +307,7 @@
 			"🐌": {"char": "🐌", "codepoint": "1F40C", "name": "SNAIL"},
 			"🪱": {"char": "🪱", "codepoint": "1FAB1", "name": "WORM"},
 			"🦄": {"char": "🦄", "codepoint": "1F984", "name": "UNICORN"},
+			"🐾": {"char": "🐾", "codepoint": "1F43E", "name": "PAW PRINTS"},
 			"🦠": {"char": "🦠", "codepoint": "1F9A0", "name": "MICROBE"}
 		}
 	},
@@ -335,6 +335,8 @@
 			"🚸": {"char": "🚸", "codepoint": "1F6B8", "name": "Children Crossing"},
 			"❓": {"char": "❓", "codepoint": "2753", "name": "Question Mark"},
 			"❗": {"char": "❗", "codepoint": "2757", "name": "Exclamation Mark"},
+			"🌠": {"char": "🌠", "codepoint": "1F320", "name": "SHOOTING STAR"},
+			"🗿": {"char": "🗿", "codepoint": "1F5FF", "name": "MOAI"},
 			"⚡": {"char": "⚡", "codepoint": "26A1", "name": "High Voltage","style":"BUG"},
 			"♿": {"char": "♿", "codepoint": "267F", "name": "Wheelchair Symbol","style":"BUG"},
 			"⚓": {"char": "⚓", "codepoint": "2693", "name": "Anchor","style":"BUG"}
@@ -758,25 +760,30 @@
 		"tags": ["drawing","plain"],
 		"wide": 1,
 		"emoji": {
+			"▘":{"char":"▘","codepoint":"2598","name":"QUADRANT UPPER LEFT"},
+			"▝":{"char":"▝","codepoint":"259D","name":"QUADRANT UPPER RIGHT"},
+			"▖":{"char":"▖","codepoint":"2596","name":"QUADRANT LOWER LEFT"},
+			"▗":{"char":"▗","codepoint":"2597","name":"QUADRANT LOWER RIGHT"},
+
+			"▌":{"char":"▌","codepoint":"258C","name":"LEFT HALF BLOCK"},
+			"▐":{"char":"▐","codepoint":"2590","name":"RIGHT HALF BLOCK"},
+			"▀":{"char":"▀","codepoint":"2580","name":"UPPER HALF BLOCK"},
+			"▄":{"char":"▄","codepoint":"2584","name":"LOWER HALF BLOCK"},
+			"▚":{"char":"▚","codepoint":"259A","name":"QUADRANT UPPER LEFT AND LOWER RIGHT"},
+			"▞":{"char":"▞","codepoint":"259E","name":"QUADRANT UPPER RIGHT AND LOWER LEFT"},
+
+			"▛":{"char":"▛","codepoint":"259B","name":"QUADRANT UPPER LEFT AND UPPER RIGHT AND LOWER LEFT"},
+			"▜":{"char":"▜","codepoint":"259C","name":"QUADRANT UPPER LEFT AND UPPER RIGHT AND LOWER RIGHT"},
+			"▙":{"char":"▙","codepoint":"2599","name":"QUADRANT UPPER LEFT AND LOWER LEFT AND LOWER RIGHT"},
+			"▟":{"char":"▟","codepoint":"259F","name":"QUADRANT UPPER RIGHT AND LOWER LEFT AND LOWER RIGHT"},
+
+			"█": {"char": "█", "codepoint": "2588", "name": "FULL BLOCK"},
+
 			"░":{"char": "░", "codepoint": "2591", "name": "LIGHT SHADE"},
 			"▒":{"char": "▒", "codepoint": "2592", "name": "MEDIUM SHADE"},
 			"▓":{"char": "▓", "codepoint": "2593", "name": "DARK SHADE"},
 			"▔":{"char": "▔", "codepoint": "2594", "name": "UPPER ONE EIGHTH BLOCK"},
-			"▕":{"char": "▕", "codepoint": "2595", "name": "RIGHT ONE EIGHTH BLOCK"},
-			"▌":{"char":"▌","codepoint":"258C","name":"LEFT HALF BLOCK"},
-			"▐":{"char":"▐","codepoint":"2590","name":"RIGHT HALF BLOCK"},
-			"▄":{"char":"▄","codepoint":"2584","name":"LOWER HALF BLOCK"},
-			"▀":{"char":"▀","codepoint":"2580","name":"UPPER HALF BLOCK"},
-			"▖":{"char":"▖","codepoint":"2596","name":"QUADRANT LOWER LEFT"},
-			"▗":{"char":"▗","codepoint":"2597","name":"QUADRANT LOWER RIGHT"},
-			"▘":{"char":"▘","codepoint":"2598","name":"QUADRANT UPPER LEFT"},
-			"▙":{"char":"▙","codepoint":"2599","name":"QUADRANT UPPER LEFT AND LOWER LEFT AND LOWER RIGHT"},
-			"▚":{"char":"▚","codepoint":"259A","name":"QUADRANT UPPER LEFT AND LOWER RIGHT"},
-			"▛":{"char":"▛","codepoint":"259B","name":"QUADRANT UPPER LEFT AND UPPER RIGHT AND LOWER LEFT"},
-			"▜":{"char":"▜","codepoint":"259C","name":"QUADRANT UPPER LEFT AND UPPER RIGHT AND LOWER RIGHT"},
-			"▝":{"char":"▝","codepoint":"259D","name":"QUADRANT UPPER RIGHT"},
-			"▞":{"char":"▞","codepoint":"259E","name":"QUADRANT UPPER RIGHT AND LOWER LEFT"},
-			"▟":{"char":"▟","codepoint":"259F","name":"QUADRANT UPPER RIGHT AND LOWER LEFT AND LOWER RIGHT"}
+			"▕":{"char": "▕", "codepoint": "2595", "name": "RIGHT ONE EIGHTH BLOCK"}
 		}
 	},
 	"plain-box-drawing": {
@@ -1241,7 +1248,7 @@
 		"wide": 1,
 		"emoji": {
 			"𓃱": {"char": "𓃱", "codepoint": "130F1", "name": "EGYPTIAN HIEROGLYPH E006 (GIRAFFE)"},
-			
+
 			"𓃴": {"char": "𓃴", "codepoint": "130F4", "name": "EGYPTIAN HIEROGLYPH E028 (GAZELLE)"},
 			"𓃠": {"char": "𓃠", "codepoint": "130E0", "name": "EGYPTIAN HIEROGLYPH E013 (CAT)"},
 
@@ -1264,5 +1271,5 @@
 
 			"𓃰": {"char": "𓃰", "codepoint": "130F0", "name": "EGYPTIAN HIEROGLYPH E005 (ELEPHANT)"}
 		}
-	}	
+	}
 }

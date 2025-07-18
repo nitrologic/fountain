@@ -108,7 +108,7 @@ const flagNames={
 	logging : "log all output to file",
 	debugging : "emit diagnostics",
 	pushonshare : "emit a /push after any /share",
-	rawprompt : "experimental rawmode stdin deno prompt replacement",
+	rawprompt : "experimental rawmode stdin !!! warning !!! will crash on paste",
 	resetcounters : "factory reset when reset",
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed"
@@ -1694,12 +1694,85 @@ function resolvePath(dir,filename){
 // arrow navigation and tab completion incoming
 // a reminder to enable rawprompt for new modes
 
-const reader=Deno.stdin.readable.getReader();
-const writer=Deno.stdout.writable.getWriter();
 
 let promptBuffer=new Uint8Array(0);
 
+// new version with timeout
+
+const reader=Deno.stdin.readable.getReader();
+const writer=Deno.stdout.writable.getWriter();
+const promptTimeout = new AbortController();
+async function refreshBackground(ms) {
+	console.log("Running background refresh...");
+	await new Promise(resolve => setTimeout(resolve, ms));
+}
 async function promptForge(message) {
+	if(!roha.config.rawprompt) return prompt(message);
+	let result="";
+	if (message) {
+		await writer.write(encoder.encode(message));
+		await writer.ready;
+	}
+	if(roha.config.page) {
+		await writer.write(homeCursor);
+	}
+	Deno.stdin.setRaw(true);
+	let busy=true;
+	const timer = setInterval(() => { refreshBackground(5) }, 1000);
+	while (busy) {
+		try {
+//			const timeout = setTimeout(() => {refreshBackground(5)}, 1000); // 5-second timeout
+			const { value, done }=await reader.read();
+			if (done || !value) break;
+			let bytes=[];
+			for (const byte of value) {
+				if (byte === 0x7F || byte === 0x08) { // Backspace
+					if (promptBuffer.length > 0) {
+						promptBuffer=promptBuffer.slice(0, -1);
+						bytes.push(0x08, 0x20, 0x08);
+					}
+				} else if (byte === 0x1b) { // Escape sequence
+					if (value.length === 1) {
+						await exitForge();
+						Deno.exit(0);
+					}
+					if (value.length === 3) {
+						if (value[1] === 0xf4 && value[2] === 0x50) {
+							echo("F1");
+						}
+					}
+					break;
+				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
+					bytes.push(0x0D, 0x0A);
+					const line=decoder.decode(promptBuffer);
+					let n=line.length;
+					if (n > 0) {
+						promptBuffer=promptBuffer.slice(n);
+					}
+					result=line.trimEnd();
+					await log(result, "stdin");
+					busy=false;
+				} else {
+					bytes.push(byte);
+					const buf=new Uint8Array(promptBuffer.length + 1);
+					buf.set(promptBuffer);
+					buf[promptBuffer.length]=byte;
+					promptBuffer=buf;
+				}
+			}
+			if (bytes.length) await writer.write(new Uint8Array(bytes));
+		}catch(e){
+			console.error("Prompt error:", error);
+			busy=false;
+		}
+	}
+	clearInterval(timer);
+	Deno.stdin.setRaw(false);
+	if(roha.config.page) await writer.write(homeCursor);
+	return result;
+}
+
+async function promptForge2(message) {
 	if(!roha.config.rawprompt) return prompt(message);
 	let result="";
 	if (message) {

@@ -23,7 +23,8 @@ self.onmessage=(e)=>{
 	}
 };
 
-const blankFrame=("⚫".repeat(48)+"\n").repeat(12);
+const Leds="⚫⚪🔵🟢🔴🟡🟣🟠🟤";
+const blankFrame=("🔵".repeat(48)+"\n").repeat(12);
 
 function update() {
 	const count=frameCount++;
