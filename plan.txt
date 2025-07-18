@@ -1,3 +1,5 @@
+- 
+- fix claude-haiku invalid_request_error messages.0.content: Field required
 - spec command
 - alibaba thinking prices
 - non ansi tables

@@ -44,13 +44,10 @@ const code={
 	"█": {"char": "█", "codepoint": "2588", "name": "FULL BLOCK"},
 }
 
-const Leds="⚫⚪🔵🟢🔴🟡🟣🟠🟤";
-const blankFrame=("🔵".repeat(48)+"\n").repeat(12);
-
 function update() {
 	const count=frameCount++;
 	const time=performance.now();
-	const frame=(count==0)?blankFrame:"";
+	const frame="";//(count==0)?blankFrame:"";
 	return {success:true,time,event:"tick",count,frame};
 }
 

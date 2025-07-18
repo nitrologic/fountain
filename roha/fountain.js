@@ -51,6 +51,12 @@ const boxChars=["┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣
 const break50="─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴";
 const rule50= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
 
+const Clear="\x1B[2J";
+const Home="\x1B[H";
+const SaveCursorA = "\x1B[s";
+const RestoreCursorA = "\x1B[u";
+
+
 const pageBreak=break50+break50+break50;
 const pageRule=rule50+rule50+rule50;
 
@@ -1694,17 +1700,23 @@ function resolvePath(dir,filename){
 // arrow navigation and tab completion incoming
 // a reminder to enable rawprompt for new modes
 
-
 let promptBuffer=new Uint8Array(0);
 
 // new version with timeout
-
+let slopFrame=0;
 const reader=Deno.stdin.readable.getReader();
 const writer=Deno.stdout.writable.getWriter();
 const promptTimeout = new AbortController();
-async function refreshBackground(ms) {
-	console.log("Running background refresh...");
+async function refreshBackground(ms,prompt) {
 	await new Promise(resolve => setTimeout(resolve, ms));
+	const line=decoder.decode(promptBuffer);
+	if(slopFrames.length&&slopFrame!=slopFrames.length){
+		slopFrame=slopFrames.length;
+		const frame=slopFrames[slopFrame-1];
+//		const text=SaveCursorA + Home + Clear + frame + RestoreCursorA;
+		const text=Home + Home + frame + line;//[0K
+		Deno.stdout.write(encoder.encode(text));
+	}
 }
 async function promptForge(message) {
 	if(!roha.config.rawprompt) return prompt(message);
@@ -1718,7 +1730,10 @@ async function promptForge(message) {
 	}
 	Deno.stdin.setRaw(true);
 	let busy=true;
-	const timer = setInterval(() => { refreshBackground(5) }, 1000);
+	const timer = setInterval(() => { 
+		const line=decoder.decode(promptBuffer);
+		refreshBackground(5,line);
+	}, 1000);
 	while (busy) {
 		try {
 //			const timeout = setTimeout(() => {refreshBackground(5)}, 1000); // 5-second timeout
@@ -3102,12 +3117,15 @@ for(const name of slopnames){
 	const url="file:///"+path;
 	const worker=new Worker(url,{type: "module"});
 	worker.onmessage = (message) => {
-		const payload=message.data;
+		const payload={...message.data};
 		switch(payload.event){
 			case "tick":
 				if(payload.frame){
-					slopFrames.push({payload,name});
-					echo(payload.frame);
+					slopFrames.push(payload.frame);
+//					console.log(payload.frame);
+//					const frame=SaveCursor + Home + payload.frame;
+//					Deno.stdout.write(encoder.encode(frame));
+//					console.log();
 				}
 				break;
 			default:

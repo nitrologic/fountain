@@ -5,7 +5,7 @@
 
 const dots = ["🟣", "🔵", "🟢", "🟡", "🔴"];
 
-const period=200;
+const period=500;
 
 const startTime=performance.now();
 
@@ -24,12 +24,17 @@ self.onmessage=(e)=>{
 };
 
 const Leds="⚫⚪🔵🟢🔴🟡🟣🟠🟤";
-const blankFrame=("🔵".repeat(48)+"\n").repeat(12);
-
+const ledArray = ["⚫", "⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", "🟤"]
+function blankFrame(index:number):string{
+	const start=index%ledArray.length;
+	const led=ledArray[start];
+	const grid=(led.repeat(48)+"\n").repeat(12);
+	return grid;
+}
 function update() {
 	const count=frameCount++;
 	const time=performance.now();
-	const frame=(count==0)?blankFrame:"";
+	const frame=(count<12)?blankFrame(count):"";
 	return {success:true,time,event:"tick",count,frame};
 }
 
