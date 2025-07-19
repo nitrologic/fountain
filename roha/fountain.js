@@ -1719,14 +1719,13 @@ let promptBuffer=new Uint8Array(0);
 let slopFrame=0;
 const reader=Deno.stdin.readable.getReader();
 const writer=Deno.stdout.writable.getWriter();
-async function refreshBackground(ms,prompt) {
+async function refreshBackground(ms,line) {
 	await new Promise(resolve => setTimeout(resolve, ms));
-	const line=decoder.decode(promptBuffer);
 	if(slopFrames.length&&slopFrame!=slopFrames.length){
 		slopFrame=slopFrames.length;
 		const frame=slopFrames[slopFrame-1];
 //		const message=AnsiHome + frame + AnsiCursor + row + ";1H\n" + prompt+line;
-		const message=AnsiHome + frame + AnsiPrompt() + prompt + line;
+		const message=AnsiHome + frame + AnsiPrompt() + line;
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}

@@ -1,7 +1,94 @@
 // slop.ts - skeleton code for slop services
-
 // (c)2025 Simon Armstrong 
 // Licensed under the MIT License - See LICENSE file
+
+import { resolve } from "https://deno.land/std/path/mod.ts";
+import { _common } from "https://deno.land/std@0.224.0/path/_common/common.ts";
+
+let verbose=false;
+let rawPrompt=true;
+
+let outputBuffer=[];
+let printBuffer=[];
+let markdownBuffer=[];
+
+const AnsiBlankLine="\x1B[0K";
+const AnsiClear="\x1B[2J";
+const AnsiHome="\x1B[H";
+const AnsiCursor="\x1B[";
+
+function AnsiPrompt(){
+	const size=Deno.consoleSize();                                                                                                                                                   
+	const row=size.rows;
+	return AnsiCursor + row + ";1H" + AnsiBlankLine;
+}
+
+
+function toString(arg:any):string{
+	if (typeof arg === 'object') {
+		return JSON.stringify(arg);
+	}
+	return String(arg);
+}
+
+async function fileLength(path) {
+	const stat=await Deno.stat(path);
+	return stat.size;
+}
+
+function echo(){
+	const args=arguments.length?Array.from(arguments):[];
+	const lines=[];
+	for(const arg of args){
+		const line=toString(arg);
+		lines.push(line);
+	}
+	outputBuffer.push(lines.join(" "));
+}
+
+async function readFileNames(path:string,suffix:string){
+	const result=[];
+	try {
+	for await (const entry of Deno.readDir(path)) {
+		if (entry.isFile && entry.name.endsWith(suffix)) {
+			if(verbose) echo("readFileNames",path,entry);
+			result.push(entry.name);
+		}
+	}
+	} catch (error) {
+		echo("readFileNames:", error);
+	}
+	return result;
+}
+
+const appDir=Deno.cwd();
+const slopPath=resolve(appDir,"../slop");
+
+const slops=[];
+const slopFrames=[];
+const slopnames=await readFileNames(slopPath,".slop.ts");
+
+for(const name of slopnames){
+	const path=slopPath+"/"+name;
+	const len=await fileLength(path);
+	echo("[SLOP] running slop",name,len);
+	const url="file:///"+path;
+	const worker=new Worker(url,{type: "module"});
+	worker.onmessage = (message) => {
+		const payload={...message.data};
+		switch(payload.event){
+			case "tick":
+				if(payload.frame){
+					slopFrames.push(payload.frame);
+				}
+				break;
+			default:
+				echo("[SLOP]",name,payload);
+				break;
+		}
+	}
+	slops.push(worker);
+}
 
 let slopPail:unknown[]=[];
 
@@ -11,6 +98,94 @@ function logSlop(_result:any){
 	slopPail.push(message);
 }
 
+
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
 }
+
+const decoder=new TextDecoder("utf-8");
+const encoder=new TextEncoder();
+
+let promptBuffer=new Uint8Array(0);
+let slopFrame=0;
+const reader=Deno.stdin.readable.getReader();
+const writer=Deno.stdout.writable.getWriter();
+async function refreshBackground(ms,line) {
+	await new Promise(resolve => setTimeout(resolve, ms));
+	if(slopFrames.length&&slopFrame!=slopFrames.length){
+		slopFrame=slopFrames.length;
+		const frame=slopFrames[slopFrame-1];
+//		const message=AnsiHome + frame + AnsiCursor + row + ";1H\n" + prompt+line;
+		const message=AnsiHome + frame + AnsiPrompt() + line;
+		await writer.write(encoder.encode(message));
+		await writer.ready;
+	}
+}
+// promptForge 𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴 𓅠
+async function promptForge(message:string) {
+	if(!rawPrompt) return prompt(message);
+	let result="";
+	if(message){
+		await writer.write(encoder.encode(message));
+		await writer.ready;
+	}
+	Deno.stdin.setRaw(true);
+	let busy=true;
+	const timer = setInterval(async() => {
+		const line=decoder.decode(promptBuffer);
+		await refreshBackground(5,message+line);
+	}, 1000);
+	while (busy) {
+		try {
+//			const timeout = setTimeout(() => {refreshBackground(5)}, 1000); // 5-second timeout
+			const { value, done }=await reader.read();
+			if (done || !value) break;
+			let bytes=[];
+			for (const byte of value) {
+				if (byte === 0x7F || byte === 0x08) { // Backspace
+					if (promptBuffer.length > 0) {
+						promptBuffer=promptBuffer.slice(0, -1);
+						bytes.push(0x08, 0x20, 0x08);
+					}
+				} else if (byte === 0x1b) { // Escape sequence
+					if (value.length === 1) {
+						await exitForge();
+						Deno.exit(0);
+					}
+					if (value.length === 3) {
+						if (value[1] === 0xf4 && value[2] === 0x50) {
+							echo("F1");
+						}
+					}
+					break;
+				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
+					bytes.push(0x0D, 0x0A);
+					const line=decoder.decode(promptBuffer);
+					let n=line.length;
+					if (n > 0) {
+						promptBuffer=promptBuffer.slice(n);
+					}
+					result=line.trimEnd();
+					echo("[stdin]",result);
+					busy=false;
+				} else {
+					bytes.push(byte);
+					const buf=new Uint8Array(promptBuffer.length + 1);
+					buf.set(promptBuffer);
+					buf[promptBuffer.length]=byte;
+					promptBuffer=buf;
+				}
+			}
+			if (bytes.length) await writer.write(new Uint8Array(bytes));
+		}catch(error){
+			console.error("Prompt error:", error);
+			busy=false;
+		}
+	}
+	clearInterval(timer);
+	Deno.stdin.setRaw(false);
+	return result;
+}
+
+console.log("slop 0.1");
+await(promptForge(">"));
