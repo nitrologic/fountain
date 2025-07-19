@@ -1,3 +1,20 @@
+moueson
+echo "\033[?1003h\033[?1015h\033[?1006h" 
+// stty -echo
+// But we can still catch them in the STDIN
+// We get 16 bits sequences like 35;15;7M where 35 is the mouse move, and the two next numbers are the row and colums numbers + the M ending.
+
+//Then to reset:  echo 
+mouseoff
+"\033[?1000l"
+
+We could similarly catch clicks, mouse wheels, and mouse button wheel. This way we could implement buttons and buffer mouse scrolling. More details on mouse support in this post: https://stackoverflow.com/a/58390575/2494754
+
+Other good one the Clipboard copy:
+
+echo -e '\e]52;c;SGVsbG8gR2l0aHVi'
+
+
 logy prefix words:
 biblio bio chrono ethno topo geo anthro archaeo astro crimin dem etymo 
 hodo hydr myco neuro paleo pheno psycho socio theo zo

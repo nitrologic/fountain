@@ -30,6 +30,9 @@ const AnsiClear="\x1B[2J";
 const AnsiHome="\x1B[H";
 const AnsiCursor="\x1B[";
 
+const AnsiMouseOn="\x1B[?1003h\x1B[?1015h\x1B[?1006h";
+const AnsiMouseOff="\x1B[?1000l";
+
 let consoleSize=Deno.consoleSize();
 
 function AnsiPrompt(){
@@ -162,8 +165,8 @@ async function refreshBackground(pause:number,line:string) {
 	await new Promise(resolve => setTimeout(resolve, pause));
 	const events=flushEvents();
 	if(events.length){
+		console.log("[SLOP] workers update",JSON.stringify(events));
 		for(const worker of slops){
-			console.log("[SLOP] worker update");
 			worker.postMessage({command:"update",events});
 		}			
 	}
@@ -257,7 +260,8 @@ async function promptSlop(message:string) {
 	return result;
 }
 
-console.log("slop 0.1");
+console.log("slop 0.1 mouse is on"+AnsiMouseOn);
+
 while(true){
 	const input=await(promptSlop(">"));
 	if(input=="exit") break;
@@ -269,7 +273,10 @@ while(true){
 	console.log("[SLOP] ",input);
 }
 
-console.log("oh no, bye");
+
+console.log("oh no, bye, mouse off");
+console.log(AnsiMouseOff);
+
 exitSlop();
 Deno.exit(0);
 */
