@@ -1,3 +1,51 @@
+function blankFrame2(){
+	const w=32;
+	const h=12;
+	const bits:boolean[]=new Array(w*h);
+	for(let xy=0;xy<w*h;xy++){
+		const r=Math.random();
+		bits[xy]=r>0.3?true:false;
+	}
+	const cols=h/2;
+	const rows=w/2;
+	const lines:string[]=new Array(rows);
+	for(let y=0;y<cols;y++){
+		let line:string[]=[];
+		const y0=2*y*w;
+		const y1=y0+w;
+		for(let x=0;x<rows;x++){
+			const b4:boolean[]=[
+				bits[y0+x*2+0],
+				bits[y0+x*2+1],
+				bits[y1+x*2+0],
+				bits[y1+x*2+1]
+			];
+			const index:number=(b4[0]?1:0)+(b4[1]?2:0)+(b4[2]?4:0)+(b4[3]?8:0);
+			const q4=quads.charAt(index);
+			line.push(q4);
+		}
+		lines[y]=line.join("");
+	}
+	return lines.join("\n");
+}
+
+
+
+// slop 0.1 const bloks=" ▘▝▗▄▌▞▖▜▚▐▀▛▙▟█"
+
+
+/*
+const blocks=" ▘▝▖▗▌▐▀▄▚▞▛▜▙▟█"; 
+const blockbits=[0, 1,2,4,8, 5,10,3,12,9,6, 7,11,13,14, 15];
+let blits=Array(16).fill(" ");
+for(let index=0;index<16;index++){
+	const bit=blockbits[index];
+	blits[bit]=blocks.charAt(index);
+}
+console.log(blits.join(""));
+*/
+
+
 {
   "hieroglyph": {
     "base": {

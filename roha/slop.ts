@@ -1,4 +1,4 @@
-// slop.ts - skeleton code for slop services
+// slop.ts - skeleton code for serving slop
 // (c)2025 Simon Armstrong 
 // Licensed under the MIT License - See LICENSE file
 
@@ -12,15 +12,18 @@ let outputBuffer=[];
 let printBuffer=[];
 let markdownBuffer=[];
 
+const exitMessage="Ending session.";
+
 const AnsiBlankLine="\x1B[0K";
 const AnsiClear="\x1B[2J";
 const AnsiHome="\x1B[H";
 const AnsiCursor="\x1B[";
 
+const consolSize=Deno.consoleSize();                                                                                                                                                   
+
 function AnsiPrompt(){
-	const size=Deno.consoleSize();                                                                                                                                                   
-	const row=size.rows;
-	return AnsiCursor + row + ";1H" + AnsiBlankLine;
+	const row=consolSize.rows;
+	return AnsiCursor + row + ";1H";// + AnsiBlankLine;
 }
 
 
@@ -36,8 +39,8 @@ async function fileLength(path) {
 	return stat.size;
 }
 
-function echo(){
-	const args=arguments.length?Array.from(arguments):[];
+function echo(...args:any[]){
+//	const args=arguments.length?Array.from(arguments):[];
 	const lines=[];
 	for(const arg of args){
 		const line=toString(arg);
@@ -65,7 +68,7 @@ const appDir=Deno.cwd();
 const slopPath=resolve(appDir,"../slop");
 
 const slops=[];
-const slopFrames=[];
+const slopFrames:string[]=[];
 const slopnames=await readFileNames(slopPath,".slop.ts");
 
 for(const name of slopnames){
@@ -116,14 +119,34 @@ async function refreshBackground(ms,line) {
 		slopFrame=slopFrames.length;
 		const frame=slopFrames[slopFrame-1];
 //		const message=AnsiHome + frame + AnsiCursor + row + ";1H\n" + prompt+line;
-		const message=AnsiHome + frame + AnsiPrompt() + line;
+		const message=AnsiHome+frame+AnsiPrompt()+line;
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
 }
-// promptForge 𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴 𓅠
-async function promptForge(message:string) {
-	if(!rawPrompt) return prompt(message);
+
+// exitSlop 𓊽𓉴𓉴𓉴𓊽
+
+function exitSlop(){
+	Deno.stdin.setRaw(false);
+	console.log("exitSlop",exitMessage);
+}
+
+// promptSlop 𓅠
+
+async function promptSlop(message:string) {
+
+	const timer = setInterval(async() => {
+		const line=decoder.decode(promptBuffer);
+		await refreshBackground(5,message+line);
+	}, 100);
+
+	if(!rawPrompt) {
+		const response=prompt(message);
+		clearInterval(timer);
+		return response;
+	}
+
 	let result="";
 	if(message){
 		await writer.write(encoder.encode(message));
@@ -131,10 +154,6 @@ async function promptForge(message:string) {
 	}
 	Deno.stdin.setRaw(true);
 	let busy=true;
-	const timer = setInterval(async() => {
-		const line=decoder.decode(promptBuffer);
-		await refreshBackground(5,message+line);
-	}, 1000);
 	while (busy) {
 		try {
 //			const timeout = setTimeout(() => {refreshBackground(5)}, 1000); // 5-second timeout
@@ -149,7 +168,7 @@ async function promptForge(message:string) {
 					}
 				} else if (byte === 0x1b) { // Escape sequence
 					if (value.length === 1) {
-						await exitForge();
+						exitSlop();
 						Deno.exit(0);
 					}
 					if (value.length === 3) {
@@ -188,4 +207,9 @@ async function promptForge(message:string) {
 }
 
 console.log("slop 0.1");
-await(promptForge(">"));
+await(promptSlop(">"));
+
+console.log("oh no, bye");
+
+exitSlop();
+Deno.exit(0);
