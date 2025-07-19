@@ -90,7 +90,7 @@ function resetWorkers(){
 	consoleSize=Deno.consoleSize();
 	for(const worker of slops){
 		console.log("[SLOP] worker reset");
-		worker.postMessage({command:"reset"});
+		worker.postMessage({command:"reset",consoleSize});
 	}
 }
 

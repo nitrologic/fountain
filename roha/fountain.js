@@ -11,7 +11,7 @@ import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import {Anthropic } from "npm:@anthropic-ai/sdk";
 
-// Tested with Deno 2.4.0, V8 13.7.152.6, TypeScript 5.8.3
+// Tested with Deno 2.4.2, V8 13.7.152.14, TypeScript 5.8.3
 
 const env=Deno.env;
 

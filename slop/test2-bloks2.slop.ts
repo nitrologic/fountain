@@ -2,11 +2,11 @@
 
 // emits events start error tick
 
-const tvWidth=100;
-const tvHeight=44;
-
 const MaxFrame=250;
-const period=20;
+const period=100;
+
+const tvWidth=128;
+const tvHeight=32;
 
 const quads=" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█";
 
@@ -20,17 +20,21 @@ class pixels{
 		const words=((width+15)/16)|0;
 		this.bitmap=new Uint16Array(words*height);
 	}
-	clear(){
+	clear(shade:number){
 		const n=this.bitmap.length;
 		for(let xy=0;xy<n;xy++){
-			const r:number=Math.random()*0xffff;
-			this.bitmap[xy]=(r|0);
+			let bits=0;
+			for(let i=0;i<16;i++){
+				if(Math.random()<shade) bits|=(1<<i);
+			}
+//			const r:number=Math.random()*0xffff;
+			this.bitmap[xy]=bits;
 		}
 	}
 	frame():string[]{
 		const w=this.width;
 		const h=this.height;
-		const words=(w+15)/16;
+		const words=((w+15)/16)|0;
 		const bitmap=this.bitmap;
 		const cols:number=h/2;
 		const rows:number=w/2;
@@ -54,9 +58,9 @@ class pixels{
 	}
 }
 
-const tv:pixels=new pixels(tvWidth,tvHeight);
+let tv:pixels=new pixels(tvWidth,tvHeight);
 const startTime=performance.now();
-let frameCount=0;
+let frameCount=-1;
 
 function update(events:any[]){
 	console.log("update",events);
@@ -67,6 +71,11 @@ self.onmessage=(e)=>{
 	switch(slip.command){
 		case "reset":
 			frameCount=0;
+			const size=slip.consoleSize;
+			if(size){
+				const w=size.columns*2;
+				tv=new pixels(w,size.rows*2-3);
+			}
 			break;
 		case "update":
 			const events=slip.events;
@@ -79,14 +88,17 @@ self.onmessage=(e)=>{
 };
 
 function blankFrame(){
-	tv.clear();
+	const t=performance.now();
+	const shade=(t/3e3)%1;
+	tv.clear(shade);
 	return tv.frame().join("\n");
 }
 
 function tick() {
-	const count=frameCount++;
+	const stopped=frameCount<0;
+	const count=stopped?-1:frameCount++;
 	const time=performance.now();
-	const frame=(count<MaxFrame)?blankFrame():"";
+	const frame=(count>=0 && count<MaxFrame)?blankFrame():"";
 	return {success:true,time,event:"tick",count,frame};
 }
 
