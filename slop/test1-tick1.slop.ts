@@ -7,7 +7,7 @@ const ledArray = ["⚫", "⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", 
 
 const MaxFrames=0;
 
-const period=500;
+const period=150;
 
 const startTime=performance.now();
 
@@ -18,6 +18,7 @@ self.onmessage=(e)=>{
 	switch(slip.command){
 		case "reset":
 			frameCount=0;
+			const size=slip.consoleSize;
 			break;
 		case "stop":
 			frameCount=0;

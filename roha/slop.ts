@@ -15,6 +15,8 @@ let markdownBuffer=[];
 
 const exitMessage="Ending session.";
 
+const AnsiDefault="\x1B[39m";
+const AnsiPink="\x1B[38;5;206m";
 const AnsiBlankLine="\x1B[0K";
 const AnsiClear="\x1B[2J";
 const AnsiHome="\x1B[H";
@@ -161,7 +163,7 @@ async function refreshBackground(pause:number,line:string) {
 		slopFrame=slopFrames.length;
 		const frame=slopFrames[slopFrame-1];
 //		const message=AnsiHome + frame + AnsiCursor + row + ";1H\n" + prompt+line;
-		const message=AnsiHome+frame+AnsiPrompt()+line;
+		const message=AnsiHome+frame+AnsiPrompt()+AnsiPink+line+AnsiDefault;
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
