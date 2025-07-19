@@ -1,3 +1,51 @@
+logy prefix words:
+biblio bio chrono ethno topo geo anthro archaeo astro crimin dem etymo 
+hodo hydr myco neuro paleo pheno psycho socio theo zo
+eco mytho philo onco seismo
+aero- (aerology: study of the atmosphere)
+agro- (agrology: study of soils)
+cosmo- (cosmology: study of the universe)
+crypto- (cryptology: study of codes)
+dendro- (dendrology: study of trees)
+eno- (enology: study of wine)
+entom- (entomology: study of insects)
+glotto- (glottology: study of languages)
+graph- (graphology: study of handwriting)
+hemato- (hematology: study of blood)
+ichthyo- (ichthyology: study of fish)
+litho- (lithology: study of rocks)
+meteo- (meteorology: study of weather)
+morpho- (morphology: study of forms/structures)
+nepho- (nephology: study of clouds)
+noso- (nosology: study of disease classification)
+odonto- (odontology: study of teeth)
+orni- (ornithology: study of birds)
+patho- (pathology: study of diseases)
+phreno- (phrenology: study of skull shapes, now obsolete)
+pomo- (pomology: study of fruit)
+rheu- (rheumatology: study of rheumatic diseases)
+speleo- (speleology: study of caves)
+techno- (technology: study/application of techniques)
+vexillo- (vexillology: study of flags)
+
+Using these above, you can make pink text like so:
+
+\033[38;5;206m     #That is, \033[38;5;<FG COLOR>m
+
+And make an early-morning blue background using
+
+\033[48;5;57m      #That is, \033[48;5;<BG COLOR>m
+And, of course, you can combine these:
+
+\033[38;5;206;48;5;57m
+The 8-bit colours are arranged like so:
+
+Range	Description
+0x00-0x07	standard colors (same as the 4-bit colours)
+0x08-0x0F	high intensity colors
+0x10-0xE7	6 × 6 × 6 cube (216 colors): 16 + 36 × r + 6 × g + b (0 ≤ r, g, b ≤ 5)
+0xE8-0xFF	grayscale from black to white in 24 steps
+
 class pixels2{
 	width: number;
 	height: number;

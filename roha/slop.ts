@@ -2,6 +2,14 @@
 // (c)2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
+Deno.serve((request) => {
+    const r=JSON.stringify(request);
+    return new Response("Slop Fountain:"+r);
+});
+
+// slopsite snapshot for worker refs
+
+/*
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import { _common } from "https://deno.land/std@0.224.0/path/_common/common.ts";
 
@@ -264,3 +272,4 @@ while(true){
 console.log("oh no, bye");
 exitSlop();
 Deno.exit(0);
+*/
