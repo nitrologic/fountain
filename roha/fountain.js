@@ -1719,8 +1719,9 @@ function resolvePath(dir,filename){
 
 let promptBuffer=new Uint8Array(0);
 let slopFrame=0;
-const reader=Deno.stdin.readable.getReader();
+
 const writer=Deno.stdout.writable.getWriter();
+
 async function refreshBackground(ms,line) {
 	await new Promise(resolve => setTimeout(resolve, ms));
 	if(slopFrames.length&&slopFrame!=slopFrames.length){
@@ -1732,7 +1733,11 @@ async function refreshBackground(ms,line) {
 		await writer.ready;
 	}
 }
-// promptForge 𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴 𓅠
+
+// promptForge 𓅠
+
+const reader=Deno.stdin.readable.getReader();
+
 async function promptForge(message) {
 	if(!roha.config.rawprompt) return prompt(message);
 	let result="";
@@ -1743,18 +1748,24 @@ async function promptForge(message) {
 	if(roha.config.page) {
 		await writer.write(homeCursor);
 	}
-	Deno.stdin.setRaw(true);
+
 	let busy=true;
-	const timer = setInterval(async() => {
-		const line=decoder.decode(promptBuffer);
-		await refreshBackground(5,message+line);
-	}, 1000);
+	let timer;
+
+	if(roha.config.refreshBackground){
+		timer = setInterval(async() => {
+			const line=decoder.decode(promptBuffer);
+			await refreshBackground(5,message+line);
+		}, 1000);
+	}
+
+	Deno.stdin.setRaw(true);
+
 	while (busy) {
 		try {
-//			const timeout = setTimeout(() => {refreshBackground(5)}, 1000); // 5-second timeout
 			const { value, done }=await reader.read();
 			if (done || !value) break;
-			let bytes=[];
+			const bytes=[];
 			for (const byte of value) {
 				if (byte === 0x7F || byte === 0x08) { // Backspace
 					if (promptBuffer.length > 0) {
@@ -1796,71 +1807,10 @@ async function promptForge(message) {
 			busy=false;
 		}
 	}
-	clearInterval(timer);
 	Deno.stdin.setRaw(false);
-	if(roha.config.page) await writer.write(homeCursor);
-	return result;
-}
+//	reader.cancel();
 
-async function promptForge2(message) {
-	if(!roha.config.rawprompt) return prompt(message);
-	let result="";
-	if (message) {
-		await writer.write(encoder.encode(message));
-		await writer.ready;
-	}
-	if(roha.config.page) {
-		await writer.write(homeCursor);
-	}
-	Deno.stdin.setRaw(true);
-	try {
-		let busy=true;
-		while (busy) {
-			const { value, done }=await reader.read();
-			if (done || !value) break;
-			let bytes=[];
-			for (const byte of value) {
-				if (byte === 0x7F || byte === 0x08) { // Backspace
-					if (promptBuffer.length > 0) {
-						promptBuffer=promptBuffer.slice(0, -1);
-						bytes.push(0x08, 0x20, 0x08);
-					}
-				} else if (byte === 0x1b) { // Escape sequence
-					if (value.length === 1) {
-						await exitForge();
-						Deno.exit(0);
-					}
-					if (value.length === 3) {
-						if (value[1] === 0xf4 && value[2] === 0x50) {
-							echo("F1");
-						}
-					}
-					break;
-				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
-					bytes.push(0x0D, 0x0A);
-					const line=decoder.decode(promptBuffer);
-					let n=line.length;
-					if (n > 0) {
-						promptBuffer=promptBuffer.slice(n);
-					}
-					result=line.trimEnd();
-					await log(result, "stdin");
-					busy=false;
-				} else {
-					bytes.push(byte);
-					const buf=new Uint8Array(promptBuffer.length + 1);
-					buf.set(promptBuffer);
-					buf[promptBuffer.length]=byte;
-					promptBuffer=buf;
-				}
-			}
-			if (bytes.length) await writer.write(new Uint8Array(bytes));
-		}
-	}catch(e){
-		echo("promptForge","threw",e);
-	} finally {
-		Deno.stdin.setRaw(false);
-	}
+	if (timer) clearInterval(timer);
 	if(roha.config.page) await writer.write(homeCursor);
 	return result;
 }
