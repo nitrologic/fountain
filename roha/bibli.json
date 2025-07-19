@@ -2,8 +2,8 @@
 	"name": "bibli",
 	"description": "Bibliographic index of specifications",
 	"copyright": "2025 Simon Armstrong",
-	"version": "1.0.2",
-	"date": "2025-07-19T04:20:00+12:00",
+	"version": "1.0.3",
+	"date": "2025-07-20T04:20:00+12:00",
 	"license": {
 		"name": "MIT",
 		"url": "https://opensource.org/licenses/MIT"
@@ -24,6 +24,15 @@
 			"suff27":{
 				"aca14": "graphy iatry logia metry nomy ology onymy scopy sophia tics cracy ist ics etics",
 				"etc13": "al ance ence ese ism ity oid ous ty ure y archy pathy"
+			}
+		},
+		"coptic": {
+			"name": "Coptic",
+			"description": "Final stage of Egyptian, written with Greek-derived script",
+			"alphabet": {
+				"lower": "ⲁⲃⲅⲇⲉⲋⲍⲏⲑⲓⲕⲗⲙⲛⲝⲟⲡⲣⲥⲧⲩⲫⲯⲱ",
+				"upper": "ⲀⲂⲄⲆⲈⲊⲌⲎⲐⲒⲔⲖⲘⲚⲜⲞⲠⲢⲤⲦⲨⲪⲮⲰ",
+				"extras": "ϢϤϦϨϪϬϮ"
 			}
 		},
 		"greek": {
