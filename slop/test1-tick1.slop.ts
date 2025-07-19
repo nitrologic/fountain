@@ -1,11 +1,11 @@
 // worker.ts
 // basic frame counter
 
-// emits events start error tick
+// emits slow blink events start error tick
+
+const ledArray = ["⚫", "⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", "🟤"]
 
 const MaxFrames=0;
-
-const dots = ["🟣", "🔵", "🟢", "🟡", "🔴"];
 
 const period=500;
 
@@ -25,14 +25,13 @@ self.onmessage=(e)=>{
 	}
 };
 
-const Leds="⚫⚪🔵🟢🔴🟡🟣🟠🟤";
-const ledArray = ["⚫", "⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", "🟤"]
 function blankFrame(index:number):string{
 	const start=index%ledArray.length;
 	const led=ledArray[start];
 	const grid=(led.repeat(48)+"\n").repeat(2);
 	return grid;
 }
+
 function update() {
 	const count=frameCount++;
 	const time=performance.now();

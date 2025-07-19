@@ -1,3 +1,53 @@
+class pixels2{
+	width: number;
+	height: number;
+	bits: boolean[];
+	constructor(width:number,height:number) {
+		this.width = width;
+		this.height = height;
+		this.bits = new Array(width*height).fill(false);
+		const words=(width+15)/16;
+	}
+	clear(){
+		const n=this.bits.length;
+		for(let xy=0;xy<n;xy++){
+			const r=Math.random();
+			this.bits[xy]=r>0.3?true:false;
+		}
+	}
+	frame():string[]{
+		const w=this.width;
+		const h=this.height;
+		const bits=this.bits;
+		const cols:number=h/2;
+		const rows:number=w/2;
+		const lines:string[]=[];
+		for(let y:number=0;y<cols;y++){
+			let line:string[]=[];
+			const y0=2*y*w;
+			const y1=y0+w;
+			for(let x:number=0;x<rows;x++){
+				const b4:boolean[]=[
+					bits[y0+x*2+0],
+					bits[y0+x*2+1],
+					bits[y1+x*2+0],
+					bits[y1+x*2+1]
+				];
+				const index:number=(b4[0]?1:0)+(b4[1]?2:0)+(b4[2]?4:0)+(b4[3]?8:0);
+				const q4=quads.charAt(index);
+				line.push(q4);
+			}
+			lines.push(line.join(""));
+		}
+		return lines;
+	}
+};
+
+
+
+const Leds="⚫⚪🔵🟢🔴🟡🟣🟠🟤";
+const dots = ["🟣", "🔵", "🟢", "🟡", "🔴"];
+
 function blankFrame2(){
 	const w=32;
 	const h=12;
