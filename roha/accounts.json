@@ -1,95 +1,95 @@
 {
 	"deepseek": {
+		"emoji": "🐋",
 		"env": "DEEPSEEK_API_KEY",
 		"url": "https://api.deepseek.com",
 		"docs": "https://api-docs.deepseek.com",
 		"api": "DeepSeek",
-		"emoji": "🐋",
 		"locale": "zh-CN"
-	},
-	"xai": {
-		"env": "XAI_API_KEY",
-		"url": "https://api.x.ai/v1",
-		"docs": "https://docs.x.ai/docs/overview",
-		"api": "OpenAI",
-		"emoji": "🚀",
-		"locale": "en-US"
-	},
-	"openai": {
-		"env": "OPENAI_API_KEY",
-		"url": "https://api.openai.com/v1",
-		"api": "OpenAI",
-		"emoji": "🏐",
-		"locale": "en-US"
-	},
-	"gemini": {
-		"env": "GEMINI_API_KEY",
-		"url": "https://generativelanguage.googleapis.com/v1alpha",
-		"api": "Google",
-		"emoji": "🌟",
-		"locale": "en-US"
-	},
-	"alibaba": {
-		"env": "ALIBABA_API_KEY",
-		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
-		"api": "OpenAI",
-		"emoji": "🐉",
-		"locale": "zh-CN"
-	},
-	"mistral": {
-		"env": "MISTRAL_API_KEY",
-		"url": "https://api.mistral.ai/v1",
-		"docs": "https://docs.mistral.ai/",
-		"api": "OpenAI",
-		"emoji": "⚡️",
-		"locale": "fr-FR"
-	},
-	"anthropic": {
-		"env": "ANTHROPIC_API_KEY",
-		"url": "https://api.anthropic.com/v1",
-		"docs": "https://docs.anthropic.com/en/home/",
-		"api": "Anthropic",
-		"emoji": "🌐",
-		"locale": "en-US"
-	},
-	"cohere": {
-		"env": "COHERE_API_KEY",
-		"url": "https://api.cohere.com/v2",
-		"docs": "https://docs.cohere.com/reference/about",
-		"api": "Cohere",
-		"emoji": "🧩",
-		"locale": "en-CA"
 	},
 	"moonshot": {
+		"emoji": "🌙",
 		"env": "MOONSHOT_API_KEY",
 		"url": "https://api.moonshot.ai/v1",
 		"docs": "https://platform.moonshot.ai/docs/",
 		"api": "OpenAI",
-		"emoji": "🌙",
+		"locale": "zh-CN"
+	},
+	"anthropic": {
+		"emoji": "🌐",
+		"env": "ANTHROPIC_API_KEY",
+		"url": "https://api.anthropic.com/v1",
+		"docs": "https://docs.anthropic.com/en/home/",
+		"api": "Anthropic",
+		"locale": "en-US"
+	},
+	"openai": {
+		"emoji": "🏐",
+		"env": "OPENAI_API_KEY",
+		"url": "https://api.openai.com/v1",
+		"api": "OpenAI",
+		"locale": "en-US"
+	},
+	"xai": {
+		"emoji": "🚀",
+		"env": "XAI_API_KEY",
+		"url": "https://api.x.ai/v1",
+		"docs": "https://docs.x.ai/docs/overview",
+		"api": "OpenAI",
+		"locale": "en-US"
+	},
+	"gemini": {
+		"emoji": "🌟",
+		"env": "GEMINI_API_KEY",
+		"url": "https://generativelanguage.googleapis.com/v1alpha",
+		"api": "Google",
+		"locale": "en-US"
+	},
+	"mistral": {
+		"emoji": "⚡️",
+		"env": "MISTRAL_API_KEY",
+		"url": "https://api.mistral.ai/v1",
+		"docs": "https://docs.mistral.ai/",
+		"api": "OpenAI",
+		"locale": "fr-FR"
+	},
+	"cohere": {
+		"emoji": "🧩",
+		"env": "COHERE_API_KEY",
+		"url": "https://api.cohere.com/v2",
+		"docs": "https://docs.cohere.com/reference/about",
+		"api": "Cohere",
+		"locale": "en-CA"
+	},
+	"alibaba": {
+		"emoji": "🐉",
+		"env": "ALIBABA_API_KEY",
+		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+		"api": "OpenAI",
 		"locale": "zh-CN"
 	},
 	"cerebras":{
+		"emoji": "🤗𝐂",
 		"env": "HUGGINGFACE_API_KEY",
 		"url": "https://router.huggingface.co/cerebras/v1",
 		"docs":"https://huggingface.co/docs",
 		"api": "OpenAI",
-		"emoji": "🤗𝐂",
 		"locale": "en-US"
 	},
 	"nscale":{
+		"emoji": "🤗𝐍",
 		"env": "HUGGINGFACE_API_KEY",
 		"url": "https://router.huggingface.co/nscale/v1",
 		"docs":"https://huggingface.co/docs",
 		"api": "OpenAI",
-		"emoji": "🤗𝐍",
 		"locale": "en-US"
 	},
 	"hyperbolic":{
+		"emoji": "🤗𝐇",
 		"env": "HUGGINGFACE_API_KEY",
 		"url": "https://router.huggingface.co/hyperbolic/v1",
 		"docs":"https://huggingface.co/docs",
 		"api": "OpenAI",
-		"emoji": "🤗𝐇",
 		"locale": "en-US"
 	}
 }

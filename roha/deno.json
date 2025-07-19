@@ -12,7 +12,7 @@
 			"dependencies":["slop","fountain"]
 		},
 		"play":{
-			"dependencies":["vic12"]
+			"dependencies":["slop"]
 		}
 	}
 }

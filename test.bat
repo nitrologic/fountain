@@ -1,4 +1,4 @@
 pushd roha
-deno task slopfountain
-rem deno task play
+rem deno task slopfountain
+deno task play
 popd

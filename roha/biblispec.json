@@ -1,0 +1,29 @@
+{
+	"name": "BibliSpec",
+	"description": "Bibliographic index of specifications",
+	"copyright": "2025 Simon Armstrong",
+	"version": "1.0.0",
+	"date": "2025-07-19T04:20:00+12:00",
+	"license": {
+		"name": "MIT",
+		"url": "https://opensource.org/licenses/MIT"
+	},
+	"spec": {
+		"unicode": {
+			"name": "Unicode",
+			"version": "15.1",
+			"description": "Unicode Character Database",
+			"features": "A range of codepoint sequences from Unicode blocks",
+			"range": {
+				"AZ": {
+					"codes": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+					"name": "LATIN CAPITAL LETTERS",
+					"block": "Basic Latin",
+					"category": "Lu",
+					"codePoints": ["U+0041", "U+005A"],
+					"range": [65, 90]
+				}
+			}
+		}
+	}
+}

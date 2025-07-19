@@ -19,9 +19,15 @@ self.onmessage=(e)=>{
 };
 
 
+const dots=" 𓃉 𓃊 𓃋 𓃌 𓃍 𓃎 𓃏 𓃐 𓃑 ";
 const blocks=" ▘▝▖▗▌▐▀▄▚▞▛▜▙▟█"; 
-
 const blockbits=[0, 1,2,4,8, 5,10,3,12,9,6, 7,11,13,14, 15];
+let blits=[];
+for(const bit of blockbits){
+	blits.push(blocks.charAt(bit));
+}
+console.log(blits.join(""));
+
 
 const code={
 	"▘":{"char":"▘","codepoint":"2598","name":"QUADRANT UPPER LEFT"},

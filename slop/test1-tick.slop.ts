@@ -3,6 +3,8 @@
 
 // emits events start error tick
 
+const MaxFrames=0;
+
 const dots = ["🟣", "🔵", "🟢", "🟡", "🔴"];
 
 const period=500;
@@ -28,13 +30,13 @@ const ledArray = ["⚫", "⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", 
 function blankFrame(index:number):string{
 	const start=index%ledArray.length;
 	const led=ledArray[start];
-	const grid=(led.repeat(48)+"\n").repeat(12);
+	const grid=(led.repeat(48)+"\n").repeat(2);
 	return grid;
 }
 function update() {
 	const count=frameCount++;
 	const time=performance.now();
-	const frame=(count<12)?blankFrame(count):"";
+	const frame=(count<MaxFrames)?blankFrame(count):"";
 	return {success:true,time,event:"tick",count,frame};
 }
 
