@@ -2,10 +2,17 @@
 // (c)2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
+console.log("[SLOP] skeleton code says hello");
+
+Deno.exit(0);
+
+/*
 Deno.serve((request) => {
     const r=JSON.stringify(request);
     return new Response("Slop Fountain:"+r);
 });
+
+*/
 
 // slopsite snapshot for worker refs
 

@@ -46,6 +46,26 @@
 				}
 			}
 		},
+		"latin": {
+			"name": "Latin",
+			"description": "Latin linguistic roots and Unicode characters",
+			"alphabet": {
+				"lower": "abcdefghijklmnopqrstuvwxyz",
+				"upper": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+				"uncommon": "ÆæŒœÞþÐðƷʒȜȝ"
+			},
+			"lingua": {
+				"core": "verbum nomen ratio vox forma scriptum",
+				"verbs": "ago dico facio scribo video voco",
+				"concepts": "veritas virtus tempus lex ars scientia",
+				"ends": {
+					"noun": "us a um io ix io",
+					"verb": "are ere ire ior",
+					"abstract": "tio io tas men",
+					"agent": "tor trix or"
+				}
+			}
+		},
 		"unicode": {
 			"name": "Unicode",
 			"version": "15.1",

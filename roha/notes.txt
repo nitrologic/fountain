@@ -1,10 +1,32 @@
+bibli.spec.unicode.lexis.𓅷𓅽
+
+"latin": {
+"name": "Latin",
+"description": "Latin linguistic roots and Unicode characters",
+"alphabet": {
+"lower": "abcdefghijklmnopqrstuvwxyz",
+"upper": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+"uncommon": "ÆæŒœÞþÐðƷʒȜȝ"
+},
+"lingua": {
+"core": "verbum nomen ratio vox forma scriptum",
+"verbs": "ago dico facio scribo video voco",
+"concepts": "veritas virtus tempus lex ars scientia",
+"ends": {
+"noun": "us a um io ix io",
+"verb": "are ere ire ior",
+"abstract": "tio io tas men",
+"agent": "tor trix or"
+}
+},
+
 moueson
-echo "\033[?1003h\033[?1015h\033[?1006h" 
+echo "\033[?1003h\033[?1015h\033[?1006h"
 // stty -echo
 // But we can still catch them in the STDIN
 // We get 16 bits sequences like 35;15;7M where 35 is the mouse move, and the two next numbers are the row and colums numbers + the M ending.
 
-//Then to reset:  echo 
+//Then to reset:  echo
 mouseoff
 "\033[?1000l"
 
@@ -16,7 +38,7 @@ echo -e '\e]52;c;SGVsbG8gR2l0aHVi'
 
 
 logy prefix words:
-biblio bio chrono ethno topo geo anthro archaeo astro crimin dem etymo 
+biblio bio chrono ethno topo geo anthro archaeo astro crimin dem etymo
 hodo hydr myco neuro paleo pheno psycho socio theo zo
 eco mytho philo onco seismo
 aero- (aerology: study of the atmosphere)
@@ -150,7 +172,7 @@ function blankFrame2(){
 
 
 /*
-const blocks=" ▘▝▖▗▌▐▀▄▚▞▛▜▙▟█"; 
+const blocks=" ▘▝▖▗▌▐▀▄▚▞▛▜▙▟█";
 const blockbits=[0, 1,2,4,8, 5,10,3,12,9,6, 7,11,13,14, 15];
 let blits=Array(16).fill(" ");
 for(let index=0;index<16;index++){

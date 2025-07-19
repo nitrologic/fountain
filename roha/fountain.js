@@ -78,6 +78,7 @@ const appDir=Deno.cwd();
 const accountsPath=resolve(appDir,"accounts.json");
 const specsPath=resolve(appDir,"modelspecs.json");
 const unicodePath=resolve(appDir,"slopspec.json");
+const bibliPath=resolve(appDir,"bibli.json");
 
 const slopPath=resolve(appDir,"../slop");
 const forgePath=resolve(appDir,"forge");
@@ -86,6 +87,7 @@ const rohaPath=resolve(forgePath,"forge.json");
 const modelAccounts=JSON.parse(await Deno.readTextFile(accountsPath));
 const modelSpecs=JSON.parse(await Deno.readTextFile(specsPath));
 const unicodeSpec=JSON.parse(await Deno.readTextFile(unicodePath));
+const bibli=JSON.parse(await Deno.readTextFile(bibliPath));
 
 const emojiIndex = {};
 
@@ -3126,7 +3128,7 @@ const slopnames=await readFileNames(slopPath,".slop.ts");
 for(const name of slopnames){
 	const path=slopPath+"/"+name;
 	const len=await fileLength(path);
-	echo("[SLOP] running slop",name,len);
+	echo("[SLOPS] running slop",name,len);
 	const url="file:///"+path;
 	const worker=new Worker(url,{type: "module"});
 	worker.onmessage = (message) => {
@@ -3142,7 +3144,7 @@ for(const name of slopnames){
 				}
 				break;
 			default:
-				echo("[SLOP]",name,payload);
+				echo("[SLOPS]",name,payload);
 				break;
 		}
 	}
@@ -3161,8 +3163,8 @@ echo("Deno.consoleSize",termSize);
 
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
-//echo("");
 
+echo(bibli.spec.unicode.lexis.𓅷𓅽.codes);
 
 if(roha.config.listenonstart){
 	listenService();
