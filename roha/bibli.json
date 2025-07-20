@@ -257,6 +257,14 @@
 					"codePoints": ["U+13079","U+13080"],
 					"range": [49241, 49248],
 					"usage": "Hieroglyphic eyes"
+				},
+				"𓂁𓂇":{
+					"codes": "𓂁𓂂𓂃𓂄𓂅𓂆𓂇",
+					"name": "Eye Parts",
+					"block": "Egyptian Hieroglyphs",
+					"category": "So",
+					"codePoints": ["U+13081", "U+13087"],
+					"range": [77953, 77959]
 				}
 			}
 		}
