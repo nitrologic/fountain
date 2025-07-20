@@ -2920,7 +2920,8 @@ async function relay(depth) {
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)
 
-		echo("[FOUNTAIN] unhandled error",error.message,JSON.stringify(error.stack));
+		echo("[FOUNTAIN] unhandled error",error.message);
+		echo("[FOUNTAIN]",error.stack);
 
 		//		echo("unhandled error line",line);
 		if(verbose){

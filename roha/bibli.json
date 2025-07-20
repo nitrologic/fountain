@@ -265,6 +265,14 @@
 					"category": "So",
 					"codePoints": ["U+13081", "U+13087"],
 					"range": [77953, 77959]
+				},
+				"♈♓":{
+					"name": "Zodiac",
+					"codes": "♈♉♊♋♌♍♎♏♐♑♒♓",
+					"block": "Miscellaneous Symbols",
+					"category": "Nd",
+					"codePoints": ["U+2648","U+2653"],
+					"range": [9800,9811]
 				}
 			}
 		}

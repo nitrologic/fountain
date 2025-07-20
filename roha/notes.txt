@@ -1,3 +1,12 @@
+[FOUNTAIN] unhandled error DeepSeek API error: Bad Request "Error: DeepSeek API error:
+
+ Bad Request
+     at Object.create (file:///C:/nitrologic/fountain/roha/fountain.js:1190:14)
+	     at eventLoopTick (ext:core/01_core.js:178:7)
+		     at async relay (file:///C:/nitrologic/fountain/roha/fountain.js:2721:20)
+			     at async chat (file:///C:/nitrologic/fountain/roha/fountain.js:3001:5)
+				     at async file:///C:/nitrologic/fountain/roha/fountain.js:3143:2"
+
 𓏢 harp
 𓏣 sistrum
 
