@@ -1,6 +1,9 @@
 {
 	"name": "bibli",
+	"separator": "𓄰𓄱𓄲𓄳𓄴𓄱𓄵𓄶𓄷𓄱𓄰",
 	"description": "Bibliographic index of specifications",
+	"moto": "Ⲡⲉⲛⲥⲁϩ ⲉϥϯⲙⲉ ⲙⲙⲟⲛ",
+	"status": "A living document of linguistic latitude",
 	"copyright": "2025 Simon Armstrong",
 	"version": "1.0.3",
 	"date": "2025-07-20T04:20:00+12:00",
@@ -25,6 +28,34 @@
 				"aca14": "graphy iatry logia metry nomy ology onymy scopy sophia tics cracy ist ics etics",
 				"etc13": "al ance ence ese ism ity oid ous ty ure y archy pathy"
 			}
+		},
+		"hebrew": {
+			"name": "Hebrew",
+			"description": "Semitic script, abjad layout with Unicode vowel points",
+			"alphabet": {
+					"lower": "אבגדהוזחטיכלמנסעפצקרשת",
+					"upper": "אבגדהוזחטיכלמנסעפצקרשת",
+					"uncommon": "ךםןףץ"
+			},
+			"lingua": [
+				{
+					"lang": "he",
+					"core": "דבר שם טוב רחמים אמת צדק",
+					"verbs": "אמר ברא יצא לקח",
+					"concepts": "שלום תורה חסד חיים"
+				},
+				{
+					"lang": "en",
+					"core": "davar shem tov rahamim emet tzedek",
+					"verbs": "amar bara yatza lakah",
+					"concepts": "shalom torah hesed chayim",
+					"ends": {
+							"abstract": "ut on ah",
+							"agent": "i er",
+							"diminutive": "on it"
+					}
+				}
+			]
 		},
 		"coptic": {
 			"name": "Coptic",
@@ -75,6 +106,15 @@
 				}
 			}
 		},
+		"reo":{
+			"name": "Te Reo Māori",
+			"description": "Indigenous language of Aotearoa, Latin script, macrons for long vowels.",
+			"alphabet": {
+				"lower": "aāeēhikmnoprtuw",
+				"upper": "AĀEĒHIKMNOPRTUW",
+				"uncommon": ""
+			}
+		},
 		"unicode": {
 			"name": "Unicode",
 			"version": "15.1",
@@ -122,6 +162,22 @@
 					"category": "So",
 					"codePoints": ["U+1319B", "U+1319F"],
 					"range": [7963, 7967]
+				},
+				"𓄰𓄱":{
+					"group": "plain-symbols",
+					"tags": ["hieroglyphs", "plain","totem"],
+					"wide": 1,
+					"emoji": {
+						"𓄰":{},"𓄱":{}
+					}
+				},
+				"𓄲𓄷":{
+					"group": "plain-symbols",
+					"tags": ["hieroglyphs", "plain","ea9625"],
+					"wide": 1,
+					"emoji": {
+						"𓄲":{},"𓄳":{},"𓄴":{},"𓄵":{},"𓄶":{},"𓄷":{}
+					}
 				},
 				"𓅷𓅽":{
 					"codes": "𓅷𓅸𓅹𓅺𓅻𓅼𓅽",

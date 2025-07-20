@@ -938,7 +938,13 @@
 			"∅": {"char": "∅", "codepoint": "2205", "name": "EMPTY SET"},
 			"∠": {"char": "∠", "codepoint": "2220", "name": "ANGLE"},
 			"∥": {"char": "∥", "codepoint": "2225", "name": "PARALLEL TO"},
-			"⊥": {"char": "⊥", "codepoint": "22A5", "name": "PERPENDICULAR"}
+			"⊥": {"char": "⊥", "codepoint": "22A5", "name": "PERPENDICULAR"},
+			"≡": {"char": "≡", "codepoint": "2261", "name": "IDENTICAL TO"},
+			"≅": {"char": "≅", "codepoint": "2245", "name": "APPROXIMATELY EQUAL TO"},
+			"⊢": {"char": "⊢", "codepoint": "22A2", "name": "RIGHT TACK"},
+			"∮": {"char": "∮", "codepoint": "222E", "name": "CONTOUR INTEGRAL"},
+			"∣": {"char": "∣", "codepoint": "2223", "name": "DIVIDES"},
+			"°": {"char": "°", "codepoint": "00B0", "name": "DEGREE SIGN"}
 		}
 	},
 	"plain-currency": {
@@ -1193,6 +1199,14 @@
 			"☃": {"char": "☃", "codepoint": "2603", "name": "SNOWMAN"},
 			"☔": {"char": "☔", "codepoint": "2614", "name": "UMBRELLA WITH RAIN DROPS"},
 			"⛅": {"char": "⛅", "codepoint": "26C5", "name": "SUN BEHIND CLOUD"}
+		}
+	},
+	"ea9625-hieroglyph":{
+		"group": "plain-symbols",
+		"tags": ["hieroglyphs", "plain","ea9625"],
+		"wide": 1,
+		"emoji": {
+			"𓄲":{},"𓄳":{},"𓄴":{},"𓄵":{},"𓄶":{},"𓄷":{}
 		}
 	},
 	"plain-hieroglyph":{

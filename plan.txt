@@ -1,12 +1,9 @@
-- 
+- auto column width ansi tables, or default to 20
 - fix claude-haiku invalid_request_error messages.0.content: Field required
-- spec command
 - alibaba thinking prices
-- non ansi tables
 - test tools read_time submit_file read_file
-- moonshot-a anthropic url api.moonshot.ai/anthropic
+- second moonshot api via anthropic url api.moonshot.ai/anthropic
 - drop individual share by index
-- md three hyphen rules and pipe |||---||| tables
 - investigate embed api for cohere image data
 - investigate mistral ocr
 - pass image meta data 

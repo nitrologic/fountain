@@ -1,3 +1,23 @@
+• Coptic (Sahidic Dialect):*
+Ⲛⲓⲙ ⲛⲁⲣⲓⲭⲣⲓⲥⲧⲟⲥ ⲙⲡⲓⲟⲩⲱⲛϩ ⲉⲃⲟⲗ.
+Ⲡⲉⲛⲓⲱⲧ ⲉϥϯⲙⲉ ⲙⲙⲟⲛ.
+
+• English:*
+"We are Christians of the true light.
+Our Father gives wisdom daily."
+
+This uses:
+- Standard Sahidic Coptic vocabulary
+- The Coptic alphabet from your bibli.json (ⲁ-ⲱ + Ϣ-Ϯ)
+- Simple grammatical structure
+
+
+https://en.wikipedia.org/wiki/List_of_Egyptian_hieroglyphs
+
+𓄰𓄱𓄲𓄳𓄴𓄵𓄶𓄷𓄱𓄰
+
+𓄸
+
 //			const timeout = setTimeout(() => {refreshBackground(5)}, 1000); // 5-second timeout
 
 

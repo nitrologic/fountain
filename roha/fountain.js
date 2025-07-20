@@ -5,7 +5,7 @@
 // ⛲ 𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴 𓅠
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
-import { contentType } from "https://deno.land/std@0.224.0/media_types/mod.ts";
+import { contentType } from "https://deno.land/std/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
@@ -98,6 +98,21 @@ function parseUnicode(){
 	}
 }
 
+function parseBibli(){
+	for(const index in bibli.spec){
+		const item=bibli.spec[index];
+		const keys = Object.keys(item);
+		echo("[BIBLI]",index,keys.join(" "));
+		if(item.alphabet){
+			echo("[BIBLI] alphabet:",item.alphabet);		
+		}
+		if(item.lexis){
+			const blocks=Object.keys(item.lexis);
+			echo("[BIBLI] lexis:",blocks.join(" "));		
+		}
+	}
+}
+
 function stringwidth2(str) {
 	let width = 0;
 	for (const char of str) {
@@ -127,7 +142,7 @@ const flagNames={
 	logging : "log all output to file",
 	debugging : "emit diagnostics",
 	pushonshare : "emit a /push after any /share",
-	rawprompt : "experimental rawmode stdin !!! warning !!! will crash on paste",
+	rawprompt : "experimental rawmode stdin - broken paste",
 	resetcounters : "factory reset when reset",
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed"
@@ -2114,6 +2129,9 @@ async function callCommand(command) {
 	let words=command.split(" ");
 	try {
 		switch (words[0]) {
+			case "bibli":
+				parseBibli();
+				break;
 			case "spec":
 				parseUnicode();
 				break;
