@@ -5,7 +5,7 @@
 	"moto": "Ⲡⲉⲛⲥⲁϩ ⲉϥϯⲙⲉ ⲙⲙⲟⲛ",
 	"status": "A living document of linguistic latitude",
 	"copyright": "2025 Simon Armstrong",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"date": "2025-07-20T04:20:00+12:00",
 	"license": {
 		"name": "MIT",
@@ -17,16 +17,16 @@
 	},
 	"spec": {
 		"pheme":{
-			"pre62": {
+			"pre61": {
 				"science18": "electro helio chrono cosmo crypto dendro etymo geo glotto graph hydr patho pheno rheu seismo speleo techno topo",
 				"nature13": "aero agro eco entom ichthyo litho meteo morpho myco nepho paleo zoo zo",
 				"body12": "angio cardio dermato gastro hemato histo neuro noso odonto osteo phreno",
 				"human11": "anthro archaeo biblio bio crimino dem ethno onco orni psycho socio",
-				"meta8": "astro eno philo pomo theo vexillo"
+				"meta7": "astro eno hiero philo pomo theo vexillo"
 			},
-			"suff27":{
+			"suff28":{
 				"aca14": "graphy iatry logia metry nomy ology onymy scopy sophia tics cracy ist ics etics",
-				"etc13": "al ance ence ese ism ity oid ous ty ure y archy pathy"
+				"etc14": "al ance ence ese ism ity oid ous ty ure y archy pathy phile"
 			}
 		},
 		"hebrew": {
@@ -165,7 +165,7 @@
 				},
 				"𓄰𓄱":{
 					"group": "plain-symbols",
-					"tags": ["hieroglyphs", "plain","totem"],
+					"tags": ["hieroglyphs", "plain","uterus"],
 					"wide": 1,
 					"emoji": {
 						"𓄰":{},"𓄱":{}
@@ -173,7 +173,7 @@
 				},
 				"𓄲𓄷":{
 					"group": "plain-symbols",
-					"tags": ["hieroglyphs", "plain","ea9625"],
+					"tags": ["hieroglyphs", "plain","intestines","ea9625"],
 					"wide": 1,
 					"emoji": {
 						"𓄲":{},"𓄳":{},"𓄴":{},"𓄵":{},"𓄶":{},"𓄷":{}
