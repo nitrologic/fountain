@@ -1,9 +1,8 @@
+[![Deno](https://img.shields.io/badge/deno-2.4.2-black?logo=deno)](https://deno.land/)
 
-# slop fountain
+# 𓄵𓄳𓄷⛲
 
-[![Deno](https://img.shields.io/badge/deno-2.4.0-black?logo=deno)](https://deno.land/)
-
-Home of nitrologic slop fountain — a 4th generation of the roha foundry forge LLM tool
+Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM tool
 
 ## Accounts
 
@@ -21,7 +20,7 @@ Home of nitrologic slop fountain — a 4th generation of the roha foundry forge 
 
 ## developers
 
-[slop fountaint](roha/README.md)
+[README.md](roha/README.md)
 
 # blog
 

@@ -164,7 +164,10 @@
 					"range": [7963, 7967]
 				},
 				"𓄰𓄱":{
-					"group": "plain-symbols",
+					"codes": "𓄰𓄱",
+					"name": "Fertility",
+					"block": "Egyptian Hieroglyphs",
+					"category": "So",
 					"tags": ["hieroglyphs", "plain","uterus"],
 					"wide": 1,
 					"emoji": {
@@ -172,12 +175,20 @@
 					}
 				},
 				"𓄲𓄷":{
-					"group": "plain-symbols",
+					"codes":"𓄲𓄳𓄴𓄵𓄶𓄷",
+					"name":"Viscera",
+					"block": "Egyptian Hieroglyphs",
+					"category": "So",
 					"tags": ["hieroglyphs", "plain","intestines","ea9625"],
 					"wide": 1,
-					"emoji": {
-						"𓄲":{},"𓄳":{},"𓄴":{},"𓄵":{},"𓄶":{},"𓄷":{}
-					}
+					"sims": [
+						{"point":"𓄲","sim":"e"},
+						{"point":"𓄳","sim":"a"},
+						{"point":"𓄴","sim":"9"},
+						{"point":"𓄵","sim":"g6"},
+						{"point":"𓄶","sim":"z2"},
+						{"point":"𓄷","sim":"s5"}
+					]
 				},
 				"𓅷𓅽":{
 					"codes": "𓅷𓅸𓅹𓅺𓅻𓅼𓅽",

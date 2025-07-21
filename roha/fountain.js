@@ -53,6 +53,7 @@ const boxChars=["┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣
 const break50="─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴";
 const rule50= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
 
+const ThinSpace=" ";
 const AnsiBlankLine="\x1B[0K";
 const AnsiClear="\x1B[2J";
 const AnsiHome="\x1B[H";
@@ -1187,7 +1188,8 @@ async function connectDeepSeek(account,config) {
 							body: JSON.stringify(payload),
 						});
 						if (!response.ok) {
-							throw new Error(`DeepSeek API error: ${response.statusText}`);
+							console.log("[DeepSeek] not ok",response.status,response.statusText);
+							throw new Error("DeepSeek API error");
 						}
 						return await response.json();
 					},
