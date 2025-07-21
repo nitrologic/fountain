@@ -1,3 +1,4 @@
+- fix raw mode prompt paste bug
 - auto column width ansi tables, or default to 20
 - fix claude-haiku invalid_request_error messages.0.content: Field required
 - alibaba thinking prices

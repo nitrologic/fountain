@@ -13,7 +13,7 @@ import {Anthropic } from "npm:@anthropic-ai/sdk";
 
 const env=Deno.env;
 
-const fountainVersion="1.2.6";
+const fountainVersion="1.2.7";
 const defaultModel="deepseek-chat@deepseek";
 const fountainName="fountain "+fountainVersion;
 const rohaTitle=fountainName+" ⛲ ";
