@@ -57,7 +57,7 @@ const AnsiHome="\x1B[H";
 const AnsiCursor="\x1B[";
 
 function AnsiPrompt(){
-	const size=Deno.consoleSize();                                                                                                                                                   
+	const size=Deno.consoleSize();
 	const row=size.rows;
 	return AnsiCursor + row + ";1H" + AnsiBlankLine;
 }
@@ -89,6 +89,34 @@ function padChars(text){
 	return [...text].join(ThinSpace);
 }
 
+function stringWidth(str) {
+	let w = 0;
+	for (const ch of str) {
+		w += isDoubleWidth(ch.codePointAt(0)) ? 2 : 1;
+	}
+	return w;
+}
+
+function stringFit(text,width){
+	return text.substring(0,width);
+	// this code needs love
+	const wide=stringWidth(text);
+	if(width>wide){
+ 		let wide = 0;
+		let clip = "";
+		for (const ch of text) {
+			const w = isDoubleWidth(ch.codePointAt(0)) ? 2 : 1;
+			if (wide + w > width) break;
+			clip += ch;
+			wide += w;
+		}
+		return clip;
+	}
+	const pad=" ".repeat(wide-width);
+	return text+pad;
+}
+
+
 function parseUnicode(){
 	for(const group in unicodeSpec){
 		const keys = Object.keys(unicodeSpec[group].emoji);
@@ -97,18 +125,29 @@ function parseUnicode(){
 }
 
 function parseBibli(){
+	const glyphs=bibli.separator;
+//	const size=Deno.consoleSize();
+//	const wide=size.columns;
+	const wide=terminalColumns;
+	const spaced=padChars(glyphs.repeat(150));
+	const br=stringFit(spaced,wide);
+	const hr=stringFit(rule500,wide);
+	echo("[BIBLI]",hr);
 	for(const index in bibli.spec){
 		const item=bibli.spec[index];
 		const keys = Object.keys(item);
 		echo("[BIBLI]",index,keys.join(" "));
 		if(item.alphabet){
-			echo("[BIBLI] alphabet:",item.alphabet);		
+			echo("[BIBLI] alphabet:",item.alphabet);
 		}
 		if(item.lexis){
 			const blocks=Object.keys(item.lexis);
-			echo("[BIBLI] lexis:",blocks.join(" "));		
+			echo("[BIBLI] lexis:",blocks.join(" "));
 		}
 	}
+	echo("[BIBLI]",hr);
+	echo("[BIBLI]",bibli.moto);
+	echo("[BIBLI]",hr);
 }
 
 function stringwidth2(str) {
@@ -484,15 +523,6 @@ const isDoubleWidth = (() => {
 })();
 
 // here be dragons - emoji widths based on userterminal may be required
-
-function stringWidth(str) {
-	let w = 0;
-	for (const ch of str) {
-		w += isDoubleWidth(ch.codePointAt(0)) ? 2 : 1;
-	}
-	return w;
-}
-
 
 async function fileLength(path) {
 	const stat=await Deno.stat(path);
@@ -3146,7 +3176,6 @@ let rohaUser=username+"@"+userdomain;
 const sharecount=roha.sharedFiles?.length||0;
 
 let termSize = Deno.consoleSize();
-
 echo("Deno.consoleSize",termSize);
 
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})

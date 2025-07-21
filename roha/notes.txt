@@ -1,5 +1,9 @@
-+
-Here's a markdown table test with Chinese mythological creatures:
+## yet another new name
+
+![Slop Welcome](slop/slopwelcome.png)
+
+
++Here's a markdown table test with Chinese mythological creatures:
 
 ┌───────────────────┬──────────────────────────────────────┬─────────────────────┐
 │  Creature          │  Description                          │  Symbolism           │

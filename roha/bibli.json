@@ -1,12 +1,9 @@
 {
 	"name": "bibli",
-	"separator": "𓄰𓄱𓄲𓄳𓄴𓄱𓄵𓄶𓄷𓄱𓄰",
+	"version": "1.0.6",
 	"description": "Bibliographic index of specifications",
-	"moto": "Ⲡⲉⲛⲥⲁϩ ⲉϥϯⲙⲉ ⲙⲙⲟⲛ",
 	"status": "A living document of linguistic latitude",
-	"copyright": "2025 Simon Armstrong",
-	"version": "1.0.4",
-	"date": "2025-07-20T04:20:00+12:00",
+	"copyright": "(C) 2025 Simon Armstrong",
 	"license": {
 		"name": "MIT",
 		"url": "https://opensource.org/licenses/MIT"
@@ -15,6 +12,8 @@
 		"type": "git",
 		"url": "https://github.com/nitrologic/biblispec"
 	},
+	"moto": "Ⲡⲉⲛⲥⲁϩ ⲉϥϯⲙⲉ ⲙⲙⲟⲛ",
+	"separator": "𓆛𓆜𓆝𓆞𓆟",
 	"spec": {
 		"pheme":{
 			"pre61": {
@@ -174,6 +173,13 @@
 						"𓄰":{},"𓄱":{}
 					}
 				},
+				"𓏊𓏍":{
+					"codes":"𓏊𓏋𓏌𓏍",
+					"name":"Jars",
+					"block": "Egyptian Hieroglyphs",
+					"category": "So",
+					"tags": ["hieroglyphs", "plain","jars"]
+				},
 				"𓄲𓄷":{
 					"codes":"𓄲𓄳𓄴𓄵𓄶𓄷",
 					"name":"Viscera",
@@ -181,7 +187,7 @@
 					"category": "So",
 					"tags": ["hieroglyphs", "plain","intestines","ea9625"],
 					"wide": 1,
-					"sims": [
+					"glyphs": [
 						{"point":"𓄲","sim":"e"},
 						{"point":"𓄳","sim":"a"},
 						{"point":"𓄴","sim":"9"},

@@ -1,12 +1,5 @@
-# models under test
 
-
-
----
-
-## yet another new name
-
-![Slop Welcome](slop/slopwelcome.png)
+# blog fountain  𓄵𓄲𓄲𓄷𓄲 ⛲
 
 ## log of recent code review with DeepSeek and grok-3-mini
 
@@ -19,6 +12,12 @@
 ## latest Gemini GoogleGenerativeAI driver
 
 ![Gemini Slop](slop/slopgeminiaccount.png)
+
+
+## unicode under test 𓏍 𓏍
+
+small jar big jar round jar three jars
+# 𓏊 𓏋 𓏌 𓏍
 
 ## history command added
 
