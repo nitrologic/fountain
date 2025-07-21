@@ -1,44 +1,27 @@
-// slop.ts - skeleton code for serving slop
+// slopshop.ts - a slop shop
 // (c)2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
-console.log("[SLOP] skeleton code says hello");
+// scans the slop folder for .slop.ts workers
 
-Deno.exit(0);
-
-/*
-Deno.serve((request) => {
-    const r=JSON.stringify(request);
-    return new Response("Slop Fountain:"+r);
-});
-
-*/
-
-// slopsite snapshot for worker refs
-
-/*
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import { _common } from "https://deno.land/std@0.224.0/path/_common/common.ts";
 
-let verbose=false;
+const appDir=Deno.cwd();
+const slopPath=resolve(appDir,"../slop");
+
+let _verbose=false;
 
 const rawPrompt=true;
-
-let outputBuffer=[];
-let printBuffer=[];
-let markdownBuffer=[];
 
 const exitMessage="Ending session.";
 
 const AnsiDefault="\x1B[39m";
 const AnsiPink="\x1B[38;5;206m";
-const AnsiBlankLine="\x1B[0K";
-const AnsiClear="\x1B[2J";
+const _AnsiBlankLine="\x1B[0K";
+const _AnsiClear="\x1B[2J";
 const AnsiHome="\x1B[H";
 const AnsiCursor="\x1B[";
-
-const AnsiMouseOn="\x1B[?1003h\x1B[?1015h\x1B[?1006h";
-const AnsiMouseOff="\x1B[?1000l";
 
 let consoleSize=Deno.consoleSize();
 
@@ -47,6 +30,13 @@ function AnsiPrompt(){
 	return AnsiCursor + row + ";1H";// + AnsiBlankLine;
 }
 
+// slopsite utility functions
+// typescript ahead - fix the any 
+
+let _outputBuffer=[];
+let _printBuffer=[];
+let _markdownBuffer=[];
+
 function toString(arg:any):string{
 	if (typeof arg === 'object') {
 		return JSON.stringify(arg);
@@ -54,7 +44,7 @@ function toString(arg:any):string{
 	return String(arg);
 }
 
-async function fileLength(path) {
+async function fileLength(path:string) {
 	const stat=await Deno.stat(path);
 	return stat.size;
 }
@@ -66,7 +56,7 @@ function echo(...args:any[]){
 		const line=toString(arg);
 		lines.push(line);
 	}
-	outputBuffer.push(lines.join(" "));
+	_outputBuffer.push(lines.join(" "));
 }
 
 async function readFileNames(path:string,suffix:string){
@@ -74,7 +64,7 @@ async function readFileNames(path:string,suffix:string){
 	try {
 	for await (const entry of Deno.readDir(path)) {
 		if (entry.isFile && entry.name.endsWith(suffix)) {
-			if(verbose) echo("readFileNames",path,entry);
+			if(_verbose) echo("readFileNames",path,entry);
 			result.push(entry.name);
 		}
 	}
@@ -93,34 +83,35 @@ class Event{
 	}
 };
 
-const appDir=Deno.cwd();
-const slopPath=resolve(appDir,"../slop");
-
-const slops:Worker[]=[];
-const slopFrames:string[]=[];
-const slopnames=await readFileNames(slopPath,".slop.ts");
-const slopEvents:Event[]=[];
-
 function onKey(value:number[]){
 	const e=new Event("key",value);
 	slopEvents.push(e);
 }
 
-function resetWorkers(){
-	consoleSize=Deno.consoleSize();
-	for(const worker of slops){
-		console.log("[SLOP] worker reset");
-		worker.postMessage({command:"reset",consoleSize});
-	}
-}
+// main action starts here
 
+const slops:Worker[]=[];
+const slopWorkers:any[]=[];
+
+const slopFrames:string[]=[];
+const slopnames=await readFileNames(slopPath,".slop.ts");
+const slopEvents:Event[]=[];
+
+console.log("[SHLOP] slop shop 0.2");
+console.log("[SHLOP] serving slopnames");
+console.log("[SHLOP]",slopnames);
+console.log("[SHLOP] enter to start");
+
+let workerCount=0;
 for(const name of slopnames){
+	const id=workerCount++;
 	const path=slopPath+"/"+name;
 	const len=await fileLength(path);
-	echo("[SLOP] running slop",name,len);
+	echo("[SHLOP] running slop",name,len);
 	const url="file:///"+path;
 	const worker=new Worker(url,{type: "module"});
 	worker.onmessage = (message) => {
+		echo("[SHLOP]",worker,message)
 		const payload={...message.data};
 		switch(payload.event){
 			case "tick":
@@ -129,18 +120,19 @@ for(const name of slopnames){
 				}
 				break;
 			default:
-				echo("[SLOP]",name,payload);
+				echo("[SHLOP]",name,payload);
 				break;
 		}
 	}
 	slops.push(worker);
+	slopWorkers.push({id,name})
 }
 
 let slopPail:unknown[]=[];
 
 function logSlop(_result:any){
 	const message=JSON.stringify(_result);
-	console.error("\t[slop]",message);
+	console.error("\t[SHLOP]",message);
 	slopPail.push(message);
 }
 
@@ -163,7 +155,16 @@ function flushEvents(){
 const decoder=new TextDecoder("utf-8");
 const encoder=new TextEncoder();
 
-let promptBuffer=new Uint8Array(0);
+function resetWorkers(){
+	consoleSize=Deno.consoleSize();
+	for(const key in slops){
+		const worker=slops[key];
+		const info=slopWorkers[key];
+		console.log("[SHLOP] worker reset",info.name);
+		worker.postMessage({command:"reset",consoleSize});
+	}
+}
+
 let slopFrame=0;
 let slopEvent=0;
 const reader=Deno.stdin.readable.getReader();
@@ -172,8 +173,9 @@ async function refreshBackground(pause:number,line:string) {
 	await new Promise(resolve => setTimeout(resolve, pause));
 	const events=flushEvents();
 	if(events.length){
-		console.log("[SLOP] workers update",JSON.stringify(events));
+		// all slop workers get all events
 		for(const worker of slops){
+			console.log("[SHLOP] worker update");
 			worker.postMessage({command:"update",events});
 		}			
 	}
@@ -191,10 +193,12 @@ async function refreshBackground(pause:number,line:string) {
 
 function exitSlop(){
 	Deno.stdin.setRaw(false);
-	console.log("exitSlop",exitMessage);
+	console.log("[SHLOP] exitSlop clearing raw",exitMessage);
 }
 
 // promptSlop 𓅠
+
+let _promptBuffer=new Uint8Array(0);
 
 async function promptSlop(message:string) {
 	if(!rawPrompt) {
@@ -208,7 +212,7 @@ async function promptSlop(message:string) {
 	}
 	Deno.stdin.setRaw(true);
 	const timer = setInterval(async() => {
-		const line=decoder.decode(promptBuffer);
+		const line=decoder.decode(_promptBuffer);
 		await refreshBackground(5,message+line);
 	}, 100);
 	let busy=true;
@@ -220,8 +224,8 @@ async function promptSlop(message:string) {
 			let bytes=[];
 			for (const byte of value) {
 				if (byte === 0x7F || byte === 0x08) { // Backspace
-					if (promptBuffer.length > 0) {
-						promptBuffer=promptBuffer.slice(0, -1);
+					if (_promptBuffer.length > 0) {
+						_promptBuffer=_promptBuffer.slice(0, -1);
 						bytes.push(0x08, 0x20, 0x08);
 					}
 				} else if (byte === 0x1b) { // Escape sequence
@@ -238,10 +242,10 @@ async function promptSlop(message:string) {
 					break;
 				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
 					bytes.push(0x0D, 0x0A);
-					const line=decoder.decode(promptBuffer);
+					const line=decoder.decode(_promptBuffer);
 					let n=line.length;
 					if (n > 0) {
-						promptBuffer=promptBuffer.slice(n);
+						_promptBuffer=_promptBuffer.slice(n);
 					}
 					result=line.trimEnd();
 					echo("[stdin]",result);
@@ -250,10 +254,10 @@ async function promptSlop(message:string) {
 					onKey([0]);
 				} else {
 					bytes.push(byte);
-					const buf=new Uint8Array(promptBuffer.length + 1);
-					buf.set(promptBuffer);
-					buf[promptBuffer.length]=byte;
-					promptBuffer=buf;
+					const buf=new Uint8Array(_promptBuffer.length + 1);
+					buf.set(_promptBuffer);
+					buf[_promptBuffer.length]=byte;
+					_promptBuffer=buf;
 				}
 			}
 			if (bytes.length) await writer.write(new Uint8Array(bytes));
@@ -267,23 +271,17 @@ async function promptSlop(message:string) {
 	return result;
 }
 
-console.log("slop 0.1 mouse is on"+AnsiMouseOn);
-
 while(true){
-	const input=await(promptSlop(">"));
+	const input=await(promptSlop("]"));
 	if(input=="exit") break;
 	if(input==""){
-		console.log("[SLOP] reset");
+		console.log("[SHLOP] reset");
 		resetWorkers();
 		continue;
 	}
-	console.log("[SLOP] ",input);
+	console.log("[SHLOP] ",input);
 }
 
-
-console.log("oh no, bye, mouse off");
-console.log(AnsiMouseOff);
-
+console.log("oh no, bye");
 exitSlop();
 Deno.exit(0);
-*/

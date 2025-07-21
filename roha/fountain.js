@@ -4,16 +4,15 @@
 
 // Tested with Deno 2.4.2, V8 13.7.152.14, TypeScript 5.8.3
 
+import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
+import { Anthropic } from "npm:@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "npm:@google/generative-ai";
+
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
-import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
-import { GoogleGenerativeAI } from "npm:@google/generative-ai";
-import {Anthropic } from "npm:@anthropic-ai/sdk";
 
-const env=Deno.env;
-
-const fountainVersion="1.2.7";
+const fountainVersion="1.2.8";
 const defaultModel="deepseek-chat@deepseek";
 const fountainName="fountain "+fountainVersion;
 const rohaTitle=fountainName+" ⛲ ";
@@ -21,6 +20,8 @@ const rohaTitle=fountainName+" ⛲ ";
 const terminalColumns=120;
 const statsColumn=50;
 const clipLog=1800;
+
+const thinSpace=" ";
 const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};
 
 // system prompt
@@ -33,37 +34,76 @@ const rohaGuide=[
 	"Use tabs for indenting js and json files."
 ]
 
+const welcome=await Deno.readTextFile("welcome.txt");
+
 const mutsInclude="models under test include "
-
-const username=env.get("USERNAME");
-const userdomain=env.get("USERDOMAIN").toLowerCase();
-const userregion = Intl.DateTimeFormat().resolvedOptions();
-
-const userterminal=env.get("TERM")||env.get("TERM_PROGRAM")||env.get("SESSIONNAME")||"VOID";
-
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Feel free to comment if shared files are new or different.";
 const exitMessage="Ending session.";
-
 const boxChars=["┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
-
 const rule500= "━".repeat(500);
 const pageBreak=rule500;
 
-const ThinSpace=" ";
-const AnsiBlankLine="\x1B[0K";
-const AnsiClear="\x1B[2J";
+// user environment
+
+const username=getEnv("USERNAME");
+const userdomain=getEnv("USERDOMAIN").toLowerCase();
+const userregion = Intl.DateTimeFormat().resolvedOptions();
+
+const userterminal=getEnv("TERM")||getEnv("TERM_PROGRAM")||getEnv("SESSIONNAME")||"VOID";
+
+let rohaHistory=[];
+let rohaModel="mut";	//mut name excludes preview version details
+let rohaUser=username+"@"+userdomain;
+
+let grokModel="";
+let grokAccount=null;
+let grokFunctions=true;
+let grokUsage=0;
+let grokTemperature=1.0;
+let grokThink=0.0;
+
+// Ansi codes
+
+const AnsiReset="\x1b[0m";
+
 const AnsiHome="\x1B[H";
 const AnsiCursor="\x1B[";
+const AnsiWhite="\x1b[38;5;255m";
+const AnsiGreenBG="\x1b[48;5;23m";
+const AnsiTealBG="\x1b[48;5;24m";
+const AnsiGreyBG="\x1b[48;5;232m";
+const AnsiVividOrange="\x1b[38;5;208m";
+const AnsiLineBlank="\x1B[0K";
 
-function AnsiPrompt(){
+const _AnsiClear="\x1B[2J";
+const _AnsiMoveToEnd="\x1b[999B";
+
+const _AnsiNeonPink="\x1b[38;5;201m";
+const _AnsiPop="\x1b[1;36m";
+const _AnsiSaveCursorA = "\x1B[s";
+const _AnsiRestoreCursorA = "\x1B[u";
+
+// Array of 8 ANSI colors (codes 30-37) selected for contrast and visibility in both light and dark modes.
+
+const AnsiColors=[
+	"\x1b[30m", // Black: Deep black (#333333), subtle on light, visible on dark
+	"\x1b[31m", // Red: Muted red (#CC3333), clear on white and black
+	"\x1b[32m", // Green: Forest green (#2D6A4F), good contrast on both
+	"\x1b[33m", // Yellow: Golden yellow (#DAA520), readable on dark and light
+	"\x1b[34m", // Blue: Medium blue (#3366CC), balanced visibility
+	"\x1b[35m", // Magenta: Soft magenta (#AA3377), distinct on any background
+	"\x1b[36m", // Cyan: Teal cyan (#008080), contrasts well without glare
+	"\x1b[37m"	// White: Light gray (#CCCCCC), subtle on light, clear on dark
+];
+
+function ansiPrompt(){
 	const size=Deno.consoleSize();
 	const row=size.rows;
-	return AnsiCursor + row + ";1H" + AnsiBlankLine;
+	return AnsiCursor + row + ";1H" + AnsiLineBlank;
 }
 
-const SaveCursorA = "\x1B[s";
-const RestoreCursorA = "\x1B[u";
+// application configuration
 
 const slowMillis=25;
 const MaxFileSize=512*1024;
@@ -85,6 +125,12 @@ const bibli=JSON.parse(await Deno.readTextFile(bibliPath));
 
 const emojiIndex = {};
 
+// helper functions
+
+function getEnv(key){
+	return Deno.env.get(key);
+}
+
 function unixTime(date){
 	const d = new Date(date);
 	const s = d.getTime()/1000;
@@ -101,7 +147,7 @@ function dateStamp(seconds){
 }
 
 function padChars(text){
-	return [...text].join(ThinSpace);
+	return [...text].join(thinSpace);
 }
 
 function stringWidth(str) {
@@ -114,6 +160,10 @@ function stringWidth(str) {
 
 function stringFit(text,width){
 	return text.substring(0,width);
+}
+
+/*	
+function stringFit2(text,width){
 	// this code needs love
 	const wide=stringWidth(text);
 	if(width>wide){
@@ -130,7 +180,7 @@ function stringFit(text,width){
 	const pad=" ".repeat(wide-width);
 	return text+pad;
 }
-
+*/
 
 function parseUnicode(){
 	for(const group in unicodeSpec){
@@ -179,9 +229,6 @@ const encoder=new TextEncoder();
 // rohaHistory is array of {role,name||title,content}
 // attached as payload messages in chat completions
 
-let rohaHistory=[];
-let rohaModel="mut";	//mut name excludes preview version details
-
 const flagNames={
 	squash : "squash message sequences in output",
 	reasonoutloud : "echo chain of thought",
@@ -197,7 +244,8 @@ const flagNames={
 	rawprompt : "experimental rawmode stdin - broken paste",
 	resetcounters : "factory reset when reset",
 	returntopush : "hit return to /push - under test",
-	slow : "experimental output at reading speed"
+	slow : "experimental output at reading speed",
+	slops : "console worker scripts"
 };
 
 const emptyConfig={
@@ -217,6 +265,7 @@ const emptyConfig={
 	resetcounters:false,
 	returntopush:false,
 	slow:false,
+	slops:false,
 	nic:"user"
 };
 
@@ -801,7 +850,7 @@ let geminiCallCount=0;
 async function connectGoogle(account,config){
 	try{
 		const baseURL=config.url;
-		const apiKey=env.get(config.env);
+		const apiKey=getEnv(config.env);
 		if(!apiKey) return null;
 		const response=await fetch(baseURL+"/models?key="+apiKey);
 		if (!response.ok) {
@@ -991,7 +1040,7 @@ function anthropicTools(payload){
 async function connectAnthropic(account,config){
 	try{
 		const baseURL=config.url;
-		const apiKey=env.get(config.env);
+		const apiKey=getEnv(config.env);
 		if(!apiKey) return null;
 		const headers={
 			"x-api-key":apiKey,
@@ -1119,7 +1168,7 @@ function prepareCohereRequest(payload){
 async function connectCohere(account,config) {
 	try{
 		const baseURL=config.url;
-		const apiKey=env.get(config.env);
+		const apiKey=getEnv(config.env);
 		if(!apiKey) return null;
 		const headers={
 			"Authorization":"Bearer "+apiKey,
@@ -1204,7 +1253,7 @@ async function connectCohere(account,config) {
 async function connectDeepSeek(account,config) {
 	try{
 		const baseURL=config.url;
-		const apiKey=env.get(config.env);
+		const apiKey=getEnv(config.env);
 		if(!apiKey) return null;
 		const headers={Authorization:"Bearer "+apiKey,"Content-Type":"application/json"};
 		const response=await fetch(baseURL+"/models",{method:"GET",headers});
@@ -1254,7 +1303,7 @@ async function connectDeepSeek(account,config) {
 
 async function connectOpenAI(account,config) {
 	try{
-		const apiKey=env.get(config.env);
+		const apiKey=getEnv(config.env);
 		const endpoint=new OpenAI({ apiKey, baseURL: config.url });
 		if(roha.config.debugging){
 			for(const [key, value] of Object.entries(endpoint)){
@@ -1474,18 +1523,6 @@ function stripAnsi(text) {
 	return text.replace(/\x1B\[\d+(;\d+)*[mK]/g, "");
 }
 
-// Array of 8 ANSI colors (codes 30-37) selected for contrast and visibility in both light and dark modes.
-const ansiColors=[
-	"\x1b[30m", // Black: Deep black (#333333), subtle on light, visible on dark
-	"\x1b[31m", // Red: Muted red (#CC3333), clear on white and black
-	"\x1b[32m", // Green: Forest green (#2D6A4F), good contrast on both
-	"\x1b[33m", // Yellow: Golden yellow (#DAA520), readable on dark and light
-	"\x1b[34m", // Blue: Medium blue (#3366CC), balanced visibility
-	"\x1b[35m", // Magenta: Soft magenta (#AA3377), distinct on any background
-	"\x1b[36m", // Cyan: Teal cyan (#008080), contrasts well without glare
-	"\x1b[37m"	// White: Light gray (#CCCCCC), subtle on light, clear on dark
-];
-
 function ansiStyle(text, style="bold", colorIndex=null) {
 	if (!roha.config.ansi) return text;
 	let formatted=text;
@@ -1494,29 +1531,18 @@ function ansiStyle(text, style="bold", colorIndex=null) {
 		case "italic": formatted="\x1b[3m" + formatted + "\x1b[0m"; break;
 		case "underline": formatted="\x1b[4m" + formatted + "\x1b[0m"; break;
 	}
-	if (!Deno.noColor && colorIndex !== null && colorIndex >= 0 && colorIndex < ansiColors.length) {
-		formatted=ansiColors[colorIndex] + formatted + "\x1b[0m";
+	if (!Deno.noColor && colorIndex !== null && colorIndex >= 0 && colorIndex < AnsiColors.length) {
+		formatted=AnsiColors[colorIndex] + formatted + "\x1b[0m";
 	}
 	return formatted;
 }
 
-const ansiWhite="\x1b[38;5;255m";
-const ansiNeonPink="\x1b[38;5;201m";
-const ansiVividOrange="\x1b[38;5;208m";
+const CodeTitle=AnsiTealBG+AnsiVividOrange;
+const CodeBlock=AnsiGreenBG+AnsiWhite;
+const ReplyBlock=AnsiGreyBG;
 
-const ansiGreenBG="\x1b[48;5;23m";
-const ansiTealBG="\x1b[48;5;24m";
-const ansiGreyBG="\x1b[48;5;232m";
-const ansiReset="\x1b[0m";
+const StatusBlock=AnsiGreyBG;
 
-const ansiCodeTitle=ansiTealBG+ansiVividOrange;
-const ansiCodeBlock=ansiGreenBG+ansiWhite;
-const ansiReplyBlock=ansiGreyBG;
-const ansiStatusBlock=ansiGreyBG;
-
-const ansiPop="\x1b[1;36m";
-
-const ansiMoveToEnd="\x1b[999B";
 const saveCursor=new Uint8Array([27,91,115]);
 const restoreCursor=new Uint8Array([27,91,117]);
 
@@ -1625,7 +1651,7 @@ function mdToAnsi(md) {
 	let inTable=false;
 	let headings=[];
 	let widths=[];
-	const result=broken?[ansiReplyBlock]:[];
+	const result=broken?[ReplyBlock]:[];
 	let poplast=false;
 	for (let line of lines) {
 		line=line.trimEnd();
@@ -1635,11 +1661,11 @@ function mdToAnsi(md) {
 			inCode=!inCode;
 			if(inCode){
 				const codeType=trim.substring(3).trim();
-				result.push(ansiCodeBlock);
+				result.push(CodeBlock);
 				if(roha.config.debugging&&codeType) print("inCode codetype:",codeType,"line:",line);
 			}else{
-				result.push(ansiReset);
-				if (broken) result.push(ansiReplyBlock);
+				result.push(AnsiReset);
+				if (broken) result.push(ReplyBlock);
 			}
 		}else{
 			if (!inCode) {
@@ -1690,8 +1716,8 @@ function mdToAnsi(md) {
 				if (header) {
 					const level=header[0].length;
 					line=line.substring(level).trim();
-					const ink=Deno.noColor?"":ansiColors[(colorCycle++)&7];
-					line=ink + line + ansiReset;	//ansiPop
+					const ink=Deno.noColor?"":AnsiColors[(colorCycle++)&7];
+					line=ink + line + AnsiReset;	//ansiPop
 				}
 				// bullets
 				if (line.startsWith("*") || line.startsWith("+")) {
@@ -1718,7 +1744,7 @@ function mdToAnsi(md) {
 		result.push(boxBottom(widths));
 	}
 
-	result.push(ansiReset);
+	result.push(AnsiReset);
 	return result.join("\n");
 }
 
@@ -1784,6 +1810,8 @@ function resolvePath(dir,filename){
 //const promptTimeout = new AbortController();
 //const text=SaveCursorA + AnsiHome + AnsiClear + frame + RestoreCursorA;
 
+const slopFrames=[];
+
 let promptBuffer=new Uint8Array(0);
 let slopFrame=0;
 
@@ -1795,7 +1823,7 @@ async function refreshBackground(ms,line) {
 		slopFrame=slopFrames.length;
 		const frame=slopFrames[slopFrame-1];
 //		const message=AnsiHome + frame + AnsiCursor + row + ";1H\n" + prompt+line;
-		const message=AnsiHome + frame + AnsiPrompt() + line;
+		const message=AnsiHome + frame + ansiPrompt() + line;
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
@@ -2854,7 +2882,7 @@ async function relay(depth) {
 			cost="$"+spend.toFixed(3);
 		}
 
-		// ansiStatusBlock status bar
+		// StatusBlock status bar
 		const echostatus=(depth==0);
 		if(echostatus){
 			const temp=grokTemperature.toFixed(1)+"°";
@@ -2862,7 +2890,7 @@ async function relay(depth) {
 			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,forge,cost,size,elapsed.toFixed(2)+"s"];
 			const status=" "+modelSpec.join(" ")+" ";
 			if (roha.config.ansi)
-				echo(ansiStatusBlock+status+ansiReset);
+				echo(StatusBlock+status+AnsiReset);
 			else
 				echo(status);
 		}
@@ -2927,7 +2955,7 @@ async function relay(depth) {
 //		const name=rohaModel||"mut1";
 		if(replies.length){
 			let content=replies.join("\n<eom>\n");
-			rohaHistory.push({role:"assistant",name,mut,emoji,content,elapsed,price:spend});
+			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
 		}
 	} catch (error) {
 		const line=error.message || String(error);
@@ -3113,19 +3141,11 @@ for(const account in modelAccounts){
 
 await flush();
 
-let grokModel="";
-let grokAccount=null;
-let grokFunctions=true;
-let grokUsage=0;
-let grokTemperature=1.0;
-let grokThink=0.0;
-
 resetModel(roha.model||defaultModel);
 
 await flush();
 let sessions=increment("sessions");
 if(sessions==0||roha.config.showWelcome){
-	let welcome=await Deno.readTextFile("welcome.txt");
 	echo(welcome);
 	await flush();
 	await writeForge();
@@ -3165,39 +3185,39 @@ if(false){
 
 // slops go here
 
-const slops=[];
-const slopFrames=[];
-const slopnames=await readFileNames(slopPath,".slop.ts");
-for(const name of slopnames){
-	const path=slopPath+"/"+name;
-	const len=await fileLength(path);
-	echo("[SLOPS] running slop",name,len);
-	const url="file:///"+path;
-	const worker=new Worker(url,{type: "module"});
-	worker.onmessage = (message) => {
-		const payload={...message.data};
-		switch(payload.event){
-			case "tick":
-				if(payload.frame){
-					slopFrames.push(payload.frame);
-//					console.log(payload.frame);
-//					const frame=SaveCursor + Home + payload.frame;
-//					Deno.stdout.write(encoder.encode(frame));
-//					console.log();
-				}
-				break;
-			default:
-				echo("[SLOPS]",name,payload);
-				break;
+if(roha.config.slops){
+	const slops=[];
+	const slopnames=await readFileNames(slopPath,".slop.ts");
+	for(const name of slopnames){
+		const path=slopPath+"/"+name;
+		const len=await fileLength(path);
+		echo("[SLOPS] running slop",name,len);
+		const url="file:///"+path;
+		const worker=new Worker(url,{type: "module"});
+		worker.onmessage = (message) => {
+			const payload={...message.data};
+			switch(payload.event){
+				case "tick":
+					if(payload.frame){
+						slopFrames.push(payload.frame);
+	//					console.log(payload.frame);
+	//					const frame=SaveCursor + Home + payload.frame;
+	//					Deno.stdout.write(encoder.encode(frame));
+	//					console.log();
+					}
+					break;
+				default:
+					echo("[SLOPS]",name,payload);
+					break;
+			}
 		}
+		slops.push(worker);
 	}
-	slops.push(worker);
 }
 
 await flush();
 
 let rohaNic=roha.config.nic||"nic";
-let rohaUser=username+"@"+userdomain;
 const sharecount=roha.sharedFiles?.length||0;
 
 let termSize = Deno.consoleSize();

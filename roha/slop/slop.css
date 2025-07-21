@@ -1,0 +1,127 @@
+/*
+// slop.css
+// (c) nitrologic 2025 all rights reserved
+*/
+
+
+
+@media print {
+	div {
+		break-inside: avoid;
+	}
+}
+
+body{
+	--renderBackground:#222;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+input{
+	margin-top:8px;
+	font-family:inherit;
+}
+
+
+
+body[palette=night] {
+	color:#aaa; 
+    background-color: #222;
+	--contentBackground:#222;
+	--panelBackground:#555;
+	--panelGrid:#777;
+	--groupBackground:#333;
+	--inputColor:#ddd;
+	--inputBackground:#444;
+	--inputOn:#4a4;
+	--activeBackground:#aa6;
+	--readonlyColor:#eee;
+	--readonlyBackground:#343;
+	--borderColor:#585;
+	--editorColor:#aac;
+	--editorBackground:#225;
+	--selectColor:#5aa;
+	--selectBackground:#022;
+	--alink:#888;
+	--avisited:#999;
+	--ahover:#aaa;
+	--aactive:#bbb;
+	--namedfieldBackground:#347;
+}
+
+body[palette=day] {
+	color:#686; 
+    background-color: #ffe;
+	--contentBackground:#eee;
+	--panelBackground:#bbb;
+	--panelGrid:#ddd;
+	--groupBackground:#ddd;
+	--inputColor:#222;
+	--inputBackground:#bba;
+	--inputOn:#8e8;
+	--activeBackground:#88e;
+	--readonlyColor:#833;
+	--readonlyBackground:#eee;
+	--borderColor:#220;
+	--editorColor:#225;
+	--editorBackground:#aad;
+	--selectColor:#220;
+	--selectBackground:#cdd;
+	--alink:#888;
+	--avisited:#777;
+	--ahover:#666;
+	--aactive:#555;
+	--namedfieldBackground:#def;
+}
+
+
+div.group{
+	background-color: var(--groupBackground);
+	padding:4px;
+}
+
+div.log{
+	height:200px;
+	overflow-y:auto;
+	white-space: pre-wrap;
+	line-height:1.4;
+	font-size: small;
+	padding:4px;
+}
+
+textarea.prompt{
+	width:80vw;
+	height:25vh;
+	background-color:var(--editorBackground);
+	color:var(--editorColor);
+	line-height:1.8;
+	font-size:large;
+}
+
+div.system{
+	background-color:#111;
+	padding:4px;
+	display:inline-block;
+}
+
+div[section]{
+	border:solid 2px darkcyan;
+	margin:10px;
+	padding:8px;
+}
+
+span.box{
+	display:inline-block;
+	padding:6px;
+	vertical-align:bottom;
+}
+
+label.label{
+	display:grid;
+	font-family: monospace;	
+	user-select: none;
+}
+
+label.label.value{
+	font-family: monospace;	
+	font-size:20px;
+}

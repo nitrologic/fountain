@@ -1,19 +1,22 @@
 {
 	"tasks":{
-		"vic12": "deno run --allow-read vic12.ts",
-		"slop": "deno run --allow-net --allow-env --allow-sys --allow-read slop.ts",
-		"slopsite": "deno run --allow-net --allow-env --allow-sys --allow-read slopsite.ts",
-		"slopcity": "deno run --allow-net --allow-env --allow-sys --allow-read slopcity.ts",
-		"slopnet": "deno run --allow-net --allow-env --allow-sys --allow-read slopnet.ts",
+		"slop": "deno run slophello.ts",
 		"fountain": "deno run --allow-net --allow-env --allow-read --allow-write=./forge fountain.js",
-		"roha":{
-			"dependencies":["fountain","slopnet","slopcity"]
-		},
+		"slopresponse": "deno run --allow-net --allow-env --allow-sys --allow-read slopresponse.ts",
+		"slopshop": "deno run --allow-net --allow-env --allow-sys --allow-read slopshop.ts",
+		"slopnet": "deno run --allow-net --allow-env --allow-sys --allow-read slopnet.ts",
+		"slopcity": "deno run --allow-net --allow-env --allow-sys --allow-read slopcity.ts",
 		"slopfountain":{
 			"dependencies":["slop","fountain"]
 		},
 		"play":{
-			"dependencies":["slopsite"]
+			"dependencies":["slopshop"]
+		},
+		"net":{
+			"dependencies":["slopnet"]
+		},
+		"host":{
+			"dependencies":["slopcity"]
 		}
 	}
 }

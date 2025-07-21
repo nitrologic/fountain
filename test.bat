@@ -1,4 +1,4 @@
 pushd roha
+rem deno task play net host slopfountain
 deno task slopfountain
-rem deno task play
 popd
