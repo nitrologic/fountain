@@ -17,6 +17,7 @@ Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM too
 | openai       | ⚛     | en-US  | https://platform.openai.com/docs    | OpenAI   |
 | gemini       | 🌟    | en-US  | https://ai.google.dev/docs          | Google   |
 | anthropic    | 🤖    | en-US  | https://docs.anthropic.com/         | Anthropic |
+| hugging face | 🤗    | en-US  | https://huggingface.co/docs         | OpenAI    |
 
 ## developers
 
