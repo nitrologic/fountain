@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-// ⛲ 𓉴𓊽𓊽𓊽𓊽𓊽𓉴𓊽𓊽𓊽𓊽𓊽𓉴 𓅠
+// Tested with Deno 2.4.2, V8 13.7.152.14, TypeScript 5.8.3
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std/media_types/mod.ts";
@@ -11,29 +11,22 @@ import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import {Anthropic } from "npm:@anthropic-ai/sdk";
 
-// Tested with Deno 2.4.2, V8 13.7.152.14, TypeScript 5.8.3
-
 const env=Deno.env;
 
-const fountainVersion="1.2.5";
+const fountainVersion="1.2.6";
+const defaultModel="deepseek-chat@deepseek";
 const fountainName="fountain "+fountainVersion;
-
 const rohaTitle=fountainName+" ⛲ ";
-
-const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};
-
 const terminalColumns=120;
 const statsColumn=50;
 const clipLog=1800;
-
-const defaultModel="deepseek-chat@deepseek";
-
-const rohaMihi="Welcome to the fountain, a many:many user model research project.";
+const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};
+const rohaMihi="Welcome to the fountain - we've got fun and games. A many:many user model research project.";
 
 const rohaGuide=[
 	"As a guest assistant language model please be mindful of others, courteous and professional.",
 	"Keep response short and only post code on request.",
-	"Tabs not spaces."
+	"Use tabs for indenting js and json files."
 ]
 
 const mutsInclude="models under test include "
@@ -91,6 +84,10 @@ const unicodeSpec=JSON.parse(await Deno.readTextFile(unicodePath));
 const bibli=JSON.parse(await Deno.readTextFile(bibliPath));
 
 const emojiIndex = {};
+
+function padChars(text){
+	return [...text].join(ThinSpace);
+}
 
 function parseUnicode(){
 	for(const group in unicodeSpec){
@@ -1371,7 +1368,7 @@ function listShare(){
 	sorted.sort((a, b) => b.size - a.size);
 	for (const share of sorted) {
 		const shared=(rohaShares.includes(share.path))?"🔗":"";
-		const tags="["+rohaTitle+" "+share.tag+"]";
+		const tags="["+rohaUser+" "+share.tag+"]";	//+rohaTitle
 		const detail=(share.description)?share.description:"";
 		echo((count++),share.path,share.size,shared,tags,detail);
 		list.push(share.id);
@@ -3093,6 +3090,23 @@ if(roha.config.debugging){
 	parseUnicode();
 }
 
+// signal handlers go here
+
+if(false){
+	Deno.addSignalListener("SIGWINCH", () => {
+	const size = Deno.consoleSize();
+	console.log("Terminal resized",size);
+	});
+	Deno.addSignalListener("SIGCONT", () => {
+	const size = Deno.consoleSize();
+	console.log("Terminal resized",size);
+	});
+}
+
+// Windows only supports ctrl-c (SIGINT), ctrl-break (SIGBREAK), and ctrl-close (SIGUP)
+
+// slops go here
+
 const slops=[];
 const slopFrames=[];
 const slopnames=await readFileNames(slopPath,".slop.ts");
@@ -3135,7 +3149,8 @@ echo("Deno.consoleSize",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
 
-echo(bibli.spec.unicode.lexis.𓅷𓅽.codes);
+const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes);
+echo(birds);
 
 if(roha.config.listenonstart){
 	listenService();
