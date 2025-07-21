@@ -335,6 +335,21 @@ error: Uncaught (in promise) BadResource: Bad resource ID
 
 const rulbreak500="─┬──┴".repeat(100);
 const pageRule=rule500;
+# interface
+
+[model-name@account temperature° $cost.000 context.00KB time.00s]
+
+# commands
+
+/model [id] [all]
+
+/share [folder]
+
+/push
+
+* discuss with model under test here
+
+exit
 
 
 > /commit

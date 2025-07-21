@@ -190,6 +190,7 @@ function parseUnicode(){
 }
 
 function parseBibli(){
+	const tag=roha.config.verbose?"[BIBLI]":"";
 	const glyphs=bibli.separator;
 //	const size=Deno.consoleSize();
 //	const wide=size.columns;
@@ -197,22 +198,22 @@ function parseBibli(){
 	const spaced=padChars(glyphs.repeat(150));
 	const br=stringFit(spaced,wide);
 	const hr=stringFit(rule500,wide);
-	echo("[BIBLI]",hr);
+	echo(tag,hr);
 	for(const index in bibli.spec){
 		const item=bibli.spec[index];
 		const keys = Object.keys(item);
-		echo("[BIBLI]",index,keys.join(" "));
+		echo(tag,index,keys.join(" "));
 		if(item.alphabet){
-			echo("[BIBLI] alphabet:",item.alphabet);
+			echo(tag+" alphabet:",item.alphabet);
 		}
 		if(item.lexis){
 			const blocks=Object.keys(item.lexis);
-			echo("[BIBLI] lexis:",blocks.join(" "));
+			echo(tag+" lexis:",blocks.join(" "));
 		}
 	}
-	echo("[BIBLI]",hr);
-	echo("[BIBLI]",bibli.moto);
-	echo("[BIBLI]",hr);
+	echo(tag,hr);
+	echo(tag,bibli.moto);
+	echo(tag,hr);
 }
 
 function stringwidth2(str) {
@@ -2222,7 +2223,8 @@ async function modelCommand(words){
 			const account=modelAccounts[provider];
 			const emoji=account.emoji||"";
 			const mut=mutName(modelname);
-			if(priced || all){
+			const cheap = priced && priced[0]<0.61;
+			if(cheap || all){
 				const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
 				echo_row(i,attr,mut,created,mutspec.relays|0,pricing,emoji,notes.join(" "));
 			}
@@ -3001,6 +3003,7 @@ async function relay(depth) {
 				return spend;
 			}
 		}
+		// 400 Bad Request
 		//unhandled error line: 400 status code (no body)+
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)

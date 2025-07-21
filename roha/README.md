@@ -2,6 +2,8 @@
 
 A research tool for advanced model manipulation.
 
+# setup
+
 Requires an api environment variable, see accounts.json for latest
 
 * DEEPSEEK_API_KEY
@@ -13,24 +15,9 @@ Requires an api environment variable, see accounts.json for latest
 * ANTHROPIC_API_KEY
 * COHERE_API_KEY
 * MOONSHOT_API_KEY
+* HUGGINGFACE_API_KEY
 
-# interface
-
-[model-name@account temperature° $cost.000 context.00KB time.00s]
-
-# commands
-
-/model [id] [all]
-
-/share [folder]
-
-/push
-
-* discuss with model under test here
-
-exit
-
-# reference
+# documentation
 
 Main user documentation [forge.md](forge.md)
 

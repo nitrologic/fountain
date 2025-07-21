@@ -9,6 +9,9 @@
 		"slopfountain":{
 			"dependencies":["slop","fountain"]
 		},
+		"sync":{
+			"dependencies":["slopsite"]
+		},
 		"play":{
 			"dependencies":["slopshop"]
 		},

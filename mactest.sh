@@ -3,7 +3,6 @@ pushd roha
 export USERNAME="$USER"
 export USERDOMAIN=$(scutil --get LocalHostName)
 # deno --version
-#deno task slopfountain
-#deno task play
-deno task slop
+# deno task play
+deno task slopfountain
 popd
