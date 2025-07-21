@@ -17,10 +17,14 @@ const fountainVersion="1.2.6";
 const defaultModel="deepseek-chat@deepseek";
 const fountainName="fountain "+fountainVersion;
 const rohaTitle=fountainName+" ⛲ ";
+
 const terminalColumns=120;
 const statsColumn=50;
 const clipLog=1800;
 const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};
+
+// system prompt
+
 const rohaMihi="Welcome to the fountain - we've got fun and games. A many:many user model research project.";
 
 const rohaGuide=[
@@ -43,8 +47,8 @@ const exitMessage="Ending session.";
 
 const boxChars=["┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
 
-const break50="─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴─┬┴";
-const rule50= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
+const rule500= "━".repeat(500);
+const pageBreak=rule500;
 
 const ThinSpace=" ";
 const AnsiBlankLine="\x1B[0K";
@@ -60,10 +64,6 @@ function AnsiPrompt(){
 
 const SaveCursorA = "\x1B[s";
 const RestoreCursorA = "\x1B[u";
-
-
-const pageBreak=break50+break50+break50;
-const pageRule=rule50+rule50+rule50;
 
 const slowMillis=25;
 const MaxFileSize=512*1024;
@@ -1368,7 +1368,7 @@ function listShare(){
 	sorted.sort((a, b) => b.size - a.size);
 	for (const share of sorted) {
 		const shared=(rohaShares.includes(share.path))?"🔗":"";
-		const tags="["+rohaUser+" "+share.tag+"]";	//+rohaTitle
+		const tags="[ "+rohaUser+" "+share.tag+"]";	//+rohaTitle
 		const detail=(share.description)?share.description:"";
 		echo((count++),share.path,share.size,shared,tags,detail);
 		list.push(share.id);
@@ -1816,8 +1816,11 @@ async function promptForge(message) {
 				}
 			}
 			if (bytes.length) await writer.write(new Uint8Array(bytes));
-		}catch(e){
+		}catch(error){
 			console.error("Prompt error:", error);
+			if(roha.config.rawprompt){
+				console.error("Please consider disabling rawprompt in config");
+			}
 			busy=false;
 		}
 	}
@@ -2054,7 +2057,7 @@ async function onAccount(args){
 		for(const key in modelAccounts){
 			list.push(key);
 		}
-		echo_row("id","name","llm","🇦🇮","credit");
+		echo_row("id","name","llm","credit");
 		echo_row("----","-------------","----","----------");
 		for(let i=0;i<list.length;i++){
 			const key=list[i];

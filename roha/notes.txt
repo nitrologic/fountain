@@ -1,3 +1,47 @@
++
+Here's a markdown table test with Chinese mythological creatures:
+
+┌───────────────────┬──────────────────────────────────────┬─────────────────────┐
+│  Creature          │  Description                          │  Symbolism           │
+├───────────────────┼──────────────────────────────────────┼─────────────────────┤
+│  龙 (Lóng)        │  Celestial dragon, controls water     │  Imperial power      │
+│  凤凰 (Fènghuáng) │  Immortal fire bird                   │  Harmony, renewal    │
+│  麒麟 (Qílín)     │  Hybrid beast with antlers/scales      │  Auspicious omen     │
+│  白虎 (Báihǔ)     │  White tiger of the west               │  Martial prowess     │
+└───────────────────┴──────────────────────────────────────┴─────────────────────┘
+
+Let me know if you'd like:
+- Different styling (e.g., box-drawing chars)
+- Additional columns/rows
+- Embedded code blocks
+
+• (Tables render differently per client - this should align cleanly in standard markdown viewers.)*
+
+ fountain 1.2.6 ⛲  deepseekchat 🐋 deepseek-chat@deepseek 1.0° 🪠 $0.009 98.47KB 13.20s 
+>this needs spacing rule
++Slop Fountain has crashed, darn, this release will be stable soon: ReferenceError: error is not defined
+    at promptForge (file:///C:/nitrologic/fountain/roha/fountain.js:1820:35)
+    at eventLoopTick (ext:core/01_core.js:178:7)
+    at async chat (file:///C:/nitrologic/fountain/roha/fountain.js:2967:10)
+    at async file:///C:/nitrologic/fountain/roha/fountain.js:3161:2
+error: Uncaught (in promise) BadResource: Bad resource ID
+                console.log(line);
+                        ^
+    at Object.print (ext:core/01_core.js:678:28)
+    at Console.<anonymous> (ext:runtime/98_global_scope_shared.js:136:46)
+    at console.log (ext:deno_console/01_console.js:3139:20)
+    at flush (file:///C:/nitrologic/fountain/roha/fountain.js:625:11)
+    at exitForge (file:///C:/nitrologic/fountain/roha/fountain.js:198:8)
+    at eventLoopTick (ext:core/01_core.js:178:7)
+    at async file:///C:/nitrologic/fountain/roha/fountain.js:3164:2
+
+
+	
+
+const rulbreak500="─┬──┴".repeat(100);
+const pageRule=rule500;
+
+
 > /commit
 [DeepSeek] not ok 400 Bad Request
 [FOUNTAIN] unhandled error DeepSeek API error
