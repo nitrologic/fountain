@@ -85,6 +85,21 @@ const bibli=JSON.parse(await Deno.readTextFile(bibliPath));
 
 const emojiIndex = {};
 
+function unixTime(date){
+	const d = new Date(date);
+	const s = d.getTime()/1000;
+	return Math.floor(s);
+}
+
+function dateStamp(seconds){
+	if(seconds>0){
+		const date = new Date(seconds*1000);
+		const created=date.toISOString();
+		return created.substring(0,10);
+	}
+	return "---";
+}
+
 function padChars(text){
 	return [...text].join(ThinSpace);
 }
@@ -335,7 +350,7 @@ let tagList=[];
 let shareList=[];
 let memberList=[];
 
-const emptyMUT={notes:[],errors:[],relays:0,cost:0,elapsed:0}
+const emptyMUT={notes:[],errors:[],relays:0,cost:0,elapsed:0,created:0}
 const emptyModel={name:"empty",account:"",hidden:false,prompts:0,completion:0}
 const emptyTag={}
 
@@ -772,7 +787,9 @@ function prepareGeminiContent(payload){
 
 	//system_instruction
 
-	const request={model:payload.model,system_instruction:{parts:sysparts},contents,tools};
+	const temperature=grokTemperature;
+
+	const request={model:payload.model,temperature,system_instruction:{parts:sysparts},contents,tools};
 
 	if(debugging) debug("[GEMINI] request",request);
 
@@ -795,6 +812,8 @@ async function connectGoogle(account,config){
 		const list=[];
 		for(const model of models.models){
 			list.push(model.name+"@"+account);
+// no created date but has .version and displayName
+//			echo("GEMINI",model);
 		}
 		modelList.push(...list);
 		const genAI=new GoogleGenerativeAI(apiKey);
@@ -991,7 +1010,8 @@ async function connectAnthropic(account,config){
 			if(model.type=="model"){
 				const name=model.id+"@"+account;
 				list.push(name);
-				const spec={id:model.id,object:"model",created:model.created_at,owner:"owner"}
+				const t=unixTime(model.created_at);
+				const spec={id:model.id,object:"model",created:t,owner:"owner"}
 				specModel(spec,account);
 			}else{
 				echo("unexpected model type",model);
@@ -1014,7 +1034,8 @@ async function connectAnthropic(account,config){
 						const model=payload.model;
 						const system=anthropicSystem(payload);
 						const messages=anthropicMessages(payload);
-						const request={model,max_tokens:1024,system,messages};
+						const temperature=grokTemperature;
+						const request={model,max_tokens:1024,temperature,system,messages};
 						if (payload.tools) {
 							request.tools=anthropicTools(payload);
 						}
@@ -1047,6 +1068,7 @@ function specCohereModel(model,account){
 	const info=exists?roha.mut[name]:{name,notes:[],errors:[],relays:0,cost:0};
 	info.id=model.name;
 	info.object="model";
+	// TODO: fix me
 	info.created="created";
 	info.owner="owner";
 	if (!info.notes) info.notes=[];
@@ -1190,6 +1212,7 @@ async function connectDeepSeek(account,config) {
 		const models=await response.json();
 		const list=[];
 		for (const model of models.data) {
+			echo("[DEEPSEEK]",model);
 			const name=model.id+"@"+account;
 			list.push(name);
 // dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
@@ -2136,6 +2159,50 @@ function listShares(shares){
 	shareList=list;
 }
 
+async function modelCommand(words){
+	let name=words[1];
+	if(name && name!="all"){
+		if(name.length&&!isNaN(name)) name=modelList[name|0];
+		if(modelList.includes(name)){
+			await resetModel(name);
+			await writeForge();
+		}
+	}else{
+		echo_row("id","☐","model name","📆","🧮","💰","💰💰","🪣🧊🫐🪨");
+		echo_row("-----","--","-----------------------","------------","-----","---- ---- ---- ---- ----","------","-----------------");
+		const all=(name && name=="all");
+		for(let i=0;i<modelList.length;i++){
+			const modelname=modelList[i];
+// todo: ⭐power
+			const attr=(modelname==grokModel)?"☑":" ";
+// mutspec from roha.mut
+			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
+			mutspec.name=modelname;
+			const notes=[...mutspec.notes];
+			if(mutspec.hasForge) notes.push("🪣");
+			const rated=modelname in modelSpecs?modelSpecs[modelname]:{};
+			if(rated.cold) notes.push("🧊");
+			if(rated.multi) notes.push("🫐");
+			if(rated.inline) notes.push("Inline");
+			if(rated.strict) notes.push("🪨");
+			const seconds=mutspec.created;
+			const created=dateStamp(seconds);
+			const priced=rated.pricing;
+			// account from modelProvder
+			const modelProvider=modelname.split("@");
+			const provider=modelProvider[1];
+			const account=modelAccounts[provider];
+			const emoji=account.emoji||"";
+			const mut=mutName(modelname);
+			if(priced || all){
+				const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
+				echo_row(i,attr,mut,created,mutspec.relays|0,pricing,emoji,notes.join(" "));
+			}
+		}
+		listCommand="model";
+	}
+}
+
 async function attachMedia(words){
 	if (words.length==1){
 		listShares(roha.attachedFiles);
@@ -2294,50 +2361,8 @@ async function callCommand(command) {
 					}
 				}
 				break;
-			case "model":{
-				// TODO: refactor this gigantic block
-					let name=words[1];
-					if(name && name!="all"){
-						if(name.length&&!isNaN(name)) name=modelList[name|0];
-						if(modelList.includes(name)){
-							await resetModel(name);
-							await writeForge();
-						}
-					}else{
-						echo_row("id","☐","model name","📆","🧮","💰","🪣🧊🫐🪨");
-						echo_row("-----","--","-----------------------","-----","---- ---- ---- ---- ----","------","-----------------");
-						const all=(name && name=="all");
-						for(let i=0;i<modelList.length;i++){
-							const modelname=modelList[i];
-							// todo: ⭐power
-							const attr=(modelname==grokModel)?"☑":" ";
-							// mutspec from roha.mut
-							const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
-							mutspec.name=modelname;
-							const notes=[...mutspec.notes];
-							if(mutspec.hasForge) notes.push("🪣");
-							const rated=modelname in modelSpecs?modelSpecs[modelname]:{};
-							if(rated.cold) notes.push("🧊");
-							if(rated.multi) notes.push("🫐");
-							if(rated.inline) notes.push("Inline");
-							if(rated.strict) notes.push("🪨");
-							const priced=rated.pricing;
-							// account from modelProvder
-							const modelProvider=modelname.split("@");
-							const provider=modelProvider[1];
-							const account=modelAccounts[provider];
-							const emoji=account.emoji||"";
-							const mut=mutName(modelname);
-							if(priced || all){
-								const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
-								// todo: verbose use modelname
-//								echo(i,attr,emoji,mut,"{"+notes.join(",")+"}",mutspec.relays|0,pricing);
-								echo_row(i,attr,mut,mutspec.relays|0,pricing,emoji,notes.join(" "));
-							}
-						}
-						listCommand="model";
-					}
-				}
+			case "model":
+				await modelCommand(words);
 				break;
 			case "begin":
 				await pushHistory();
