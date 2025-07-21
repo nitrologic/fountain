@@ -9,27 +9,28 @@ Timestamps in some file names is hex seconds since 1.1.1970.
 commands with no arguments may often prompt for a # index from
 the items displayed
 
-### /listen
-
-Accept connections from web clients on port
-
 ### /config
 
 Toggle configuration flags.
 
 Default values are typically:
 
-* 0 commitonstart : commit shared files on start : true
-* 1 saveonexit :  save conversation history on exit : true
-* 2 forge : enable model tool interface : true
-* 3 ansi : markdown ANSI rendering : true
-* 4 slow : output at reading speed : true
-* 5 verbose : emit debug information : false
-* 6 broken : ansi background blocks : false
-* 7 logging : log all output to file : true
-* 8 resetcounters : factory reset when reset : false
-* 9 returntopush : hit return to /push - under test : false
-* 10 rawPrompt : experimental rawmode stdin deno prompt replacement : false
+* 0 squash : squash message sequences in output : false
+* 1 reasonoutloud : echo chain of thought : false
+* 2 tools : enable model tool interface : false
+* 3 commitonstart : commit shared files on start : true
+* 4 saveonexit :  save conversation history on exit : false
+* 5 ansi : markdown ANSI rendering : true
+* 6 verbose : emit debug information : false
+* 7 broken : ansi background blocks : false
+* 8 logging : log all output to file : true
+* 9 debugging : emit diagnostics : false
+* 10 pushonshare : emit a /push after any /share : false
+* 11 rawprompt : experimental rawmode stdin - broken paste : true
+* 12 resetcounters : factory reset when reset : false
+* 13 returntopush : hit return to /push - under test : false
+* 14 slow : experimental output at reading speed : false
+* 15 slops : console worker scripts : false
 
 ### /temp
 
@@ -43,7 +44,7 @@ Share a file or folder with optional tag.
 
 Files are added to the share list used by the /push /commit command.
 
-A * signifies file share is included in current context.
+A 🔗 signifies file share is included in current context.
 
 Valid extensions for image files are .jpg and .png.
 
@@ -67,11 +68,15 @@ Clear all shared files and conversation history.
 
 If config resetcounters true then clear all counters too.
 
-### /history
+### /history /list
 
 List a summary of recent conversation entries. 
 
 Provides a quick overview of chat history.
+
+### /log
+
+Dumps context onto poorly formatted wall.
 
 ### /cd
 
@@ -182,3 +187,10 @@ The token cost summary when model has no rate defined includes:
 * promptTokens used in the context - drop files to reduce
 * replyTokens used for completions - typically cost more
 * totalTokens a running total of tokens used
+
+
+
+
+### /listen
+
+Accept connections from web clients on port
