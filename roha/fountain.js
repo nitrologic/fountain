@@ -194,7 +194,7 @@ function parseBibli(){
 	const glyphs=bibli.separator;
 //	const size=Deno.consoleSize();
 //	const wide=size.columns;
-	const wide=terminalColumns;
+	const wide=terminalColumns-10;
 	const spaced=padChars(glyphs.repeat(150));
 	const br=stringFit(spaced,wide);
 	const hr=stringFit(rule500,wide);
@@ -1672,7 +1672,7 @@ function mdToAnsi(md) {
 			if (!inCode) {
 				// rules
 				if(line.startsWith("---")||line.startsWith("***")||line.startsWith("___")){
-					line=pageBreak.substring(0,terminalColumns-1);
+					line=pageBreak.substring(0,terminalColumns-10);
 				}
 				if(line.startsWith("|")){
 					if(headings.length&&widths.length){

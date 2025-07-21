@@ -134,7 +134,7 @@ Displays tag name, count of shares tagged and description.
 
 List the internal application counters.
 
-### /credit
+### /account /credit
 
 Display current account information.
 
@@ -188,8 +188,15 @@ The token cost summary when model has no rate defined includes:
 * replyTokens used for completions - typically cost more
 * totalTokens a running total of tokens used
 
+### /think
 
+### /bibli
 
+### /spec
+
+### /balance
+
+### /nic
 
 ### /listen
 
