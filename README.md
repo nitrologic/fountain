@@ -21,10 +21,10 @@ Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM too
 
 ## developers
 
-[forge.md](roha/forge.md)
-[fountain.md](roha/fountain.md)
-[plan.txt](plan.txt)
-[license](LICENSE)
+* [forge.md](roha/forge.md)
+* [fountain.md](roha/fountain.md)
+* [plan.txt](plan.txt)
+* [license](LICENSE)
 
 # blog
 
