@@ -21,8 +21,8 @@ const terminalColumns=120;
 const statsColumn=50;
 const clipLog=1800;
 
-const thinSpace=" ";
 const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};
+const modelKey={"🪣":"Pail","🧊":"Frigid","📷":"Vision","🪨":"strict"};  
 
 // system prompt
 
@@ -150,6 +150,7 @@ function dateStamp(seconds){
 	return "---";
 }
 
+const thinSpace=" "; 
 function padChars(text:string):string{
 	return [...text].join(thinSpace);
 }
@@ -164,6 +165,17 @@ function stringWidth(text:string):number{
 
 function stringFit(text:string,width:number):string{
 	return text.substring(0,width);
+}
+
+function stringRight(text:string,width:number):string{
+	const n=stringWidth(text);
+	const pad=(width>n)?" ".repeat(width-n):"";
+	return pad+text;
+}
+function echoKey(key:object,wide:number){
+	const text=JSON.stringify(key);
+	const rtext=stringRight(text,wide);
+	echo(rtext);
 }
 
 /*
@@ -655,6 +667,17 @@ function echo(...args:any):void{
 	outputBuffer.push(lines.join(" "));
 }
 
+function echoWarning(...args:any){
+	const lines=[];
+	for(const arg of args){
+		const line=toString(arg);
+		lines.push(line);
+	}
+	const text=ansiStyle(lines.join(" "));
+	outputBuffer.push(text);
+}
+
+
 function echo_row(...cells:any):void{
 	const row = cells.map(String).join('|');
 	markdownBuffer.push("|"+row+"|");
@@ -715,7 +738,7 @@ async function flush() {
 	if(md.length){
 		if (roha.config.ansi) {
 			const ansi=mdToAnsi(md);
-			console.log(ansi+"🌟");
+			console.log(ansi);		//+"🌟");
 		}else{
 			if(md.length) console.log(md);
 		}
@@ -1390,6 +1413,7 @@ async function aboutModel(modelname){
 
 //DeepSeek-R1-Distill-Llama-70B
 //Meta-Llama-3.1-8B-Instruct
+//-experimental -Instruct
 function mutName(modelname:string){
 	const modelAccount=modelname.split("@");
 	const path=modelAccount[0];
@@ -1397,6 +1421,9 @@ function mutName(modelname:string){
 	let name:string=names.pop()||"";
 	name=name.replace("-R1-Distill-","-");
 	name=name.replace("Meta-Llama-","Llama");
+	name=name.replace("-experimental","#");
+	name=name.replace("-Instruct","");
+	name=name.replace("-instruct","");
 	const namebits=name.split("-");
 	const muts=namebits.slice(0,3);
 	const bit=namebits[3]||"0";
@@ -2173,8 +2200,18 @@ async function modelCommand(words){
 			await writeForge();
 		}
 	}else{
-		echo_row("id","☐","model name","📆","🧮","💰","💰💰","🪣🧊🫐🪨");
-		echo_row("-----","--","--------------------------","------------","-----","---- ---- ---- ---- ----","------","-----------------");
+		const keys="🪣🧊📷🪨";
+		echo_row("id","☐","model","account","🧮","📆","💰",keys);
+		echo_row(
+			"-----",
+			"--",
+			"--------------------------",
+			"------------",
+			"-----",
+			"------------",
+			"----  ----  ----  ----",
+			"-----------------"
+		);
 		const all=(name && name=="all");
 		for(let i=0;i<modelList.length;i++){
 			const modelname=modelList[i];
@@ -2187,7 +2224,7 @@ async function modelCommand(words){
 			if(mutspec.hasForge) notes.push("🪣");
 			const rated=modelname in modelSpecs?modelSpecs[modelname]:{};
 			if(rated.cold) notes.push("🧊");
-			if(rated.multi) notes.push("🫐");
+			if(rated.multi) notes.push("📷");
 			if(rated.inline) notes.push("Inline");
 			if(rated.strict) notes.push("🪨");
 			const seconds=mutspec.created;
@@ -2202,10 +2239,11 @@ async function modelCommand(words){
 			const cheap = priced && priced[0]<0.81;
 			if(cheap || all){
 				const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
-				echo_row(i,attr,mut,created,mutspec.relays|0,pricing,emoji,notes.join(" "));
+				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
 			}
 		}
 		listCommand="model";
+		echoKey(modelKey,100);
 	}
 }
 
@@ -2622,6 +2660,9 @@ function strictHistory(history){
 	}
 	return list;
 }
+
+// TODO: used by moonshot and claude for vision inline images
+// "multi":true payloads need explanation
 
 function multiHistory(history){
 	const list=[];
@@ -3121,7 +3162,7 @@ for(const account in modelAccounts){
 		}
 //		echo("[FORGE] endpoint modelList",endpoint.modelList);
 	}else{
-		echo("[FORGE] Endpoint failure for account",account);
+		echoWarning("[FORGE] Endpoint failure for account",account);
 	}
 }
 
@@ -3209,8 +3250,7 @@ let rohaNic=roha.config.nic||"nic";
 const sharecount=roha.sharedFiles?.length||0;
 
 let termSize = Deno.consoleSize();
-echo("Deno.consoleSize",termSize);
-
+echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
 
