@@ -117,7 +117,7 @@ const AnsiColors=[
 	"\x1b[37m"	// White: Light gray (#CCCCCC), subtle on light, clear on dark
 ];
 
-function ansiPrompt(){
+function ansiPrompt():string{
 	const size=Deno.consoleSize();
 	const row=size.rows;
 	return AnsiCursor + row + ";1H" + AnsiLineBlank;
@@ -162,19 +162,19 @@ function dateStamp(seconds){
 	return "---";
 }
 
-function padChars(text){
+function padChars(text:string):string{
 	return [...text].join(thinSpace);
 }
 
-function stringWidth(str) {
+function stringWidth(text:string):number{
 	let w = 0;
-	for (const ch of str) {
+	for (const ch of text) {
 		w += isDoubleWidth(ch.codePointAt(0)) ? 2 : 1;
 	}
 	return w;
 }
 
-function stringFit(text,width){
+function stringFit(text:string,width:number):string{
 	return text.substring(0,width);
 }
 
@@ -657,7 +657,6 @@ function toString(arg:unknown):string{
 // takes both markdown and plain
 
 function echo(...args:any):void{
-//	const args=arguments.length?Array.from(arguments):[];
 	const lines=[];
 	for(const arg of args){
 		const line=toString(arg);
@@ -671,7 +670,7 @@ function echo_row(...cells:any):void{
 	markdownBuffer.push("|"+row+"|");
 }
 
-function debugValue(title,value){
+function debugValue(title:string,value:unknown){
 	if(roha.config.debugging){
 		const json=JSON.stringify(value);
 		echo(title,json);
@@ -682,7 +681,7 @@ function debugValue(title,value){
 	}
 }
 
-async function log(lines,id){
+async function log(lines:string,id:string){
 	if(roha.config.logging){
 		const time=new Date().toISOString();
 		const list=[];
@@ -741,7 +740,7 @@ async function flush() {
 	outputBuffer=[];
 }
 
-function wordWrap(text,cols=terminalColumns){
+function wordWrap(text:string,cols:number=terminalColumns):string{
 	const result=[];
 	let pos=0;
 	while(pos<text.length){
@@ -2714,7 +2713,7 @@ function inlineHistory(history){
 // returns spend
 // warning - tool_calls resolved with recursion
 
-async function relay(depth) {
+async function relay(depth:number) {
 	const now=performance.now();
 	const verbose=roha.config.verbose;
 	const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;

@@ -3,7 +3,7 @@ setlocal EnableDelayedExpansion
 
 set DIR=rc3
 set COMPILE_ARGS=--allow-run --allow-env --allow-net --allow-read --allow-write
-set CORE=README.md LICENSE fountain.md welcome.txt accounts.json modelrates.json
+set CORE=forge.md LICENSE fountain.md welcome.txt accounts.json modelrates.json
 set EXTRAS=isolation\readme.txt isolation\test.js foundry\notice.txt
 set DEPENDENCIES=%CORE% %EXTRAS%
 
