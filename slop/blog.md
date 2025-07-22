@@ -5,15 +5,15 @@
 
 ## log of recent code review with DeepSeek and grok-3-mini
 
-![Slop Log](slop/sloplog.png)
+![Slop Log](sloplog.png)
 
 ## js server platforms? deno -wired | node.js -tired
 
-![Slop Source](slop/slopsource.png)
+![Slop Source](slopsource.png)
 
 ## latest Gemini GoogleGenerativeAI driver
 
-![Gemini Slop](slop/slopgeminiaccount.png)
+![Gemini Slop](slopgeminiaccount.png)
 
 
 ## unicode under test 𓏍 𓏍
@@ -23,11 +23,11 @@ small jar big jar round jar three jars
 
 ## history command added
 
-![Slop History](slop/slophistory.png)
+![Slop History](slophistory.png)
 
 ## serving slopstudio step 1
 
-![Serving Slop Studio](slop/slopstudio.png)
+![Serving Slop Studio](slopstudio.png)
 
 ---
 

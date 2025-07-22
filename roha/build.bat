@@ -1,31 +1,31 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set DIR=rc3
+set DIR=rc4
 set COMPILE_ARGS=--allow-run --allow-env --allow-net --allow-read --allow-write
-set CORE=forge.md LICENSE fountain.md welcome.txt accounts.json modelrates.json
+set CORE=forge.md LICENSE fountain.md welcome.txt accounts.json modelspecs.json
 set EXTRAS=isolation\readme.txt isolation\test.js foundry\notice.txt
 set DEPENDENCIES=%CORE% %EXTRAS%
 
-if not exist "fountain.js" (
-	echo Error: fountain.js not found.
+if not exist "slopfountain.ts" (
+	echo Error: slopfountain.ts not found.
 	exit /b 1
 )
 
-deno cache fountain.js
+deno cache slopfountain.ts
 if errorlevel 1 (
 	echo Error: Failed to cache dependencies.
 	exit /b 1
 )
 
-deno compile %COMPILE_ARGS% --output %DIR%\fountain.exe fountain.js
+deno compile --no-check %COMPILE_ARGS% --output %DIR%\slopfountain.exe slopfountain.ts
 if errorlevel 1 (
-	echo Error: Failed to compile fountain.js.
+	echo Error: Failed to compile slopfountain.ts.
 	exit /b 1
 )
 
-if not exist "%DIR%\fountain.exe" (
-	echo Error: fountain.exe not created.
+if not exist "%DIR%\slopfountain.exe" (
+	echo Error: slopfountain.exe not created.
 	exit /b 1
 )
 
@@ -52,6 +52,6 @@ if !MISSING! gtr 0 (
 
 echo Forge %DIR% build completed.
 
-rem upx --best %DIR%\fountain.exe
+rem upx --best %DIR%\slopfountain.exe
 
 exit /b 0

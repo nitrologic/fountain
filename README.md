@@ -1,6 +1,7 @@
 [![Deno](https://img.shields.io/badge/deno-2.4.2-black?logo=deno)](https://deno.land/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 
-# 𓄵𓄳𓄷⛲
+# 𓄷𓄲𓄲 𓄵𓄲𓄲𓄷𓄲⛲
 
 Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM tool
 
@@ -26,8 +27,7 @@ Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM too
 * [plan.txt](plan.txt)
 * [license](LICENSE)
 
-# blog
+# blog posts
 
-* [original model under test](https://github.com/nitrologic/forge/blob/main/blog.md)
-* [more recent models under test](blog.md)
-
+* [recent models under test](slop/blog.md)
+* [original forge model under test](https://github.com/nitrologic/forge/blob/main/blog.md)

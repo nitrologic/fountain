@@ -2818,7 +2818,7 @@ async function relay(depth) {
 		if(info && info.pricing.length>3 && grokThink>0){
 			payload.config={thinkingConfig:{thinkingBudget:grokThink}};
 		}
-		if(roha.config.debugging){
+		if(debugging){
 			echo("[RELAY] payload",JSON.stringify(payload,null,"\t"));
 		}
 

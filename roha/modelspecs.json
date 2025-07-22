@@ -1,12 +1,14 @@
 {
 	"deepseek-chat@deepseek": {
 		"pricing": [0.27, 0.07, 1.10],
-		"purpose": "General conversation and text generation",
+		"released": "2025-03-24",
+		"purpose": "V3‑0324 General conversation and text generation",
 		"press": "Cost-effective model for versatile tasks, trained on massive text datasets."
 	},
 	"deepseek-reasoner@deepseek": {
 		"pricing": [0.55, 0.14, 2.19],
-		"purpose": "Advanced reasoning and problem-solving",
+		"released": "2025-05-28",
+		"purpose": "R1‑0528 Advanced reasoning and problem-solving",
 		"press": "High-performance model for complex math, coding, and logical tasks."
 	},
 	"meta-llama/Meta-Llama-3.1-405B-Instruct@hyperbolic":{
@@ -104,18 +106,21 @@
 	},
 	"models/gemini-2.5-pro-preview-06-05@gemini":{
 		"pricing":[1.25,10.0],
+		"released":"2025-06-05",
 		"purpose":"Excels at coding and complex reasoning tasks",
 		"press":"A state-of-the-art multipurpose model",
 		"reality":"Not cheap, and often a complete dunce."
 	},
 	"models/gemini-2.5-flash-preview-05-20@gemini":{
 		"pricing":[0.15,0.15,0.60,3.50],
+		"released":"2025-05-20",
 		"purpose":"Adaptive thinking, cost efficiency.",
 		"press":"The best price-to-performance ratio.",
 		"reality":"testing now, thinking budget say what now?"
 	},
 	"models/gemini-2.0-flash@gemini":{
 		"pricing":[0.10,0.40],
+		"released": "2024-12-11",
 		"purpose":"High-performance multimodal model optimized for agent-based applications.",
 		"press":"Balanced performance across tasks with a 1 million token context window, built for the era of Agents.",
 		"reality":"A tendency to regurgitate Mr Creosote style."

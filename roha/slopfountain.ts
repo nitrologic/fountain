@@ -391,6 +391,8 @@ function increment(key){
 	return i
 }
 
+// all models are here - with and without spec
+
 let modelList=[];
 let lodeList=[];
 
@@ -864,10 +866,13 @@ async function connectGoogle(account,config){
 		}
 		const models=await response.json();
 		const list=[];
+		//specModel
 		for(const model of models.models){
-			list.push(model.name+"@"+account);
-// no created date but has .version and displayName
-//			echo("GEMINI",model);
+			const name=model.name+"@"+account;
+			list.push(name);	
+//			echo("[GOOOGLE] released",name);
+			const spec={id:model.name,object:"model",owner:"owner"}
+			specModel(spec,account);
 		}
 		modelList.push(...list);
 		const genAI=new GoogleGenerativeAI(apiKey);
@@ -1048,6 +1053,23 @@ async function connectAnthropic(account,config){
 
 // API support for cohere
 
+function getDottedDate(name:string):number{
+	const n=name.length;
+	const year=parseInt(name.substring(n-4,n));
+	const month=parseInt(name.substring(n-7,n-5));
+//	echo("[GETDATE]",year,month);
+	const date=new Date(Date.UTC(year, month - 1, 1));	
+	return Math.floor(date.getTime()/1000);
+}
+
+function getDate(yearmonthday:string):number{
+	const date=new Date(yearmonthday+"T00:00:00Z");
+	const time=Math.floor(date.getTime()/1000);
+//	echo("[GETDATE]",time);
+	return time;
+}
+
+
 function specCohereModel(model,account){
 	if(roha.config.debugging) echo("[cohere] spec",model);
 	const name=model.name+"@"+account;
@@ -1055,10 +1077,11 @@ function specCohereModel(model,account){
 	const info=exists?roha.mut[name]:{name,notes:[],errors:[],relays:0,cost:0};
 	info.id=model.name;
 	info.object="model";
-// TODO: fix me
-//	const created=(model.endsWith(2024)||model.endsWith(2025))?
-//	if()
-	info.created="created";
+	const modelname=model.name;
+	const dated=(modelname.endsWith(2024)||modelname.endsWith(2025));
+	const created=(dated)?getDottedDate(modelname):"created";
+//	echo("COHERE",created);
+	info.created=created;
 	info.owner="owner";
 	if (!info.notes) info.notes=[];
 	if (!info.errors) info.errors=[];
@@ -1115,8 +1138,8 @@ async function connectCohere(account,config) {
 		const headers={
 			"Authorization":"Bearer "+apiKey,
 			"Content-Type":"application/json",
-			"Accept":"application/json"
-//			"X-Client-Name": "fountain.js"
+			"Accept":"application/json",
+			"X-Client-Name": "slopfountain.ts"
 		};
 		const response=await fetch(baseURL+"/models",{method:"GET",headers});
 		if (!response.ok) return null;
@@ -1320,15 +1343,17 @@ function specAccount(account){
 function specModel(model,account){
 	const name=model.id+"@"+account;
 	const exists=name in roha.mut;
+	const spec=(name in modelSpecs)?modelSpecs[name]:null;
+	const created=(spec && spec.released)?(getDate(spec.released)):model.created;
 	const info=exists?roha.mut[name]:{name,notes:[],errors:[],relays:0,cost:0};
 	info.id=model.id;
 	info.object=model.object;
-	info.created=model.created;
+	info.created=created;
 	info.owner=model.owned_by;
-//	echo("statModel",name,JSON.stringify(model));
+//	echo("specModel",name,JSON.stringify(model));
 	if (!info.notes) info.notes=[];
 	if (!info.errors) info.errors=[];
-//	echo("mut",name,info);
+//	echo("[MUT]",name,info);
 	roha.mut[name]=info;
 }
 
@@ -2703,6 +2728,7 @@ function inlineHistory(history){
 // warning - tool_calls resolved with recursion
 
 async function relay(depth:number) {
+	const debugging=roha.config.debugging&&roha.config.verbose;
 	const now=performance.now();
 	const verbose=roha.config.verbose;
 	const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
@@ -2745,7 +2771,7 @@ async function relay(depth:number) {
 		if(info && info.pricing.length>3 && grokThink>0){
 			payload.config={thinkingConfig:{thinkingBudget:grokThink}};
 		}
-		if(roha.config.debugging){
+		if(debugging){
 			const dump=JSON.stringify(payload,null,"\t");
 			echo("[RELAY] payload",dump);
 		}
@@ -2818,7 +2844,7 @@ async function relay(depth:number) {
 				await writeForge();
 			}
 		}else{
-			echo("debugging spend 2");
+			echo("[RELAY] debugging spend 2");
 		}
 
 		const details=(usage.prompt_tokens_details)?JSON.stringify(usage.prompt_tokens_details):"";
