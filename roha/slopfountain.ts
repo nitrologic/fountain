@@ -24,9 +24,16 @@ const clipLog=1800;
 const thinSpace=" ";
 const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};
 
+class Item{
+	role:string;
+	name:sgtring;
+	title:string;
+	content:string;
+}
+
 class Payload{
-	model:string;
-	messages:[]=[];
+	model:string="";
+	messages:Item[]=[];
 	tools:[]=[];
 	temperature:number=1.0;
 	max_tokens:{}={};
@@ -631,7 +638,7 @@ let outputBuffer=[];
 let printBuffer=[];
 let markdownBuffer=[];
 
-function print(){
+function print():void{
 	const args=arguments.length?Array.from(arguments):[];
 	const lines=args.join(" ").split("\n");
 	for(const eachline of lines){
@@ -640,7 +647,7 @@ function print(){
 	}
 }
 
-function toString(arg){
+function toString(arg:unknown):string{
 	if (typeof arg === 'object') {
 		return JSON.stringify(arg);
 	}
@@ -649,8 +656,8 @@ function toString(arg){
 
 // takes both markdown and plain
 
-function echo(){
-	const args=arguments.length?Array.from(arguments):[];
+function echo(...args:any):void{
+//	const args=arguments.length?Array.from(arguments):[];
 	const lines=[];
 	for(const arg of args){
 		const line=toString(arg);
@@ -659,7 +666,7 @@ function echo(){
 	outputBuffer.push(lines.join(" "));
 }
 
-function echo_row(...cells){
+function echo_row(...cells:any):void{
 	const row = cells.map(String).join('|');
 	markdownBuffer.push("|"+row+"|");
 }
@@ -936,7 +943,6 @@ async function connectGoogle(account,config){
 }
 
 // API support for anthropic
-//messages: [{ role: "user", content: "Hello, Claude" }],
 
 function anthropicSystem(payload){
 	const system=[];
@@ -1007,7 +1013,7 @@ async function connectAnthropic(account,config){
 				const spec={id:model.id,object:"model",created:t,owner:"owner"}
 				specModel(spec,account);
 			}else{
-				echo("unexpected model type",model);
+				echo("[CLAUDE] unexpected model type",model);
 			}
 		}
 		modelList.push(...list);
