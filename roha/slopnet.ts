@@ -11,11 +11,11 @@ let sessionCount = 0;
 let connectionCount = 0;
 let connectionClosed = 0;
 
-const greetings = "welcome to slopnet "+slopnetVersion+" type exit to quit";
+const greetings = "welcome to slopnet "+slopnetVersion+" shutdown to quit";
 
 function logSlop(_result: any) {
 	const message = JSON.stringify(_result);
-	console.error("\t[slopnet]", message);
+	console.error("\t[SLOPNET]", message);
 	slopPail.push(message);
 }
 
@@ -86,7 +86,7 @@ async function handleTelnetConnection(conn: Deno.Conn) {
 	const buffer = new Uint8Array(1024);
 	let input = "";
 	await conn.write(encoder.encode(greetings));
-	logSlop({ greet, connectionCount });
+	logSlop({ greetings, connectionCount });
 	while (true) {
 		const n = await conn.read(buffer);
 		if (n === null) break; // Connection closed
@@ -101,8 +101,10 @@ async function handleTelnetConnection(conn: Deno.Conn) {
 		for (const line of lines) {
 			const trimmed = line.trim();
 			if (!trimmed) continue;
-
 			let response: string;
+			if (trimmed == "shutdown"){
+				Deno.exit(0);
+			}
 			if (trimmed === "exit") {
 				response = "Goodbye";
 				logSlop({ input: trimmed, output: response, connectionCount });
@@ -131,16 +133,17 @@ function handleCommand(line: string): string {
 	const command = line.substring(1).trim().toLowerCase();
 	switch (command) {
 		case "help":
-			return "Available commands: /help, /info, /push, exit";
-		case "info":
-			const info = {
-				hostName: Deno.hostname(),
-				userName: Deno.env.get("USERNAME") || "root",
-				platform: (Deno.uid() || "Windows") + " " + Deno.osRelease(),
-				session: "slop${Deno.pid}.${++sessionCount}",
-				connectionCount
-			};
-			return JSON.stringify(info);
+			return "Available commands: /help, /info, /push /exit /shutdown";
+		case "info":{
+				const info = {
+					hostName: Deno.hostname(),
+					userName: Deno.env.get("USERNAME") || "root",
+					platform: (Deno.uid() || "Windows") + " " + Deno.osRelease(),
+					session: "slop${Deno.pid}.${++sessionCount}",
+					connectionCount
+				};
+				return JSON.stringify(info);
+			}
 		case "push":
 			return "Pushed to slopPail";
 		default:

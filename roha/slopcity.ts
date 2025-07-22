@@ -181,14 +181,14 @@ Deno.serve(async (request) => {
 	}
 	switch(path){
 		case "/":{
-			const response=await servePath(request,"slop.html");
+			const response=await servePath(request,"../slop/slop.html");
 			return response;
 		}
 		case "/slopstudio.js":
 		case "/slopdom.js":
 		case "/slop.css":
 		case "/favicon.ico":{
-			const response=await servePath(request,"."+path);
+			const response=await servePath(request,"../slop/"+path);
 			return response;
 		}
 	}
