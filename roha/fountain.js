@@ -1,3 +1,7 @@
+// this is old code
+
+// see slopfountain.ts for latest
+
 // fountain.js - A research tool for dunking large language models.
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
