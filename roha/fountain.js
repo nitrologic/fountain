@@ -655,13 +655,14 @@ function echo_row(...cells){
 	markdownBuffer.push("|"+row+"|");
 }
 
-function debug(title,value){
-	if(roha.config.verbose){
+function debugValue(title,value){
+	if(roha.config.debugging){
 		const json=JSON.stringify(value);
 		echo(title,json);
 	}else{
-		// was print
-		echo(title);
+		if(roha.config.verbose){
+			echo(title);
+		}
 	}
 }
 
@@ -764,12 +765,12 @@ function geminiTools(payload){
 	const functions=[];
 	for(const tool of payload.tools){
 //		geminiTools(payload)
-//		debug("[GEMINI] tool",tool);
+//		echo("[GEMINI] tool",tool);
 		if(tool.type=="function"){
 			const f=tool.function;
 			const p=f.parameters;
 			const d={name:f.name,description:f.description,parameters:{type:p.type,properties:p.properties,required:p.required}};
-//			debug("[GEMINI] function",d);
+//			echo("[GEMINI] function",d);
 			functions.push(d);
 		}
 	}
@@ -793,18 +794,18 @@ function prepareGeminiContent(payload){
 			case "assistant":{
 				if(item.tool_call_id){
 					// todo - geminifi the tool result
+					if (debugging) echo("[GEMINI] assistant",item.tool_call_id);
 					const ass={role:"user",parts:[{text}]}
-					debug("[GEMINI] ass",ass);
 //					contents.push(ass);
 				}else{
 					const ass={role:"model",parts:[{text}]}
-					debug("[GEMINI] ass",ass);
+					if (debugging) echo("[GEMINI] assistant",ass,item);
 //					contents.push(ass);
 				}
 				}
 				break;
 			case "user":{
-					if(debugging) debug("[GEMINI] prepare",item);
+					if(debugging) echo("[GEMINI] prepare",item);
 					if(item.name=="blob"){
 						blob=JSON.parse(text);
 						continue;
@@ -813,7 +814,7 @@ function prepareGeminiContent(payload){
 					if(item.name=="image"){
 						const mimeType=blob.type;
 						const data=text;
-						debug("[GEMINI] image",mimeType);
+						echo("[GEMINI] image",mimeType);
 						contents.push({role:"user",parts:[{inlineData:{mimeType,data}}]});
 						continue;
 					}
@@ -839,9 +840,15 @@ function prepareGeminiContent(payload){
 
 	const temperature=grokTemperature;
 
-	const request={model:payload.model,temperature,system_instruction:{parts:sysparts},contents,tools};
+	const request={
+		model:payload.model,
+		system_instruction:{parts:sysparts},
+		generationConfig:{temperature},
+		contents,
+		tools
+	};
 
-	if(debugging) debug("[GEMINI] request",request);
+	if(debugging) echo("[GEMINI] request",request);
 
 	return request;
 }
@@ -882,9 +889,10 @@ async function connectGoogle(account,config){
 						const model=genAI.getGenerativeModel({model:payload.model});
 						const request=prepareGeminiContent(payload);
 						// TODO: hook up ,signal SingleRequestOptions parameter
-						// if(roha.config.debugging) debug("[GEMINI] generateContent",request);
+						// if(roha.config.debugging) echo("[GEMINI] generateContent",request);
 						const result=await model.generateContent(request);
-						if(roha.config.verbose) echo("[GEMINI] result",result);
+						const debugging=roha.config.debugging;
+						if(debugging) echo("[GEMINI] result",result);
 						const text=await result.response.text();
 						const usage=result.response.usageMetadata||{};
 						const choices = [];
@@ -893,14 +901,16 @@ async function connectGoogle(account,config){
 						if(calls){
 							const toolCalls = calls.map((call,index)=>({id:"call_"+(geminiCallCount++),type:"function",function:{name:call.name,arguments:JSON.stringify(call.args)}}));
 							choices[0].message.tool_calls=toolCalls;
-							debug("[GEMINI] toolCalls",toolCalls);
+							echo("[GEMINI] toolCalls",toolCalls);
 //							for(const call of toolCalls){
-//								debug("[GEMINI] toolCall",call);
+//								echo("[GEMINI] toolCall",call);
 //								choices.push({tool_calls:call});
 //							}
 						}
+						const temperature=grokTemperature;
 						return {
 							model:payload.model,
+							temperature,
 							choices,
 							usage:{
 								prompt_tokens:usage.promptTokenCount,
@@ -1158,9 +1168,11 @@ function prepareCohereRequest(payload){
 				break;
 		}
 	}
+	const temperature=grokTemperature;
 	const request={
-		stream:false,
 		model:payload.model,
+		temperature,
+		stream:false,
 		messages:history
 	};
 	return request;
@@ -1233,7 +1245,8 @@ async function connectCohere(account,config) {
 								return {model,choices:[{message:{content:text}}],usage};
 							}
 							echo("[cohere] status",response.status,response.statusText);
-							echo("[cohere] content",content);
+							if(roha.config.debugging)
+								echo("[cohere] content",content);
 						}catch(e){
 							echo("[cohere] exception",e.message);
 						}
@@ -2551,7 +2564,7 @@ async function onCall(toolCall) {
 		}
 		default:
 			echo("onCall unhandled function name:",name);
-			debug("toolCall",toolCall);
+			debugValue("toolCall",toolCall);
 			return { success: false, updated: 0 };
 	}
 }
@@ -2917,7 +2930,7 @@ async function relay(depth) {
 					// todo: google needs user not assistant
 					// todo: use assistant and modify in gemini tools
 					const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content:result.content};
-					debug("item",item);
+					debugValue("item",item);
 					if(verbose)echo("[RELAY] pushing tool result",item);
 					rohaHistory.push(item);
 				}
@@ -2986,6 +2999,12 @@ async function relay(depth) {
 		if(err.type=="rate_limit_error"||err.type=="invalid_request_error"){
 			echo("Oops.",err.type,err.message);
 			echo(cleanupRequired);
+			return spend;
+		}
+
+		const GenAIError="[GoogleGenerativeAI Error]";
+		if(line.includes(GenAIError)){
+			echo("[GEMINI] unhandled error",error.message);
 			return spend;
 		}
 
