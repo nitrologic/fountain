@@ -28,7 +28,3 @@ small jar big jar round jar three jars
 ## serving slopstudio step 1
 
 ![Serving Slop Studio](slopstudio.png)
-
----
-
-[<= model under test](https://github.com/nitrologic/forge/blob/main/blog.md)

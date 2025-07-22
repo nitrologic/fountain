@@ -29,5 +29,5 @@ Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM too
 
 # blog posts
 
-* [recent models under test](slop/blog.md)
-* [original forge model under test](https://github.com/nitrologic/forge/blob/main/blog.md)
+* [blog-fountain](slop/blog/blogfountain.md) recent fountain models under test
+* [blog-forge](https://github.com/nitrologic/forge/blob/main/blog.md) archived forge model under test

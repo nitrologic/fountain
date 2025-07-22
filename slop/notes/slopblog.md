@@ -1,3 +1,7 @@
+... copied from 
+
+[model under test](https://github.com/nitrologic/forge/blob/main/blog.md)
+
 # model under test
 
 A collection of screenshots and recollections from recent sprint in which me and some models wrote a thing.

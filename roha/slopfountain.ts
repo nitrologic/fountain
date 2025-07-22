@@ -90,6 +90,8 @@ const _AnsiRestoreCursorA = "\x1B[u";
 
 // Array of 8 ANSI colors (codes 30-37) selected for contrast and visibility in both light and dark modes.
 
+// const AnsiCodes
+
 const AnsiColors=[
 	"\x1b[30m", // Black: Deep black (#333333), subtle on light, visible on dark
 	"\x1b[31m", // Red: Muted red (#CC3333), clear on white and black
@@ -100,6 +102,7 @@ const AnsiColors=[
 	"\x1b[36m", // Cyan: Teal cyan (#008080), contrasts well without glare
 	"\x1b[37m"	// White: Light gray (#CCCCCC), subtle on light, clear on dark
 ];
+const AnsiColorNames=["Dark","Red","Green","Yellow","Blue","Cyan","White"];
 
 function ansiPrompt():string{
 	const size=Deno.consoleSize();
@@ -115,10 +118,11 @@ const MaxFileSize=512*1024;
 const appDir=Deno.cwd();
 const accountsPath=resolve(appDir,"accounts.json");
 const specsPath=resolve(appDir,"modelspecs.json");
-const unicodePath=resolve(appDir,"slopspec.json");
-const bibliPath=resolve(appDir,"bibli.json");
 
 const slopPath=resolve(appDir,"../slop");
+const unicodePath=resolve(appDir,"../slop/slopspec.json");
+const bibliPath=resolve(appDir,"../slop/bibli.json");
+
 const forgePath=resolve(appDir,"forge");
 const rohaPath=resolve(forgePath,"forge.json");
 
