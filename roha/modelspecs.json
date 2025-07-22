@@ -187,22 +187,22 @@
 		"pricing":[0.80,4.0],
 		"strict":true,
 		"purpose":"fast speeds, improved instruction following, and more accurate tool use",
-		"reality":"invalid_request_error messages.0.content: Field required"
+		"reality":"I do not feel comfortable providing or discussing..."
 	},
 	"command-a-03-2025@cohere":{
 		"pricing":[0.50,2.0],
 		"purpose":"canadian something"
 	},
 	"command-r-plus-08-2024@cohere":{
-		"pricing":[0.50,2.0],
+		"pricing":[1.50,2.0],
 		"purpose":"canadian 128K context window"
 	},
 	"command-r@cohere":{
-		"pricing":[0.50,2.0],
+		"pricing":[1.50,2.0],
 		"purpose":"canadian 128K context window"
 	},
 	"command-a-vision@cohere":{
-		"pricing":[0.50,2.0],
+		"pricing":[1.50,2.0],
 		"purpose":"canadian 128K context window"
 	},
 	"moonshot-v1-128k-vision-preview@moonshot": {
@@ -227,12 +227,12 @@
 		"press": "Ideal for deep learning applications requiring comprehensive text understanding."
 	},
 	"kimi-k2-0711-preview@moonshot": {
-		"pricing": [0.60,0.15,2.5],
+		"pricing": [0.88,0.15,2.5],
 		"purpose": "Mixture of Experts model, 128K context window",
 		"press": "Enhanced accuracy through a Mixture of Experts approach."
 	},
 	"meta-llama/Llama-3.1-8B-Instruct@nscale":{
-		"pricing":[0.60,0.15,2.5],
+		"pricing":[0.88,0.15,2.5],
 		"purpose":"zuk llama"
 	}
 }

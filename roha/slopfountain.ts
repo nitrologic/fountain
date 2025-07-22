@@ -12,7 +12,7 @@ import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 
-const fountainVersion="1.2.8";
+const fountainVersion="1.3.0";
 const defaultModel="deepseek-chat@deepseek";
 const fountainName="fountain "+fountainVersion;
 const rohaTitle=fountainName+" ⛲ ";
@@ -23,22 +23,6 @@ const clipLog=1800;
 
 const thinSpace=" ";
 const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};
-
-class Item{
-	role:string;
-	name:sgtring;
-	title:string;
-	content:string;
-}
-
-class Payload{
-	model:string="";
-	messages:Item[]=[];
-	tools:[]=[];
-	temperature:number=1.0;
-	max_tokens:{}={};
-	config:{}={};
-};
 
 // system prompt
 
@@ -358,7 +342,7 @@ async function readSlop(slopPipe){
 }
 
 async function serveConnection(connection){
-	console.error("\t[fountain] serveConnection ",JSON.stringify(connection));
+	console.error("\t[FOUNTAIN] serveConnection ",JSON.stringify(connection));
 	const text=encoder.encode("greetings from fountain client");
 	await writeSlop(connection,text);
 }
@@ -1071,7 +1055,9 @@ function specCohereModel(model,account){
 	const info=exists?roha.mut[name]:{name,notes:[],errors:[],relays:0,cost:0};
 	info.id=model.name;
 	info.object="model";
-	// TODO: fix me
+// TODO: fix me
+//	const created=(model.endsWith(2024)||model.endsWith(2025))?
+//	if()
 	info.created="created";
 	info.owner="owner";
 	if (!info.notes) info.notes=[];
@@ -1264,12 +1250,15 @@ async function connectOpenAI(account,config) {
 		const apiKey=getEnv(config.env);
 		const endpoint=new OpenAI({ apiKey, baseURL: config.url });
 		if(roha.config.debugging){
+			debugValue("endpoint",endpoint)
+/*			
 			for(const [key, value] of Object.entries(endpoint)){
 				let content=String(value);
 				content=content.replace(/\n/g, " ");
 				content=content.substring(0,30);
-				if(key!="apiKey") echo("endpoint:"+key+":"+content);
+				if(key!="apiKey") echo("[OPENAI] endpoint:"+key+":"+content);
 			}
+*/				
 		}
 //		const models2=await listModels(config);
 		const models=await endpoint.models.list();
@@ -1324,7 +1313,7 @@ function specAccount(account){
 	}
 	if(roha.config.debugging){
 		const lode=roha.lode[account];
-		echo("[FOUNTAIN] specAccount",account,lode);//endpoint);//config);
+		if(roha.config.verbose) echo("[FOUNTAIN] specAccount",account,lode);//endpoint);//config);
 	}
 }
 
@@ -1458,7 +1447,7 @@ async function saveHistory(name) {
 		roha.saves.push(filename);
 		await writeForge();
 	} catch (error) {
-		echo("[FOUNTAIN] History save error",error.message);
+		echo("[FORGE] History save error",error.message);
 	}
 }
 
@@ -1470,7 +1459,7 @@ async function loadHistory(filename){
 		echo("History restored from",filename);
 	} catch (error) {
 //		console.error("Error restoring history:", error.message);
-		echo("[FOUNTAIN] loadHistory error",error.message);
+		echo("[FORGE] loadHistory error",error.message);
 		resetHistory()
 	}
 	return history;
@@ -1896,7 +1885,7 @@ async function shareDir(dir, tag) {
 				const hash=await hashFile(path);
 				await addShare({ path, size, modified, hash, tag });
 			} catch (error) {
-				echo("[FOUNTAIN] shareDir error",path,error.message);
+				echo("[KOHA] shareDir error",path,error.message);
 				continue;
 			}
 		}
@@ -1961,7 +1950,7 @@ async function commitShares(tag) {
 			const size=stat.size;
 			if (!stat.isFile || size > MaxFileSize) {
 				removedPaths.push(path);
-				echo("Removed invalid path",path);
+				echo("[KOHA] Removed invalid path",path);
 				dirty=true;
 				continue;
 			}
@@ -1976,10 +1965,10 @@ async function commitShares(tag) {
 					if (!rohaShares.includes(path)) {
 						rohaShares.push(path);
 						if(roha.config.verbose){
-							echo("Shared path",path);
+							echo("[KOHA] Shared path",path);
 						}
 					}else{
-						echo("Updated share path",path);
+						echo("[KOHA] Updated share path",path);
 					}
 				}
 			}
@@ -1989,20 +1978,20 @@ async function commitShares(tag) {
 				removedPaths.push(share.path);
 				dirty=true;
 			}
-			echo("[FOUNTAIN] commitShares path",share.path);
-			echo("[FOUNTAIN] commitShares error",error.message);
+			echo("[KOHA] commitShares path",share.path);
+			echo("[KOHA] commitShares error",error.message);
 		}
 	}
 	if (removedPaths.length) {
 		roha.sharedFiles=validShares;
 		await writeForge();
-		echo("[FOUNTAIN] commitShares removed", removedPaths.join(" "));
+		echo("[KOHA] commitShares removed", removedPaths.join(" "));
 	}
 	if (dirty && tag) {
 		rohaHistory.push({ role: "system", title:"Fountain Tool Hint", content: "Feel free to call annotate_forge to tag " + tag });
 	}
 	if (count && roha.config.verbose) {
-		echo("[FOUNTAIN] Updated files",count,"of",validShares.length);
+		echo("[KOHA] Updated files",count,"of",validShares.length);
 	}
 	return dirty;
 }
@@ -2757,7 +2746,8 @@ async function relay(depth:number) {
 			payload.config={thinkingConfig:{thinkingBudget:grokThink}};
 		}
 		if(roha.config.debugging){
-			echo("[RELAY] payload",JSON.stringify(payload,null,"\t"));
+			const dump=JSON.stringify(payload,null,"\t");
+			echo("[RELAY] payload",dump);
 		}
 
 		// [RELAY] endpoint chat completions.create
@@ -2971,12 +2961,13 @@ async function relay(depth:number) {
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)
 
-		echo("[FOUNTAIN] unhandled error",error.message);
-		echo("[FOUNTAIN]",error.stack);
+		echo("[FORGE] unhandled error",error.message);
+		echo("[FORGE]",error.stack);
 
 		//		echo("unhandled error line",line);
 		if(verbose){
-			echo("[FOUNTAIN] payload",JSON.stringify(payload,null,"\t"));
+			const dump=JSON.stringify(payload,null,"\t");
+			echo("[FORGE] payload",dump);
 		}
 	}
 	return spend;
@@ -3088,18 +3079,18 @@ for(const account in modelAccounts){
 	if(endpoint) {
 		const count=endpoint.modelList?.length||0;		//",endpoint.modelList
 		if(roha.config.verbose){
-			echo("[FOUNTAIN] Connected",account,count,elapsed.toFixed(2)+"s");
+			echo("[FORGE] Connected to",account,count,elapsed.toFixed(2)+"s");
 		}
 		rohaEndpoint[account]=endpoint;
 		specAccount(account);
 		const lode=roha.lode[account];
 		if(!areSame(lode.modelList,endpoint.modelList)){
-			echo("[FOUNTAIN] modifying modelList");
+			echo("[FORGE] modifying modelList");
 			lode.modelList=endpoint.modelList;
 		}
-//		echo("[FOUNTAIN] endpoint modelList",endpoint.modelList);
+//		echo("[FORGE] endpoint modelList",endpoint.modelList);
 	}else{
-		echo("[FOUNTAIN] Endpoint failure for account",account);
+		echo("[FORGE] Endpoint failure for account",account);
 	}
 }
 
