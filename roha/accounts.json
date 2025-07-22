@@ -41,7 +41,8 @@
 	"gemini": {
 		"emoji": "🌟",
 		"env": "GEMINI_API_KEY",
-		"url": "https://generativelanguage.googleapis.com/v1alpha",
+		"url2": "https://generativelanguage.googleapis.com/v1alpha",
+		"url": "https://generativelanguage.googleapis.com/v1beta",
 		"docs": "https://ai.google.dev/gemini-api/docs",
 		"api": "Google",
 		"locale": "en-US"

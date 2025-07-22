@@ -2242,7 +2242,7 @@ async function modelCommand(words){
 			const account=modelAccounts[provider];
 			const emoji=account.emoji||"";
 			const mut=mutName(modelname);
-			const cheap = priced && priced[0]<0.81;
+			const cheap = priced && priced[0]<0.101;
 			if(cheap || all){
 				const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
 				echo_row(i,attr,mut,created,mutspec.relays|0,pricing,emoji,notes.join(" "));

@@ -1386,20 +1386,21 @@ async function aboutModel(modelname){
 
 //DeepSeek-R1-Distill-Llama-70B
 //Meta-Llama-3.1-8B-Instruct
-function mutName(modelname){
+function mutName(modelname:string){
 	const modelAccount=modelname.split("@");
 	const path=modelAccount[0];
 	const names=path.split("/");
-	let name=names.pop();
+	let name:string=names.pop()||"";
 	name=name.replace("-R1-Distill-","-");
 	name=name.replace("Meta-Llama-","Llama");
-	const namebits=name.split("-");	//preview");
-	let mut=namebits[0]+(namebits[1]||"")+(namebits[2]||"");
-	if(namebits[3]=="vision") mut+="vision";
-	return mut;
+	const namebits=name.split("-");
+	const muts=namebits.slice(0,3);
+	const bit=namebits[3]||"0";
+	if (isNaN(parseFloat(bit))) muts.push(bit);
+	return muts.join("-");
 }
 
-async function resetModel(modelname){
+async function resetModel(modelname:string){
 	const modelAccount=modelname.split("@");
 	const path=modelAccount[0];
 	const provider=modelAccount[1];
@@ -2169,7 +2170,7 @@ async function modelCommand(words){
 		}
 	}else{
 		echo_row("id","☐","model name","📆","🧮","💰","💰💰","🪣🧊🫐🪨");
-		echo_row("-----","--","-----------------------","------------","-----","---- ---- ---- ---- ----","------","-----------------");
+		echo_row("-----","--","--------------------------","------------","-----","---- ---- ---- ---- ----","------","-----------------");
 		const all=(name && name=="all");
 		for(let i=0;i<modelList.length;i++){
 			const modelname=modelList[i];

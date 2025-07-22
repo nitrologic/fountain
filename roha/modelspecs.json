@@ -2,13 +2,13 @@
 	"deepseek-chat@deepseek": {
 		"pricing": [0.27, 0.07, 1.10],
 		"released": "2025-03-24",
-		"purpose": "V3‑0324 General conversation and text generation",
+		"purpose": "V3-0324 General conversation and text generation",
 		"press": "Cost-effective model for versatile tasks, trained on massive text datasets."
 	},
 	"deepseek-reasoner@deepseek": {
 		"pricing": [0.55, 0.14, 2.19],
 		"released": "2025-05-28",
-		"purpose": "R1‑0528 Advanced reasoning and problem-solving",
+		"purpose": "R1-0528 Advanced reasoning and problem-solving",
 		"press": "High-performance model for complex math, coding, and logical tasks."
 	},
 	"meta-llama/Meta-Llama-3.1-405B-Instruct@hyperbolic":{
