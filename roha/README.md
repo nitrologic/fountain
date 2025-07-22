@@ -19,17 +19,15 @@ Requires an api environment variable, see accounts.json for latest
 
 # documentation
 
-Main user documentation [forge.md](forge.md)
+Main command line forge user documentation [forge.md](forge.md)
 
-Developer blog [blog.md](blog.md)
+# baby repos
 
-# history
+Stage one nitrologic roha [roha](https://github.com/nitrologic/roha)
 
-Stage one nitrologic roha development [roha](https://github.com/nitrologic/roha)
+Second stage nitrologic foundry [foundry](https://github.com/nitrologic/foundry) 
 
-Second stage nitrologic roha foundry development [foundry](https://github.com/nitrologic/foundry) 
-
-Third stage nitrlogic forge [forge](https://github.com/nitrologic/forge)
+Third stage nitrologic forge [forge](https://github.com/nitrologic/forge)
 
 # development
 
