@@ -1021,13 +1021,12 @@ function anthropicMessages(payload){
 	for(const item of payload.messages){
 		switch(item.role){
 			case "user":
-				for(const content of item.content){
-					messages.push({role:"user",content:content.text});
-				}
+				// item role name type
+				messages.push({role:"user",name:item.name,content:item.content});
 				break;
 			case "assistant":
 				if(item.tool_calls){
-					list.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
+					// list.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
 				}else{
 					messages.push({role:"assistant",content:item.content});
 				}
@@ -1093,7 +1092,9 @@ async function connectAnthropic(account,config){
 					create: async (payload) => {
 						const model=payload.model;
 						const system=anthropicSystem(payload);
+//						echo("[CLAUDE] ",payload);
 						const messages=anthropicMessages(payload);
+//						echo("[CLAUDE] ",messages);
 						const temperature=grokTemperature;
 						const request={model,max_tokens:1024,temperature,system,messages};
 						if (payload.tools) {
@@ -1104,10 +1105,11 @@ async function connectAnthropic(account,config){
 							prompt_tokens:reply.usage.input_tokens,
 							completion_tokens:reply.usage.output_tokens
 						};
+						const content=reply.content[0].text||"";
 						return {
 							model,
 							choices:[
-								{message:{content:reply.content[0].text}}
+								{message:{content}}
 							],
 							usage
 						};
@@ -2236,7 +2238,7 @@ async function modelCommand(words){
 			const account=modelAccounts[provider];
 			const emoji=account.emoji||"";
 			const mut=mutName(modelname);
-			const cheap = priced && priced[0]<0.61;
+			const cheap = priced && priced[0]<0.81;
 			if(cheap || all){
 				const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
 				echo_row(i,attr,mut,created,mutspec.relays|0,pricing,emoji,notes.join(" "));

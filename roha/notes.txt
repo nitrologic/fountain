@@ -1,9 +1,15 @@
 𓅷 𓅸 𓅹 𓅺 𓅻 𓅼 𓅽
 > /model 18
-model: {"id":0,"mut":"claude3haiku","emoji":"🌐","rate":[0.8,4],"modelname":"claude-3-haiku-20240307@anthropic","balance":"$-8.7973","strict":true,"multi":false,"inline":false}
+model: {"id":0,"mut":"claude3haiku","emoji":"🌐","rate":[0.8,4],
+"modelname":"claude-3-haiku-20240307@anthropic","balance":"$-8.7973",
+"strict":true,"multi":false,"inline":false
+}
+
 purpose: fast speeds, improved instruction following, and more accurate tool use
+
 > hi claude
 +
+
 Oops. invalid_request_error messages.0.content: Field required
 Switch model, drop shares or reset history to continue.
 
