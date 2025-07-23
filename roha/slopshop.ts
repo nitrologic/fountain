@@ -23,6 +23,12 @@ const _AnsiClear="\x1B[2J";
 const AnsiHome="\x1B[H";
 const AnsiCursor="\x1B[";
 
+// const quads=" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█";
+
+const AnsiShowCursor = "\x1b[?25h"
+const AnsiHideCursor = "\x1b[?25l"
+const AnsiRGB="\x1B[38;2;"//⟨r⟩;⟨g⟩;⟨b⟩m"
+
 let consoleSize=Deno.consoleSize();
 
 function AnsiPrompt(){
@@ -101,6 +107,8 @@ console.log("[SHLOP] slop shop 0.2");
 console.log("[SHLOP] serving slopnames");
 console.log("[SHLOP]",slopnames);
 console.log("[SHLOP] enter to start");
+
+console.log(AnsiHideCursor);
 
 let workerCount=0;
 for(const name of slopnames){
@@ -192,6 +200,7 @@ async function refreshBackground(pause:number,line:string) {
 // exitSlop 𓊽𓉴𓉴𓉴𓊽
 
 function exitSlop(){
+	console.log(AnsiShowCursor);
 	Deno.stdin.setRaw(false);
 	console.log("[SHLOP] exitSlop clearing raw",exitMessage);
 }
@@ -283,5 +292,7 @@ while(true){
 }
 
 console.log("oh no, bye");
+
 exitSlop();
 Deno.exit(0);
+

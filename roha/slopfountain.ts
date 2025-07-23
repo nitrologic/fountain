@@ -22,7 +22,7 @@ const statsColumn=50;
 const clipLog=1800;
 
 const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};
-const modelKey={"🪣":"Pail","🧊":"Frigid","📷":"Vision","🪨":"strict"};  
+const modelKey={"🪣":"Pail","🧊":"Frigid","📷":"Vision","🪨":"strict"};
 
 // system prompt
 
@@ -88,9 +88,10 @@ const _AnsiPop="\x1b[1;36m";
 const _AnsiSaveCursorA = "\x1B[s";
 const _AnsiRestoreCursorA = "\x1B[u";
 
-// Array of 8 ANSI colors (codes 30-37) selected for contrast and visibility in both light and dark modes.
+// Array of 8 ANSI colors (codes 30-37) 
+// selected for contrast and visibility in both light and dark modes.
 
-// const AnsiCodes
+const AnsiColorNames=["Black","Red","Green","Yellow","Blue","Magenta","Cyan","White"];
 
 const AnsiColors=[
 	"\x1b[30m", // Black: Deep black (#333333), subtle on light, visible on dark
@@ -102,7 +103,6 @@ const AnsiColors=[
 	"\x1b[36m", // Cyan: Teal cyan (#008080), contrasts well without glare
 	"\x1b[37m"	// White: Light gray (#CCCCCC), subtle on light, clear on dark
 ];
-const AnsiColorNames=["Dark","Red","Green","Yellow","Blue","Cyan","White"];
 
 function ansiPrompt():string{
 	const size=Deno.consoleSize();
@@ -150,7 +150,7 @@ function dateStamp(seconds){
 	return "---";
 }
 
-const thinSpace=" "; 
+const thinSpace=" ";
 function padChars(text:string):string{
 	return [...text].join(thinSpace);
 }
@@ -673,7 +673,7 @@ function echoWarning(...args:any){
 		const line=toString(arg);
 		lines.push(line);
 	}
-	const text=ansiStyle(lines.join(" "));
+	const text=ansiStyle(lines.join(" "),"blink",1);
 	outputBuffer.push(text);
 }
 
@@ -896,7 +896,7 @@ async function connectGoogle(account,config){
 		//specModel
 		for(const model of models.models){
 			const name=model.name+"@"+account;
-			list.push(name);	
+			list.push(name);
 //			echo("[GOOOGLE] released",name);
 			const spec={id:model.name,object:"model",owner:"owner"}
 			specModel(spec,account);
@@ -1085,7 +1085,7 @@ function getDottedDate(name:string):number{
 	const year=parseInt(name.substring(n-4,n));
 	const month=parseInt(name.substring(n-7,n-5));
 //	echo("[GETDATE]",year,month);
-	const date=new Date(Date.UTC(year, month - 1, 1));	
+	const date=new Date(Date.UTC(year, month - 1, 1));
 	return Math.floor(date.getTime()/1000);
 }
 
@@ -1301,14 +1301,14 @@ async function connectOpenAI(account,config) {
 		const endpoint=new OpenAI({ apiKey, baseURL: config.url });
 		if(roha.config.debugging){
 			debugValue("endpoint",endpoint)
-/*			
+/*
 			for(const [key, value] of Object.entries(endpoint)){
 				let content=String(value);
 				content=content.replace(/\n/g, " ");
 				content=content.substring(0,30);
 				if(key!="apiKey") echo("[OPENAI] endpoint:"+key+":"+content);
 			}
-*/				
+*/
 		}
 //		const models2=await listModels(config);
 		const models=await endpoint.models.list();
@@ -1523,17 +1523,23 @@ async function loadHistory(filename){
 }
 
 
-function stripAnsi(text) {
+function stripAnsi(text:string) {
 	return text.replace(/\x1B\[\d+(;\d+)*[mK]/g, "");
 }
 
-function ansiStyle(text, style="bold", colorIndex=null) {
+function ansiStyle(text:string, style:string="bold", colorIndex:number=-1) {
 	if (!roha.config.ansi) return text;
 	let formatted=text;
 	switch (style.toLowerCase()) {
 		case "bold": formatted="\x1b[1m" + formatted + "\x1b[0m"; break;
+		case "dim": formatted="\x1b[2m" + formatted + "\x1b[0m"; break;
 		case "italic": formatted="\x1b[3m" + formatted + "\x1b[0m"; break;
 		case "underline": formatted="\x1b[4m" + formatted + "\x1b[0m"; break;
+		case "blink1": formatted="\x1b[5m" + formatted + "\x1b[0m"; break;
+		case "blink2": formatted="\x1b[6m" + formatted + "\x1b[0m"; break;
+		case "reverse": formatted="\x1b[7m" + formatted + "\x1b[0m"; break;
+		case "hidden": formatted="\x1b[8m" + formatted + "\x1b[0m"; break;
+		case "strikethrough": formatted="\x1b[9m"+formatted + "\x1b[0m"; break;
 	}
 	if (!Deno.noColor && colorIndex !== null && colorIndex >= 0 && colorIndex < AnsiColors.length) {
 		formatted=AnsiColors[colorIndex] + formatted + "\x1b[0m";

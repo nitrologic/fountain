@@ -10,12 +10,6 @@ const period=100;
 const tvWidth=128;
 const tvHeight=32;
 
-const quads=" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█";
-
-const AnsiDefault="\x1B[39m";
-const AnsiPink="\x1B[38;5;206m";
-const AnsiRGB="\x1B[38;2;"//⟨r⟩;⟨g⟩;⟨b⟩m"
-
 let tv:pixelMap=new pixelMap(tvWidth,tvHeight);
 const startTime=performance.now();
 let frameCount=-1;
@@ -48,7 +42,12 @@ self.onmessage=(e)=>{
 function blankFrame(){
 	const t=performance.now();
 	const shade=(t/3e3)%1;
-	tv.noise(shade);
+//	tv.noise(shade);
+//	tv.blank(shade);
+	tv.cls(shade);
+	for(let i=0;i<100;i++){
+		tv.plot(i,i);
+	}
 	return tv.frame().join("\n");
 }
 
