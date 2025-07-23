@@ -2214,13 +2214,13 @@ async function modelCommand(words){
 		echo_row("id","☐","model","account","🧮","📆","💰",modelKeys);
 		echo_row(
 			"-----",
-			"-",
+			"--",
 			"--------------------------",
 			"------------",
 			"-----",
 			"------------",
 			"---  ----  ---- ---",
-			"--------"
+			"---------"
 		);
 		const all=(name && name=="all");
 		for(let i=0;i<modelList.length;i++){
@@ -2246,7 +2246,7 @@ async function modelCommand(words){
 			const account=modelAccounts[provider];
 			const emoji=account.emoji||"";
 			const mut=mutName(modelname);
-			const cheap = priced && priced[0]<1.01;
+			const cheap = priced && priced[0]<3.01;
 			if(cheap || all){
 				const pricing=(rated&&rated.pricing)?stringifyArray(rated.pricing):"";
 				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
@@ -3046,13 +3046,13 @@ async function relay(depth:number) {
 		//Unsupported value: 'temperature' does not support 0.8 with this model.
 		// tooling 1 unhandled error line: 400 status code (no body)
 
-		echo("[FORGE] unhandled error",error.message);
-		echo("[FORGE]",error.stack);
-
 		//		echo("unhandled error line",line);
-		if(verbose){
+
+		echo("[RELAY] unhandled error",error.message);
+		echo("[RELAY]",error.stack);
+		if(debugging){
 			const dump=JSON.stringify(payload,null,"\t");
-			echo("[FORGE] payload",dump);
+			echo("[RELAY] payload",dump);
 		}
 	}
 	return spend;

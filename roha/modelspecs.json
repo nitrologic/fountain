@@ -184,7 +184,7 @@
 		"reality":"rate limited 20,000 input tokens per minute"
 	},
 	"claude-sonnet-4-20250514@anthropic":{
-		"pricing":[15.0,75.0],
+		"pricing":[3.0,15.0],
 		"multi":true,
 		"purpose":"balance performance, cost-effectiveness, and speed for high-volume production"
 	},
@@ -211,7 +211,7 @@
 		"purpose":"canadian 128K context window"
 	},
 	"moonshot-v1-128k-vision-preview@moonshot": {
-		"pricing": [0.20,0.15,2.0],
+		"pricing": [2,5],
 		"multi": true,
 		"purpose": "High-res image recognition and analysis, 128K context window",
 		"press": "High-resolution image analysis for detailed recognition tasks."
