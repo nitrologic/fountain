@@ -232,7 +232,7 @@
 		"press": "Ideal for deep learning applications requiring comprehensive text understanding."
 	},
 	"kimi-k2-0711-preview@moonshot": {
-		"pricing": [0.88,0.15,2.5],
+		"pricing": [0.60,0.15,2.5],
 		"purpose": "Mixture of Experts model, 128K context window",
 		"press": "Enhanced accuracy through a Mixture of Experts approach."
 	},

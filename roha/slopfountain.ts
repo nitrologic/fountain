@@ -21,9 +21,6 @@ const terminalColumns=120;
 const statsColumn=50;
 const clipLog=1800;
 
-const toolKey={tools:"🪣",notool:"🐸",off:"🪠"};
-const modelKey={"🪣":"Pail","🧊":"Frigid","📷":"Vision","🪨":"strict"};
-
 // system prompt
 
 const rohaMihi="Welcome to the fountain - we've got fun and games. A many:many user model research project.";
@@ -2167,7 +2164,7 @@ async function onAccount(args){
 	}
 }
 
-async function showHelp() {
+async function showHelp(words) {
 	try {
 		const md=await Deno.readTextFile("forge.md");
 		echo(mdToAnsi(md));
@@ -2197,6 +2194,9 @@ function listShares(shares){
 	shareList=list;
 }
 
+// modelCommand - list table of models
+const modelKeys="🟢📷📠";
+const modelKey={"🟢":"Tools","📷":"Vision","📠":"Simple"};
 async function modelCommand(words){
 	let name=words[1];
 	if(name && name!="all"){
@@ -2206,8 +2206,7 @@ async function modelCommand(words){
 			await writeForge();
 		}
 	}else{
-		const keys="🪣🧊📷🪨";
-		echo_row("id","☐","model","account","🧮","📆","💰",keys);
+		echo_row("id","☐","model","account","🧮","📆","💰",modelKeys);
 		echo_row(
 			"-----",
 			"--",
@@ -2227,12 +2226,12 @@ async function modelCommand(words){
 			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 			mutspec.name=modelname;
 			const notes=[...mutspec.notes];
-			if(mutspec.hasForge) notes.push("🪣");
+			if(mutspec.hasForge) notes.push("🟢");
 			const rated=modelname in modelSpecs?modelSpecs[modelname]:{};
 			if(rated.cold) notes.push("🧊");
 			if(rated.multi) notes.push("📷");
-			if(rated.inline) notes.push("Inline");
-			if(rated.strict) notes.push("🪨");
+			if(rated.strict) notes.push("📠");
+//			if(rated.inline) notes.push("📘");
 			const seconds=mutspec.created;
 			const created=dateStamp(seconds);
 			const priced=rated.pricing;
@@ -2242,7 +2241,7 @@ async function modelCommand(words){
 			const account=modelAccounts[provider];
 			const emoji=account.emoji||"";
 			const mut=mutName(modelname);
-			const cheap = priced && priced[0]<0.81;
+			const cheap = priced && priced[0]<1.01;
 			if(cheap || all){
 				const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
 				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
@@ -2322,7 +2321,7 @@ async function callCommand(command) {
 				await onAccount(words);
 				break;
 			case "help":
-				await showHelp();
+				await showHelp(words);
 				break;
 			case "nic":{
 					if(words.length>1){
@@ -2638,6 +2637,9 @@ async function processToolCalls(calls) {
 	return results;
 }
 
+// strict mode history for simplified model prompts 📠
+// returns a list of {role,content}
+
 function strictHistory(history){
 	const list=[];
 	for(const _item of history){
@@ -2723,6 +2725,7 @@ function multiHistory(history){
 	return list;
 }
 
+// inline mode 📘 flattens images as inline parts
 
 function inlineHistory(history){
 	const list=[];
@@ -2786,7 +2789,7 @@ async function relay(depth:number) {
 	const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 	const strictMode=info&&info.strict;
 	const multiMode=info&&info.multi;
-	const inlineMode=info&&info.inline;
+//	const inlineMode=info&&info.inline;
 	const modelAccount=grokModel.split("@");
 	const model=modelAccount[0];
 	const account=modelAccount[1];
