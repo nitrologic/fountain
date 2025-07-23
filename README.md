@@ -5,6 +5,13 @@
 
 Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM tool
 
+## Researcher Links
+
+* [fountain.md](roha/fountain.md) Configuration
+* [forge.md](roha/forge.md) Command Set
+* [plan.txt](plan.txt) On the list
+* [license](LICENSE) Copyright (c) 2025 Simon Armstrong - MIT License
+
 ## Accounts
 
 | Account Name | Emoji | Locale | Docs                                | API      |
@@ -19,13 +26,6 @@ Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM too
 | gemini       | 🌟    | en-US  | https://ai.google.dev/docs          | Google   |
 | anthropic    | 🤖    | en-US  | https://docs.anthropic.com/         | Anthropic |
 | hugging face | 🤗    | en-US  | https://huggingface.co/docs         | OpenAI    |
-
-## developers
-
-* [forge.md](roha/forge.md)
-* [fountain.md](roha/fountain.md)
-* [plan.txt](plan.txt)
-* [license](LICENSE)
 
 # blog posts
 
