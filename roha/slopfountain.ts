@@ -17,7 +17,7 @@ const defaultModel="deepseek-chat@deepseek";
 const fountainName="fountain "+fountainVersion;
 const rohaTitle=fountainName+" ⛲ ";
 
-const terminalColumns=120;
+const terminalColumns=100;
 const statsColumn=50;
 const clipLog=1800;
 
@@ -150,6 +150,10 @@ function dateStamp(seconds){
 const thinSpace=" ";
 function padChars(text:string):string{
 	return [...text].join(thinSpace);
+}
+
+function stringifyArray(array:[]):string{
+	return array.join(",");
 }
 
 function stringWidth(text:string):number{
@@ -2195,8 +2199,8 @@ function listShares(shares){
 }
 
 // modelCommand - list table of models
-const modelKeys="🟢📷📠";
-const modelKey={"🟢":"Tools","📷":"Vision","📠":"Simple"};
+const modelKeys="📠📷📘";
+const modelKey={"📠":"Tools","📷":"Vision","📘":"Strict"};
 async function modelCommand(words){
 	let name=words[1];
 	if(name && name!="all"){
@@ -2206,16 +2210,17 @@ async function modelCommand(words){
 			await writeForge();
 		}
 	}else{
+		echoKey(modelKey,100);
 		echo_row("id","☐","model","account","🧮","📆","💰",modelKeys);
 		echo_row(
 			"-----",
-			"--",
+			"-",
 			"--------------------------",
 			"------------",
 			"-----",
 			"------------",
-			"----  ----  ----  ----",
-			"-----------------"
+			"---  ----  ---- ---",
+			"--------"
 		);
 		const all=(name && name=="all");
 		for(let i=0;i<modelList.length;i++){
@@ -2226,11 +2231,11 @@ async function modelCommand(words){
 			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 			mutspec.name=modelname;
 			const notes=[...mutspec.notes];
-			if(mutspec.hasForge) notes.push("🟢");
+			if(mutspec.hasForge) notes.push("📠");
 			const rated=modelname in modelSpecs?modelSpecs[modelname]:{};
 			if(rated.cold) notes.push("🧊");
 			if(rated.multi) notes.push("📷");
-			if(rated.strict) notes.push("📠");
+			if(rated.strict) notes.push("📘");
 //			if(rated.inline) notes.push("📘");
 			const seconds=mutspec.created;
 			const created=dateStamp(seconds);
@@ -2243,12 +2248,11 @@ async function modelCommand(words){
 			const mut=mutName(modelname);
 			const cheap = priced && priced[0]<1.01;
 			if(cheap || all){
-				const pricing=(rated&&rated.pricing)?JSON.stringify(rated.pricing):"";
+				const pricing=(rated&&rated.pricing)?stringifyArray(rated.pricing):"";
 				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
 			}
 		}
 		listCommand="model";
-		echoKey(modelKey,100);
 	}
 }
 
