@@ -12,7 +12,7 @@ import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 
-const fountainVersion="1.3.0";
+const fountainVersion="1.3.1";
 const defaultModel="deepseek-chat@deepseek";
 const fountainName="fountain "+fountainVersion;
 const rohaTitle=fountainName+" ⛲ ";
