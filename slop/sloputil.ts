@@ -29,6 +29,15 @@ export class pixelMap{
 		this.wordmap.fill(0xffff);
 		this.colmap.fill(grey);
 	}
+	draw(sprite:string,x:number,y:number){
+		const lines=sprite.split("\n");
+		for(const line of lines){
+			for(let xx=0;xx<line.length;xx++){
+				if(line.charAt(xx)=="*") this.plot(x+xx,y);
+			}
+			y++;
+		}
+	}
 	plot(x:number,y:number){
 		const bit=1<<(x&15);
 		const index=y*this.span+(x>>4);

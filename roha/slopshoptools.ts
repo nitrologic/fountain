@@ -1,0 +1,53 @@
+// slopshoptools.ts - utility functions
+// (c)2025 Simon Armstrong
+// Licensed under the MIT License - See LICENSE file
+
+export const Ansi={
+    Home:"\x1B[H",
+    Pink:"\x1B[38;5;206m",
+    Default:"\x1B[39m",
+    HideCursor:"\x1b[?25l",
+    ShowCursor:"\x1b[?25h",
+	Cursor:"\x1B[" 				//+ row + ";1H"
+}
+
+const AnsiHome="\x1B[H";
+const AnsiPink="\x1B[38;5;206m";
+const AnsiDefault="\x1B[39m";
+const AnsiShowCursor = "\x1b[?25h"
+const AnsiHideCursor = "\x1b[?25l"
+const AnsiCursor="\x1B["; //+ row + ";1H";
+
+const _AnsiBlankLine="\x1B[0K";
+const _AnsiClear="\x1B[2J";
+const _AnsiRGB="\x1B[38;2;"//⟨r⟩;⟨g⟩;⟨b⟩m"
+
+// const quads=" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█";
+// slopsite utility functions
+// typescript ahead - fix the any 
+
+let _outputBuffer:string[]=[];
+let _printBuffer=[];
+let _markdownBuffer=[];
+
+export function toString(arg:any):string{
+	if (typeof arg === 'object') {
+		return JSON.stringify(arg);
+	}
+	return String(arg);
+}
+
+export async function fileLength(path:string) {
+	const stat=await Deno.stat(path);
+	return stat.size;
+}
+
+export function echo(...args:any[]){
+//	const args=arguments.length?Array.from(arguments):[];
+	const lines=[];
+	for(const arg of args){
+		const line=toString(arg);
+		lines.push(line);
+	}
+	_outputBuffer.push(lines.join(" "));
+}

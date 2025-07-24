@@ -1,84 +1,60 @@
-// slopshop.ts - a slop shop
+// slopshop.ts - keeping .slop.ts workers busy
 // (c)2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
 // scans the slop folder for .slop.ts workers
 
-import { resolve } from "https://deno.land/std/path/mod.ts";
-import { _common } from "https://deno.land/std@0.224.0/path/_common/common.ts";
+// todo:
+// frame multiple viewports
+//
 
-const appDir=Deno.cwd();
-const slopPath=resolve(appDir,"../slop");
-
-let _verbose=false;
+// const message=AnsiHome+frame+ansiPrompt()+AnsiPink+line+AnsiDefault;
 
 const rawPrompt=true;
 
 const exitMessage="Ending session.";
 
-const AnsiDefault="\x1B[39m";
-const AnsiPink="\x1B[38;5;206m";
-const _AnsiBlankLine="\x1B[0K";
-const _AnsiClear="\x1B[2J";
-const AnsiHome="\x1B[H";
-const AnsiCursor="\x1B[";
+import { resolve } from "https://deno.land/std/path/mod.ts";
+import { _common } from "https://deno.land/std@0.224.0/path/_common/common.ts";
 
-// const quads=" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█";
+import { echo, fileLength, Ansi } from "./slopshoptools.ts";
 
-const AnsiShowCursor = "\x1b[?25h"
-const AnsiHideCursor = "\x1b[?25l"
-const AnsiRGB="\x1B[38;2;"//⟨r⟩;⟨g⟩;⟨b⟩m"
 
-let consoleSize=Deno.consoleSize();
-
-function AnsiPrompt(){
-	const row=consoleSize.rows;
-	return AnsiCursor + row + ";1H";// + AnsiBlankLine;
-}
-
-// slopsite utility functions
-// typescript ahead - fix the any 
-
-let _outputBuffer=[];
-let _printBuffer=[];
-let _markdownBuffer=[];
-
-function toString(arg:any):string{
-	if (typeof arg === 'object') {
-		return JSON.stringify(arg);
-	}
-	return String(arg);
-}
-
-async function fileLength(path:string) {
-	const stat=await Deno.stat(path);
-	return stat.size;
-}
-
-function echo(...args:any[]){
-//	const args=arguments.length?Array.from(arguments):[];
-	const lines=[];
-	for(const arg of args){
-		const line=toString(arg);
-		lines.push(line);
-	}
-	_outputBuffer.push(lines.join(" "));
-}
-
-async function readFileNames(path:string,suffix:string){
+async function readFileNames(path:string,suffix:string):Promise<string[]>{
 	const result=[];
 	try {
-	for await (const entry of Deno.readDir(path)) {
-		if (entry.isFile && entry.name.endsWith(suffix)) {
-			if(_verbose) echo("readFileNames",path,entry);
-			result.push(entry.name);
+		for await (const entry of Deno.readDir(path)) {
+			if (entry.isFile && entry.name.endsWith(suffix)) {
+				if(_verbose) echo("readFileNames",path,entry);
+				result.push(entry.name);
+			}
 		}
-	}
 	} catch (error) {
 		echo("readFileNames:", error);
 	}
 	return result;
 }
+
+const appDir=Deno.cwd();
+const slopPath=resolve(appDir,"../slop");
+
+const _verbose=false;
+
+// main action starts here
+
+const slops:Worker[]=[];
+const slopWorkers:any[]=[];
+
+const slopFrames:string[]=[];
+const slopnames=await readFileNames(slopPath,".slop.ts");
+const slopEvents:Event[]=[];
+
+console.log("[SHLOP] slop shop 0.2");
+console.log("[SHLOP] serving slopnames");
+console.log("[SHLOP]",slopnames);
+console.log("[SHLOP] enter to start exit to end");
+
+console.log(Ansi.HideCursor);
 
 class Event{
 	name: string;
@@ -93,22 +69,6 @@ function onKey(value:number[]){
 	const e=new Event("key",value);
 	slopEvents.push(e);
 }
-
-// main action starts here
-
-const slops:Worker[]=[];
-const slopWorkers:any[]=[];
-
-const slopFrames:string[]=[];
-const slopnames=await readFileNames(slopPath,".slop.ts");
-const slopEvents:Event[]=[];
-
-console.log("[SHLOP] slop shop 0.2");
-console.log("[SHLOP] serving slopnames");
-console.log("[SHLOP]",slopnames);
-console.log("[SHLOP] enter to start");
-
-console.log(AnsiHideCursor);
 
 let workerCount=0;
 for(const name of slopnames){
@@ -163,6 +123,8 @@ function flushEvents(){
 const decoder=new TextDecoder("utf-8");
 const encoder=new TextEncoder();
 
+let consoleSize=Deno.consoleSize();
+
 function resetWorkers(){
 	consoleSize=Deno.consoleSize();
 	for(const key in slops){
@@ -172,6 +134,12 @@ function resetWorkers(){
 		worker.postMessage({command:"reset",consoleSize});
 	}
 }
+
+function ansiPrompt(){
+	const row=consoleSize.rows;
+	return Ansi.Cursor + row + ";1H";// + AnsiBlankLine;
+}
+
 
 let slopFrame=0;
 let slopEvent=0;
@@ -190,8 +158,8 @@ async function refreshBackground(pause:number,line:string) {
 	if(slopFrames.length&&slopFrame!=slopFrames.length){
 		slopFrame=slopFrames.length;
 		const frame=slopFrames[slopFrame-1];
-//		const message=AnsiHome + frame + AnsiCursor + row + ";1H\n" + prompt+line;
-		const message=AnsiHome+frame+AnsiPrompt()+AnsiPink+line+AnsiDefault;
+//		const message=Ansi.Home + frame + Ansi.Cursor + row + ";1H\n" + prompt+line;
+		const message=Ansi.Home+frame+ansiPrompt()+Ansi.Pink+line+Ansi.Default;
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
@@ -200,7 +168,7 @@ async function refreshBackground(pause:number,line:string) {
 // exitSlop 𓊽𓉴𓉴𓉴𓊽
 
 function exitSlop(){
-	console.log(AnsiShowCursor);
+	console.log(Ansi.ShowCursor);
 	Deno.stdin.setRaw(false);
 	console.log("[SHLOP] exitSlop clearing raw",exitMessage);
 }
