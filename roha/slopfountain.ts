@@ -12,7 +12,7 @@ import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 
-const fountainVersion="1.3.1";
+const fountainVersion="1.3.2";
 const defaultModel="deepseek-chat@deepseek";
 const fountainName="fountain "+fountainVersion;
 const rohaTitle=fountainName+" ⛲ ";
@@ -465,6 +465,12 @@ function echoContent(content,wide,left,right){
 	}
 }
 
+// with item in order of preference, src = mut title name 
+function itemSource(item):string{
+	const src:string=item.mut||item.title||item.name||"roha";
+	return src;
+}
+
 function listHistory(){
 	const wide=terminalColumns-statsColumn;
 	const history=rohaHistory;
@@ -475,11 +481,11 @@ function listHistory(){
 		const clip=content.substring(0,wide);
 		const size="("+content.length+")";
 		const role=item.role.padEnd(12," ");
-		const name=(item.mut||item.title||item.name||"roha").padEnd(15," ");
+		const from=itemSource(item).padEnd(15," ");
 		const iii=String(i).padStart(3,"0");
 		const spend=item.price?(item.emoji+" "+item.price.toFixed(4)) :"";
 		const seconds=item.elapsed?(item.elapsed.toFixed(2)+"s"):"";
-		echo(iii,role,name,clip,size,spend,seconds);
+		echo(iii,role,from,clip,size,spend,seconds);
 		total+=content.length;
 	}
 	const size=unitString(total,4,"B");
@@ -498,7 +504,8 @@ function logHistory(){
 		const iii=String(index).padStart(3,"0");
 		const spend=item.price?(item.emoji+" "+item.price.toFixed(4)) :"";
 		const seconds=item.elapsed?(item.elapsed.toFixed(2)+"s"):"";
-		echo(iii,item.role,item.mut||item.title||item.name||"???",spend,seconds);
+		const src=itemSource(item);
+		echo(iii,item.role,src,spend,seconds);
 		const content=readable(item.content).substring(0,clipLog);
 		echoContent(content,wide,3,2);
 	}
@@ -820,7 +827,7 @@ function prepareGeminiContent(payload){
 				break;
 			case "assistant":{
 				if(item.tool_call_id){
-					// todo - geminifi the tool result
+					// todo: - geminifi the tool result
 					if (debugging) echo("[GEMINI] assistant",item.tool_call_id);
 					const ass={role:"user",parts:[{text}]}
 //					contents.push(ass);
@@ -1283,7 +1290,7 @@ async function connectDeepSeek(account,config) {
 						});
 						if (!response.ok) {
 							console.log("[DeepSeek] not ok",response.status,response.statusText);
-							throw new Error("DeepSeek API error");
+							throw new Error("DeepSeek API error "+response.statusText);
 						}
 						return await response.json();
 					},
@@ -2276,7 +2283,9 @@ async function attachMedia(words){
 	}
 }
 
-async function callCommand(command) {
+// can emit [FOUNTAIN] callCommand error
+// TODO: validate docs and link to information
+async function callCommand(command:string) {
 	let dirty=false;
 	let words=command.split(" ");
 	try {
@@ -2493,7 +2502,11 @@ async function callCommand(command) {
 				return false; // Command not recognized
 		}
 	} catch (error) {
-		echo("[FOUNTAIN] callCommand error",command,error.message,error.stack);
+		if(roha.config.debugging){
+			echo("[FOUNTAIN] callCommand error",command,error.message,error.stack);
+		}else{
+			echo("[FOUNTAIN] calling",command,error.message);
+		}
 	}
 	increment("calls");
 	return dirty;
@@ -2648,19 +2661,20 @@ function strictHistory(history){
 	const list=[];
 	for(const _item of history){
 		const item={..._item};
+		const src="["+itemSource(item)+"] ";
 		switch(item.role){
 			case "system":
-				list.push({role:"system",content:item.content});
+				list.push({role:"system",content:src+item.content});
 				break;
 			case "assistant":
 				if(item.tool_calls){
-					list.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
+					list.push({role:item.role,content:src+item.content,tool_calls:item.tool_calls});
 				}else{
-					list.push({role:"assistant",content:item.content});
+					list.push({role:"assistant",content:src+item.content});
 				}
 				break;
 			case "user":{
-					const content="["+item.name+"] "+item.content;
+					const content=src+item.content;
 					list.push({role:item.role,content});
 				}
 				break;
@@ -2815,6 +2829,9 @@ async function relay(depth:number) {
 		}else{
 			payload.messages=[...rohaHistory];
 		}
+
+		// if(config.hasCache) payload.cache_tokens=true;
+
 	// use tools
 		const useTools=grokFunctions&&roha.config.tools;
 		if(useTools){
@@ -2836,11 +2853,10 @@ async function relay(depth:number) {
 		}
 
 		// [RELAY] endpoint chat completions.create
+		// this call can throw from DeepSeek API
 
 		const completion=await endpoint.chat.completions.create(payload);
 		elapsed=(performance.now()-now)/1000;
-
-		// if(config.hasCache) payload.cache_tokens=true;
 
 		// TODO: detect -latest modelnames rerouting to real instances
 		if (completion.model != model) {
@@ -2992,7 +3008,12 @@ async function relay(depth:number) {
 			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
 		}
 	} catch (error) {
-		const line=error.message || String(error);
+		const line=error.message || String(error);		
+		if(line.includes("DeepSeek API error")){
+			echo(line+" - maximum prompt length exceeded?");
+			echo(cleanupRequired);
+			return spend;
+		}
 		if(line.includes("maximum prompt length")){
 			echo("Oops, maximum prompt length exceeded.");
 			echo(cleanupRequired);

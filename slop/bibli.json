@@ -1,6 +1,6 @@
 {
 	"name": "bibli",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "Bibliographic index of specifications",
 	"status": "A living document of linguistic latitude",
 	"copyright": "(C) 2025 Simon Armstrong",
@@ -290,6 +290,22 @@
 					"category": "Nd",
 					"codePoints": ["U+2648","U+2653"],
 					"range": [9800,9811]
+				}
+				"📑📚":{
+					"name": "Books",
+					"codes": "📑📒📓📕📗📚",
+					"block": "Miscellaneous Symbols",
+					"category": "So",
+					"codePoints": ["U+1F4D1","U+1F4DA"],
+					"range": [128209, 128218]
+				},
+				"🖊🖌": {
+					"name": "Writing Tools",
+					"codes": "🖊🖋🖌",
+					"block": "Miscellaneous Symbols",
+					"category": "So",
+					"codePoints": ["U+1F58A","U+1F58C"],
+					"range": [128394, 128396]
 				}
 			}
 		}

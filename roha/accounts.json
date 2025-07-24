@@ -55,14 +55,6 @@
 		"api": "OpenAI",
 		"locale": "fr-FR"
 	},
-	"cohere": {
-		"emoji": "🧩",
-		"env": "COHERE_API_KEY",
-		"url": "https://api.cohere.com/v2",
-		"docs": "https://docs.cohere.com/reference/about",
-		"api": "Cohere",
-		"locale": "en-CA"
-	},
 	"alibaba": {
 		"emoji": "🐉",
 		"env": "ALIBABA_API_KEY",

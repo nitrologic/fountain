@@ -1,10 +1,10 @@
 echo off
 echo Testing Slop Fountain 
 echo see roha/deno.json for task options
-
-rem skeleton play net host slopfountain
+rem 
+rem fountain skeleton play net host 
 pushd roha
-deno task slopfountain
+deno task fountain
 rem deno task play
 rem deno task net
 rem deno task host
