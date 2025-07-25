@@ -2177,10 +2177,30 @@ async function onAccount(args){
 	}
 }
 
-async function showHelp(words) {
+async function showHelp(words:string[]) {
 	try {
 		const md=await Deno.readTextFile("forge.md");
-		echo(mdToAnsi(md));
+		const cmds=md.split("\n### /");
+		const intro=cmds[0].split("\n## ")[0].trim();
+		if(words.length>1){
+			const index=parseInt(words[1]);
+			for(let i=1;i<cmds.length;i++){
+				if(i==index){
+					const help="/"+cmds[i];
+					echo("[HELP]",help);
+				}
+			}
+			listCommand="";
+		}else{
+			echo("[HELP]",intro);//mdToAnsi(intro));
+			for(let i=1;i<cmds.length;i++){
+				const line=cmds[i];
+				const eol:number=line.indexOf("\n");
+				const name=line.substring(0,eol);
+				echo("#"+i+" /"+name);
+				listCommand="help";
+			}
+		}
 	} catch (e) {
 		echo("showHelp error",e.message);
 	}

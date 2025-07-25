@@ -1,13 +1,8 @@
-# nitrologic forge research tool
+# nitrologic-forge CLI Reference Manual
 
-A research tool designed to chat and share files with models under test.
+The forge text interfaces is designed for research tools such as Slop Fountain⛲ to chat and share files with models under test.
 
-Timestamps in some file names is hex seconds since 1.1.1970.
-
-## forge user interface
-
-commands with no arguments may often prompt for a # index from
-the items displayed
+It is designed to be human usable adopting traditional platforms where appropriate. Commands with no arguments may often prompt for a # index from the items displayed.
 
 ### /config
 
@@ -187,17 +182,3 @@ The token cost summary when model has no rate defined includes:
 * promptTokens used in the context - drop files to reduce
 * replyTokens used for completions - typically cost more
 * totalTokens a running total of tokens used
-
-### /think
-
-### /bibli
-
-### /spec
-
-### /balance
-
-### /nic
-
-### /listen
-
-Accept connections from web clients on port

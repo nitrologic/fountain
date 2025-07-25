@@ -2,6 +2,12 @@
 
 A research tool for advanced model manipulation.
 
+Timestamps in some file names is hex seconds since 1.1.1970.
+
+# documentation
+
+CLI Reference Manual - forge user documentation [forge.md](forge.md)
+
 # setup
 
 Requires an api environment variable, see accounts.json for latest
@@ -17,10 +23,6 @@ Requires an api environment variable, see accounts.json for latest
 * MOONSHOT_API_KEY
 * HUGGINGFACE_API_KEY
 
-# documentation
-
-Main command line forge user documentation [forge.md](forge.md)
-
 # history
 
 Stage one nitrologic roha [roha](https://github.com/nitrologic/roha)
@@ -28,3 +30,22 @@ Stage one nitrologic roha [roha](https://github.com/nitrologic/roha)
 Second stage nitrologic foundry [foundry](https://github.com/nitrologic/foundry) 
 
 Third stage nitrologic forge [forge](https://github.com/nitrologic/forge)
+
+
+# notes
+
+Commands in development
+
+### /think
+
+### /bibli
+
+### /spec
+
+### /balance
+
+### /nic
+
+### /listen
+
+Accept connections from web clients on port
