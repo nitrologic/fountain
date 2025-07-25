@@ -30,12 +30,29 @@ export class pixelMap{
 		this.colmap.fill(grey);
 	}
 	draw(sprite:string,x:number,y:number){
+		x|=0;y|=0;
 		const lines=sprite.split("\n");
 		for(const line of lines){
 			for(let xx=0;xx<line.length;xx++){
 				if(line.charAt(xx)=="*") this.plot(x+xx,y);
 			}
 			y++;
+		}
+	}
+	vlin(x:number,y:number,h:number){
+		const bit=1<<(x&15);
+		let index=y*this.span+(x>>4);
+		while(h-->0){
+			this.wordmap[index]|=bit;
+			index+=this.span;
+		}
+	}
+	hlin(x:number,y:number,w:number){
+		const bit=1<<(x&15);
+		while(w-->0){
+			let index=y*this.span+(x>>4);
+			this.wordmap[index]|=bit;
+			x++;
 		}
 	}
 	plot(x:number,y:number){

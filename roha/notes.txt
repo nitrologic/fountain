@@ -1,3 +1,10 @@
+?Prompt error: InvalidData: Windows stdio in console mode does not support writing non-UTF-8 byte sequences
+    at async Object.write (ext:deno_web/06_streams.js:1180:9) {
+  name: "InvalidData"
+}
+error: Uncaught (in promise) BadResource: Bad resource ID
+                console.log("[SHLOP] reset");
+
 
 Enabling Mouse Reporting in ANSI Terminals
 To detect mouse clicks, movements, and releases, you need to enable mouse tracking using

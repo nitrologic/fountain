@@ -52,6 +52,28 @@ console.log("[SHLOP] enter to start exit to end");
 
 console.log(Ansi.HideCursor);
 
+class Button{
+	value=0;
+	inc(){
+		this.value++;
+	}
+}
+class Lever{
+	min=-1;
+	max=1;
+	value=0;
+	constructor(){		
+	}	
+	inc(amount=1){
+		this.value+=amount;
+		if(this.value>this.max) this.value=this.max;
+	}
+	dec(amount=1){
+		this.value-=amount;
+		if(this.value<this.min) this.value=this.min;
+	}
+};
+
 class Event{
 	name: string;
 	code: number[];
@@ -77,10 +99,24 @@ class Event{
 // [  50, 51, 126 ] F11
 // [  50, 52, 126 ] F12
 
+const joyx=new Lever();
+const joyy=new Lever();
+const joyb=new Button();
+
 function onKey(value:number[]){
-	const e=new Event("key",value);
+	if(value.length==3 && value[0]==27 && value[1]==91){
+		if(value[2]==65) joyy.dec();
+		if(value[2]==66) joyy.inc();
+		if(value[2]==67) joyx.inc();
+		if(value[2]==68) joyx.dec();
+	}
+	if(value.length==1){
+		if(value[0]===9) joyb.inc();
+	}
+	const joy=[joyx.value,joyy.value,joyb.value];
+//	console.log("[SHLOP] event",joy);
+	const e=new Event("joy",joy);
 	slopEvents.push(e);
-	console.log("[SHLOP] onKey",value)
 }
 
 let workerCount=0;
@@ -164,7 +200,7 @@ async function refreshBackground(pause:number,line:string) {
 	if(events.length){
 		// all slop workers get all events
 		for(const worker of slops){
-			console.log("[SHLOP] worker update");
+//			console.log("[SHLOP] worker update");
 			worker.postMessage({command:"update",events});
 		}			
 	}
@@ -215,8 +251,8 @@ async function promptSlop(message:string) {
 					}
 				} else if (byte === 0x1b) { // Escape sequence
 					if (value.length === 1) {
-//						exitSlop();
-//						Deno.exit(0);
+						exitSlop();
+						Deno.exit(0);
 //						onKey(27);
 					}
 					onKey(value);
