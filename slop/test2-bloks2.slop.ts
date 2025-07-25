@@ -24,6 +24,14 @@ let tv:pixelMap=new pixelMap(tvWidth,tvHeight);
 const startTime=performance.now();
 let frameCount=-1;
 
+function resize(){
+	const size=Deno.consoleSize;
+	if(size){
+		const w=size.columns*2;
+		tv=new pixelMap(w,size.rows*2-6);
+	}
+}
+
 function blankFrame(){
 	const t=performance.now();
 //	const shade=(t/3e3)%1;

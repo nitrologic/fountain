@@ -6,10 +6,9 @@
 
 // todo:
 // frame multiple viewports
-//
-
 // const message=AnsiHome+frame+ansiPrompt()+AnsiPink+line+AnsiDefault;
 
+const _verbose=false;
 const rawPrompt=true;
 
 const exitMessage="Ending session.";
@@ -19,26 +18,23 @@ import { _common } from "https://deno.land/std@0.224.0/path/_common/common.ts";
 
 import { echo, fileLength, Ansi } from "./slopshoptools.ts";
 
-
 async function readFileNames(path:string,suffix:string):Promise<string[]>{
 	const result=[];
 	try {
 		for await (const entry of Deno.readDir(path)) {
 			if (entry.isFile && entry.name.endsWith(suffix)) {
-				if(_verbose) echo("readFileNames",path,entry);
+				if(_verbose) echo("[SHLOP] readFileNames",path,entry);
 				result.push(entry.name);
 			}
 		}
 	} catch (error) {
-		echo("readFileNames:", error);
+		echo("[SHLOP] readFileNames:", error);
 	}
 	return result;
 }
 
 const appDir=Deno.cwd();
 const slopPath=resolve(appDir,"../slop");
-
-const _verbose=false;
 
 // main action starts here
 
@@ -65,9 +61,26 @@ class Event{
 	}
 };
 
+// [ 27 ] Escape
+// [ 9 ] Tab
+
+// 27, 91, 
+
+// [ 65..68 ] Up Down Right Left
+// [ 80..83 ] F1 F2 F3 F4
+// [  49, 53, 126 ] F5
+// [  49, 55, 126 ] F6
+// [  49, 56, 126 ] F7
+// [  49, 57, 126 ] F8
+// [  50, 48, 126 ] F9
+// [  50, 49, 126 ] F10
+// [  50, 51, 126 ] F11
+// [  50, 52, 126 ] F12
+
 function onKey(value:number[]){
 	const e=new Event("key",value);
 	slopEvents.push(e);
+	console.log("[SHLOP] onKey",value)
 }
 
 let workerCount=0;
@@ -104,7 +117,6 @@ function logSlop(_result:any){
 	slopPail.push(message);
 }
 
-
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
 }
@@ -127,6 +139,7 @@ let consoleSize=Deno.consoleSize();
 
 function resetWorkers(){
 	consoleSize=Deno.consoleSize();
+	consoleSize.rows-=2;
 	for(const key in slops){
 		const worker=slops[key];
 		const info=slopWorkers[key];
@@ -158,14 +171,11 @@ async function refreshBackground(pause:number,line:string) {
 	if(slopFrames.length&&slopFrame!=slopFrames.length){
 		slopFrame=slopFrames.length;
 		const frame=slopFrames[slopFrame-1];
-//		const message=Ansi.Home + frame + Ansi.Cursor + row + ";1H\n" + prompt+line;
 		const message=Ansi.Home+frame+ansiPrompt()+Ansi.Pink+line+Ansi.Default;
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
 }
-
-// exitSlop 𓊽𓉴𓉴𓉴𓊽
 
 function exitSlop(){
 	console.log(Ansi.ShowCursor);
@@ -173,12 +183,10 @@ function exitSlop(){
 	console.log("[SHLOP] exitSlop clearing raw",exitMessage);
 }
 
-// promptSlop 𓅠
-
 let _promptBuffer=new Uint8Array(0);
 
 async function promptSlop(message:string) {
-	if(!rawPrompt) {
+	if(!rawPrompt){
 		const response=await prompt(message);
 		return response;
 	}
@@ -207,8 +215,9 @@ async function promptSlop(message:string) {
 					}
 				} else if (byte === 0x1b) { // Escape sequence
 					if (value.length === 1) {
-						exitSlop();
-						Deno.exit(0);
+//						exitSlop();
+//						Deno.exit(0);
+//						onKey(27);
 					}
 					onKey(value);
 					if (value.length === 3) {
@@ -228,7 +237,7 @@ async function promptSlop(message:string) {
 					echo("[stdin]",result);
 					busy=false;
 				} else if (byte==0x09){
-					onKey([0]);
+					onKey(value);
 				} else {
 					bytes.push(byte);
 					const buf=new Uint8Array(_promptBuffer.length + 1);

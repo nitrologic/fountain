@@ -1,3 +1,147 @@
+
+Enabling Mouse Reporting in ANSI Terminals
+To detect mouse clicks, movements, and releases, you need to enable mouse tracking using
+ANSI escape sequences. Most modern terminals (xterm, iTerm2, GNOME Terminal, Windows Terminal)
+support this.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Basic Mouse Reporting Modes
+┌──────┬─────────────────┬─────────────┐
+│  Mode │  Escape Sequence │  Description │
+├──────┼─────────────────┼─────────────┤
+│  Normal (Click Tracking) │  `\x1b[?1000h`  │  Reports mouse clicks & drags
+(press/release). │
+│  Extended (Motion Tracking) │  `\x1b[?1002h`  │  Reports mouse movement while a
+button is held. │
+│  Full (All Events) │  `\x1b[?1003h`  │  Reports all mouse movements (even without
+clicks). │
+└──────┴─────────────────┴─────────────┘
+
+• Disable mouse reporting:*
+`\x1b[?1000l` (or `1002l`, `1003l` for extended/full modes).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2. Mouse Event Format
+When enabled, mouse actions send an escape sequence like:
+
+\x1b[M<b><x><y>
+
+- `<b>` = Button & action (encoded in a single byte).
+- `<x>` & `<y>` = Column & row (1-based, ASCII-encoded).
+
+Button Codes (`<b>`)
+┌───────┬─────────┐
+│  Value │  Meaning │
+├───────┼─────────┤
+│  `0x20` │  Left button press │
+│  `0x23` │  Left button release │
+│  `0x21` │  Middle button press │
+│  `0x24` │  Middle button release │
+│  `0x22` │  Right button press │
+│  `0x25` │  Right button release │
+│  `0x60` │  Scroll up │
+│  `0x61` │  Scroll down │
+└───────┴─────────┘
+
+• (Note: Some terminals vary slightly in encoding.)*
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3. Example in Deno
+Here’s how to enable mouse tracking in your `slopfountain.ts`:
+
+
+// Enable mouse reporting (normal mode)
+Deno.stdout.write(new TextEncoder().encode("\x1b[?1000h"));
+
+// Set raw mode for input
+Deno.stdin.setRaw(true);
+const reader = Deno.stdin.readable.getReader();
+
+while (true) {
+  const { value } = await reader.read();
+  const input = new TextDecoder().decode(value);
+
+  // Check for mouse input
+  if (input.startsWith("\x1b[M")) {
+    const [_, b, x, y] = input.split("").map(c => c.charCodeAt(0));
+    const button = b - 32; // Decode button
+    const col = x - 32;    // Column (1-based)
+    const row = y - 32;    // Row (1-based)
+
+    console.log(`Mouse: button=${button}, x=${col}, y=${row}`);
+  }
+
+  // Exit on Ctrl+C
+  if (input === "\x03") break;
+}
+
+// Disable mouse reporting before exit
+Deno.stdout.write(new TextEncoder().encode("\x1b[?1000l"));
+Deno.stdin.setRaw(false);
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4. Handling Mouse Events
+┌────────┬────────────────┬─────────┐
+│  Action │  Example Output │  Meaning │
+├────────┼────────────────┼─────────┤
+│  Left-click at (10,5) │  `\x1b[M 0<10><5>` │  Press at column 10, row 5. │
+│  Left-release │  `\x1b[M 3<10><5>` │  Release at same position. │
+│  Right-click │  `\x1b[M 2<15><8>` │  Right press at (15,8). │
+│  Scroll up │  `\x1b[M `\`<5><5>` │  `\` = 0x60 (scroll up). │
+└────────┴────────────────┴─────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+5. Notes & Caveats
+1. Terminal Compatibility:
+   - Works in xterm, iTerm2, Windows Terminal, GNOME Terminal.
+   - May not work in basic `cmd.exe` or `mintty`.
+
+2. Coordinates:
+   - `(1,1)` = Top-left corner (not `0,0`).
+   - Some terminals report pixels (not cells) in extended modes.
+
+3. Disable on Exit:
+   - Always turn off mouse reporting (`\x1b[?1000l`) before exiting, or the terminal may
+misbehave.
+
+4. Drag Events:
+   - Mode `1002` reports movement while a button is held.
+   - Mode `1003` reports all movements (even without clicks).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+6. Advanced: SGR Mode (Better Encoding)
+For more precise reporting (like high-DPI mice), use SGR mode:
+
+// Enable SGR mouse mode (better for modern terminals)
+Deno.stdout.write(new TextEncoder().encode("\x1b[?1006h"));
+
+// Example SGR event: `\x1b[<0;12;35M` = Left-click at (12,35)
+
+- Format: `\x1b[<b;x;yM` (press) or `\x1b[<b;x;ym` (release).
+- Works better with high-resolution mice.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Summary
+✅ Enable mouse reporting with `\x1b[?1000h`.
+📊 Decode events (`\x1b[M<b><x><y>`).
+🚫 Disable with `\x1b[?1000l` before exiting.
+
+Would you like a full implementation in `slopfountain.ts`? I can refine the mouse handling logic
+further. 🐭
+
+{account:deepseek,spent:0.0128,balance:-0.6814}
+ fountain 1.3.2 ⛲  deepseek-chat 🐋 deepseek-chat@deepseek 1.0° 🪠 $0.013 111.6KB 48.54s 
+>
+
+
 //
 📜
 ☯
