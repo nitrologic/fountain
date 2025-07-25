@@ -1,11 +1,14 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set DIR=rc4
+set DIR=..\rc4\win32
 set COMPILE_ARGS=--allow-run --allow-env --allow-net --allow-read --allow-write
 set CORE=forge.md LICENSE fountain.md welcome.txt accounts.json modelspecs.json
 set EXTRAS=isolation\readme.txt isolation\test.js foundry\notice.txt
-set DEPENDENCIES=%CORE% %EXTRAS%
+set EXTRAS2=slopspec.json bibli.json
+set DEPENDENCIES=%CORE% %EXTRAS2%
+
+pushd ..\roha
 
 if not exist "slopfountain.ts" (
 	echo Error: slopfountain.ts not found.
@@ -51,6 +54,8 @@ if !MISSING! gtr 0 (
 )
 
 echo Forge %DIR% build completed.
+
+popd
 
 rem upx --best %DIR%\slopfountain.exe
 

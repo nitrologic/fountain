@@ -4,7 +4,7 @@
 
 // Tested with Deno 2.4.2, V8 13.7.152.14, TypeScript 5.8.3
 
-import OpenAI from "https://deno.land/x/openai@v4.69.0/mod.ts";
+import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { Anthropic } from "npm:@anthropic-ai/sdk";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
@@ -115,10 +115,10 @@ const MaxFileSize=512*1024;
 const appDir=Deno.cwd();
 const accountsPath=resolve(appDir,"accounts.json");
 const specsPath=resolve(appDir,"modelspecs.json");
+const unicodePath=resolve(appDir,"slopspec.json");
+const bibliPath=resolve(appDir,"bibli.json");
 
 const slopPath=resolve(appDir,"../slop");
-const unicodePath=resolve(appDir,"../slop/slopspec.json");
-const bibliPath=resolve(appDir,"../slop/bibli.json");
 
 const forgePath=resolve(appDir,"forge");
 const rohaPath=resolve(forgePath,"forge.json");
@@ -1367,11 +1367,11 @@ function specAccount(account){
 	const endpoint=rohaEndpoint[account];
 	const models=endpoint.models||[];
 	if(!(account in roha.lode)){
-		roha.lode[account]={name:account,url:endpoint.baseURL,env:config.env,credit:0,models};
+		roha.lode[account]={name:account,url:endpoint.baseURL,env:config.env,credit:0};
 	}
 	if(roha.config.debugging){
 		const lode=roha.lode[account];
-		if(roha.config.verbose) echo("[FOUNTAIN] specAccount",account,lode);//endpoint);//config);
+		if(roha.config.verbose) echo("[FOUNTAIN] specAccount",account,lode);
 	}
 }
 
@@ -1792,9 +1792,11 @@ async function readForge(){
 }
 
 async function writeForge(){
+//	console.log("[WRITING] roha",roha)
+	const json=JSON.stringify(roha, null, "\t");
 	try {
 		roha.model=grokModel;
-		await Deno.writeTextFile(rohaPath, JSON.stringify(roha, null, "\t"));
+		await Deno.writeTextFile(rohaPath,json);
 	} catch (error) {
 		console.error("Error writing",rohaPath,error);
 	}
@@ -3190,6 +3192,9 @@ for(const account in modelAccounts){
 		rohaEndpoint[account]=endpoint;
 		specAccount(account);
 		const lode=roha.lode[account];
+
+//		echo("[SPEW]",endpoint.modelList);
+
 		if(!areSame(lode.modelList,endpoint.modelList)){
 			echo("[FORGE] modifying modelList");
 			lode.modelList=endpoint.modelList;
@@ -3211,7 +3216,6 @@ let sessions=increment("sessions");
 if(sessions==0||roha.config.showWelcome){
 	echo(welcome);
 	await flush();
-	await writeForge();
 }
 
 if(roha.config){
