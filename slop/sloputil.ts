@@ -81,7 +81,7 @@ export class pixelMap{
 			this.colmap[xy]=col8;
 		}
 	}
-	frame():string[]{
+	frameQuads():string[]{
 		const w=this.width;
 		const h=this.height;
 		const span=((w+15)/16)|0;
@@ -115,4 +115,44 @@ export class pixelMap{
 		}
 		return lines;
 	}
+
+	frame():string[]{	//Braille
+		const w=this.width;
+		const h=this.height;
+		const span=((w+15)/16)|0;
+		const wordmap=this.wordmap;
+		const cols:number=(w/2)|0;
+		const rows:number=(h/4)|0;
+		const lines:string[]=[];
+		for(let y:number=0;y<rows;y++){
+			let line:string[]=[];
+			const y0=y*4+0;
+			const y1=y*4+1;
+			const y2=y*4+2;
+			const y3=y*4+3;
+			for(let x:number=0;x<cols;x++){
+				const w0=wordmap[y0*span+(x>>3)|0];
+				const w1=wordmap[y1*span+(x>>3)|0];
+				const w2=wordmap[y2*span+(x>>3)|0];
+				const w3=wordmap[y3*span+(x>>3)|0];
+				const bit0=1<<((x*2+0)&15);
+				const bit1=1<<((x*2+1)&15);
+				const b8:number=BrailleCode+
+					(w0&bit0?1:0)+
+					(w0&bit1?8:0)+
+					(w1&bit0?2:0)+
+					(w1&bit1?16:0)+
+					(w2&bit0?4:0)+
+					(w2&bit1?32:0)+
+					(w3&bit0?64:0)+
+					(w3&bit1?128:0);
+				line.push(String.fromCharCode(b8));
+			}
+			lines.push(line.join(""));
+		}
+		return lines;
+	}
 }
+
+const BrailleCode=0x2800;
+const BrailleOrder=[1,4,2,5,3,6,7,8];
