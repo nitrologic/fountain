@@ -26,7 +26,7 @@ const numbers=await loadSprites("../slop/slop-number-sprites.txt")
 const period=50;	//20hz chunky pixel display
 //const period=40;	//25hz chunky pixel display
 
-const MaxFrame=0;//1200;
+const MaxFrame=2200;
 
 // pico is 240 x 135
 

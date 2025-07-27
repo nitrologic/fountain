@@ -1,24 +1,51 @@
 #!/bin/bash
 
-DIR="forge-rc4"
-DEPENDENCIES=("README.md" "LICENSE" "CHANGELOG.md" "forge.md" "welcome.txt" "accounts.json" "modelspecs.json" "foundry/notice.txt" "isolation/readme.txt" "isolation/test.js")
+DIR="../rc4/macos"
+DEPENDENCIES=("fountain.md" "LICENSE" "forge.md" "welcome.txt" "accounts.json" "modelspecs.json" "slopspec.json" "bibli.json")
+DEPENDENCIES2=("foundry/notice.txt" "isolation/readme.txt" "isolation/test.js")
 
-deno cache forge.js
+pushd ../roha
+
+deno cache slopfountain.ts
 if [ $? -ne 0 ]; then
     echo "Error: Failed to cache dependencies."
     exit 1
 fi
 
-deno compile --allow-run --allow-env --allow-net --allow-read --allow-write --output "$DIR/forge" forge.js
+deno compile --no-check --allow-run --allow-env --allow-net --allow-read --allow-write --output "$DIR/slopfountain" slopfountain.ts
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to compile forge.js."
+    echo "Error: Failed to compile slopfountain.ts."
     exit 1
 fi
 
-if [ ! -f "$DIR/forge" ]; then
-    echo "Error: forge executable not created by compiler."
+if [ ! -f "$DIR/slopfountain" ]; then
+    echo "Error: slopfountain binary not created by compiler."
     exit 1
 fi
+
+
+
+
+deno cache slopshop.ts
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to cache dependencies."
+    exit 1
+fi
+
+deno compile --no-check --allow-run --allow-env --allow-net --allow-read --allow-write --output "$DIR/slopshop" slopshop.ts
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to compile slopshop.ts."
+    exit 1
+fi
+
+if [ ! -f "$DIR/slopshop" ]; then
+    echo "Error: slopshop binary not created by compiler."
+    exit 1
+fi
+
+
+
+
 
 MISSING=0
 COPY_FAILED=0
@@ -44,6 +71,8 @@ if [ $MISSING -gt 0 ] || [ $COPY_FAILED -gt 0 ]; then
     # exit 1
 fi
 
-echo "Forge $DIR build completed successfully."
+echo "nitrologic Slop Fountain $DIR build completed successfully."
+
+popd
 
 exit 0
