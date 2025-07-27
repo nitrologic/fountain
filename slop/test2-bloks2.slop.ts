@@ -1,7 +1,14 @@
 // worker.ts
-// emits events start error tick
 
-import { pixelMap } from "./sloputil.ts";
+// emits events 
+// start error tick
+
+// key events   * down press only
+// enter - reset
+// arrow keys - up down left right
+// tab - fire
+
+import { pixelMap, SixShades } from "./sloputil.ts";
 
 async function loadSprites(path:string){
 	const spritestxt=await Deno.readTextFile(path);
@@ -11,8 +18,8 @@ async function loadSprites(path:string){
 	return sprites
 }
 
-const sprites=await loadSprites("../slop/test-sprites.txt")
-const numbers=await loadSprites("../slop/number-sprites.txt")
+const sprites=await loadSprites("../slop/slop-sprites.txt")
+const numbers=await loadSprites("../slop/slop-number-sprites.txt")
 
 // console.log("numbers",numbers.length);
 
@@ -21,23 +28,32 @@ const period=50;	//20hz chunky pixel display
 
 const MaxFrame=1200;
 
-const tvWidth=128;
-const tvHeight=32;
-
 // pico is 240 x 135
 
 
 // pixelMap is currently colored foreground 2x2 blocks on ansi background
 
-let tv:pixelMap=new pixelMap(tvWidth,tvHeight);
-const startTime=performance.now();
-let frameCount=-1;
+let tvWidth=128;
+let tvHeight=32;
 
-function resize(){
-	const size=Deno.consoleSize;
+const startTime=performance.now();
+
+let tv={};
+
+function setSize(w:number,h:number){
+	tv=new pixelMap(w,h);
+	tvWidth=w;
+	tvHeight=h;
+}
+
+setSize(tvWidth,tvHeight);
+
+function onResize(size){
 	if(size){
-		const w=size.columns*2;
-		tv=new pixelMap(w,size.rows*2-6);
+		const w=size.columns-2;
+		const h=size.rows-2;
+		setSize(w*2,h*2); //dither and quad
+//		setSize(w,h); //char & widechars
 	}
 }
 
@@ -74,15 +90,19 @@ const shots:Shot[]=[];
 let shipJoy=[0,0,0];
 let fireCount=0;
 
+let frameCount=-1;
+
 function onReset(){
 	ship.x=20;
 	ship.y=10;
 	shots.length=0;
+// todo: currently under switch case control
+//	frameCount=0;
 }
 
 function onTick(){
 	const joy=shipJoy;
-	ship.x+=joy[0];
+	ship.x+=joy[0]*0.5;
 	let y=ship.y+joy[1]*0.5;
 	if(y<1) y=1;
 	if(y>32) y=32;
@@ -99,22 +119,36 @@ function onTick(){
 	}
 }
 
-
 function gameFrame(){
 	const t=performance.now();
-//	const shade=(t/3e3)%1;
-//	tv.noise(shade);
-//	tv.blank(0.8);
-	tv.cls(0.8);
-	tv.draw(sprites[0],ship.x,ship.y);
-	tv.draw(sprites[1],36,2);
+	if(frameCount<5){
+		tv.blank(1);
+	}else{
+		tv.cls(0.5);
+		tv.draw(sprites[0],ship.x,ship.y);
+		tv.draw(sprites[1],36,2);
+		for(const shot of shots){
+			tv.plot(shot.x,shot.y);
+		}
 
-	for(const shot of shots){
-		tv.plot(shot.x,shot.y);
+		tv.rect(ship.x+10,ship.y,3,3);
+
 	}
 
-	return tv.frame().join("\n");
+//	const fb=tv.quadFrame();
+//	const fb=tv.charFrame("*"," ");
+	const fb=tv.widecharFrame("⬜"," ");
+//	const fb=tv.ditherFrame(SixShades);
+	return fb.join("\n");
 }
+
+
+//	const shade=(t/3e3)%1;
+//	tv.noise(shade);
+
+//	return tv.quadFrame().join("\n");
+//	return tv.charFrame("*"," ").join("\n");
+//	return tv.brailleFrame().join("\n");
 
 function tick() {
 	const stopped=frameCount<0;
@@ -137,10 +171,7 @@ self.onmessage=(e)=>{
 		case "reset":
 			frameCount=0;
 			const size=slip.consoleSize;
-			if(size){
-				const w=size.columns*2;
-				tv=new pixelMap(w,size.rows*2-4);
-			}
+			if(size) onResize(size);
 			onReset();
 			break;
 		case "update":
@@ -148,7 +179,7 @@ self.onmessage=(e)=>{
 			update(events);
 			break;
 		case "stop":
-			frameCount=0;
+			frameCount=-1;
 			break;
 	}
 };

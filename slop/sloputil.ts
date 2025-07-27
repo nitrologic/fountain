@@ -2,41 +2,75 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
-export const quads=" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█";
+export const BrailleCode=0x2800;
 
-const AnsiRGB="\x1B[38;2;" //+"⟨r⟩;⟨g⟩;⟨b⟩m"
+export const QuadChars=" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█";
+
+export const SixShades=" ░▒▓██";
+export const SixShades2="██▓▒░ ";
+
+export const AnsiRGB="\x1B[38;2;" //+"⟨r⟩;⟨g⟩;⟨b⟩m"
+
+function ansiFG(col8:number):string{
+	const fg8="\x1B[38;5;"+col8+"m";
+	return fg8;
+}
+
+export function edgeFrame(fb:string[],edge:string[]):string[]{
+	const lines:string[]=[];
+	let y=0;
+	for(const charline of fb){
+		const prefix=edge[y]||"";
+		lines.push(prefix+charline);
+		y++;
+	}
+	return lines;
+}
+
 
 export class pixelMap{
 	width: number;
 	height: number;
 	span: number;
 	wordmap: Uint16Array;
-	colmap: Uint8Array;
+	leftEdge: string[];
+	
 	constructor(width:number,height:number) {
 		this.width = width;
 		this.height = height;
 		this.span=((width+15)/16)|0;
 		this.wordmap=new Uint16Array(this.span*height);
-		this.colmap=new Uint8Array(width*height/4);
+		this.leftEdge=[""];
 	}
 	cls(shade:number){
 		const grey=0xe8+(shade*23)|0;
 		this.wordmap.fill(0);
-		this.colmap.fill(grey);
+		this.leftEdge.fill("");
+		this.leftEdge[0]=ansiFG(grey);
 	}
 	blank(shade:number){
 		const grey=0xe8+(shade*23)|0;
 		this.wordmap.fill(0xffff);
-		this.colmap.fill(grey);
+		this.leftEdge[0]=ansiFG(grey);
 	}
 	draw(sprite:string,x:number,y:number){
 		x|=0;y|=0;
 		const lines=sprite.split("\n");
 		for(const line of lines){
 			for(let xx=0;xx<line.length;xx++){
-				if(line.charAt(xx)=="*") this.plot(x+xx,y);
+				const char=line.charAt(xx);
+				if(char=="*"||char=="#") this.plot(x+xx,y);
 			}
 			y++;
+		}
+	}
+	rect(x0:number,y0:number,w:number,h:number){
+		for(let y=y0;y<y0+h;y++){
+			for(let x=x0;x<x0+w;x++){
+				const index=y*this.span+(x>>4);
+				const bit=1<<(x&15);
+				this.wordmap[index]|=bit;
+			}
 		}
 	}
 	vlin(x:number,y:number,h:number){
@@ -75,13 +109,83 @@ export class pixelMap{
 //			const r:number=Math.random()*0xffff;
 			this.wordmap[xy]=bits;
 		}
-		const c=this.colmap.length;
-		for(let xy=0;xy<c;xy++){
-			const col8=16+(Math.random()*216)|0;
-			this.colmap[xy]=col8;
-		}
 	}
-	frameQuads():string[]{
+
+	// shades 0..4 from counting bits in a 2x2 sample
+	ditherFrame(shades:string=" ░▒▓██"){
+		const w=this.width;
+		const h=this.height;
+		const span=((w+15)/16)|0;
+		const wordmap=this.wordmap;
+		const cols:number=w/2;
+		const rows:number=h/2;
+		const lines:string[]=[];
+		for(let y:number=0;y<rows;y++){
+			let line:string[]=[];
+			for(let x:number=0;x<cols;x++){
+				const w0=wordmap[(y*2+0)*span+(x>>3)|0];
+				const w1=wordmap[(y*2+1)*span+(x>>3)|0];
+				const pos0=(x&7)*2;
+				const pos1=pos0+1;
+				const count=((w0>>pos0)&1)+((w0>>pos1)&1) + ((w1>>pos0)&1)+((w1>>pos1)&1);
+				const q1=shades.charAt(count);
+				line.push(q1);
+			}
+			lines.push(line.join(""));
+		}
+		return lines;
+	}
+
+	charFrame(char0:string,char1:string):string[]{
+		const w=this.width;
+		const h=this.height;
+		const span=((w+15)/16)|0;
+		const wordmap=this.wordmap;
+		const cols:number=w;
+		const rows:number=h;
+		const lines:string[]=[];
+		for(let y:number=0;y<rows;y++){
+			let line:string[]=[];
+			for(let x:number=0;x<cols;x++){
+				const w0=wordmap[y*span+(x>>4)|0];
+				const bit=1<<(x&15);
+				const q1=w0&bit?char0:char1;
+				line.push(q1);
+			}
+			lines.push(line.join(""));
+		}
+		return lines;
+	}
+
+	widecharFrame(char0:string,char1:string):string[]{
+		const w=this.width;
+		const h=this.height;
+		const span=((w+15)/16)|0;
+		const wordmap=this.wordmap;
+		const cols:number=w;
+		const rows:number=h;
+		const lines:string[]=[];
+		for(let y:number=0;y<rows;y++){
+			let line:string[]=[];
+			let wides=0;
+			for(let x:number=0;x+wides<cols;x++){
+				const w0=wordmap[y*span+(x>>4)|0];
+				const bit=1<<(x&15);
+				if((w0&bit)==0 && wides>0){
+					wides--;
+				}else{
+					const ch:string=w0&bit?char0:char1;
+					line.push(ch);
+					let code=ch.charCodeAt(0);
+					if(code>128) wides++;
+				}
+			}
+			lines.push(line.join(""));
+		}
+		return lines;
+	}
+
+	quadFrame():string[]{
 		const w=this.width;
 		const h=this.height;
 		const span=((w+15)/16)|0;
@@ -99,24 +203,15 @@ export class pixelMap{
 				const bit0=1<<((x*2+0)&15);
 				const bit1=1<<((x*2+1)&15);
 				const index:number=(w0&bit0?1:0)+(w0&bit1?2:0)+(w1&bit0?4:0)+(w1&bit1?8:0);
-				const q4=quads.charAt(index);
-				const col8=this.colmap[y*cols+x];
-//				const gcode=0xe8+(Math.random()*24)|0;
-				const gcode=(col8)|0;
-				const grey="\x1B[38;5;"+gcode+"m";
-				const rgb=AnsiRGB+(Math.random()*255|0)+";"+(Math.random()*255|0)+";"+(Math.random()*255|0)+"m";
-				// 36 × r + 6 × g + b
-				//const hcode=0x10+(Math.random()*216)|0;
-				const fg8="\x1B[38;5;"+col8+"m";
-//				line.push(fg8+q4);
-				line.push(grey+q4);
+				const q4=QuadChars.charAt(index);
+				line.push(q4);
 			}
 			lines.push(line.join(""));
 		}
 		return lines;
 	}
 
-	frame():string[]{	//Braille
+	brailleFrame():string[]{	//Braille
 		const w=this.width;
 		const h=this.height;
 		const span=((w+15)/16)|0;
@@ -137,6 +232,7 @@ export class pixelMap{
 				const w3=wordmap[y3*span+(x>>3)|0];
 				const bit0=1<<((x*2+0)&15);
 				const bit1=1<<((x*2+1)&15);
+				//const BrailleOrder=[1,4,2,5,3,6,7,8];
 				const b8:number=BrailleCode+
 					(w0&bit0?1:0)+
 					(w0&bit1?8:0)+
@@ -152,7 +248,65 @@ export class pixelMap{
 		}
 		return lines;
 	}
+
+	// uses this.leftEdge to prefix lines
+
 }
 
-const BrailleCode=0x2800;
-const BrailleOrder=[1,4,2,5,3,6,7,8];
+/*
+
+	edgeFrame(fb:string[]):string[]{
+		const lines:string[]=[];
+		const span=this.width;
+		let y=0;
+		for(const charline of fb){
+			const edge=this.leftEdge[y]||"";
+			for(let line of charline){
+				lines.push(edge+charline);
+			}
+			y++;
+		}
+		return lines;
+	}
+
+//				const char=charline.charAt(x);
+				// const gcode=0xe8+(Math.random()*24)|0;
+				// const rgb=AnsiRGB+(Math.random()*255|0)+";"+(Math.random()*255|0)+";"+(Math.random()*255|0)+"m";
+				// 36 × r + 6 × g + b
+				// const hcode=0x10+(Math.random()*216)|0;
+				// const fg8="\x1B[38;5;"+col8+"m";
+//				line.push(fg8+q4);
+	greyFrame(fb:string[]):string[]{
+		const lines:string[]=[];
+		const span=this.width;
+		let y=0;
+		for(const charline of fb){
+			for(let x=0;x<charline.length;x++){
+				const char=charline.charAt(x);
+				const col8=this.colmap[y*span+x];
+				// const gcode=0xe8+(Math.random()*24)|0;
+				const gcode=(col8)|0;
+				const grey="\x1B[38;5;"+gcode+"m";
+				const rgb=AnsiRGB+(Math.random()*255|0)+";"+(Math.random()*255|0)+";"+(Math.random()*255|0)+"m";
+				// 36 × r + 6 × g + b
+				// const hcode=0x10+(Math.random()*216)|0;
+				const fg8="\x1B[38;5;"+col8+"m";
+//				line.push(fg8+q4);
+			}
+			y++;
+		}
+		return lines;
+	}
+*/
+/*		
+		const c=this.colmap.length;
+		for(let xy=0;xy<c;xy++){
+			const col8=16+(Math.random()*216)|0;
+			this.colmap[xy]=col8;
+		}
+*/			
+// TODO: colmap is colorcodes per line
+//export class colorMap{
+//  cspan: number;
+//	colmap: Uint8Array;
+//
