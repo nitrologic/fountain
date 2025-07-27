@@ -9,7 +9,7 @@ Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM too
 
 * [fountain.md](roha/fountain.md) Configuration
 * [forge.md](roha/forge.md) Command Set
-* [plan.txt](plan.txt) On the list
+* [plan.txt](roha/plan.txt) On the list
 * [license](LICENSE) Copyright (c) 2025 Simon Armstrong - MIT License
 
 ## Developer setup
