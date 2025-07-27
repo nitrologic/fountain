@@ -103,6 +103,12 @@ const joyx=new Lever();
 const joyy=new Lever();
 const joyb=new Button();
 
+function resetJoy(){
+	joyx.value=0;
+	joyy.value=0;
+	joyb.value=0;
+}
+
 function onKey(value:number[]){
 	if(value.length==3 && value[0]==27 && value[1]==91){
 		if(value[2]==65) joyy.dec();
@@ -299,6 +305,7 @@ while(true){
 	if(input==""){
 		console.log("[SHLOP] reset");
 		resetWorkers();
+		resetJoy();
 		continue;
 	}
 	console.log("[SHLOP] ",input);

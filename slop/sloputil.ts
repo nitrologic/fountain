@@ -42,6 +42,24 @@ export class pixelMap{
 		this.wordmap=new Uint16Array(this.span*height);
 		this.leftEdge=[""];
 	}
+	point(x:number,y:number){
+		const bit=1<<(x&15);
+		const w16=this.wordmap[y*this.span+(x>>4)];
+		return(w16&bit)==bit;
+	}
+	blit(src:pixelMap,destx:number,desty:number){
+		for(let y=0;y<src.height;y++){
+			const dy=(desty+y)|0;
+			if(dy>=0 && dy<this.height){
+				for(let x=0;x<src.width;x++){
+					const dx=(destx+x)|0;
+					if(dx>=0 && dx<this.width){
+						if(src.point(x,y)) this.plot(dx,dy)
+					}
+				}
+			}
+		}
+	}
 	cls(shade:number){
 		const grey=0xe8+(shade*23)|0;
 		this.wordmap.fill(0);

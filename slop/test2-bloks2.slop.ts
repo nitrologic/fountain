@@ -26,7 +26,7 @@ const numbers=await loadSprites("../slop/slop-number-sprites.txt")
 const period=50;	//20hz chunky pixel display
 //const period=40;	//25hz chunky pixel display
 
-const MaxFrame=1200;
+const MaxFrame=0;//1200;
 
 // pico is 240 x 135
 
@@ -52,8 +52,8 @@ function onResize(size){
 	if(size){
 		const w=size.columns-2;
 		const h=size.rows-2;
-		setSize(w*2,h*2); //dither and quad
-//		setSize(w,h); //char & widechars
+//		setSize(w*2,h*2); //dither and quad
+		setSize(w,h); //char & widechars
 	}
 }
 
@@ -75,8 +75,6 @@ class Ship{
 	y=10;
 }
 
-const ship=new Ship();
-
 class Shot{
 	x:number;
 	y:number;
@@ -86,18 +84,20 @@ class Shot{
 	}
 }
 
-const shots:Shot[]=[];
 let shipJoy=[0,0,0];
-let fireCount=0;
-
+let shotCount=0;
 let frameCount=-1;
+const ship=new Ship();
+const shots:Shot[]=[];
 
 function onReset(){
+	shipJoy=[0,0,0];
+	shotCount=0;
+// todo: currently under switch case control
+//	frameCount=0;
 	ship.x=20;
 	ship.y=10;
 	shots.length=0;
-// todo: currently under switch case control
-//	frameCount=0;
 }
 
 function onTick(){
@@ -107,14 +107,15 @@ function onTick(){
 	if(y<1) y=1;
 	if(y>32) y=32;
 	ship.y=y;
-	if(fireCount<joy[2]){
-		fireCount++;
+	if(shotCount<joy[2]){
+		shotCount++;
 		shots.push(new Shot(ship.x+6,ship.y+1));
 	}
 	for (let i = shots.length - 1; i >= 0; i--) {
 		shots[i].x += 2;
 		if (shots[i].x > tvWidth) {
 			shots.splice(i, 1);
+
 		}
 	}
 }
@@ -137,7 +138,7 @@ function gameFrame(){
 
 //	const fb=tv.quadFrame();
 //	const fb=tv.charFrame("*"," ");
-	const fb=tv.widecharFrame("⬜"," ");
+	const fb=tv.widecharFrame("🔳"," ");	//⬜
 //	const fb=tv.ditherFrame(SixShades);
 	return fb.join("\n");
 }
