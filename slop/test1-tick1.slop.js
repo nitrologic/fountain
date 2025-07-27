@@ -26,7 +26,7 @@ self.onmessage=(e)=>{
 	}
 };
 
-function blankFrame(index:number):string{
+function blankFrame(index){
 	const start=index%ledArray.length;
 	const led=ledArray[start];
 	const grid=(led.repeat(48)+"\n").repeat(2);

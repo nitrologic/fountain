@@ -8,9 +8,9 @@
 // arrow keys - up down left right
 // tab - fire
 
-import { pixelMap, SixShades } from "./sloputil.ts";
+import { pixelMap, SixShades } from "./sloputil.js";
 
-async function loadSprites(path:string){
+async function loadSprites(path){
 	const spritestxt=await Deno.readTextFile(path);
 	//console.log(spritestxt);
 	const sprites=spritestxt.split(/\n\s*\n/);
@@ -40,7 +40,7 @@ const startTime=performance.now();
 
 let tv={};
 
-function setSize(w:number,h:number){
+function setSize(w,h){
 	tv=new pixelMap(w,h);
 	tvWidth=w;
 	tvHeight=h;
@@ -76,8 +76,8 @@ class Ship{
 }
 
 class Shot{
-	x:number;
-	y:number;
+	x;
+	y;
 	constructor(x,y){
 		this.x=x;
 		this.y=y;
@@ -88,7 +88,7 @@ let shipJoy=[0,0,0];
 let shotCount=0;
 let frameCount=-1;
 const ship=new Ship();
-const shots:Shot[]=[];
+const shots=[];
 
 function onReset(){
 	shipJoy=[0,0,0];
@@ -160,7 +160,7 @@ function tick() {
 	return {success:true,time,event:"tick",count,frame};
 }
 
-function update(events:any[]){
+function update(events){
 	for(const e of events){
 		if(e.name=="joy") shipJoy=e.code;
 	}

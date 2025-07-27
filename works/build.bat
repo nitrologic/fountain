@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-set DIR=..\rc4\win32
+set DIR=..\rc5
 set COMPILE_ARGS=--allow-run --allow-env --allow-net --allow-read --allow-write
 set CORE=forge.md LICENSE fountain.md welcome.txt accounts.json modelspecs.json
 set EXTRAS=isolation\readme.txt isolation\test.js foundry\notice.txt
@@ -31,6 +31,35 @@ if not exist "%DIR%\slopfountain.exe" (
 	echo Error: slopfountain.exe not created.
 	exit /b 1
 )
+
+
+
+if not exist "slopshop.ts" (
+	echo Error: slopshop.ts not found.
+	exit /b 1
+)
+
+deno cache slopshop.ts
+if errorlevel 1 (
+	echo Error: Failed to cache dependencies.
+	exit /b 1
+)
+
+deno compile --no-check %COMPILE_ARGS% --output %DIR%\slopshop.exe slopshop.ts
+if errorlevel 1 (
+	echo Error: Failed to compile slopshop.ts.
+	exit /b 1
+)
+
+if not exist "%DIR%\slopshop.exe" (
+	echo Error: slopshop.exe not created.
+	exit /b 1
+)
+
+
+
+
+
 
 set MISSING=0
 for %%F in (%DEPENDENCIES%) do (

@@ -42,7 +42,7 @@ const slops:Worker[]=[];
 const slopWorkers:any[]=[];
 
 const slopFrames:string[]=[];
-const slopnames=await readFileNames(slopPath,".slop.ts");
+const slopnames=await readFileNames(slopPath,".slop.js");
 const slopEvents:Event[]=[];
 
 console.log("[SHLOP] slop shop 0.2");

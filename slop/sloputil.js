@@ -1,4 +1,4 @@
-// sloputil.ts
+// sloputil.js
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
@@ -11,13 +11,13 @@ export const SixShades2="██▓▒░ ";
 
 export const AnsiRGB="\x1B[38;2;" //+"⟨r⟩;⟨g⟩;⟨b⟩m"
 
-function ansiFG(col8:number):string{
+function ansiFG(col8){
 	const fg8="\x1B[38;5;"+col8+"m";
 	return fg8;
 }
 
-export function edgeFrame(fb:string[],edge:string[]):string[]{
-	const lines:string[]=[];
+export function edgeFrame(fb,edge){
+	const lines=[];
 	let y=0;
 	for(const charline of fb){
 		const prefix=edge[y]||"";
@@ -29,49 +29,49 @@ export function edgeFrame(fb:string[],edge:string[]):string[]{
 
 
 export class pixelMap{
-	width: number;
-	height: number;
-	span: number;
-	wordmap: Uint16Array;
-	leftEdge: string[];
+	width;
+	height;
+	span;
+	wordmap;	//Uint16Array;
+	leftEdge;
 	
-	constructor(width:number,height:number) {
+	constructor(width,height) {
 		this.width = width;
 		this.height = height;
 		this.span=((width+15)/16)|0;
 		this.wordmap=new Uint16Array(this.span*height);
 		this.leftEdge=[""];
 	}
-	point(x:number,y:number){
+	point(x,y){
 		const bit=1<<(x&15);
 		const w16=this.wordmap[y*this.span+(x>>4)];
 		return(w16&bit)==bit;
 	}
-	blit(src:pixelMap,destx:number,desty:number){
-		for(let y=0;y<src.height;y++){
+	blit(srcPixels,destx,desty){
+		for(let y=0;y<srcPixels.height;y++){
 			const dy=(desty+y)|0;
 			if(dy>=0 && dy<this.height){
-				for(let x=0;x<src.width;x++){
+				for(let x=0;x<srcPixels.width;x++){
 					const dx=(destx+x)|0;
 					if(dx>=0 && dx<this.width){
-						if(src.point(x,y)) this.plot(dx,dy)
+						if(srcPixels.point(x,y)) this.plot(dx,dy)
 					}
 				}
 			}
 		}
 	}
-	cls(shade:number){
+	cls(shade){
 		const grey=0xe8+(shade*23)|0;
 		this.wordmap.fill(0);
 		this.leftEdge.fill("");
 		this.leftEdge[0]=ansiFG(grey);
 	}
-	blank(shade:number){
+	blank(shade){
 		const grey=0xe8+(shade*23)|0;
 		this.wordmap.fill(0xffff);
 		this.leftEdge[0]=ansiFG(grey);
 	}
-	draw(sprite:string,x:number,y:number){
+	draw(sprite,x,y){
 		x|=0;y|=0;
 		const lines=sprite.split("\n");
 		for(const line of lines){
@@ -82,7 +82,7 @@ export class pixelMap{
 			y++;
 		}
 	}
-	rect(x0:number,y0:number,w:number,h:number){
+	rect(x0,y0,w,h){
 		for(let y=y0;y<y0+h;y++){
 			for(let x=x0;x<x0+w;x++){
 				const index=y*this.span+(x>>4);
@@ -91,7 +91,7 @@ export class pixelMap{
 			}
 		}
 	}
-	vlin(x:number,y:number,h:number){
+	vlin(x,y,h){
 		const bit=1<<(x&15);
 		let index=y*this.span+(x>>4);
 		while(h-->0){
@@ -99,7 +99,7 @@ export class pixelMap{
 			index+=this.span;
 		}
 	}
-	hlin(x:number,y:number,w:number){
+	hlin(x,y,w){
 		const bit=1<<(x&15);
 		while(w-->0){
 			let index=y*this.span+(x>>4);
@@ -107,40 +107,40 @@ export class pixelMap{
 			x++;
 		}
 	}
-	plot(x:number,y:number){
+	plot(x,y){
 		const bit=1<<(x&15);
 		const index=y*this.span+(x>>4);
 		this.wordmap[index]|=bit;
 	}
-	clear(x:number,y:number){
+	clear(x,y){
 		const mask=0xffff-(1<<(x&15));
 		const index=y*this.span+(x>>4);
 		this.wordmap[index]&=mask;
 	}
-	noise(shade:number){
+	noise(shade){
 		const n=this.wordmap.length;
 		for(let xy=0;xy<n;xy++){
 			let bits=0;
 			for(let i=0;i<16;i++){
 				if(Math.random()<shade) bits|=(1<<i);
 			}
-//			const r:number=Math.random()*0xffff;
+//			const r=Math.random()*0xffff;
 			this.wordmap[xy]=bits;
 		}
 	}
 
 	// shades 0..4 from counting bits in a 2x2 sample
-	ditherFrame(shades:string=" ░▒▓██"){
+	ditherFrame(shades=" ░▒▓██"){
 		const w=this.width;
 		const h=this.height;
 		const span=((w+15)/16)|0;
 		const wordmap=this.wordmap;
-		const cols:number=w/2;
-		const rows:number=h/2;
-		const lines:string[]=[];
-		for(let y:number=0;y<rows;y++){
-			let line:string[]=[];
-			for(let x:number=0;x<cols;x++){
+		const cols=w/2;
+		const rows=h/2;
+		const lines=[];
+		for(let y=0;y<rows;y++){
+			let line=[];
+			for(let x=0;x<cols;x++){
 				const w0=wordmap[(y*2+0)*span+(x>>3)|0];
 				const w1=wordmap[(y*2+1)*span+(x>>3)|0];
 				const pos0=(x&7)*2;
@@ -154,17 +154,17 @@ export class pixelMap{
 		return lines;
 	}
 
-	charFrame(char0:string,char1:string):string[]{
+	charFrame(char0,char1){
 		const w=this.width;
 		const h=this.height;
 		const span=((w+15)/16)|0;
 		const wordmap=this.wordmap;
-		const cols:number=w;
-		const rows:number=h;
-		const lines:string[]=[];
-		for(let y:number=0;y<rows;y++){
-			let line:string[]=[];
-			for(let x:number=0;x<cols;x++){
+		const cols=w;
+		const rows=h;
+		const lines=[];
+		for(let y=0;y<rows;y++){
+			let line=[];
+			for(let x=0;x<cols;x++){
 				const w0=wordmap[y*span+(x>>4)|0];
 				const bit=1<<(x&15);
 				const q1=w0&bit?char0:char1;
@@ -175,24 +175,24 @@ export class pixelMap{
 		return lines;
 	}
 
-	widecharFrame(char0:string,char1:string):string[]{
+	widecharFrame(char0,char1){
 		const w=this.width;
 		const h=this.height;
 		const span=((w+15)/16)|0;
 		const wordmap=this.wordmap;
-		const cols:number=w;
-		const rows:number=h;
-		const lines:string[]=[];
-		for(let y:number=0;y<rows;y++){
-			let line:string[]=[];
+		const cols=w;
+		const rows=h;
+		const lines=[];
+		for(let y=0;y<rows;y++){
+			let line=[];
 			let wides=0;
-			for(let x:number=0;x+wides<cols;x++){
+			for(let x=0;x+wides<cols;x++){
 				const w0=wordmap[y*span+(x>>4)|0];
 				const bit=1<<(x&15);
 				if((w0&bit)==0 && wides>0){
 					wides--;
 				}else{
-					const ch:string=w0&bit?char0:char1;
+					const ch=w0&bit?char0:char1;
 					line.push(ch);
 					let code=ch.charCodeAt(0);
 					if(code>128) wides++;
@@ -203,24 +203,24 @@ export class pixelMap{
 		return lines;
 	}
 
-	quadFrame():string[]{
+	quadFrame(){
 		const w=this.width;
 		const h=this.height;
 		const span=((w+15)/16)|0;
 		const wordmap=this.wordmap;
-		const cols:number=w/2;
-		const rows:number=h/2;
-		const lines:string[]=[];
-		for(let y:number=0;y<rows;y++){
-			let line:string[]=[];
+		const cols=w/2;
+		const rows=h/2;
+		const lines=[];
+		for(let y=0;y<rows;y++){
+			let line=[];
 			const y0=y*2+0;
 			const y1=y*2+1;
-			for(let x:number=0;x<cols;x++){
+			for(let x=0;x<cols;x++){
 				const w0=wordmap[y0*span+(x>>3)|0];
 				const w1=wordmap[y1*span+(x>>3)|0];
 				const bit0=1<<((x*2+0)&15);
 				const bit1=1<<((x*2+1)&15);
-				const index:number=(w0&bit0?1:0)+(w0&bit1?2:0)+(w1&bit0?4:0)+(w1&bit1?8:0);
+				const index=(w0&bit0?1:0)+(w0&bit1?2:0)+(w1&bit0?4:0)+(w1&bit1?8:0);
 				const q4=QuadChars.charAt(index);
 				line.push(q4);
 			}
@@ -229,21 +229,21 @@ export class pixelMap{
 		return lines;
 	}
 
-	brailleFrame():string[]{	//Braille
+	brailleFrame(){	//Braille
 		const w=this.width;
 		const h=this.height;
 		const span=((w+15)/16)|0;
 		const wordmap=this.wordmap;
-		const cols:number=(w/2)|0;
-		const rows:number=(h/4)|0;
-		const lines:string[]=[];
-		for(let y:number=0;y<rows;y++){
-			let line:string[]=[];
+		const cols=(w/2)|0;
+		const rows=(h/4)|0;
+		const lines=[];
+		for(let y=0;y<rows;y++){
+			let line=[];
 			const y0=y*4+0;
 			const y1=y*4+1;
 			const y2=y*4+2;
 			const y3=y*4+3;
-			for(let x:number=0;x<cols;x++){
+			for(let x=0;x<cols;x++){
 				const w0=wordmap[y0*span+(x>>3)|0];
 				const w1=wordmap[y1*span+(x>>3)|0];
 				const w2=wordmap[y2*span+(x>>3)|0];
@@ -251,7 +251,7 @@ export class pixelMap{
 				const bit0=1<<((x*2+0)&15);
 				const bit1=1<<((x*2+1)&15);
 				//const BrailleOrder=[1,4,2,5,3,6,7,8];
-				const b8:number=BrailleCode+
+				const b8=BrailleCode+
 					(w0&bit0?1:0)+
 					(w0&bit1?8:0)+
 					(w1&bit0?2:0)+
@@ -273,8 +273,8 @@ export class pixelMap{
 
 /*
 
-	edgeFrame(fb:string[]):string[]{
-		const lines:string[]=[];
+	edgeFrame(fb){
+		const lines=[];
 		const span=this.width;
 		let y=0;
 		for(const charline of fb){
@@ -294,8 +294,8 @@ export class pixelMap{
 				// const hcode=0x10+(Math.random()*216)|0;
 				// const fg8="\x1B[38;5;"+col8+"m";
 //				line.push(fg8+q4);
-	greyFrame(fb:string[]):string[]{
-		const lines:string[]=[];
+	greyFrame(fb){
+		const lines=[];
 		const span=this.width;
 		let y=0;
 		for(const charline of fb){
@@ -325,6 +325,6 @@ export class pixelMap{
 */			
 // TODO: colmap is colorcodes per line
 //export class colorMap{
-//  cspan: number;
+//  cspan;
 //	colmap: Uint8Array;
 //
