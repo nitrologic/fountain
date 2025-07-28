@@ -1,22 +1,25 @@
-// worker.ts
+// test2 bloks
 
-// emits events 
-// start error tick
+import { loadSprites, greyShade, pixelMap, SixShades } from "./sloputil.js";
 
-// key events   * down press only
+const MaxFrame=0;
+
+// big wide terminal blocks sandbox
+// half spacing and wide spacing work in progress
+
+// blokshop check list
 // enter - reset
+// exit[enter] - quit
+
+// emit check list
+// start 
+// error 
+// tick
+
+// key controls check list
+// type - onPress
 // arrow keys - up down left right
 // tab - fire
-
-import { pixelMap, SixShades } from "./sloputil.js";
-
-async function loadSprites(path){
-	const spritestxt=await Deno.readTextFile(path);
-	//console.log(spritestxt);
-	const sprites=spritestxt.split(/\n\s*\n/);
-	//console.log("sprites=",sprites.length);
-	return sprites
-}
 
 const sprites=await loadSprites("../slop/slop-sprites.txt")
 const numbers=await loadSprites("../slop/slop-number-sprites.txt")
@@ -25,19 +28,12 @@ const numbers=await loadSprites("../slop/slop-number-sprites.txt")
 
 const period=50;	//20hz chunky pixel display
 //const period=40;	//25hz chunky pixel display
-
-const MaxFrame=2200;
-
 // pico is 240 x 135
-
-
 // pixelMap is currently colored foreground 2x2 blocks on ansi background
 
 let tvWidth=128;
 let tvHeight=32;
-
 const startTime=performance.now();
-
 let tv={};
 
 function setSize(w,h){
@@ -54,19 +50,6 @@ function onResize(size){
 		const h=size.rows-2;
 //		setSize(w*2,h*2); //dither and quad
 		setSize(w,h); //char & widechars
-	}
-}
-
-function test1(){
-	for(let i=0;i<100;i++){
-		tv.plot(i,i);
-	}
-	tv.draw(sprites[0],12,2);
-	tv.draw(sprites[1],16,7);
-	tv.draw(sprites[0],0,12);
-	for(let i=0;i<24;i++){
-		const d=(Math.random()*10)|0;
-		tv.draw(numbers[d],i*5,17);
 	}
 }
 
@@ -121,35 +104,29 @@ function onTick(){
 }
 
 function gameFrame(){
-	const t=performance.now();
+	const millis=performance.now();
 	if(frameCount<5){
 		tv.blank(1);
 	}else{
-		tv.cls(0.5);
-		tv.draw(sprites[0],ship.x,ship.y);
+
+		tv.cls(greyShade(0.5));
+
+		// frame 0 for walk tween
+		let moving=!(shipJoy[0]==0&&shipJoy[1]==0)
+
+		let tween=millis&64?1:0;
+		tv.draw(sprites[moving?tween:1],ship.x,ship.y);
+
 		tv.draw(sprites[1],36,2);
+
 		for(const shot of shots){
 			tv.plot(shot.x,shot.y);
 		}
-
-		tv.rect(ship.x+10,ship.y,3,3);
-
+//		tv.rect(ship.x+10,ship.y,3,3);
 	}
-
-//	const fb=tv.quadFrame();
-//	const fb=tv.charFrame("*"," ");
 	const fb=tv.widecharFrame("🔳"," ");	//⬜
-//	const fb=tv.ditherFrame(SixShades);
 	return fb.join("\n");
 }
-
-
-//	const shade=(t/3e3)%1;
-//	tv.noise(shade);
-
-//	return tv.quadFrame().join("\n");
-//	return tv.charFrame("*"," ").join("\n");
-//	return tv.brailleFrame().join("\n");
 
 function tick() {
 	const stopped=frameCount<0;

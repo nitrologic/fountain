@@ -1,3 +1,98 @@
+function test1(){
+	for(let i=0;i<100;i++){
+		tv.plot(i,i);
+	}
+	tv.draw(sprites[0],12,2);
+	tv.draw(sprites[1],16,7);
+	tv.draw(sprites[0],0,12);
+	for(let i=0;i<24;i++){
+		const d=(Math.random()*10)|0;
+		tv.draw(numbers[d],i*5,17);
+	}
+}
+
+function test1(){
+    for(let i=0;i<100;i++){
+        tv.plot(i,i);
+    }
+    tv.draw(sprites[0],12,2);
+    tv.draw(sprites[1],16,7);
+    tv.draw(sprites[0],0,12);
+    for(let i=0;i<24;i++){
+        const d=(Math.random()*10)|0;
+        tv.draw(numbers[d],i*5,17);
+    }
+}
+
+
+
+//	const shade=(t/3e3)%1;
+//	tv.noise(shade);
+
+//	return tv.quadFrame().join("\n");
+//	return tv.charFrame("*"," ").join("\n");
+//	return tv.brailleFrame().join("\n");
+
+
+/*
+
+	edgeFrame(fb){
+		const lines=[];
+		const span=this.width;
+		let y=0;
+		for(const charline of fb){
+			const edge=this.leftEdge[y]||"";
+			for(let line of charline){
+				lines.push(edge+charline);
+			}
+			y++;
+		}
+		return lines;
+	}
+
+//				const char=charline.charAt(x);
+				// const gcode=0xe8+(Math.random()*24)|0;
+				// const rgb=AnsiRGB+(Math.random()*255|0)+";"+(Math.random()*255|0)+";"+(Math.random()*255|0)+"m";
+				// 36 × r + 6 × g + b
+				// const hcode=0x10+(Math.random()*216)|0;
+				// const fg8="\x1B[38;5;"+col8+"m";
+//				line.push(fg8+q4);
+	greyFrame(fb){
+		const lines=[];
+		const span=this.width;
+		let y=0;
+		for(const charline of fb){
+			for(let x=0;x<charline.length;x++){
+				const char=charline.charAt(x);
+				const col8=this.colmap[y*span+x];
+				// const gcode=0xe8+(Math.random()*24)|0;
+				const gcode=(col8)|0;
+				const grey="\x1B[38;5;"+gcode+"m";
+				const rgb=AnsiRGB+(Math.random()*255|0)+";"+(Math.random()*255|0)+";"+(Math.random()*255|0)+"m";
+				// 36 × r + 6 × g + b
+				// const hcode=0x10+(Math.random()*216)|0;
+				const fg8="\x1B[38;5;"+col8+"m";
+//				line.push(fg8+q4);
+			}
+			y++;
+		}
+		return lines;
+	}
+*/
+/*		
+		const c=this.colmap.length;
+		for(let xy=0;xy<c;xy++){
+			const col8=16+(Math.random()*216)|0;
+			this.colmap[xy]=col8;
+		}
+*/			
+// TODO: colmap is colorcodes per line
+//export class colorMap{
+//  cspan;
+//	colmap: Uint8Array;
+//
+
+
 [SPEW] [
 	"babbage-002@openai",
 	"chatgpt-4o-latest@openai",

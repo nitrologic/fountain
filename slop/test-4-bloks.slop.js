@@ -1,58 +1,20 @@
-// test3 bloks
+// test-4 bloks
 
-import { greyShade, pixelMap, SixShades } from "./sloputil.js";
+// frogger
 
-const MaxFrame=0;
+import { loadSprites, greyShade, pixelMap, SixShades } from "./sloputil.js";
 
-// big wide terminal blocks sandbox
-// half spacing and wide spacing work in progress
-
-// blokshop check list
-// enter - reset
-// exit[enter] - quit
-
-// emit check list
-// start 
-// error 
-// tick
-
-// key controls check list
-// type - onPress
-// arrow keys - up down left right
-// tab - fire
-
-async function loadSprites(path){
-    const spritestxt=await Deno.readTextFile(path);
-    //console.log(spritestxt);
-    const sprites=spritestxt.split(/\n\s*\n/);
-    //console.log("sprites=",sprites.length);
-    return sprites
-}
+const MaxFrame=2400;
 
 const sprites=await loadSprites("../slop/slop-sprites.txt")
 const numbers=await loadSprites("../slop/slop-number-sprites.txt")
 
-// console.log("numbers",numbers.length);
-
-//const period=50;	//20hz chunky pixel display
-//const period=40;	//25hz chunky pixel display
-const period=20;	//50hz chunky pixel display
-
-// pico is 240 x 135
-
-const ground=new pixelMap(3200,40);
-for(let x=0;x<ground.width;x++){
-    const h=(2+Math.random()*32)|0;
-    ground.vlin(x,40-h,h);
-}
-
-// pixelMap is currently colored foreground 2x2 blocks on ansi background
+const period=100;	//20hz chunky pixel display
 
 let tvWidth=128;
 let tvHeight=32;
 
 const startTime=performance.now();
-
 let tv={};
 
 function setSize(w,h){
@@ -65,10 +27,10 @@ setSize(tvWidth,tvHeight);
 
 function onResize(size){
     if(size){
-        const w=size.columns-2;
+        const w=size.columns-1;
         const h=size.rows-2;
-		setSize(w*2,h*2); //dither and quad
-//        setSize(w,h); //char & widechars
+//		setSize(w*2,h*2); //dither and quad
+        setSize(w,h); //char & widechars
     }
 }
 
@@ -122,45 +84,33 @@ function onTick(){
     }
 }
 
-let scrollx=0;
-
 function gameFrame(){
-    const t=performance.now();
+    const millis=performance.now();
     if(frameCount<5){
         tv.blank(1);
     }else{
-        tv.cls(greyShade(0.2));
+        tv.cls(greyShade(0.5));
+// pond life
 
-        tv.blit(ground,-scrollx,tvHeight-40);
-        scrollx+=0.5;
+        let x=(millis>>7)&63;
+        tv.draw(numbers[0],2+x,2);
 
-        tv.draw(sprites[0],ship.x,ship.y);
-
-        tv.drawleft(sprites[0],ship.x,ship.y);
-
+/* shooting guy
+        // frame 0 for walk tween
+        let moving=!(shipJoy[0]==0&&shipJoy[1]==0)
+        let tween=millis&64?1:0;
+        tv.draw(sprites[moving?tween:1],ship.x,ship.y);
         tv.draw(sprites[1],36,2);
         for(const shot of shots){
             tv.plot(shot.x,shot.y);
         }
+*/
 
-//        tv.rect(ship.x+10,ship.y,3,3);
-
+//		tv.rect(ship.x+10,ship.y,3,3);
     }
-
-	const fb=tv.quadFrame();
-//	const fb=tv.charFrame("*"," ");
-//  const fb=tv.widecharFrame("🔳"," ");	//⬜
-//	const fb=tv.ditherFrame(SixShades);
+    const fb=tv.widecharFrame("🔳"," ");	//⬜
     return fb.join("\n");
 }
-
-
-//	const shade=(t/3e3)%1;
-//	tv.noise(shade);
-
-//	return tv.quadFrame().join("\n");
-//	return tv.charFrame("*"," ").join("\n");
-//	return tv.brailleFrame().join("\n");
 
 function tick() {
     const stopped=frameCount<0;
@@ -171,9 +121,15 @@ function tick() {
     return {success:true,time,event:"tick",count,frame};
 }
 
+let refreshTick=0;
+
 function update(events){
     for(const e of events){
         if(e.name=="joy") shipJoy=e.code;
+        if(e.name=="refresh"){
+            refreshTick=e.code[0];
+            console.log("!@!refresh",e.code[0]);
+        }
     }
 }
 

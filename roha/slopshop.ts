@@ -2,11 +2,12 @@
 // (c)2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
-// scans the slop folder for .slop.ts workers
+// scans the slop folder for .slop.js workers *
 
 // todo:
 // frame multiple viewports
 // const message=AnsiHome+frame+ansiPrompt()+AnsiPink+line+AnsiDefault;
+// ts support via modular plugin
 
 const _verbose=false;
 const rawPrompt=true;
@@ -48,7 +49,7 @@ const slopEvents:Event[]=[];
 console.log("[SHLOP] slop shop 0.2");
 console.log("[SHLOP] serving slopnames");
 console.log("[SHLOP]",slopnames);
-console.log("[SHLOP] enter to start exit to end");
+console.log("[SHLOP] enter to start type exit to end");
 
 console.log(Ansi.HideCursor);
 
@@ -163,7 +164,7 @@ async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
 }
 
-function flushEvents(){
+function flushSlopEvents(){
 	const events:Event[]=[];
 	if(slopEvents.length&&slopEvent<slopEvents.length){
 		while(slopEvent<slopEvents.length){
@@ -182,12 +183,14 @@ let consoleSize=Deno.consoleSize();
 function resetWorkers(){
 	consoleSize=Deno.consoleSize();
 	consoleSize.rows-=2;
+	let count=0;
 	for(const key in slops){
 		const worker=slops[key];
 		const info=slopWorkers[key];
-		console.log("[SHLOP] worker reset",info.name);
 		worker.postMessage({command:"reset",consoleSize});
+		count++;
 	}
+	console.log("[SHLOP] workers reset",count);
 }
 
 function ansiPrompt(){
@@ -201,21 +204,29 @@ let slopEvent=0;
 const reader=Deno.stdin.readable.getReader();
 const writer=Deno.stdout.writable.getWriter();
 async function refreshBackground(pause:number,line:string) {
+
+	if(slopFrames.length&&slopFrame!=slopFrames.length){
+		slopFrame=slopFrames.length;
+		const frame=slopFrames[slopFrame-1];
+//		const frame=slopFrames[slopFrame++];
+		const message=Ansi.Home+frame+ansiPrompt()+Ansi.Pink+line+Ansi.Default;
+		await writer.write(encoder.encode(message));
+		await writer.ready;
+	}
+
+
 	await new Promise(resolve => setTimeout(resolve, pause));
-	const events=flushEvents();
+	const events=flushSlopEvents();
+
+	const e=new Event("refresh",[slopFrame]);
+	events.push(e);
+
 	if(events.length){
 		// all slop workers get all events
 		for(const worker of slops){
 //			console.log("[SHLOP] worker update");
 			worker.postMessage({command:"update",events});
 		}			
-	}
-	if(slopFrames.length&&slopFrame!=slopFrames.length){
-		slopFrame=slopFrames.length;
-		const frame=slopFrames[slopFrame-1];
-		const message=Ansi.Home+frame+ansiPrompt()+Ansi.Pink+line+Ansi.Default;
-		await writer.write(encoder.encode(message));
-		await writer.ready;
 	}
 }
 
@@ -240,7 +251,7 @@ async function promptSlop(message:string) {
 	Deno.stdin.setRaw(true);
 	const timer = setInterval(async() => {
 		const line=decoder.decode(_promptBuffer);
-		await refreshBackground(5,message+line);
+		await refreshBackground(20,message+line);
 	}, 100);
 	let busy=true;
 	while (busy) {
@@ -264,7 +275,7 @@ async function promptSlop(message:string) {
 					onKey(value);
 					if (value.length === 3) {
 						if (value[1] === 0xf4 && value[2] === 0x50) {
-							echo("F1");
+							echo("[SHLOP] F1");
 						}
 					}
 					break;
@@ -276,7 +287,7 @@ async function promptSlop(message:string) {
 						_promptBuffer=_promptBuffer.slice(n);
 					}
 					result=line.trimEnd();
-					echo("[stdin]",result);
+					echo("[SHLOP] stdin",result);
 					busy=false;
 				} else if (byte==0x09){
 					onKey(value);

@@ -11,6 +11,11 @@ export const SixShades2="██▓▒░ ";
 
 export const AnsiRGB="\x1B[38;2;" //+"⟨r⟩;⟨g⟩;⟨b⟩m"
 
+export function greyShade(shade){
+	const grey=0xe8+(shade*23)|0;
+	return grey;
+}
+
 function ansiFG(col8){
 	const fg8="\x1B[38;5;"+col8+"m";
 	return fg8;
@@ -60,16 +65,14 @@ export class pixelMap{
 			}
 		}
 	}
-	cls(shade){
-		const grey=0xe8+(shade*23)|0;
+	cls(c8){
 		this.wordmap.fill(0);
 		this.leftEdge.fill("");
-		this.leftEdge[0]=ansiFG(grey);
+		this.leftEdge[0]=ansiFG(c8);
 	}
-	blank(shade){
-		const grey=0xe8+(shade*23)|0;
+	blank(c8){
 		this.wordmap.fill(0xffff);
-		this.leftEdge[0]=ansiFG(grey);
+		this.leftEdge[0]=ansiFG(c8);
 	}
 	draw(sprite,x,y){
 		x|=0;y|=0;
@@ -82,6 +85,19 @@ export class pixelMap{
 			y++;
 		}
 	}
+	// draws sprite in -x,y space
+	drawleft(sprite,x,y){
+		x|=0;y|=0;
+		const lines=sprite.split("\n");
+		for(const line of lines){
+			for(let xx=0;xx<line.length;xx++){
+				const char=line.charAt(xx);
+				if(char=="*"||char=="#") this.plot(x-xx,y);
+			}
+			y++;
+		}
+	}
+
 	rect(x0,y0,w,h){
 		for(let y=y0;y<y0+h;y++){
 			for(let x=x0;x<x0+w;x++){
@@ -108,11 +124,15 @@ export class pixelMap{
 		}
 	}
 	plot(x,y){
+		// TODO: fastPlot version without this guff
+		x|=0;y|=0;if(x<0||x>=this.width||y<0||y>=this.height) return;
 		const bit=1<<(x&15);
 		const index=y*this.span+(x>>4);
 		this.wordmap[index]|=bit;
 	}
 	clear(x,y){
+		// TODO: fastPlot version without this guff
+		x|=0;y|=0;if(x<0||x>=this.width||y<0||y>=this.height) return;
 		const mask=0xffff-(1<<(x&15));
 		const index=y*this.span+(x>>4);
 		this.wordmap[index]&=mask;
@@ -271,60 +291,10 @@ export class pixelMap{
 
 }
 
-/*
-
-	edgeFrame(fb){
-		const lines=[];
-		const span=this.width;
-		let y=0;
-		for(const charline of fb){
-			const edge=this.leftEdge[y]||"";
-			for(let line of charline){
-				lines.push(edge+charline);
-			}
-			y++;
-		}
-		return lines;
-	}
-
-//				const char=charline.charAt(x);
-				// const gcode=0xe8+(Math.random()*24)|0;
-				// const rgb=AnsiRGB+(Math.random()*255|0)+";"+(Math.random()*255|0)+";"+(Math.random()*255|0)+"m";
-				// 36 × r + 6 × g + b
-				// const hcode=0x10+(Math.random()*216)|0;
-				// const fg8="\x1B[38;5;"+col8+"m";
-//				line.push(fg8+q4);
-	greyFrame(fb){
-		const lines=[];
-		const span=this.width;
-		let y=0;
-		for(const charline of fb){
-			for(let x=0;x<charline.length;x++){
-				const char=charline.charAt(x);
-				const col8=this.colmap[y*span+x];
-				// const gcode=0xe8+(Math.random()*24)|0;
-				const gcode=(col8)|0;
-				const grey="\x1B[38;5;"+gcode+"m";
-				const rgb=AnsiRGB+(Math.random()*255|0)+";"+(Math.random()*255|0)+";"+(Math.random()*255|0)+"m";
-				// 36 × r + 6 × g + b
-				// const hcode=0x10+(Math.random()*216)|0;
-				const fg8="\x1B[38;5;"+col8+"m";
-//				line.push(fg8+q4);
-			}
-			y++;
-		}
-		return lines;
-	}
-*/
-/*		
-		const c=this.colmap.length;
-		for(let xy=0;xy<c;xy++){
-			const col8=16+(Math.random()*216)|0;
-			this.colmap[xy]=col8;
-		}
-*/			
-// TODO: colmap is colorcodes per line
-//export class colorMap{
-//  cspan;
-//	colmap: Uint8Array;
-//
+export async function loadSprites(path){
+	const spritestxt=await Deno.readTextFile(path);
+	//console.log(spritestxt);
+	const sprites=spritestxt.split(/\n\s*\n/);
+	//console.log("sprites=",sprites.length);
+	return sprites
+}
