@@ -322,7 +322,6 @@ function logVal(name,value){
 	var0.value=label;
 }
 
-
 let logTools;
 let logVarBar;
 

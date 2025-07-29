@@ -3,28 +3,18 @@
 // Licensed under the MIT License - See LICENSE file
 
 export const Ansi={
-    Home:"\x1B[H",
-    Pink:"\x1B[38;5;206m",
-    Default:"\x1B[39m",
-    HideCursor:"\x1b[?25l",
-    ShowCursor:"\x1b[?25h",
-	Cursor:"\x1B[" 				//+ row + ";1H"
+	Reset:"\x1BC",
+	Defaults:"\x1B[0m",//"\x1B[39;49m",//\x1B[0m",
+	Home:"\x1B[H",
+	Pink:"\x1B[38;5;206m",
+	HideCursor:"\x1b[?25l",
+	ShowCursor:"\x1b[?25h",
+	Cursor:"\x1B["//+ row + ";1H"
 }
-
-const AnsiHome="\x1B[H";
-const AnsiPink="\x1B[38;5;206m";
-const AnsiDefault="\x1B[39m";
-const AnsiShowCursor = "\x1b[?25h"
-const AnsiHideCursor = "\x1b[?25l"
-const AnsiCursor="\x1B["; //+ row + ";1H";
-
-const _AnsiBlankLine="\x1B[0K";
-const _AnsiClear="\x1B[2J";
-const _AnsiRGB="\x1B[38;2;"//⟨r⟩;⟨g⟩;⟨b⟩m"
 
 // const quads=" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█";
 // slopsite utility functions
-// typescript ahead - fix the any 
+// typescript ahead - fix the any
 
 let _outputBuffer:string[]=[];
 let _printBuffer=[];

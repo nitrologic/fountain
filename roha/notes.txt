@@ -1,3 +1,15 @@
+const AnsiClear="\x1B[2J";
+const AnsiHome="\x1B[H";
+const AnsiPink="\x1B[38;5;206m";
+const AnsiDefault="\x1B[39m";
+const AnsiShowCursor = "\x1b[?25h"
+const AnsiHideCursor = "\x1b[?25l"
+const AnsiCursor="\x1B["; //+ row + ";1H";
+
+const _AnsiBlankLine="\x1B[0K";
+const _AnsiRGB="\x1B[38;2;"//⟨r⟩;⟨g⟩;⟨b⟩m"
+
+
 function test1(){
 	for(let i=0;i<100;i++){
 		tv.plot(i,i);

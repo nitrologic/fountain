@@ -2,22 +2,27 @@
 // (c)2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
+import { resolve } from "https://deno.land/std/path/mod.ts";
+
+import { echo, fileLength, Ansi } from "./slopshoptools.ts";
+
 // scans the slop folder for .slop.js workers *
 
 // todo:
+
 // frame multiple viewports
 // const message=AnsiHome+frame+ansiPrompt()+AnsiPink+line+AnsiDefault;
 // ts support via modular plugin
+// smooth out clock ticks at both ends
+
+const BackgroundPeriod=40;
+const BackgroundDutyCycle=20;
 
 const _verbose=false;
 const rawPrompt=true;
 
 const exitMessage="Ending session.";
 
-import { resolve } from "https://deno.land/std/path/mod.ts";
-import { _common } from "https://deno.land/std@0.224.0/path/_common/common.ts";
-
-import { echo, fileLength, Ansi } from "./slopshoptools.ts";
 
 async function readFileNames(path:string,suffix:string):Promise<string[]>{
 	const result=[];
@@ -59,6 +64,7 @@ class Button{
 		this.value++;
 	}
 }
+
 class Lever{
 	min=-1;
 	max=1;
@@ -125,6 +131,8 @@ function onKey(value:number[]){
 	const e=new Event("joy",joy);
 	slopEvents.push(e);
 }
+
+// receives payload frames in tick messages
 
 let workerCount=0;
 for(const name of slopnames){
@@ -206,14 +214,14 @@ const writer=Deno.stdout.writable.getWriter();
 async function refreshBackground(pause:number,line:string) {
 
 	if(slopFrames.length&&slopFrame!=slopFrames.length){
-		slopFrame=slopFrames.length;
-		const frame=slopFrames[slopFrame-1];
-//		const frame=slopFrames[slopFrame++];
-		const message=Ansi.Home+frame+ansiPrompt()+Ansi.Pink+line+Ansi.Default;
+//		slopFrame=slopFrames.length;
+//		const frame=slopFrames[slopFrame-1];
+		const frame=slopFrames[slopFrame++];
+// Ansi.Clear does not help scroll buffer issue, Ansi.Reset does in vscode...
+		const message=Ansi.Reset+Ansi.Defaults+Ansi.Home+frame+Ansi.Defaults+ansiPrompt()+Ansi.Pink+line;
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
-
 
 	await new Promise(resolve => setTimeout(resolve, pause));
 	const events=flushSlopEvents();
@@ -249,10 +257,11 @@ async function promptSlop(message:string) {
 		await writer.ready;
 	}
 	Deno.stdin.setRaw(true);
+	// TODO: document me
 	const timer = setInterval(async() => {
 		const line=decoder.decode(_promptBuffer);
-		await refreshBackground(20,message+line);
-	}, 100);
+		await refreshBackground(BackgroundDutyCycle,message+line);
+	}, BackgroundPeriod);
 	let busy=true;
 	while (busy) {
 		try {

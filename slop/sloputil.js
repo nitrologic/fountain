@@ -9,6 +9,8 @@ export const QuadChars=" ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█";
 export const SixShades=" ░▒▓██";
 export const SixShades2="██▓▒░ ";
 
+export const HalfBlocks=" ▀▄█";
+
 export const AnsiRGB="\x1B[38;2;" //+"⟨r⟩;⟨g⟩;⟨b⟩m"
 
 export function greyShade(shade){
@@ -16,8 +18,12 @@ export function greyShade(shade){
 	return grey;
 }
 
-function ansiFG(col8){
+export function ansiFG(col8){
 	const fg8="\x1B[38;5;"+col8+"m";
+	return fg8;
+}
+export function ansiBG(col8){
+	const fg8="\x1B[48;5;"+col8+"m";
 	return fg8;
 }
 
@@ -38,14 +44,16 @@ export class pixelMap{
 	height;
 	span;
 	wordmap;	//Uint16Array;
-	leftEdge;
-	
+	leftEdge;	
 	constructor(width,height) {
+		this.resize(width,height);
+		this.leftEdge=[""];
+	}
+	resize(width,height){
 		this.width = width;
 		this.height = height;
 		this.span=((width+15)/16)|0;
 		this.wordmap=new Uint16Array(this.span*height);
-		this.leftEdge=[""];
 	}
 	point(x,y){
 		const bit=1<<(x&15);
@@ -247,6 +255,32 @@ export class pixelMap{
 			lines.push(line.join(""));
 		}
 		return lines;
+	}
+
+	halfblockFrame(){
+		const w=this.width;
+		const h=this.height;
+		const span=((w+15)/16)|0;
+		const wordmap=this.wordmap;
+		const cols=w;
+		const rows=h/2;
+		const lines=[];
+		for(let y=0;y<rows;y++){
+			let line=[];
+			const y0=y*2+0;
+			const y1=y*2+1;
+			for(let x=0;x<cols;x++){
+				const w0=wordmap[y0*span+(x>>4)|0];
+				const w1=wordmap[y1*span+(x>>4)|0];
+				const bit=1<<(x&15);
+				const index=((w0&bit)?1:0)+((w1&bit)?2:0);
+				const h2=HalfBlocks.charAt(index);
+				line.push(h2);
+			}
+			lines.push(line.join(""));
+		}
+		return lines;
+
 	}
 
 	brailleFrame(){	//Braille

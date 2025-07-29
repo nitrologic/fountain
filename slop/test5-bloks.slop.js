@@ -1,34 +1,38 @@
-// test-4 bloks
+// test5 bloks
 
-// frogger
-
-import { loadSprites, greyShade, pixelMap, SixShades } from "./sloputil.js";
+// uses frameCount not performance.now() for timing purposes
+// all sleeps removed
 
 const MaxFrame=2400;
+
+// frogger or little computer guy
+
+import { ansiFG,ansiBG, loadSprites, greyShade, pixelMap, SixShades } from "./sloputil.js";
 
 const sprites=await loadSprites("../slop/slop-sprites.txt")
 const numbers=await loadSprites("../slop/slop-number-sprites.txt")
 
-const period=100;	//20hz chunky pixel display
-
 let tvWidth=128;
 let tvHeight=32;
+let tickCount=0;
 
-const startTime=performance.now();
+const tiny=new pixelMap(128,12);
+
 let tv={};
 
 function setSize(w,h){
     tv=new pixelMap(w,h);
     tvWidth=w;
     tvHeight=h;
+    tiny.resize(w*2,12);
 }
 
 setSize(tvWidth,tvHeight);
 
 function onResize(size){
     if(size){
-        const w=size.columns-1;
-        const h=size.rows-2;
+        const w=size.columns-2;
+        const h=size.rows-4;
 //		setSize(w*2,h*2); //dither and quad
         setSize(w,h); //char & widechars
     }
@@ -79,22 +83,20 @@ function onTick(){
         shots[i].x += 2;
         if (shots[i].x > tvWidth) {
             shots.splice(i, 1);
-
         }
     }
 }
 
 function gameFrame(){
-    const millis=performance.now();
+    const millis=frameCount*20;
     if(frameCount<5){
         tv.blank(1);
     }else{
         tv.cls(greyShade(0.5));
 // pond life
-
-        let x=(millis>>7)&63;
-        tv.draw(numbers[0],2+x,2);
-
+        const w=tvWidth;
+        let x=w-(frameCount%w);
+        tv.draw(numbers[5],2+x,1);
 /* shooting guy
         // frame 0 for walk tween
         let moving=!(shipJoy[0]==0&&shipJoy[1]==0)
@@ -108,17 +110,26 @@ function gameFrame(){
 
 //		tv.rect(ship.x+10,ship.y,3,3);
     }
-    const fb=tv.widecharFrame("🔳"," ");	//⬜
-    return fb.join("\n");
+//    const fb2=tv.widecharFrame("🔳"," ");	//⬜
+//    return fb2.join("\n");
+
+
+    const fb2=tv.halfblockFrame();
+
+    tiny.noise(0.5);
+    const fb=tiny.brailleFrame();
+    const fg=ansiBG(greyShade(0.5));
+    const bg=ansiBG(greyShade(0.2));
+    return fb.join("\n")+"\n"+fg+bg+fb2.join("\n");
 }
 
 function tick() {
+    tickCount++;
     const stopped=frameCount<0;
     const count=stopped?-1:frameCount++;
     if(!stopped) onTick();
-    const time=performance.now();
     const frame=(count>=0 && count<MaxFrame)?gameFrame():"";
-    return {success:true,time,event:"tick",count,frame};
+    return {success:true,event:"tick",count,frame};
 }
 
 let refreshTick=0;
@@ -128,7 +139,10 @@ function update(events){
         if(e.name=="joy") shipJoy=e.code;
         if(e.name=="refresh"){
             refreshTick=e.code[0];
-            console.log("!@!refresh",e.code[0]);
+//            console.log("!@!refresh",e.code[0]);
+
+            const reply=tick();
+            self.postMessage(reply);
         }
     }
 }
@@ -151,8 +165,6 @@ self.onmessage=(e)=>{
             break;
     }
 };
-
-setInterval(()=>{const reply=tick();self.postMessage(reply);},period);
 
 try {
     self.postMessage({success:true,event:"start",time:startTime});
