@@ -51,9 +51,9 @@ function onResize(size){
 	if(size){
 		const w=size.columns-5;
 		const h=size.rows-4;
-		setOneSize(w,h);
+//		setOneSize(w,h);
 //		setHalfSize(w,h);
-//		setQuadSize(w,h);
+		setQuadSize(w,h);
 	}
 }
 
@@ -132,8 +132,8 @@ function gameFrame(){
 	}
 //    return fb2.join("\n");
 //	const fb2=tv.halfblockFrame();
-//	const fb2=tv.quadblockFrame();
-	const fb2=tv.widecharFrame("🔳",NBSP);	//X🔳⬜
+	const fb2=tv.quadblockFrame();
+//	const fb2=tv.widecharFrame("X"," ");	//X🔳⬜
 //	const fb2=tv.charFrame("█"," ");
 	tiny.noise(0.5);
 	const fb=tiny.brailleFrame();
@@ -141,8 +141,6 @@ function gameFrame(){
 	const bg=ansiBG(greyShade(0.1));
 	return fb.join("\n")+"\n"+fg+bg+fb2.join("\n");
 }
-
-const NBSP="\u00A0";
 
 function tick() {
 	tickCount++;
