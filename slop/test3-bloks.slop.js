@@ -147,7 +147,7 @@ function gameFrame(){
 
     }
 
-	const fb=tv.quadFrame();
+	const fb=tv.quadblockFrame();
 //	const fb=tv.charFrame("*"," ");
 //  const fb=tv.widecharFrame("🔳"," ");	//⬜
 //	const fb=tv.ditherFrame(SixShades);
@@ -158,7 +158,7 @@ function gameFrame(){
 //	const shade=(t/3e3)%1;
 //	tv.noise(shade);
 
-//	return tv.quadFrame().join("\n");
+//	return tv.quadblockFrame().join("\n");
 //	return tv.charFrame("*"," ").join("\n");
 //	return tv.brailleFrame().join("\n");
 

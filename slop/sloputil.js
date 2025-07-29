@@ -55,6 +55,9 @@ export class pixelMap{
 		this.span=((width+15)/16)|0;
 		this.wordmap=new Uint16Array(this.span*height);
 	}
+	text(line,font){
+		
+	}
 	point(x,y){
 		const bit=1<<(x&15);
 		const w16=this.wordmap[y*this.span+(x>>4)];
@@ -94,7 +97,7 @@ export class pixelMap{
 		}
 	}
 	// draws sprite in -x,y space
-	drawleft(sprite,x,y){
+	drawLeft(sprite,x,y){
 		x|=0;y|=0;
 		const lines=sprite.split("\n");
 		for(const line of lines){
@@ -231,7 +234,7 @@ export class pixelMap{
 		return lines;
 	}
 
-	quadFrame(){
+	quadblockFrame(){
 		const w=this.width;
 		const h=this.height;
 		const span=((w+15)/16)|0;
@@ -331,4 +334,43 @@ export async function loadSprites(path){
 	const sprites=spritestxt.split(/\n\s*\n/);
 	//console.log("sprites=",sprites.length);
 	return sprites
+}
+
+function clipSprite(lines,x0,x1){
+	if(x1>x0){
+		const clip=[];
+		for(let y=0;y<lines.length;y++){
+			clip.push(lines[y].substring(x0,x1));
+		}
+		return clip.join("\n");
+	}
+}
+
+export async function loadSprites2(path){
+	const spritestxt=await Deno.readTextFile(path);
+	const rows=spritestxt.split(/\n\s*\n/);
+	const result=[];
+	for(const rowlines of rows){
+		const row=rowlines.split("\n");
+		let x0=0;
+		let w=row[0].length;
+		for(let x=0;x<w;x++){
+			let h=row.length;
+			let count=0;
+			for(let y=0;y<h;y++){
+				if(row[y].charAt(x)!=" ") count++;
+			}
+			if(count==0){
+				const clip=clipSprite(row,x0,x);
+				if(clip) result.push(clip);
+				x0=x+1;
+			}
+		}
+		if(x0<w-1){
+			const clip=clipSprite(row,x0,w);
+			if(clip) result.push(clip);
+		}
+	}
+	console.log("sprites2=",result.length);
+	return result;
 }
