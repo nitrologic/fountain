@@ -13,6 +13,7 @@ import { ansiFG,ansiBG, loadSprites,loadSprites2, greyShade, pixelMap, SixShades
 const sides=await loadSprites("../slop/side-sprites.txt")
 const digits=await loadSprites("../slop/slop-number-sprites.txt")
 const caps=await loadSprites2("../slop/slop-font-sprites.txt");
+const stick=await loadSprites("../slop/slop-stick-sprites.txt")
 
 console.log("caps.length",caps.length);
 
@@ -52,8 +53,8 @@ function onResize(size){
 		const w=size.columns-5;
 		const h=size.rows-4;
 //		setOneSize(w,h);
-//		setHalfSize(w,h);
-		setQuadSize(w,h);
+		setHalfSize(w,h);
+//		setQuadSize(w,h);
 	}
 }
 
@@ -126,13 +127,29 @@ function gameFrame(){
 			const y=18+(i>>5)*6;
 			tv.draw(caps[i],x,y);
 		}
+
+		let f=(millis>>6)&31;
+		if(f&16){
+			if(f&8){
+				tv.drawUp(stick[7-f&7],40,5);
+			}else{
+				tv.drawUpLeft(stick[f&7],40,5);
+			}
+		}else{
+			if(f&8){
+				tv.drawLeft(stick[7-f&7],40,5);
+			}else{
+				tv.draw(stick[f&7],40,5);
+			}
+		}
+
 		tv.draw(sides[0],22+x,6);
 		tv.drawLeft(sides[0],22+x,6);
 //		tv.rect(ship.x+10,ship.y,3,3);
 	}
 //    return fb2.join("\n");
-//	const fb2=tv.halfblockFrame();
-	const fb2=tv.quadblockFrame();
+	const fb2=tv.halfblockFrame();
+//	const fb2=tv.quadblockFrame();
 //	const fb2=tv.widecharFrame("X"," ");	//X🔳⬜
 //	const fb2=tv.charFrame("█"," ");
 	tiny.noise(0.5);

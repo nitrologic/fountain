@@ -108,6 +108,28 @@ export class pixelMap{
 			y++;
 		}
 	}
+	drawUpLeft(sprite,x,y){
+		x|=0;y|=0;
+		const lines=sprite.split("\n");
+		for(const line of lines){
+			for(let xx=0;xx<line.length;xx++){
+				const char=line.charAt(xx);
+				if(char=="*"||char=="#") this.plot(x-xx,y);
+			}
+			y--;
+		}
+	}
+	drawUp(sprite,x,y){
+		x|=0;y|=0;
+		const lines=sprite.split("\n");
+		for(const line of lines){
+			for(let xx=0;xx<line.length;xx++){
+				const char=line.charAt(xx);
+				if(char=="*"||char=="#") this.plot(x+xx,y);
+			}
+			y--;
+		}
+	}
 
 	rect(x0,y0,w,h){
 		for(let y=y0;y<y0+h;y++){
