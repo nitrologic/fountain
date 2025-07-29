@@ -217,10 +217,11 @@ export class pixelMap{
 		for(let y=0;y<rows;y++){
 			let line=[];
 			let wides=0;
+			let spaced=false;
 			for(let x=0;x+wides<cols;x++){
 				const w0=wordmap[y*span+(x>>4)|0];
 				const bit=1<<(x&15);
-				if((w0&bit)==0 && wides>0){
+				if((w0&bit)==0 && wides>0 && spaced){
 					wides--;
 				}else{
 					const ch=w0&bit?char0:char1;
@@ -228,6 +229,7 @@ export class pixelMap{
 					let code=ch.charCodeAt(0);
 					if(code>128) wides++;
 				}
+				spaced=w0&bit?false:true;
 			}
 			lines.push(line.join(""));
 		}

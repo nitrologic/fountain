@@ -1,3 +1,9 @@
+NBSP	🬀	🬁	🬂	🬃	🬄	🬅	🬆	🬇	🬈	🬉	🬊	🬋	🬌	🬍	🬎
+3	🬏	🬐	🬑	🬒	🬓	▌	🬔	🬕	🬖	🬗	🬘	🬙	🬚	🬛	🬜	🬝
+6	🬞	🬟	🬠	🬡	🬢	🬣	🬤	🬥	🬦	🬧	▐	🬨	🬩	🬪	🬫	🬬
+7	🬭	🬮	🬯	🬰	🬱	🬲	🬳	🬴	🬵	🬶	🬷	🬸	🬹	🬺	🬻	█
+
+
 const AnsiClear="\x1B[2J";
 const AnsiHome="\x1B[H";
 const AnsiPink="\x1B[38;5;206m";

@@ -4,14 +4,14 @@
 // all sleeps removed
 // quadblockFrames for big pixel motion
 
-const MaxFrame=2400;
+const MaxFrame=24000;
 
 // frogger or little computer guy
 
 import { ansiFG,ansiBG, loadSprites,loadSprites2, greyShade, pixelMap, SixShades } from "./sloputil.js";
 
 const sides=await loadSprites("../slop/side-sprites.txt")
-const numbers=await loadSprites("../slop/slop-number-sprites.txt")
+const digits=await loadSprites("../slop/slop-number-sprites.txt")
 const caps=await loadSprites2("../slop/slop-font-sprites.txt");
 
 console.log("caps.length",caps.length);
@@ -51,9 +51,9 @@ function onResize(size){
 	if(size){
 		const w=size.columns-5;
 		const h=size.rows-4;
-//		setOneSize(w,h);
+		setOneSize(w,h);
 //		setHalfSize(w,h);
-		setQuadSize(w,h);
+//		setQuadSize(w,h);
 	}
 }
 
@@ -115,39 +115,34 @@ function gameFrame(){
 // pond life
 		const w=tvWidth;
 		let x=w-(frameCount%w);
-		tv.draw(numbers[5],2+x,1);
-
-		for(let i=0;i<caps.length;i++){
-			tv.draw(caps[i],1+i*8,6);
+		
+		for(let i=0;i<digits.length;i++){
+			const x=2+(i&31)*5;
+			const y=30+(i>>5)*6;		
+			tv.draw(digits[i],x,y);
 		}
-
+		for(let i=0;i<caps.length;i++){
+			const x=(i&31)*5;
+			const y=18+(i>>5)*6;
+			tv.draw(caps[i],x,y);
+		}
 		tv.draw(sides[0],22+x,6);
 		tv.drawLeft(sides[0],22+x,6);
-/* shooting guy
-		// frame 0 for walk tween
-		let moving=!(shipJoy[0]==0&&shipJoy[1]==0)
-		let tween=millis&64?1:0;
-		tv.draw(sprites[moving?tween:1],ship.x,ship.y);
-		tv.draw(sprites[1],36,2);
-		for(const shot of shots){
-			tv.plot(shot.x,shot.y);
-		}
-*/
-
 //		tv.rect(ship.x+10,ship.y,3,3);
 	}
 //    return fb2.join("\n");
 //	const fb2=tv.halfblockFrame();
-	const fb2=tv.quadblockFrame();
-//	const fb2=tv.widecharFrame("🔳"," ");	//⬜
+//	const fb2=tv.quadblockFrame();
+	const fb2=tv.widecharFrame("🔳",NBSP);	//X🔳⬜
 //	const fb2=tv.charFrame("█"," ");
-
 	tiny.noise(0.5);
 	const fb=tiny.brailleFrame();
-	const fg=ansiFG(greyShade(0.4));
+	const fg=ansiFG(2);//greyShade(0.4));
 	const bg=ansiBG(greyShade(0.1));
 	return fb.join("\n")+"\n"+fg+bg+fb2.join("\n");
 }
+
+const NBSP="\u00A0";
 
 function tick() {
 	tickCount++;
