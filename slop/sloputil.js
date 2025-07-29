@@ -351,11 +351,11 @@ export async function loadSprites2(path){
 	const rows=spritestxt.split(/\n\s*\n/);
 	const result=[];
 	for(const rowlines of rows){
-		const row=rowlines.split("\n");
+		const row=rowlines.trim().split("\n");
 		let x0=0;
 		let w=row[0].length;
+		let h=row.length;
 		for(let x=0;x<w;x++){
-			let h=row.length;
 			let count=0;
 			for(let y=0;y<h;y++){
 				if(row[y].charAt(x)!=" ") count++;

@@ -118,7 +118,7 @@ function gameFrame(){
 		tv.draw(numbers[5],2+x,1);
 
 		for(let i=0;i<caps.length;i++){
-			tv.draw(caps[i],1+i*15,6);
+			tv.draw(caps[i],1+i*8,6);
 		}
 
 		tv.draw(sides[0],22+x,6);
