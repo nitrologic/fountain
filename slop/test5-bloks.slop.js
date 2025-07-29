@@ -21,9 +21,9 @@ const tiny=new pixelMap(128,12);
 let tv={};
 
 function setSize(w,h){
-    tv=new pixelMap(w,h);
-    tvWidth=w;
-    tvHeight=h;
+    tv=new pixelMap(w*2,h*2);
+    tvWidth=w*2;
+    tvHeight=h*2;
     tiny.resize(w*2,12);
 }
 
@@ -114,12 +114,13 @@ function gameFrame(){
 //    return fb2.join("\n");
 
 
-    const fb2=tv.halfblockFrame();
+//    const fb2=tv.halfblockFrame();
+    const fb2=tv.quadFrame();
 
     tiny.noise(0.5);
     const fb=tiny.brailleFrame();
-    const fg=ansiBG(greyShade(0.5));
-    const bg=ansiBG(greyShade(0.2));
+    const fg=ansiFG(greyShade(0.1));
+    const bg=ansiBG(greyShade(0.3));
     return fb.join("\n")+"\n"+fg+bg+fb2.join("\n");
 }
 
