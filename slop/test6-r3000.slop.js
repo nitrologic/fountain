@@ -1,5 +1,5 @@
 // MIPS R3000 worker
-// by simon and grok
+// by simon and grok and deepseek and kimik2
 // free to good home
 
 // MIPS decode
@@ -135,8 +135,9 @@ function rtypeOp(func6, rs, rt, rd, sham5) {
 		case 0x13: // MTLO
 			regs[33] = regs[rs];
 			break;
+		default:
+			console.log("unsupported func6",hex(funk6));
 		}
-
 	return true;
 }
 
@@ -163,6 +164,16 @@ function decodeMIPS(i32) {
 				regs[rt_addi] = addiResult;
 			}
 			break;
+		case 0x20: // LB
+			cycles += 2;
+			regs[rt] = ((w >>> (24 - (al << 3))) & 0xFF) << 24 >> 24;
+			break;
+		case 0x21: // LH
+			if (al & 1) return handleTrap(5);               // address error
+			cycles += 2;
+			regs[rt] = ((w >>> (16 - (al << 4))) & 0xFFFF) << 16 >> 16;
+			break;
+
 		case 0x23:	//OP_LW: // 0x23 LW
 			cycles+=2;
 			const rs_lw = (i32 >> 21) & 0x1f;
@@ -172,9 +183,35 @@ function decodeMIPS(i32) {
 			const addr = (regs[rs_lw] + signExtImm_lw) >> 2;
 			regs[rt_lw] = ram[addr];
 			break;
+
+		case 0x24: // LBU
+			cycles += 2;
+			regs[rt] = (w >>> (24 - (al << 3))) & 0xFF;
+			break;
+		case 0x25: // LHU
+			if (al & 1) return handleTrap(5);
+			cycles += 2;
+			regs[rt] = (w >>> (16 - (al << 4))) & 0xFFFF;
+			break;
+		case 0x28: // SB
+			cycles += 2;
+			ram[idx] = (w & ~(0xFF << (24 - (al << 3)))) |
+					((regs[rt] & 0xFF) << (24 - (al << 3)));
+			break;
+		case 0x29: // SH
+			if (al & 1) return handleTrap(5);
+			cycles += 2;
+			ram[idx] = (w & ~(0xFFFF << (16 - (al << 4)))) |
+					((regs[rt] & 0xFFFF) << (16 - (al << 4)));
+			break;
+		case 0x2B: // SW
+			cycles += 2;
+			ram[idx] = regs[rt];
+			break;
+
 		default:
 			console.log("unsupported op6",hex(op6));
-	}	
+	}
 	return true;
 }
 
