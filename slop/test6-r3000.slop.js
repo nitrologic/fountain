@@ -9,7 +9,12 @@
 
 // count clock cycles of MIPS r3000 core under emulation
 
+let pc = 0;
 let cycles=0;
+
+const CP0_SR = 12; // Status register
+const CP0_CAUSE = 13; // Cause register
+const CP0_EPC = 14; // Exception PC
 
 const EXC_VECTOR = 0x80000080;
 const EXC_OVF = 12;
@@ -23,18 +28,14 @@ const RamSize = 128 * 1024 * 1024; // 128M
 
 const regs = new Uint32Array(RegSize);
 const ram = new Uint32Array(RamSize);
-
-//const  = 0x23; // Load Word
-
-let pc = 0;
-let epc = 0;
-let cause = 0;
+const cp0 = new Uint32Array(32);
 
 function handleTrap(causeCode) {
-	epc = pc;
-	cause = (causeCode << 2);
+	cp0[CP0_EPC] = pc;
+	cp0[CP0_CAUSE] = causeCode << 2;
 	pc = EXC_VECTOR;
-	console.log(`Trap: Cause ${cause}, EPC ${epc}, New PC ${pc}`);
+	cp0[CP0_SR] |= 0x1; // Set interrupt disable or kernel mode
+	console.log(`Trap: Cause ${cp0[CP0_CAUSE]}, EPC ${cp0[CP0_EPC]}, New PC ${pc}`);
 	return true;
 }
 
@@ -61,6 +62,26 @@ function rtypeOp(func6, rs, rt, rd, sham5) {
 			break;
 		case 0x07: // SRAV
 			regs[rd] = regs[rt] >> (regs[rs] & 0x1F);
+			break;
+		case 0x10: // MFHI
+			regs[rd] = regs[32];
+			break;
+		case 0x12: // MFLO
+			regs[rd] = regs[33];
+			break;
+		case 0x11: // MTHI
+			regs[32] = regs[rs];
+			break;
+		case 0x13: // MTLO
+			regs[33] = regs[rs];
+			break;
+		case 0x18: // MULT (signed)
+			cycles+=10;
+			const a = BigInt(regs[rs] | 0);
+			const b = BigInt(regs[rt] | 0);
+			const result = a * b;
+			regs[REG_HI] = Number((result >> 32n) & 0xFFFFFFFFn) | 0;
+			regs[REG_LO] = Number(result & 0xFFFFFFFFn) | 0;
 			break;
 		case 0x20:	// 0x20	F_ADD
 			const addResult = regs[rs] + regs[rt];
@@ -101,42 +122,8 @@ function rtypeOp(func6, rs, rt, rd, sham5) {
 		case 0x2B: // SLTU (unsigned compare)
 			regs[rd] = regs[rs] >>> 0 < regs[rt] >>> 0 ? 1 : 0;
 			break;
-		case 0x18: // MULT (signed)
-			cycles+=10;
-			// Convert to 32-bit signed integers
-			const a = regs[rs] | 0;
-			const b = regs[rt] | 0;
-			// Perform 32x32→64 multiplication
-			const a_hi = (a >> 16) & 0xFFFF;
-			const a_lo = a & 0xFFFF;
-			const b_hi = (b >> 16) & 0xFFFF;
-			const b_lo = b & 0xFFFF;
-			// Partial products
-			const p0 = a_lo * b_lo;
-			const p1 = a_hi * b_lo;
-			const p2 = a_lo * b_hi;
-			const p3 = a_hi * b_hi;
-			// Combine results
-			const lo = p0 + ((p1 + p2) << 16);
-			const hi = p3 + ((p1 + p2) >>> 16) + (lo >>> 31);
-			// Store results (bitwise OR converts back to signed 32-bit)
-			regs[32 /* HI */] = hi | 0;
-			regs[33 /* LO */] = lo | 0;
-			break;
-		case 0x10: // MFHI
-			regs[rd] = regs[32];
-			break;
-		case 0x12: // MFLO
-			regs[rd] = regs[33];
-			break;
-		case 0x11: // MTHI
-			regs[32] = regs[rs];
-			break;
-		case 0x13: // MTLO
-			regs[33] = regs[rs];
-			break;
 		default:
-			console.log("unsupported func6",hex(funk6));
+			console.log("unsupported func6",hex(func6));
 		}
 	return true;
 }
@@ -144,24 +131,51 @@ function rtypeOp(func6, rs, rt, rd, sham5) {
 function decodeMIPS(i32) {
 	cycles++;
 	const op6 = (i32 >> 26) & 0x3f;
+	const rs = (i32 >> 21) & 0x1f;
+	const rt = (i32 >> 16) & 0x1f;
+	const rd = (i32 >> 11) & 0x1f;
 	switch (op6) {
 		case 0: // R-type
-			const rs = (i32 >> 21) & 0x1f;
-			const rt = (i32 >> 16) & 0x1f;
-			const rd = (i32 >> 11) & 0x1f;
 			const sham5 = (i32 >> 6) & 0x1f;
 			const func6 = i32 & 0x3f;
 			return rtypeOp(func6, rs, rt, rd, sham5);
-		case 0x08:	//OP_ADDI: // 0x08 ADDI
-			const rs_addi = (i32 >> 21) & 0x1f;
-			const rt_addi = (i32 >> 16) & 0x1f;
+		case 0x04: // BEQ
+			const offset_beq = (i32 & 0xffff) << 2;
+			const signExtOffset_beq = (offset_beq & 0x8000) ? (offset_beq | 0xffff0000) : offset_beq;
+			if (regs[rs] === regs[rt]) {
+				pc += signExtOffset_beq - 4; // -4 to compensate for pc increment
+			}
+			break;
+		case 0x05: // BNE
+			const offset_bne = (i32 & 0xffff) << 2;
+			const signExtOffset_bne = (offset_bne & 0x8000) ? (offset_bne | 0xffff0000) : offset_bne;
+			if (regs[rs] !== regs[rt]) {
+				pc += signExtOffset_bne - 4;
+			}
+			break;
+		case 0x06: // BLEZ
+			const offset_blez = (i32 & 0xffff) << 2;
+			const signExtOffset_blez = (offset_blez & 0x8000) ? (offset_blez | 0xffff0000) : offset_blez;
+			if ((regs[rs] | 0) <= 0) {
+				pc += signExtOffset_blez - 4;
+			}
+			break;
+
+		case 0x07: // BGTZ
+			const offset_bgtz = (i32 & 0xffff) << 2;
+			const signExtOffset_bgtz = (offset_bgtz & 0x8000) ? (offset_bgtz | 0xffff0000) : offset_bgtz;
+			if ((regs[rs] | 0) > 0) {
+				pc += signExtOffset_bgtz - 4;
+			}
+			break;
+		case 0x08:	// ADDI
 			const imm = i32 & 0xffff;
 			const signExtImm = (imm & 0x8000) ? (imm | 0xffff0000) : imm;
-			const addiResult = regs[rs_addi] + signExtImm;
+			const addiResult = regs[rs] + signExtImm;
 			if (addiResult > 0x7FFFFFFF || addiResult < -0x80000000) {
 				if (!handleTrap(EXC_OVF)) return false;
 			} else {
-				regs[rt_addi] = addiResult;
+				regs[rt] = addiResult;
 			}
 			break;
 		case 0x20: // LB
@@ -173,17 +187,13 @@ function decodeMIPS(i32) {
 			cycles += 2;
 			regs[rt] = ((w >>> (16 - (al << 4))) & 0xFFFF) << 16 >> 16;
 			break;
-
-		case 0x23:	//OP_LW: // 0x23 LW
+		case 0x23:	// LW
 			cycles+=2;
-			const rs_lw = (i32 >> 21) & 0x1f;
-			const rt_lw = (i32 >> 16) & 0x1f;
 			const imm_lw = i32 & 0xffff;
 			const signExtImm_lw = (imm_lw & 0x8000) ? (imm_lw | 0xffff0000) : imm_lw;
-			const addr = (regs[rs_lw] + signExtImm_lw) >> 2;
-			regs[rt_lw] = ram[addr];
+			const addr = (regs[rs] + signExtImm_lw) >> 2;
+			regs[rt] = ram[addr];
 			break;
-
 		case 0x24: // LBU
 			cycles += 2;
 			regs[rt] = (w >>> (24 - (al << 3))) & 0xFF;
