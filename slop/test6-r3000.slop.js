@@ -9,7 +9,7 @@
 // vintage dashboard
 
 import { mipsRegs, R3000 } from "./slopmips.js";
-import { greyShade, ansiBG, ansiFG } from "./sloputil.js";
+import { rgbShade, greyShade, ansiBG, ansiFG } from "./sloputil.js";
 
 
 // MIPS decode
@@ -253,6 +253,20 @@ function regBits(i32){
 	return line.join("");
 }
 
+function colors(){
+	const list=[];
+	for(let i=0;i<6;i++){
+		for(let j=0;j<6;j++){
+			for(let k=0;k<6;k++){
+				const rgb=rgbShade(i/5.0,j/5.0,k/5.0);
+				list.push(ansiBG(rgb)+" ");
+			}
+		}
+		list.push(ansiBG(0)+"\n");
+	}
+	console.log(list.join(""));
+}
+
 const AsmWidth=24+10;
 const r3000=new R3000();
 
@@ -318,3 +332,5 @@ console.log("test6 homegrown mips r3000 emulator");
 
 //runTest(0x0080);	//cycle t0
 runTest(0x00);	// validate instruction behavior
+
+colors();

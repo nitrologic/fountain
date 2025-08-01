@@ -164,3 +164,74 @@ export class R3000 {
 //const r3000 = new R3000();
 //const ops = [0x00230820, 0x00000000, 2]; // Example: add $at, $at, $v1; nop
 //console.log(r3000.dump(ops));
+
+export class MipsAssembler
+{
+	constructor(){
+	}
+
+// code generation macros
+
+	static SLL(A,B,C) {return ((A)<<11)|((B)<<16)|((C)<<6)|0;}
+	static SRL(A,B,C) {return ((A)<<11)|((B)<<16)|((C)<<6)|2;}
+	static SRA(A,B,C) {return ((A)<<11)|((B)<<16)|((C)<<6)|3;}
+	static SLLV(A,B,C) {return ((A)<<11)|((B)<<16)|((C)<<21)|4;}
+	static SRLV(A,B,C) {return ((A)<<11)|((B)<<16)|((C)<<21)|6;}
+	static SRAV(A,B,C) {return ((A)<<11)|((B)<<16)|((C)<<21)|7;}
+	static JR(A) {return ((A)<<21)|8;}
+	static JALR(A,B) {return ((A)<<11)|((B)<<21)|9;}
+	static SYSCALL() {return 12;}
+	static DOBREAK(A) {return 13;}
+	static MFHI(A) {return ((A)<<11)|16;}
+	static MTHI(A) {return ((A)<<11)|17;}
+	static MFLO(A) {return ((A)<<11)|18;}
+	static MTLO(A) {return ((A)<<11)|19;}
+	static MULT(A,B) {return ((A)<<21)|((B)<<16)|24;}
+	static MULTU(A,B) {return ((A)<<21)|((B)<<16)|25;}
+	static DIV(A,B) {return ((A)<<21)|((B)<<16)|26;}
+	static DIVU(A,B) {return ((A)<<21)|((B)<<16)|27;}
+	static ADD(A,B,C) {return ((A)<<11)|((B)<<21)|((C)<<16)|32;}
+	static ADDU(A,B,C) {return ((A)<<11)|((B)<<21)|((C)<<16)|33;}
+	static SUB(A,B,C) {return ((A)<<11)|((B)<<21)|((C)<<16)|34;}
+	static SUBU(A,B,C) {return ((A)<<11)|((B)<<21)|((C)<<16)|35;}
+	static AND(A,B,C) {return ((A)<<11)|((B)<<21)|((C)<<16)|36;}
+	static OR(A,B,C) {return ((A)<<11)|((B)<<21)|((C)<<16)|37;}
+	static XOR(A,B,C) {return ((A)<<11)|((B)<<21)|((C)<<16)|38;}
+	static NOR(A,B,C) {return ((A)<<11)|((B)<<21)|((C)<<16)|39;}
+	static SLT(A,B,C) {return ((A)<<11)|((B)<<21)|((C)<<16)|42;}
+	static SLTU(A,B,C) {return ((A)<<11)|((B)<<21)|((C)<<16)|43;}
+	static BLTZ(A,B) {return ((A)<<21)|((B)&0xffff)|(0X0400<<16);}
+	static BGEZ(A,B) {return ((A)<<21)|((B)&0xffff)|(0X0401<<16);}
+	static BLTZAL(A,B) {return ((A)<<21)|((B)&0xffff)|(0X0410<<16);}
+	static BGEZAL(A,B) {return ((A)<<21)|((B)&0xffff)|(0X0411<<16);}
+	static J(A) {return (2<<26)|(((A)>>2)&0x03ffffff);}
+	static JAL(A) {return (3<<26)|(((A)>>2)&0x03ffffff);}
+	static BEQ(A,B,C) {return (4<<26)|((A)<<21)|((B)<<16)|((C)&0xffff);}
+	static BNE(A,B,C) {return (5<<26)|((A)<<21)|((B)<<16)|((C)&0xffff);}
+	static BLEZ(A,B) {return (6<<26)|((A)<<21)|((B)&0xffff);}
+	static BGTZ(A,B) {return (7<<26)|((A)<<21)|((B)&0xffff);}
+	static ADDI(A,B,C) {return (8<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static ADDIU(A,B,C) {return (9<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static SLTI(A,B,C) {return (10<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static SLTIU(A,B,C) {return (11<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static ANDI(A,B,C) {return (12<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static ORI(A,B,C) {return (13<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static XORI(A,B,C) {return (14<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static LUI(A,B) {return (15<<26)|((A)<<16)|((B)&0xffff);}
+	static COP0(A) {return (16<<26)|((A)&0x03ffffff);}
+	static COP1(A) {return (17<<26)|((A)&0x03ffffff);}
+	static COP2(A) {return (18<<26)|((A)&0x03ffffff);}
+	static COP3(A) {return (19<<26)|((A)&0x03ffffff);}
+	static LB(A,B,C) {return (32<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static LH(A,B,C) {return (33<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static LWL(A,B,C) {return (34<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static LW(A,B,C) {return (35<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static LBU(A,B,C) {return (36<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static LHU(A,B,C) {return (37<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static LWR(A,B,C) {return (38<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static SB(A,B,C) {return (40<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static SH(A,B,C) {return (41<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static SWL(A,B,C) {return (42<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static SW(A,B,C) {return (43<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+	static SWR(A,B,C) {return (46<<26)|((A)<<16)|((B)<<21)|((C)&0xffff);}
+};

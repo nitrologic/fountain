@@ -13,6 +13,14 @@ export const HalfBlocks=" ▀▄█";
 
 export const AnsiRGB="\x1B[38;2;" //+"⟨r⟩;⟨g⟩;⟨b⟩m"
 
+export function rgbShade(r,g,b){
+	const r6=(r*5)|0;
+	const g6=(g*5)|0;
+	const b6=(b*5)|0;
+	const rgb=0x10+36*r6+6*g6+b6;
+	return rgb;
+}
+
 export function greyShade(shade){
 	const grey=0xe8+(shade*23)|0;
 	return grey;
