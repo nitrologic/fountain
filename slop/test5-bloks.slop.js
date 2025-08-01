@@ -4,7 +4,7 @@
 // all sleeps removed
 // quadblockFrames for big pixel motion
 
-const MaxFrame=24000;
+const MaxFrame=0;
 
 // frogger or little computer guy
 

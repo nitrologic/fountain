@@ -11,6 +11,8 @@ export const SixShades2="██▓▒░ ";
 
 export const HalfBlocks=" ▀▄█";
 
+
+
 export const AnsiRGB="\x1B[38;2;" //+"⟨r⟩;⟨g⟩;⟨b⟩m"
 
 export function rgbShade(r,g,b){
@@ -25,6 +27,8 @@ export function greyShade(shade){
 	const grey=0xe8+(shade*23)|0;
 	return grey;
 }
+
+export const AnsiReset="\x1b[0m";
 
 export function ansiFG(col8){
 	const fg8="\x1B[38;5;"+col8+"m";

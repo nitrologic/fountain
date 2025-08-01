@@ -9,8 +9,9 @@
 // vintage dashboard
 
 import { mipsRegs, R3000 } from "./slopmips.js";
-import { rgbShade, greyShade, ansiBG, ansiFG } from "./sloputil.js";
+import { AnsiReset, pixelMap, rgbShade, greyShade, ansiBG, ansiFG } from "./sloputil.js";
 
+const MaxFrame=24000;
 
 // MIPS decode
 // op6 rs5 rt5 rd5 sham5 func6
@@ -260,45 +261,43 @@ function colors(){
 				list.push(ansiBG(rgb)+" ");
 			}
 		}
-		list.push(ansiBG(0)+"\n");
+		list.push(AnsiReset+"\n");
 	}
 	console.log(list.join(""));
+}
+
+function frontPanel(){
+//	return "hello world";
+	const bank=[];
+	const fg0=ansiFG(7);
+	const fg1=ansiFG(greyShade(13/23.0));
+	const fg2=ansiFG(rgbShade(1/5.0,1,1));
+	for(let i=0;i<32;i++){
+		const i32=i>0?regs[i]:PC;
+		const fg3=regs[i+RegCount]==regs[i]?fg1:fg2;
+		bank.push(fg3+regBits(i32)+fg0+"│");
+		if((i&7)==7) bank.push("\n");
+	}
+	const line=bank.join("");
+	return line;
 }
 
 const AsmWidth=24+10;
 const r3000=new R3000();
 
-const MaxCycles = 20;
+const MaxCycles = 10;
 
-function runTest(loc=0) {
+function startTest(loc=0) {
 	PC=loc;
-//	ram[1] = 4; // Store value 4 at ram[1] for LW test
-	const pcregs=["PC"].concat(mipsRegs.slice(1));
-	const regnames=pcregs.join("   ");
-	console.log("".padStart(AsmWidth+3)+regnames);
-	for (let i = 0; i < MaxCycles; i++) {
-		if(PC<0){
-			break;
-		}
-		regs.copyWithin(RegCount,0,RegCount);
-		const word=(PC&PCMASK)>>2;
-		const i32=ram[word];
-		const asm=r3000.disassemble(i32,PC);
-		if (!decodeMIPS(i32)) break;
-		PC=(PC+4)&PCMASK;
-		// in dump land PC is reg0
-		const bank=[];
-		const bg0=ansiBG(0);
-		const bg1=ansiBG(greyShade(1/23.0));
-		const bg2=ansiBG(1);
-		for(let i=0;i<32;i++){
-			const i32=i>0?regs[i]:PC;
-			const bg3=regs[i+RegCount]==regs[i]?bg1:bg2;
-			bank.push(bg3+regBits(i32)+bg0);
-		}
-		const line=bank.join(" ");
-		console.log(asm.padEnd(AsmWidth)+" "+line);
-	}
+}
+
+function stepTest(loc=0) {
+	if(PC<0) return false;
+	regs.copyWithin(RegCount,0,RegCount);
+	const word=(PC&PCMASK)>>2;
+	const i32=ram[word];
+	if(!decodeMIPS(i32)) return false;
+	PC=(PC+4)&PCMASK;
 }
 
 // Test program: ADDI, ADD, SUB, SLL, JR, LW
@@ -321,10 +320,71 @@ ram[32] = 0x21080001; // ADDI $t0, $t0, 1
 ram[33] = 0x1108fffe; // BEQ $t0, $t0, -8 (always branch back 2 words)
 ram[34] = 0; //nop
 
+let refreshTick=0;
+let tickCount=0;
+let frameCount=-1;
+
 colors();
 
 console.log("test6 homegrown mips r3000 emulator");
 
-//runTest(0x0080);	//cycle t0
-runTest(0x00);	// validate instruction behavior
+// toggles on reset betwen org 0 and org 0x80
+let startVector=0;
 
+function onResize(size){
+}
+function onReset(){
+	startTest(startVector);
+	startVector=0x80-startVector;
+}
+
+function onTick(){
+	stepTest();
+}
+
+function tick() {
+	tickCount++;
+	const stopped=frameCount<0;
+	const count=stopped?-1:frameCount++;
+	if(!stopped) onTick();
+	const frame=(count>=0 && count<MaxFrame)?frontPanel():"";
+	return {success:true,event:"tick",count,frame};
+}
+
+function update(events){
+	for(const e of events){
+		if(e.name=="refresh"){
+			refreshTick=e.code[0];
+			const reply=tick();
+			self.postMessage(reply);
+		}
+	}
+}
+
+self.onmessage=(e)=>{
+	const slip=e.data||{};
+	switch(slip.command){
+		case "reset":
+			frameCount=0;
+			const size=slip.consoleSize;
+			if(size) onResize(size);
+			onReset();
+			break;
+		case "update":
+			const events=slip.events;
+			update(events);
+			break;
+		case "stop":
+			frameCount=-1;
+			break;
+	}
+};
+
+const tiny=new pixelMap(128,12);
+
+
+try {
+	self.postMessage({success:true,event:"start",time:startTime});
+} catch (error) {
+	self.postMessage({success:false,event:"error",error:error.message });
+}

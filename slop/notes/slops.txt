@@ -1,0 +1,52 @@
+/*
+	regs.copyWithin(RegCount,0,RegCount);
+	const word=(PC&PCMASK)>>2;
+	const i32=ram[word];
+	const asm=r3000.disassemble(i32,PC);
+	if (!decodeMIPS(i32)) return false;
+	PC=(PC+4)&PCMASK;
+	// in dump land PC is reg0
+	const bank=[];
+	const bg0=ansiBG(0);
+	const bg1=ansiBG(greyShade(1/23.0));
+	const bg2=ansiBG(1);
+	for(let i=0;i<32;i++){
+		const i32=i>0?regs[i]:PC;
+		const bg3=regs[i+RegCount]==regs[i]?bg1:bg2;
+		bank.push(bg3+regBits(i32)+bg0);
+	}
+	const line=bank.join(" ");
+	console.log(asm.padEnd(AsmWidth));//+" "+line);
+	return true;
+*/
+
+function runTest(loc=0) {
+	PC=loc;
+//	ram[1] = 4; // Store value 4 at ram[1] for LW test
+	const pcregs=["PC"].concat(mipsRegs.slice(1));
+	const regnames=pcregs.join("   ");
+//	console.log("".padStart(AsmWidth+3)+regnames);
+	for (let i = 0; i < MaxCycles; i++) {
+		if(PC<0){
+			break;
+		}
+		regs.copyWithin(RegCount,0,RegCount);
+		const word=(PC&PCMASK)>>2;
+		const i32=ram[word];
+		const asm=r3000.disassemble(i32,PC);
+		if (!decodeMIPS(i32)) break;
+		PC=(PC+4)&PCMASK;
+		// in dump land PC is reg0
+		const bank=[];
+		const bg0=ansiBG(0);
+		const bg1=ansiBG(greyShade(4/23.0));
+		const bg2=ansiBG(1);
+		for(let i=0;i<32;i++){
+			const i32=i>0?regs[i]:PC;
+			const bg3=regs[i+RegCount]==regs[i]?bg1:bg2;
+			bank.push(bg3+regBits(i32)+bg0);
+		}
+		const line=bank.join(" ");
+		console.log(asm.padEnd(AsmWidth));//+" "+line);
+	}
+}
