@@ -213,29 +213,35 @@ function decodeMIPS(i32) {
 		case 0x09:          // ADDIU – add immediate unsigned
 			regs[rt]=regs[rs]+offset;
 			break;
-		case 0x0A: /* SLTI  */
+		case 0x0A: // SLTI 
+			regs[rt] = (regs[rs] | 0) < (offset | 0) ? 1 : 0;
 			break;
-		case 0x0B: /* SLTIU */
+		case 0x0B: // SLTIU
+			regs[rt] = (regs[rs] >>> 0) < (offset >>> 0) ? 1 : 0;
 			break;
-		case 0x0C: /* ANDI  */
+		case 0x0C: // ANDI 
+			regs[rt] = regs[rs] & (offset & 0xFFFF);
 			break;
-		case 0x0D: /* ORI   */
+		case 0x0D: // ORI  
+			regs[rt] = regs[rs] | (offset & 0xFFFF);
 			break;
-		case 0x0E: /* XORI  */
+		case 0x0E: // XORI 
+			regs[rt] = regs[rs] ^ (offset & 0xFFFF);
 			break;
-		case 0x0F: /* LUI   */
+		case 0x0F: // LUI
+			regs[rt] = offset << 16;		
 			break;
 		case 0x10:
 		case 0x11:
 		case 0x12:
 		case 0x13:
-			/* coprocessor 0-3 unimplemented */
+			// coprocessor 0-3 unimplemented
 			break;
 		case 0x14:
 		case 0x15:
 		case 0x16:
 		case 0x17:
-			/* reserved (left space for coprocs) */
+			// reserved (left space for coprocs)
 			break;
 		case 0x18:
 		case 0x19:
@@ -245,7 +251,7 @@ function decodeMIPS(i32) {
 		case 0x1D:
 		case 0x1E:
 		case 0x1F:
-			/* unused major opcodes 24-31 */
+			// unused major opcodes 24-31
 			break;
 
 		case 0x20: // LB
