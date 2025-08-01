@@ -2,6 +2,16 @@
 // by simon and grok and deepseek and kimik2
 // free to good home
 
+// things to do
+
+// delayslot execution logic
+// more opcodes
+// vintage dashboard
+
+import { mipsRegs, R3000 } from "./slopmips.js";
+import { greyShade, ansiBG, ansiFG } from "./sloputil.js";
+
+
 // MIPS decode
 // op6 rs5 rt5 rd5 sham5 func6
 // op6 rs5 rt5 imm16
@@ -9,8 +19,9 @@
 
 // count clock cycles of MIPS r3000 core under emulation
 
-let pc = 0;
-let cycles=0;
+let PC = 0;
+const PCMASK=0x7ffc;
+let cycleCount=0;
 
 const CP0_SR = 12; // Status register
 const CP0_CAUSE = 13; // Cause register
@@ -22,20 +33,21 @@ const EXC_OVF = 12;
 const REG_HI=32;
 const REG_LO=33;
 
-const RegSize = 34;
+const RegCount = 34;
+const RegBanks = 2;
 
 const RamSize = 128 * 1024 * 1024; // 128M
 
-const regs = new Uint32Array(RegSize);
+const regs = new Uint32Array(RegCount*RegBanks);
 const ram = new Uint32Array(RamSize);
 const cp0 = new Uint32Array(32);
 
 function handleTrap(causeCode) {
-	cp0[CP0_EPC] = pc;
+	cp0[CP0_EPC] = PC;
 	cp0[CP0_CAUSE] = causeCode << 2;
-	pc = EXC_VECTOR;
+	PC = EXC_VECTOR;
 	cp0[CP0_SR] |= 0x1; // Set interrupt disable or kernel mode
-	console.log(`Trap: Cause ${cp0[CP0_CAUSE]}, EPC ${cp0[CP0_EPC]}, New PC ${pc}`);
+	console.log(`Trap: Cause ${cp0[CP0_CAUSE]}, EPC ${cp0[CP0_EPC]}, New PC ${PC}`);
 	return true;
 }
 
@@ -76,7 +88,7 @@ function rtypeOp(func6, rs, rt, rd, sham5) {
 			regs[33] = regs[rs];
 			break;
 		case 0x18: // MULT (signed)
-			cycles+=10;
+			cycleCount+=10;
 			const a = BigInt(regs[rs] | 0);
 			const b = BigInt(regs[rt] | 0);
 			const result = a * b;
@@ -106,9 +118,9 @@ function rtypeOp(func6, rs, rt, rd, sham5) {
 			regs[rd] = regs[rs] | regs[rt];
 			break;
 		case 0x08: // F_JR: // JR
-			const delaySlotPC = pc + 4; // Save next instruction
-			pc = regs[rs] - 4;        // Target (adjusted)
-			// Optional: Execute delaySlotPC here if needed
+			const delaySlotPC=PC+4;
+			PC=(regs[rs]-4)&PCMASK;
+			// TODO: Execute delaySlotPC here if needed
 			break;
 		case 0x23: // SUBU (unsigned, no overflow)
 			regs[rd] = regs[rs] - regs[rt];
@@ -129,43 +141,37 @@ function rtypeOp(func6, rs, rt, rd, sham5) {
 }
 
 function decodeMIPS(i32) {
-	cycles++;
+	cycleCount++;
 	const op6 = (i32 >> 26) & 0x3f;
 	const rs = (i32 >> 21) & 0x1f;
 	const rt = (i32 >> 16) & 0x1f;
 	const rd = (i32 >> 11) & 0x1f;
+    const offset = ((i32<<16)>>16);
 	switch (op6) {
 		case 0: // R-type
 			const sham5 = (i32 >> 6) & 0x1f;
 			const func6 = i32 & 0x3f;
 			return rtypeOp(func6, rs, rt, rd, sham5);
 		case 0x04: // BEQ
-			const offset_beq = (i32 & 0xffff) << 2;
-			const signExtOffset_beq = (offset_beq & 0x8000) ? (offset_beq | 0xffff0000) : offset_beq;
-			if (regs[rs] === regs[rt]) {
-				pc += signExtOffset_beq - 4; // -4 to compensate for pc increment
+			if (regs[rs]===regs[rt]) {
+	//			console.log("BEQ",offset<<2);
+				PC+=(offset<<2);
 			}
 			break;
 		case 0x05: // BNE
-			const offset_bne = (i32 & 0xffff) << 2;
-			const signExtOffset_bne = (offset_bne & 0x8000) ? (offset_bne | 0xffff0000) : offset_bne;
 			if (regs[rs] !== regs[rt]) {
-				pc += signExtOffset_bne - 4;
+				PC+=(offset<<2);
 			}
 			break;
 		case 0x06: // BLEZ
-			const offset_blez = (i32 & 0xffff) << 2;
-			const signExtOffset_blez = (offset_blez & 0x8000) ? (offset_blez | 0xffff0000) : offset_blez;
 			if ((regs[rs] | 0) <= 0) {
-				pc += signExtOffset_blez - 4;
+				PC+=(offset<<2);
 			}
 			break;
 
 		case 0x07: // BGTZ
-			const offset_bgtz = (i32 & 0xffff) << 2;
-			const signExtOffset_bgtz = (offset_bgtz & 0x8000) ? (offset_bgtz | 0xffff0000) : offset_bgtz;
 			if ((regs[rs] | 0) > 0) {
-				pc += signExtOffset_bgtz - 4;
+				PC+=(offset<<2);
 			}
 			break;
 		case 0x08:	// ADDI
@@ -179,43 +185,43 @@ function decodeMIPS(i32) {
 			}
 			break;
 		case 0x20: // LB
-			cycles += 2;
+			cycleCount+=2;
 			regs[rt] = ((w >>> (24 - (al << 3))) & 0xFF) << 24 >> 24;
 			break;
 		case 0x21: // LH
 			if (al & 1) return handleTrap(5);               // address error
-			cycles += 2;
+			cycleCount+=2;
 			regs[rt] = ((w >>> (16 - (al << 4))) & 0xFFFF) << 16 >> 16;
 			break;
 		case 0x23:	// LW
-			cycles+=2;
+			cycleCount+=2;
 			const imm_lw = i32 & 0xffff;
 			const signExtImm_lw = (imm_lw & 0x8000) ? (imm_lw | 0xffff0000) : imm_lw;
 			const addr = (regs[rs] + signExtImm_lw) >> 2;
 			regs[rt] = ram[addr];
 			break;
 		case 0x24: // LBU
-			cycles += 2;
+			cycleCount+=2;
 			regs[rt] = (w >>> (24 - (al << 3))) & 0xFF;
 			break;
 		case 0x25: // LHU
 			if (al & 1) return handleTrap(5);
-			cycles += 2;
+			cycleCount+=2;
 			regs[rt] = (w >>> (16 - (al << 4))) & 0xFFFF;
 			break;
 		case 0x28: // SB
-			cycles += 2;
+			cycleCount+=2;
 			ram[idx] = (w & ~(0xFF << (24 - (al << 3)))) |
 					((regs[rt] & 0xFF) << (24 - (al << 3)));
 			break;
 		case 0x29: // SH
 			if (al & 1) return handleTrap(5);
-			cycles += 2;
+			cycleCount+=2;
 			ram[idx] = (w & ~(0xFFFF << (16 - (al << 4)))) |
 					((regs[rt] & 0xFFFF) << (16 - (al << 4)));
 			break;
 		case 0x2B: // SW
-			cycles += 2;
+			cycleCount+=2;
 			ram[idx] = regs[rt];
 			break;
 
@@ -225,18 +231,66 @@ function decodeMIPS(i32) {
 	return true;
 }
 
+
+// borrowed from sloputil
+
+const BrailleCode=0x2800;
+
 function hex(i32){
+	return regBits(i32);
+}
+function hex2(i32){
 	return i32.toString(16).padStart(8, '0');
 }
+function regBits(i32){
+	const line=[];
+	for(let byte=0;byte<4;byte++){
+		const shift=(3-byte)*8;
+		const bits=(i32>>shift)&255;
+		const u=BrailleCode+bits;
+		line.push(String.fromCharCode(u));
+	}
+	return line.join("");
+}
 
-function runTest() {
-	pc = 0;
+const AsmWidth=24+10;
+const r3000=new R3000();
+
+const MaxCycles = 20;
+
+function runTest(loc=0) {
+	PC=loc;
 //	ram[1] = 4; // Store value 4 at ram[1] for LW test
-	for (let i = 0; i < 8; i++) {
-		const i32=ram[pc >> 2];
+	const pcregs=["PC"].concat(mipsRegs.slice(1));
+	const regnames=pcregs.join("   ");
+	console.log("".padStart(AsmWidth+3)+regnames);
+	for (let i = 0; i < MaxCycles; i++) {
+		if(PC<0){
+			break;
+		}
+		regs.copyWithin(RegCount,0,RegCount);
+
+
+		const word=(PC&PCMASK)>>2;
+		const i32=ram[word];
+		const asm=r3000.disassemble(i32,PC);
+
 		if (!decodeMIPS(i32)) break;
-		pc += 4;
-		console.log("step",i,pc,hex(i32),"t0..t4=",hex(regs[8]),hex(regs[9]),hex(regs[10]),hex(regs[11]),hex(regs[12]));
+		PC+=4;
+
+		// in dump land PC is reg0
+		const bank=[];
+		const bg0=ansiBG(0);
+		const bg1=ansiBG(greyShade(1/23.0));
+		const bg2=ansiBG(1);
+		for(let i=0;i<32;i++){
+			const i32=i>0?regs[i]:PC;
+			const bg3=regs[i+RegCount]==regs[i]?bg1:bg2;
+			bank.push(bg3+regBits(i32)+bg0);
+		}
+		const line=bank.join(" ");
+
+		console.log(asm.padEnd(AsmWidth)+" "+line);
 	}
 }
 
@@ -255,7 +309,12 @@ ram[10] = 0x00000810; // MFHI $t0
 ram[11] = 0x00000812; // MFLO $t0
 ram[12] = 0x00000008; // JR $zero            (jump to 0, halt)
 
-console.log("test6 r3000");
-runTest();
+// ORG 0x0080
+ram[32] = 0x21080001; // ADDI $t0, $t0, 1
+ram[33] = 0x1108fffe; // BEQ $t0, $t0, -8 (always branch back 2 words)
+ram[34] = 0; //nop
 
+console.log("test6 homegrown mips r3000 emulator");
 
+//runTest(0x0080);	//cycle t0
+runTest(0x00);	// validate instruction behavior
