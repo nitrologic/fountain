@@ -213,23 +213,23 @@ function decodeMIPS(i32) {
 		case 0x09:          // ADDIU – add immediate unsigned
 			regs[rt]=regs[rs]+offset;
 			break;
-		case 0x0A: // SLTI 
+		case 0x0A: // SLTI
 			regs[rt] = (regs[rs] | 0) < (offset | 0) ? 1 : 0;
 			break;
 		case 0x0B: // SLTIU
 			regs[rt] = (regs[rs] >>> 0) < (offset >>> 0) ? 1 : 0;
 			break;
-		case 0x0C: // ANDI 
+		case 0x0C: // ANDI
 			regs[rt] = regs[rs] & (offset & 0xFFFF);
 			break;
-		case 0x0D: // ORI  
+		case 0x0D: // ORI
 			regs[rt] = regs[rs] | (offset & 0xFFFF);
 			break;
-		case 0x0E: // XORI 
+		case 0x0E: // XORI
 			regs[rt] = regs[rs] ^ (offset & 0xFFFF);
 			break;
 		case 0x0F: // LUI
-			regs[rt] = offset << 16;		
+			regs[rt] = offset << 16;
 			break;
 		case 0x10:
 		case 0x11:
@@ -279,6 +279,10 @@ function decodeMIPS(i32) {
 			break;
 		case 0x28: // SB
 			cycleCount+=2;
+			const ea = regs[rs] + offset;
+			const idx = ea >>> 2;
+			const al = ea & 3;
+			const w = ram[idx];
 			ram[idx] = (w & ~(0xFF << (24 - (al << 3)))) | ((regs[rt] & 0xFF) << (24 - (al << 3)));
 			break;
 		case 0x29: // SH
