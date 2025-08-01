@@ -21,6 +21,9 @@ const MaxFrame=24000;
 // count clock cycles of MIPS r3000 core under emulation
 
 let PC=0;
+let nextPC;
+let delaySlot=false;
+
 const PCMASK=0x7FFFFC;
 let cycleCount=0;
 
@@ -119,9 +122,8 @@ function rtypeOp(func6, rs, rt, rd, sham5) {
 			regs[rd] = regs[rs] | regs[rt];
 			break;
 		case 0x08: // F_JR: // JR
-			const delaySlotPC=PC+4;
-			PC=(regs[rs]-4)&PCMASK;
-			// TODO: Execute delaySlotPC here if needed
+			nextPC=(regs[rs]-4)&PCMASK;
+			delaySlot=true;
 			break;
 		case 0x23: // SUBU (unsigned, no overflow)
 			regs[rd] = regs[rs] - regs[rt];
@@ -149,42 +151,103 @@ function decodeMIPS(i32) {
 	const rd = (i32 >> 11) & 0x1f;
     const offset = ((i32<<16)>>16);
 	switch (op6) {
-		case 0: // R-type
+		case 0x00: // R-type
 			const sham5 = (i32 >> 6) & 0x1f;
 			const func6 = i32 & 0x3f;
 			return rtypeOp(func6, rs, rt, rd, sham5);
+		case 0x01: // BLTZ BGEZ BLTZAL BGEZAL
+			const cond  = (i32 >> 16) & 0x1f; // condition bits
+			const link1 = (cond & 1) !== 0;     // bit0 set → “and-link”
+			const test = regs[rs] | 0;       // signed compare
+			const take = ((rt >> 4) & 1) === 0
+				? test < 0  // bit4 low → “LTZ”
+				: test >= 0; // bit4 high → “GEZ”
+			if (link1) regs[31] = PC + 8;     // delay of caller
+			if (take) {
+				nextPC=PC+(offset<<2);
+				delaySlot=true;
+			}
+			break;
+		case 0x02: // J
+		case 0x03: // JAL
+			const link=(op6==0x03);
+			const addr26=i32&0x03FFFFFF;
+			const target=(PC+4&0xF0000000)|(addr26<<2);
+			if (link) regs[31]=PC+8; // JAL stores return‐address
+			nextPC=target - 4; // subtract 4 so tickTest adds it back
+			delaySlot=true;
+			break;
 		case 0x04: // BEQ
 			if (regs[rs]===regs[rt]) {
 	//			console.log("BEQ",offset<<2);
-				PC+=(offset<<2);
+				nextPC=PC+(offset<<2);
+				delaySlot=true;
 			}
 			break;
 		case 0x05: // BNE
 			if (regs[rs] !== regs[rt]) {
-				PC+=(offset<<2);
+				nextPC=PC+(offset<<2);
+				delaySlot=true;
 			}
 			break;
 		case 0x06: // BLEZ
 			if ((regs[rs] | 0) <= 0) {
-				PC+=(offset<<2);
+				nextPC=PC+(offset<<2);
+				delaySlot=true;
 			}
 			break;
-
 		case 0x07: // BGTZ
 			if ((regs[rs] | 0) > 0) {
-				PC+=(offset<<2);
+				nextPC=PC+(offset<<2);
+				delaySlot=true;
 			}
 			break;
 		case 0x08:	// ADDI
-			const imm = i32 & 0xffff;
-			const signExtImm = (imm & 0x8000) ? (imm | 0xffff0000) : imm;
-			const addiResult = regs[rs] + signExtImm;
+			const addiResult = regs[rs] + offset;
 			if (addiResult > 0x7FFFFFFF || addiResult < -0x80000000) {
 				if (!handleTrap(EXC_OVF)) return false;
 			} else {
 				regs[rt] = addiResult;
 			}
 			break;
+		case 0x09:          // ADDIU – add immediate unsigned
+			regs[rt]=regs[rs]+offset;
+			break;
+		case 0x0A: /* SLTI  */
+			break;
+		case 0x0B: /* SLTIU */
+			break;
+		case 0x0C: /* ANDI  */
+			break;
+		case 0x0D: /* ORI   */
+			break;
+		case 0x0E: /* XORI  */
+			break;
+		case 0x0F: /* LUI   */
+			break;
+		case 0x10:
+		case 0x11:
+		case 0x12:
+		case 0x13:
+			/* coprocessor 0-3 unimplemented */
+			break;
+		case 0x14:
+		case 0x15:
+		case 0x16:
+		case 0x17:
+			/* reserved (left space for coprocs) */
+			break;
+		case 0x18:
+		case 0x19:
+		case 0x1A:
+		case 0x1B:
+		case 0x1C:
+		case 0x1D:
+		case 0x1E:
+		case 0x1F:
+			/* unused major opcodes 24-31 */
+			break;
+
 		case 0x20: // LB
 			cycleCount+=2;
 			regs[rt] = ((w >>> (24 - (al << 3))) & 0xFF) << 24 >> 24;
@@ -196,9 +259,7 @@ function decodeMIPS(i32) {
 			break;
 		case 0x23:	// LW
 			cycleCount+=2;
-			const imm_lw = i32 & 0xffff;
-			const signExtImm_lw = (imm_lw & 0x8000) ? (imm_lw | 0xffff0000) : imm_lw;
-			const addr = (regs[rs] + signExtImm_lw) >> 2;
+			const addr = (regs[rs] + offset) >> 2;
 			regs[rt] = ram[addr];
 			break;
 		case 0x24: // LBU
@@ -297,7 +358,14 @@ function stepTest(loc=0) {
 	const word=(PC&PCMASK)>>2;
 	const i32=ram[word];
 	if(!decodeMIPS(i32)) return false;
-	PC=(PC+4)&PCMASK;
+	PC+=4;
+	if (delaySlot) {
+		const word=(PC&PCMASK)>>2;
+		const i32=ram[word];
+		if(!decodeMIPS(i32)) return false;
+		PC = nextPC & PCMASK;
+		delaySlot = false;
+	}
 }
 
 // Test program: ADDI, ADD, SUB, SLL, JR, LW
