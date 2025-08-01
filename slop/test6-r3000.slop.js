@@ -19,8 +19,8 @@ import { rgbShade, greyShade, ansiBG, ansiFG } from "./sloputil.js";
 
 // count clock cycles of MIPS r3000 core under emulation
 
-let PC = 0;
-const PCMASK=0x7ffc;
+let PC=0;
+const PCMASK=0x7FFFFC;
 let cycleCount=0;
 
 const CP0_SR = 12; // Status register
@@ -45,7 +45,7 @@ const cp0 = new Uint32Array(32);
 function handleTrap(causeCode) {
 	cp0[CP0_EPC] = PC;
 	cp0[CP0_CAUSE] = causeCode << 2;
-	PC = EXC_VECTOR;
+	PC=EXC_VECTOR;
 	cp0[CP0_SR] |= 0x1; // Set interrupt disable or kernel mode
 	console.log(`Trap: Cause ${cp0[CP0_CAUSE]}, EPC ${cp0[CP0_EPC]}, New PC ${PC}`);
 	return true;
@@ -211,14 +211,12 @@ function decodeMIPS(i32) {
 			break;
 		case 0x28: // SB
 			cycleCount+=2;
-			ram[idx] = (w & ~(0xFF << (24 - (al << 3)))) |
-					((regs[rt] & 0xFF) << (24 - (al << 3)));
+			ram[idx] = (w & ~(0xFF << (24 - (al << 3)))) | ((regs[rt] & 0xFF) << (24 - (al << 3)));
 			break;
 		case 0x29: // SH
 			if (al & 1) return handleTrap(5);
 			cycleCount+=2;
-			ram[idx] = (w & ~(0xFFFF << (16 - (al << 4)))) |
-					((regs[rt] & 0xFFFF) << (16 - (al << 4)));
+			ram[idx] = (w & ~(0xFFFF << (16 - (al << 4)))) | ((regs[rt] & 0xFFFF) << (16 - (al << 4)));
 			break;
 		case 0x2B: // SW
 			cycleCount+=2;
@@ -283,15 +281,11 @@ function runTest(loc=0) {
 			break;
 		}
 		regs.copyWithin(RegCount,0,RegCount);
-
-
 		const word=(PC&PCMASK)>>2;
 		const i32=ram[word];
 		const asm=r3000.disassemble(i32,PC);
-
 		if (!decodeMIPS(i32)) break;
-		PC+=4;
-
+		PC=(PC+4)&PCMASK;
 		// in dump land PC is reg0
 		const bank=[];
 		const bg0=ansiBG(0);
@@ -303,7 +297,6 @@ function runTest(loc=0) {
 			bank.push(bg3+regBits(i32)+bg0);
 		}
 		const line=bank.join(" ");
-
 		console.log(asm.padEnd(AsmWidth)+" "+line);
 	}
 }
@@ -328,9 +321,10 @@ ram[32] = 0x21080001; // ADDI $t0, $t0, 1
 ram[33] = 0x1108fffe; // BEQ $t0, $t0, -8 (always branch back 2 words)
 ram[34] = 0; //nop
 
+colors();
+
 console.log("test6 homegrown mips r3000 emulator");
 
 //runTest(0x0080);	//cycle t0
 runTest(0x00);	// validate instruction behavior
 
-colors();

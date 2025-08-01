@@ -39,6 +39,10 @@ function padHex(i32){
 	return i32.toString(16).padStart(8,"0");
 }
 
+function padHex6(i24){
+	return i24.toString(16).padStart(6,"0");
+}
+
 export class R3000 {
 	dump(ops) {
 		let n = (ops[ops.length - 2] >> 2);
@@ -90,7 +94,7 @@ export class R3000 {
 		rt = mipsRegs[(op >>> 16) & 31];
 		rs = mipsRegs[(op >>> 21) & 31];
 
-		let output=padHex(loc)+" "+padHex(op)+" "+mop.substring(1)+" ";
+		let output=padHex6(loc)+" "+padHex(op)+" "+mop.substring(1)+" ";
 		switch (mop[0]) {
 			case 'A': // nop
 				break;
