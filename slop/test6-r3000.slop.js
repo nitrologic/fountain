@@ -2,26 +2,33 @@
 // by simon and grok and deepseek and kimik2
 // free to good home
 
-// things to do
+// reset signal with blank line from slopshop host
 
-// delayslot execution logic
+// TODO:
+//
 // more opcodes
-// vintage dashboard
+// more dashboard
+// assembler tool
+// monitor tools
+// coms
 
 import { mipsRegs, R3000 } from "./slopmips.js";
 import { AnsiReset, pixelMap, rgbShade, greyShade, ansiBG, ansiFG } from "./sloputil.js";
 
 const MaxFrame=24000;
 
-// MIPS decode
-// op6 rs5 rt5 rd5 sham5 func6
-// op6 rs5 rt5 imm16
-// op6 address26
+// MIPS R3000 SIMULATION AHEAD
 
-// count clock cycles of MIPS r3000 core under emulation
+const REG_HI=32;
+const REG_LO=33;
+
+const RamSize = 128 * 1024 * 1024; // 128M
+
+const RegCount = 34;
+const RegBanks = 2;
 
 let PC=0;
-let nextPC;
+let PC2;
 let delaySlot=false;
 
 const PCMASK=0x7FFFFC;
@@ -33,14 +40,6 @@ const CP0_EPC = 14; // Exception PC
 
 const EXC_VECTOR = 0x80000080;
 const EXC_OVF = 12;
-
-const REG_HI=32;
-const REG_LO=33;
-
-const RegCount = 34;
-const RegBanks = 2;
-
-const RamSize = 128 * 1024 * 1024; // 128M
 
 const regs = new Uint32Array(RegCount*RegBanks);
 const ram = new Uint32Array(RamSize);
@@ -56,8 +55,9 @@ function handleTrap(causeCode) {
 }
 
 // 64 r-type opcodes work in progress
+// check the JR opcode is correct...
 
-function rtypeOp(func6, rs, rt, rd, sham5) {
+function rtypeOp(func6, sham5, rs, rt, rd) {
 	switch (func6) {
 		case 0x00: // SLL
 			regs[rd] = regs[rt] << sham5;
@@ -78,6 +78,10 @@ function rtypeOp(func6, rs, rt, rd, sham5) {
 			break;
 		case 0x07: // SRAV
 			regs[rd] = regs[rt] >> (regs[rs] & 0x1F);
+			break;
+		case 0x08: // JR
+			PC2=(regs[rs]-4)&PCMASK;
+			delaySlot=true;
 			break;
 		case 0x10: // MFHI
 			regs[rd] = regs[32];
@@ -115,18 +119,14 @@ function rtypeOp(func6, rs, rt, rd, sham5) {
 				regs[rd] = subResult;
 			}
 			break;
-		case 0x24: // F_AND: // 0x24 which AND
-			regs[rd] = regs[rs] & regs[rt];
-			break;
-		case 0x25: // F_OR: // OR
-			regs[rd] = regs[rs] | regs[rt];
-			break;
-		case 0x08: // F_JR: // JR
-			nextPC=(regs[rs]-4)&PCMASK;
-			delaySlot=true;
-			break;
 		case 0x23: // SUBU (unsigned, no overflow)
 			regs[rd] = regs[rs] - regs[rt];
+			break;
+		case 0x24: // AND
+			regs[rd] = regs[rs] & regs[rt];
+			break;
+		case 0x25: // OR
+			regs[rd] = regs[rs] | regs[rt];
 			break;
 		case 0x27: // NOR
 			regs[rd] = ~(regs[rs] | regs[rt]);
@@ -150,11 +150,12 @@ function decodeMIPS(i32) {
 	const rt = (i32 >> 16) & 0x1f;
 	const rd = (i32 >> 11) & 0x1f;
     const offset = ((i32<<16)>>16);
+
 	switch (op6) {
 		case 0x00: // R-type
 			const sham5 = (i32 >> 6) & 0x1f;
 			const func6 = i32 & 0x3f;
-			return rtypeOp(func6, rs, rt, rd, sham5);
+			return rtypeOp(func6, sham5, rs, rt, rd);
 		case 0x01: // BLTZ BGEZ BLTZAL BGEZAL
 			const cond  = (i32 >> 16) & 0x1f; // condition bits
 			const link1 = (cond & 1) !== 0;     // bit0 set → “and-link”
@@ -164,7 +165,7 @@ function decodeMIPS(i32) {
 				: test >= 0; // bit4 high → “GEZ”
 			if (link1) regs[31] = PC + 8;     // delay of caller
 			if (take) {
-				nextPC=PC+(offset<<2);
+				PC2=PC+(offset<<2);
 				delaySlot=true;
 			}
 			break;
@@ -174,31 +175,31 @@ function decodeMIPS(i32) {
 			const addr26=i32&0x03FFFFFF;
 			const target=(PC+4&0xF0000000)|(addr26<<2);
 			if (link) regs[31]=PC+8; // JAL stores return‐address
-			nextPC=target - 4; // subtract 4 so tickTest adds it back
+			PC2=target - 4; // subtract 4 so tickTest adds it back
 			delaySlot=true;
 			break;
 		case 0x04: // BEQ
 			if (regs[rs]===regs[rt]) {
 	//			console.log("BEQ",offset<<2);
-				nextPC=PC+(offset<<2);
+				PC2=PC+(offset<<2);
 				delaySlot=true;
 			}
 			break;
 		case 0x05: // BNE
 			if (regs[rs] !== regs[rt]) {
-				nextPC=PC+(offset<<2);
+				PC2=PC+(offset<<2);
 				delaySlot=true;
 			}
 			break;
 		case 0x06: // BLEZ
 			if ((regs[rs] | 0) <= 0) {
-				nextPC=PC+(offset<<2);
+				PC2=PC+(offset<<2);
 				delaySlot=true;
 			}
 			break;
 		case 0x07: // BGTZ
 			if ((regs[rs] | 0) > 0) {
-				nextPC=PC+(offset<<2);
+				PC2=PC+(offset<<2);
 				delaySlot=true;
 			}
 			break;
@@ -373,7 +374,7 @@ function stepTest(loc=0) {
 		const word=(PC&PCMASK)>>2;
 		const i32=ram[word];
 		if(!decodeMIPS(i32)) return false;
-		PC = nextPC & PCMASK;
+		PC = PC2 & PCMASK;
 		delaySlot = false;
 	}
 }
@@ -458,11 +459,19 @@ self.onmessage=(e)=>{
 	}
 };
 
-const tiny=new pixelMap(128,12);
-
 
 try {
 	self.postMessage({success:true,event:"start",time:startTime});
 } catch (error) {
 	self.postMessage({success:false,event:"error",error:error.message });
 }
+
+// const tiny=new pixelMap(128,12);
+
+
+// MIPS pre? decode
+// op6 rs5 rt5 rd5 sham5 func6
+// op6 rs5 rt5 imm16
+// op6 address26
+
+// count clock cycles of MIPS r3000 core under emulation
