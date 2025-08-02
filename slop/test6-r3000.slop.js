@@ -303,6 +303,12 @@ function decodeMIPS(i32) {
 			if (ea & 1) return handleTrap(5);
 			regs[rt] = (((ram[idx] >>> halfShift) & 0xFFFF) << 16) >> 16;
 			break;
+		case 0x22: // LWL	load word left
+			cycleCount+=3;
+			const bits=(ea&3)<<3;
+			const mask=(-1>>>(32-bits));
+			regs[rt]=(ram[idx]<<bits) | (regs[rt]&mask);
+			break;
 		case 0x23:	// LW
 			cycleCount+=2;
 			regs[rt] = ram[idx];
@@ -316,7 +322,12 @@ function decodeMIPS(i32) {
 			if (ea & 1) return handleTrap(5);
 			regs[rt] = (ram[idx] >>> halfShift) & 0xFFFF;
 			break;
-
+		case 0x26: // LWR - Load Word Right
+			cycleCount += 3;
+			const bits2 = (3 - (ea & 3)) << 3; // Opposite of LWL
+			const mask2 = (-1 << bits2) >>> 0; // Mask for preserving left bits
+			regs[rt] = (ram[idx] >>> bits2) | (regs[rt] & mask2);
+			break;
 		case 0x28: // SB
 			cycleCount+=2;
 			ram[idx] = (ram[idx] & ~(0xFF << byteShift)) | ((regs[rt] & 0xFF) << byteShift);
