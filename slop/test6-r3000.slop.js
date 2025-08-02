@@ -13,11 +13,13 @@
 // coms
 
 import { mipsRegs, R3000 } from "./slopmips.js";
-import { AnsiReset, pixelMap, rgbShade, greyShade, ansiBG, ansiFG } from "./sloputil.js";
+import { rgbShade, greyShade, ansiFG } from "./sloputil.js";
 
 const MaxFrame=24000;
 
 // MIPS R3000 SIMULATION AHEAD
+
+const REG_RA=31;
 
 const REG_HI=32;
 const REG_LO=33;
@@ -25,11 +27,13 @@ const REG_LO=33;
 const RamSize = 128 * 1024 * 1024; // 128M
 
 const RegCount = 34;
-const RegBanks = 2;
+const RegBanks = 2;		// [values, snapshot]
 
 let PC=0;
 let PC2;
 let delaySlot=false;
+
+// TODO: spec sweet spot for an r3000 worker
 
 const PCMASK=0x7FFFFC;
 let cycleCount=0;
@@ -149,13 +153,20 @@ function decodeMIPS(i32) {
 	const rs = (i32 >> 21) & 0x1f;
 	const rt = (i32 >> 16) & 0x1f;
 	const rd = (i32 >> 11) & 0x1f;
-    const offset = ((i32<<16)>>16);
+
+	if(op6==0){
+		const func6 = i32 & 0x3f;
+		const sham5 = (i32 >> 6) & 0x1f;
+		return rtypeOp(func6, sham5, rs, rt, rd);
+	}
+
+	const offset=(i32<<16)>>16;
+	const ea=(regs[rs]+offset);
+	const idx=ea>>2;
+	const byteShift=24-((ea&3)<<3);
+	const halfShift=16-((ea&3)<<4);	// ea&2 ?
 
 	switch (op6) {
-		case 0x00: // R-type
-			const sham5 = (i32 >> 6) & 0x1f;
-			const func6 = i32 & 0x3f;
-			return rtypeOp(func6, sham5, rs, rt, rd);
 		case 0x01: // BLTZ BGEZ BLTZAL BGEZAL
 			const cond  = (i32 >> 16) & 0x1f; // condition bits
 			const link1 = (cond & 1) !== 0;     // bit0 set → “and-link”
@@ -257,39 +268,35 @@ function decodeMIPS(i32) {
 
 		case 0x20: // LB
 			cycleCount+=2;
-			regs[rt] = ((w >>> (24 - (al << 3))) & 0xFF) << 24 >> 24;
+			regs[rt] = (((ram[idx] >>> byteShift)& 0xFF) << 24) >> 24;
 			break;
 		case 0x21: // LH
-			if (al & 1) return handleTrap(5);               // address error
 			cycleCount+=2;
-			regs[rt] = ((w >>> (16 - (al << 4))) & 0xFFFF) << 16 >> 16;
+			if (ea & 1) return handleTrap(5);
+			regs[rt] = (((ram[idx] >>> halfShift) & 0xFFFF) << 16) >> 16;
 			break;
 		case 0x23:	// LW
 			cycleCount+=2;
-			const addr = (regs[rs] + offset) >> 2;
-			regs[rt] = ram[addr];
+			regs[rt] = ram[idx];
 			break;
 		case 0x24: // LBU
 			cycleCount+=2;
-			regs[rt] = (w >>> (24 - (al << 3))) & 0xFF;
+			regs[rt] = (regs[rt] >>> byteShift) & 0xFF;
 			break;
 		case 0x25: // LHU
-			if (al & 1) return handleTrap(5);
 			cycleCount+=2;
-			regs[rt] = (w >>> (16 - (al << 4))) & 0xFFFF;
+			if (ea & 1) return handleTrap(5);
+			regs[rt] = (regs[rt] >>> halfShift) & 0xFFFF;
 			break;
+
 		case 0x28: // SB
 			cycleCount+=2;
-			const ea = regs[rs] + offset;
-			const idx = ea >>> 2;
-			const al = ea & 3;
-			const w = ram[idx];
-			ram[idx] = (w & ~(0xFF << (24 - (al << 3)))) | ((regs[rt] & 0xFF) << (24 - (al << 3)));
+			ram[idx] = (ram[idx] & ~(0xFF << byteShift)) | ((regs[rt] & 0xFF) << byteShift);
 			break;
 		case 0x29: // SH
-			if (al & 1) return handleTrap(5);
 			cycleCount+=2;
-			ram[idx] = (w & ~(0xFFFF << (16 - (al << 4)))) | ((regs[rt] & 0xFFFF) << (16 - (al << 4)));
+			if (ea & 1) return handleTrap(5);
+			ram[idx] = (ram[idx]&~(0xFFFF<<halfShift)) | ((regs[rt] & 0xFFFF)<<halfShift);
 			break;
 		case 0x2B: // SW
 			cycleCount+=2;
@@ -324,21 +331,9 @@ function regBits(i32){
 	return line.join("");
 }
 
-function colors(){
-	const list=[];
-	for(let i=0;i<6;i++){
-		for(let j=0;j<6;j++){
-			for(let k=0;k<6;k++){
-				const rgb=rgbShade(i/5.0,j/5.0,k/5.0);
-				list.push(ansiBG(rgb)+" ");
-			}
-		}
-		list.push(AnsiReset+"\n");
-	}
-	console.log(list.join(""));
-}
+// register contents 32 * 4 x 8 braille bits chars
 
-function frontPanel(){
+function frontPanel2(){
 //	return "hello world";
 	const bank=[];
 	const fg0=ansiFG(7);
@@ -353,6 +348,26 @@ function frontPanel(){
 	const line=bank.join("");
 	return line;
 }
+
+// register state
+
+function frontPanel(){
+	const sticker="⛲R3000"
+//	return "hello world";
+	const bank=[];
+	const fg0=ansiFG(7);
+	const fg1=ansiFG(greyShade(13/23.0));
+	const fg2=ansiFG(rgbShade(1/5.0,1,1));
+	for(let i=0;i<32;i++){
+		const i32=i>0?regs[i]:PC;
+		const fg3=regs[i+RegCount]==regs[i]?fg1:fg2;
+		bank.push(fg3+regBits(i32)+fg0+"│");
+		if((i&7)==7) bank.push("\n");
+	}
+	const line=bank.join("");
+	return line;
+}
+
 
 const AsmWidth=24+10;
 const r3000=new R3000();
@@ -465,13 +480,3 @@ try {
 } catch (error) {
 	self.postMessage({success:false,event:"error",error:error.message });
 }
-
-// const tiny=new pixelMap(128,12);
-
-
-// MIPS pre? decode
-// op6 rs5 rt5 rd5 sham5 func6
-// op6 rs5 rt5 imm16
-// op6 address26
-
-// count clock cycles of MIPS r3000 core under emulation

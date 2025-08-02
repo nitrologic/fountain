@@ -1,3 +1,32 @@
+import { AnsiReset, rgbShade, greyShade, ansiBG, ansiFG } from "./sloputil.js";
+
+
+function colors(){
+	const list=[];
+	for(let i=0;i<6;i++){
+		for(let j=0;j<6;j++){
+			for(let k=0;k<6;k++){
+				const rgb=rgbShade(i/5.0,j/5.0,k/5.0);
+				list.push(ansiBG(rgb)+" ");
+			}
+		}
+		list.push(AnsiReset+"\n");
+	}
+	console.log(list.join(""));
+}
+
+
+// const tiny=new pixelMap(128,12);
+
+
+// MIPS pre? decode
+// op6 rs5 rt5 rd5 sham5 func6
+// op6 rs5 rt5 imm16
+// op6 address26
+
+// count clock cycles of MIPS r3000 core under emulation
+
+
 NBSP	🬀	🬁	🬂	🬃	🬄	🬅	🬆	🬇	🬈	🬉	🬊	🬋	🬌	🬍	🬎
 3	🬏	🬐	🬑	🬒	🬓	▌	🬔	🬕	🬖	🬗	🬘	🬙	🬚	🬛	🬜	🬝
 6	🬞	🬟	🬠	🬡	🬢	🬣	🬤	🬥	🬦	🬧	▐	🬨	🬩	🬪	🬫	🬬
