@@ -337,9 +337,25 @@ function decodeMIPS(i32) {
 			if (ea & 1) return handleTrap(5);
 			ram[idx] = (ram[idx]&~(0xFFFF<<halfShift)) | ((regs[rt] & 0xFFFF)<<halfShift);
 			break;
+
+		case 0x2A: // SWL - Store Word Left
+			cycleCount += 3;
+			const swlBits = (ea & 3) << 3;
+			const swlMask = (-1 >>> (32 - swlBits)) >>> 0;
+			ram[idx] = (ram[idx] & ~swlMask) | ((regs[rt] >>> (24 - swlBits)) & swlMask);
+			break;
+
 		case 0x2B: // SW
 			cycleCount+=2;
 			ram[idx] = regs[rt];
+			break;
+
+
+		case 0x2E: // SWR - Store Word Right
+			cycleCount += 3;
+			const swrBits = (3 - (ea & 3)) << 3;
+			const swrMask = (-1 << swrBits) >>> 0;
+			ram[idx] = (ram[idx] & ~swrMask) | ((regs[rt] << swrBits) & swrMask);
 			break;
 
 		default:
