@@ -66,13 +66,8 @@ function rtypeOp(func6, sham5, rs, rt, rd) {
 		case 0x00: // SLL
 			regs[rd] = regs[rt] << sham5;
 			break;
-//		case 0x03: // SRA (arithmetic right shift)
-//			regs[rd] = regs[rt] >> sham5;
-//			break;
-// Safer version:
 		case 0x03: // SRA (arithmetic right shift)
-			regs[rd] = (regs[rt] >> Math.min(sham5, 31)) |
-				(regs[rt] & 0x80000000 ? ~(0x7FFFFFFF >> Math.min(sham5, 31)) : 0);
+			regs[rd] = regs[rt] >> sham5;
 			break;
 		case 0x04: // SLLV
 			regs[rd] = regs[rt] << (regs[rs] & 0x1F);
@@ -86,6 +81,11 @@ function rtypeOp(func6, sham5, rs, rt, rd) {
 		case 0x08: // JR
 			PC2=(regs[rs]-4)&PCMASK;
 			delaySlot=true;
+			break;
+		case 0x09: // JALR
+			regs[rd] = PC + 8; // Store return address
+			PC2 = (regs[rs] - 4) & PCMASK;
+			delaySlot = true;
 			break;
 		case 0x10: // MFHI
 			regs[rd] = regs[32];
@@ -107,6 +107,34 @@ function rtypeOp(func6, sham5, rs, rt, rd) {
 			regs[REG_HI] = Number((result >> 32n) & 0xFFFFFFFFn) | 0;
 			regs[REG_LO] = Number(result & 0xFFFFFFFFn) | 0;
 			break;
+
+		case 0x1A: // DIV (signed)
+			cycleCount += 35;
+			if (regs[rt] === 0) {
+				// Undefined behavior on divide-by-zero
+				regs[REG_LO] = 0;
+				regs[REG_HI] = 0;
+			} else {
+				const a = regs[rs] | 0;
+				const b = regs[rt] | 0;
+				regs[REG_LO] = (a / b) | 0;
+				regs[REG_HI] = (a % b) | 0;
+			}
+			break;
+		case 0x1B: // DIVU (unsigned)
+			cycleCount += 35;
+			if (regs[rt] === 0) {
+				// Undefined behavior on divide-by-zero
+				regs[REG_LO] = 0;
+				regs[REG_HI] = 0;
+			} else {
+				const a = regs[rs] >>> 0;
+				const b = regs[rt] >>> 0;
+				regs[REG_LO] = (a / b) | 0;
+				regs[REG_HI] = (a % b) | 0;
+			}
+			break;
+
 		case 0x20:	// 0x20	F_ADD
 			const addResult = regs[rs] + regs[rt];
 			if (addResult > 0x7FFFFFFF || addResult < -0x80000000) {
@@ -281,12 +309,12 @@ function decodeMIPS(i32) {
 			break;
 		case 0x24: // LBU
 			cycleCount+=2;
-			regs[rt] = (regs[rt] >>> byteShift) & 0xFF;
+			regs[rt] = (ram[idx] >>> byteShift) & 0xFF;
 			break;
 		case 0x25: // LHU
 			cycleCount+=2;
 			if (ea & 1) return handleTrap(5);
-			regs[rt] = (regs[rt] >>> halfShift) & 0xFFFF;
+			regs[rt] = (ram[idx] >>> halfShift) & 0xFFFF;
 			break;
 
 		case 0x28: // SB
@@ -417,8 +445,6 @@ ram[34] = 0; //nop
 let refreshTick=0;
 let tickCount=0;
 let frameCount=-1;
-
-colors();
 
 console.log("test6 homegrown mips r3000 emulator");
 
