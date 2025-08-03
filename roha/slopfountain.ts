@@ -177,13 +177,18 @@ const emojiIndex = {};
 
 // helper functions
 
-function unixTime(date){
+const epoch:number=Date.UTC(2025,4,12);
+function timestamp():string{
+	return Math.floor((Date.now()-epoch)/62.5).toString(16);
+}
+
+function unixTime(date:string){
 	const d = new Date(date);
 	const s = d.getTime()/1000;
 	return Math.floor(s);
 }
 
-function dateStamp(seconds){
+function dateStamp(seconds:number){
 	if(seconds>0){
 		const date = new Date(seconds*1000);
 		const created=date.toISOString();
@@ -742,7 +747,7 @@ function debugValue(title:string,value:unknown){
 
 async function logForge(lines:string,id:string){
 	if(roha.config.logging){
-		const time=new Date().toISOString();
+		const time=timestamp();	//new Date().toISOString();
 		const list=[];
 		for(let line of lines.split("\n")){
 			line=stripAnsi(line);
