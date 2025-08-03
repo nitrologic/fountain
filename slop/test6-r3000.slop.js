@@ -452,18 +452,20 @@ function startTest(loc=0) {
 function stepTest(loc=0) {
 	if(PC<0) return false;
 	regs.copyWithin(RegCount,0,RegCount);
-	const word=(PC&PCMASK)>>2;
-	const i32=ram[word];
-	if(!decodeMIPS(i32)) return false;
-	PC+=4;
 	if (delaySlot) {
 		const word=(PC&PCMASK)>>2;
 		const i32=ram[word];
 		if(!decodeMIPS(i32)) return false;
 		PC = PC2 & PCMASK;
 		delaySlot = false;
+	}else{
+		const word=(PC&PCMASK)>>2;
+		const i32=ram[word];
+		if(!decodeMIPS(i32)) return false;
 	}
+	PC+=4;
 }
+
 
 // Test program: ADDI, ADD, SUB, SLL, JR, LW
 ram[0] = 0x20080005; // ADDI $t0, $zero, 5  (t0 = 5)
@@ -503,9 +505,9 @@ function onReset(){
 	startVector=0x80-startVector;
 }
 
-function onTick(){
+function onCPUTick(){
 	if(true){
-		const loc=PC&PCMASK;
+		const loc=(PC)&PCMASK;
 		const op=ram[loc>>2];
 		const status=r3000.disassemble(op,loc);
 		tickLog.push(status);
@@ -518,7 +520,7 @@ function tick() {
 	tickCount++;
 	const stopped=frameCount<0;
 	const count=stopped?-1:frameCount++;
-	if(!stopped) onTick();
+	if(!stopped) onCPUTick();
 	const frame=(count>=0 && count<MaxFrame)?frontPanel():"";
 	return {success:true,event:"tick",count,frame};
 }
