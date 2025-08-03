@@ -15,7 +15,7 @@ import { echo, fileLength, Ansi } from "./slopshoptools.ts";
 // ts support via modular plugin
 // smooth out clock ticks at both ends
 
-const BackgroundPeriod=50;
+const BackgroundPeriod=200;
 const BackgroundDutyCycle=25;
 
 const _verbose=false;

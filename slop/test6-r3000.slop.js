@@ -404,7 +404,20 @@ function frontPanel2(){
 	return line;
 }
 
+class panel{
+	constructor(){}
+}
+
 // register state
+function logLines(lines,count){
+	const w=40;
+	if(tickLog){//&&tickLog.length>2){
+		const n=tickLog.length-1;
+		lines.push((tickLog[n-1]||"").padEnd(w," ")+"\n");
+		lines.push((tickLog[n-2]||"").padEnd(w," ")+"\n");
+		lines.push((tickLog[n-3]||"").padEnd(w," ")+"\n");
+	}
+}
 
 function frontPanel(){
 	const sticker="⛲R3000"
@@ -414,13 +427,16 @@ function frontPanel(){
 	const fg1=ansiFG(greyShade(13/23.0));
 	const fg2=ansiFG(rgbShade(1/5.0,1,1));
 	for(let i=0;i<32;i++){
+		if((i&7)==0) bank.push("│");
 		const i32=i>0?regs[i]:PC;
 		const fg3=regs[i+RegCount]==regs[i]?fg1:fg2;
 		bank.push(fg3+regBits(i32)+fg0+"│");
 		if((i&7)==7) bank.push("\n");
 	}
-	const line=bank.join("");
-	return line;
+	const regbank=bank.join("");
+	const lines=[regbank];
+	logLines(lines,3);
+	return lines.join("");
 }
 
 
@@ -469,6 +485,8 @@ ram[32] = 0x21080001; // ADDI $t0, $t0, 1
 ram[33] = 0x1108fffe; // BEQ $t0, $t0, -8 (always branch back 2 words)
 ram[34] = 0; //nop
 
+const tickLog=[];
+
 let refreshTick=0;
 let tickCount=0;
 let frameCount=-1;
@@ -486,6 +504,13 @@ function onReset(){
 }
 
 function onTick(){
+	if(true){
+		const loc=PC&PCMASK;
+		const op=ram[loc>>2];
+		const status=r3000.disassemble(op,loc);
+		tickLog.push(status);
+//		console.log(status);
+	}
 	stepTest();
 }
 
@@ -513,6 +538,7 @@ self.onmessage=(e)=>{
 	switch(slip.command){
 		case "reset":
 			frameCount=0;
+			tickLog.length=0;
 			const size=slip.consoleSize;
 			if(size) onResize(size);
 			onReset();
