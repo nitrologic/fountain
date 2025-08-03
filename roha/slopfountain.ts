@@ -12,7 +12,7 @@ import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { contentType } from "https://deno.land/std/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 
-const fountainVersion="1.3.2";
+const fountainVersion="1.3.3";
 const defaultModel="deepseek-chat@deepseek";
 const fountainName="fountain "+fountainVersion;
 const rohaTitle=fountainName+" ⛲ ";
@@ -53,7 +53,52 @@ const userregion = Intl.DateTimeFormat().resolvedOptions();
 
 const userterminal=getEnv("TERM")||getEnv("TERM_PROGRAM")||getEnv("SESSIONNAME")||"VOID";
 
-let rohaHistory=[];
+type ConfigFlags = {
+	showWelcome: boolean;
+	reasonoutloud: boolean;
+	tools: boolean;
+	commitonstart: boolean;
+	saveonexit: boolean;
+	ansi: boolean;
+	verbose: boolean;
+	squash: boolean;
+	broken: boolean;
+	logging: boolean;
+	debugging: boolean;
+	pushonshare: boolean;
+	rawprompt: boolean;
+	resetcounters: boolean;
+	returntopush: boolean;
+	slow: boolean;
+	slops: boolean;
+};
+
+class Plop {
+	constructor(
+		public role: string,
+		public title: string,
+		public content: string
+	) {
+	}
+}
+
+// a shared context state with multiple models
+
+let rohaHistory:Plop[]=[];
+
+const sessionStack:Plop[][]=[];
+
+function pushHistory(){
+	sessionStack.push([...rohaHistory]);
+	resetHistory();
+}
+
+function popHistory():Plop[]|false{
+	if(sessionStack.length==0) return false;
+	return sessionStack.pop()||false;
+}
+
+
 let rohaModel="mut";	//mut name excludes preview version details
 let rohaUser=username+"@"+userdomain;
 
@@ -85,7 +130,7 @@ const _AnsiPop="\x1b[1;36m";
 const _AnsiSaveCursorA = "\x1B[s";
 const _AnsiRestoreCursorA = "\x1B[u";
 
-// Array of 8 ANSI colors (codes 30-37) 
+// Array of 8 ANSI colors (codes 30-37)
 // selected for contrast and visibility in both light and dark modes.
 
 const AnsiColorNames=["Black","Red","Green","Yellow","Blue","Magenta","Cyan","White"];
@@ -110,7 +155,7 @@ function ansiPrompt():string{
 // application configuration
 
 const slowMillis=25;
-const MaxFileSize=512*1024;
+const MaxFileSize=512*1024*16;
 
 const appDir=Deno.cwd();
 const accountsPath=resolve(appDir,"accounts.json");
@@ -266,7 +311,7 @@ const flagNames={
 	slops : "console worker scripts"
 };
 
-const emptyConfig={
+const emptyConfig:ConfigFlags={
 	showWelcome:false,
 	reasonoutloud:false,
 	tools:false,
@@ -283,8 +328,7 @@ const emptyConfig={
 	resetcounters:false,
 	returntopush:false,
 	slow:false,
-	slops:false,
-	nic:"user"
+	slops:false
 };
 
 const emptyRoha={
@@ -296,7 +340,8 @@ const emptyRoha={
 	counters:{},
 	mut:{},
 	lode:{},
-	forge:[]
+	forge:[],
+	nic:"friend"
 };
 
 let slopPid=null;
@@ -431,16 +476,6 @@ let creditCommand="";
 let rohaShares=[];
 let currentDir=Deno.cwd();
 
-const sessionStack=[];
-
-function pushHistory(){
-	sessionStack.push(rohaHistory);
-	resetHistory();
-}
-function popHistory(){
-	if(sessionStack.length==0) return false;
-	return sessionStack.pop();
-}
 function resetHistory(){
 	rohaHistory=[{role:"system",title:fountainName,content:rohaMihi}];
 	const guide=rohaGuide.join(" ");
@@ -465,7 +500,7 @@ function echoContent(content,wide,left,right){
 	}
 }
 
-// with item in order of preference, src = mut title name 
+// with item in order of preference, src = mut title name
 function itemSource(item):string{
 	const src:string=item.mut||item.title||item.name||"roha";
 	return src;
@@ -644,7 +679,7 @@ function measure(o){
 	return unitString(value,4,"B");
 }
 
-let outputBuffer=[];
+let outputBuffer:string[]=[];
 let printBuffer=[];
 let markdownBuffer=[];
 
@@ -670,9 +705,12 @@ function echo(...args:any):void{
 	const lines=[];
 	for(const arg of args){
 		const line=toString(arg);
-		lines.push(line);
+		lines.push(line.trim());
 	}
-	outputBuffer.push(lines.join(" "));
+	const output=lines.join(" ").trim();
+	if(output.length){
+		outputBuffer.push(output);
+	}
 }
 
 function echoWarning(...args:any){
@@ -702,7 +740,7 @@ function debugValue(title:string,value:unknown){
 	}
 }
 
-async function log(lines:string,id:string){
+async function logForge(lines:string,id:string){
 	if(roha.config.logging){
 		const time=new Date().toISOString();
 		const list=[];
@@ -712,7 +750,7 @@ async function log(lines:string,id:string){
 			list.push(line);
 		}
 		let path=resolve(forgePath,"forge.log");
-		await Deno.writeTextFile(path,list.join(),{append:true});
+		await Deno.writeTextFile(path,list.join("\n"),{append:true});
 	}
 }
 
@@ -737,7 +775,7 @@ async function flush() {
 		const mut=mutline.model;
 		const line=mutline.line;
 		console.log(line);
-		await log(line,mut);
+		await logForge(line,mut);
 		await sleep(delay)
 	}
 	printBuffer=[];
@@ -753,9 +791,14 @@ async function flush() {
 	}
 	markdownBuffer=[];
 
-	for (const line of outputBuffer) {
-		console.log(line);
-		await log(line,"roha");
+	for (const output of outputBuffer) {
+		console.log(output);
+		const lines=output.split("\n");
+		for(const line of lines){
+			if(line.length){
+				await logForge(line,"roha");
+			}
+		}
 		await sleep(delay);
 	}
 	outputBuffer=[];
@@ -1853,13 +1896,14 @@ async function refreshBackground(ms,line) {
 
 const reader=Deno.stdin.readable.getReader();
 
-async function promptForge(message) {
+async function promptForge(message:string) {
 	if(!roha.config.rawprompt) return prompt(message);
 	let result="";
 	if(message){
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
+	// todo: paging tests
 	if(roha.config.page) {
 		await writer.write(homeCursor);
 	}
@@ -1906,7 +1950,7 @@ async function promptForge(message) {
 						promptBuffer=promptBuffer.slice(n);
 					}
 					result=line.trimEnd();
-					await log(result, "stdin");
+					await logForge(result, "stdin");
 					busy=false;
 				} else {
 					bytes.push(byte);
@@ -2021,9 +2065,14 @@ async function commitShares(tag) {
 			const path=share.path;
 			const stat=await Deno.stat(path);
 			const size=stat.size;
-			if (!stat.isFile || size > MaxFileSize) {
+			if (!stat.isFile) {
 				removedPaths.push(path);
 				echo("[KOHA] Removed invalid path",path);
+				dirty=true;
+				continue;
+			}
+			if (size > MaxFileSize) {
+				echo("[KOHA] MaxFileSize breached",path);
 				dirty=true;
 				continue;
 			}
@@ -2186,7 +2235,7 @@ async function showHelp(words:string[]) {
 			const index=parseInt(words[1]);
 			for(let i=1;i<cmds.length;i++){
 				if(i==index){
-					const help="/"+cmds[i];
+					const help="/"+cmds[i].trim();
 					echo("[HELP]",help);
 				}
 			}
@@ -2361,10 +2410,10 @@ async function callCommand(command:string) {
 			case "nic":{
 					if(words.length>1){
 						const nic=sanitizeNic(words[1].trim()||"nix");
-						roha.config.nic=nic;
+						roha.nic=nic;
 						rohaNic=nic;
 					}else{
-						echo(roha.config.nic);
+						echo(roha.nic);
 					}
 				}
 				break;
@@ -2648,7 +2697,7 @@ async function processToolCalls(calls) {
 				name: tool.function?.name || "unknown",
 				content: JSON.stringify({error: "Invalid tool call format"})
 			});
-			await log("processToolCalls error");
+			await logForge("processToolCalls error");
 			//Invalid tool call: ${JSON.stringify(tool)}`, "error");
 			continue;
 		}
@@ -3030,7 +3079,7 @@ async function relay(depth:number) {
 			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
 		}
 	} catch (error) {
-		const line=error.message || String(error);		
+		const line=error.message || String(error);
 		if(line.includes("DeepSeek API error")){
 			echo(line+" - maximum prompt length exceeded?");
 			echo(cleanupRequired);
@@ -3160,7 +3209,7 @@ async function chat() {
 				continue;
 			}
 			lines.push(line.trim());
-			await log(line,rohaUser)
+			await logForge(line,rohaUser)
 		}
 
 		if (lines.length){
@@ -3304,7 +3353,7 @@ if(roha.config.slops){
 
 await flush();
 
-let rohaNic=roha.config.nic||"nic";
+let rohaNic=roha.nic||"nic";
 const sharecount=roha.sharedFiles?.length||0;
 
 let termSize = Deno.consoleSize();
