@@ -23,9 +23,13 @@
 		"pricing": [1.60,6.40],
 		"purpose": "happyface cerebras hosted llama 3.3"
 	},
+	"llama-4-maverick-17b-128e-instruct@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 4 maverick"
+	},
 	"llama-4-scout-17b-16e-instruct@cerebras":{
 		"pricing": [1.60,6.40],
-		"purpose": "happyface cerebras hosted llama 4"
+		"purpose": "happyface cerebras hosted llama 4 scout"
 	},
 	"llama3.1-8b@cerebras":{
 		"pricing": [1.60,6.40],
