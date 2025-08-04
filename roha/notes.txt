@@ -1,3 +1,7 @@
+#mipsel-elf-gcc -v -march=mips1 -msoft-float -nostdlib -Ttext=0x80010000 -o test.elf test.c
+#mipsel-elf-gcc -x c++ -march=mips1 -msoft-float -nostdlib -c -o test.o test.cpp
+
+
 ]parseElf { cpuclass: 1, lsb: 1, fam: 8 }
 entry point 80010b70
 400000 00010000 sll z0,at,0

@@ -1,7 +1,7 @@
 .section .text,"ax"
-.global SYS_RESET
+.global _start
 
-SYS_RESET:
+_start:
 	lui	$gp,0x1f80
 	lui	$sp,0x8020
 	addiu	$sp,$sp,-36

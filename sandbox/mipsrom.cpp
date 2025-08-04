@@ -96,8 +96,7 @@ int availmem(int t)		//-1=fucked   t!=0 returns largest
 }
 
 extern "C"
-void _start(void) {
-	SYS_RESET();
+void boot(void) {
 	initheap((void *)HEAPSTART,HEAPSIZE);	//8008->801e
     volatile unsigned int *gpu = (unsigned int *)0x1F801810; // PS1 GPU register
     *gpu = 0x00000000; // Clear GPU status (example)
