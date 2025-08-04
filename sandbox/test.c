@@ -39,7 +39,6 @@ void *mallocmem(int size){
 	}
 	return 0;
 }
-
 void freemem(void *m){
 	int		i,*a,*b,*c,*d,**p;
 // join adjacents
@@ -70,7 +69,7 @@ void freemem(void *m){
 	}
 	*p=a;a[2]=0;
 }
-int avail(int t)		//-1=fucked   t!=0 returns largest
+int availmem(int t)		//-1=fucked   t!=0 returns largest
 {
 	int		i,j,t0,t1,l;
 	int		*p;

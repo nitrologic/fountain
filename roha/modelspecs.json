@@ -138,6 +138,7 @@
 	"grok-4-0709@xai":{
 		"pricing": [3.00, 15.00],
 		"multi":true,
+		"maxprompt": 256000,
 		"purpose": "Advanced reasoning and code generation",
 		"press": "High-performance model for complex research tasks and multi-step workflows."
 	},

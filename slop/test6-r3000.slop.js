@@ -720,7 +720,9 @@ function parseElf(elfData) {
 
 console.log("test6 homegrown mips r3000 emulator");
 
-const elf=await Deno.readFile("../slop/test2.elf");
+const elf=await Deno.readFile("../sandbox/test.elf");
+
+//const elf=await Deno.readFile("../slop/test2.elf");
 
 //dumpBin(elf);
 

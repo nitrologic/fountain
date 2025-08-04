@@ -1444,6 +1444,7 @@ async function aboutModel(modelname){
 	const mut=mutName(modelname);
 	const info=(modelname in modelSpecs)?modelSpecs[modelname]:null;
 	const rate=info?info.pricing||[]:[];
+	const limit=info?info.maxprompt||0:0;
 	const id=(info?info.id:0)||0;
 	const strict=info?info.strict||false:false;
 	const multi=info?info.multi||false:false;
@@ -1455,9 +1456,9 @@ async function aboutModel(modelname){
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
 	if(roha.config.verbose){
-		echo("model:",{id,mut,emoji,rate,modelname,balance,strict,multi,inline});
+		echo("model:",{id,mut,emoji,rate,limit,modelname,balance,strict,multi,inline});
 	}else{
-		echo("model:",{mut,emoji,rate,balance});
+		echo("model:",{mut,emoji,rate,limit,balance,modelname});
 	}
 	if(roha.config.verbose && info){
 		if(info.purpose)echo("purpose:",info.purpose);
@@ -1990,12 +1991,19 @@ async function addShare(share){
 	}
 }
 
-async function shareDir(dir, tag) {
+async function shareDir(dir:string, tag:string, depth=1) {
 	try {
 		const paths=[];
 		for await (const file of Deno.readDir(dir)) {
-			if (file.isFile && !file.name.startsWith(".")) {
-				paths.push(resolvePath(dir, file.name));
+			if(file.isDirectory){
+				const path = resolvePath(dir, file.name);
+				if(depth<5){
+					shareDir(path, tag, depth + 1);
+				}
+			}else{
+				if (file.isFile && !file.name.startsWith(".")) {
+					paths.push(resolvePath(dir, file.name));
+				}
 			}
 		}
 		for (const path of paths) {
@@ -2011,7 +2019,6 @@ async function shareDir(dir, tag) {
 				continue;
 			}
 		}
-		await writeForge();
 		echo("Shared",paths.length,"files from",dir,"with tag",tag);
 	} catch (error) {
 		echo("shareDir error",String(error)); //.message
@@ -2034,7 +2041,7 @@ const imageExtensions=[
 const textExtensions=[
 	"js", "ts", "txt", "json", "md",
 	"css","html", "svg",
-	"cpp", "c", "h", "cs",
+	"cpp", "c", "h", "cs", "s", "java",
 	"sh", "bat",
 	"log","py","csv","xml","ini"
 ];
@@ -2552,6 +2559,7 @@ async function callCommand(command:string) {
 					if(stat.isDirectory){
 						echo("Share directory path:",path);
 						await shareDir(path,tag);
+						await writeForge();
 					}else{
 						// attachMedia(words);
 						const size=stat.size;
@@ -3092,6 +3100,7 @@ async function relay(depth:number) {
 		}
 		if(line.includes("maximum prompt length")){
 			echo("Oops, maximum prompt length exceeded.");
+			echo(line);
 			echo(cleanupRequired);
 			return spend;
 		}
