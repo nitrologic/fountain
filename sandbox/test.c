@@ -1,3 +1,4 @@
+extern "C" void SYS_RESET();
 // mips r3000 sratch pad
 #define HEAPSTART 0x800c8000
 #define HEAPSIZE  0x00130000
@@ -94,6 +95,7 @@ int availmem(int t)		//-1=fucked   t!=0 returns largest
 	return 0;
 }
 void _start(void) {
+	SYS_RESET();
 	initheap((void *)HEAPSTART,HEAPSIZE);	//8008->801e
     volatile unsigned int *gpu = (unsigned int *)0x1F801810; // PS1 GPU register
     *gpu = 0x00000000; // Clear GPU status (example)
