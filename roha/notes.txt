@@ -1,3 +1,7 @@
+1. Etymology & Origin
+- Aeolian (Greek: Αἰολικός) refers to the Aeolians, one of the four major tribes of ancient Greece (alongside Dorians, Ionians, and Achaeans).
+- Named after Aeolus, the mythical god of winds in Greek mythology (Ἄολος).
+
 	addiu	$sp,$sp,-36
 	add	$s8,$zero,$zero
 	lw	$ra,0($sp)

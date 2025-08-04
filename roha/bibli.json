@@ -1,6 +1,6 @@
 {
 	"name": "bibli",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "Bibliographic index of specifications",
 	"status": "A living document of linguistic latitude",
 	"copyright": "(C) 2025 Simon Armstrong",
@@ -112,6 +112,35 @@
 				"lower": "aāeēhikmnoprtuw",
 				"upper": "AĀEĒHIKMNOPRTUW",
 				"uncommon": ""
+			}
+		},
+		"scales":{
+			"name":"Common Practice Tonality",
+			"tuning":"12-TET",
+			"tags": ["equal tempered","music scale","western","diatonic"],
+			"major":{
+				"solfege": ["do", "re", "mi", "fa", "so", "la", "ti"],
+				"numerals":["I", "ii", "iii", "IV", "V", "vi", "vii°"],
+				"degrees":["tonic","supertonic","mediant","subdominant","dominant","submediant","leading"],
+				"intervals":[0,2,4,5,7,9,11]
+			},
+			"blues": {
+				"numerals": ["I", "♭III", "IV", "♭V", "V", "♭VII"],
+				"degrees": ["tonic", "minor third", "perfect fourth", "diminished fifth", "perfect fifth", "minor seventh"],
+				"intervals": [0,3,5,6,7,10]
+			},
+			"aeolian":{
+				"numerals": ["i", "ii°", "♭III", "iv", "v", "♭VI", "♭VII"],
+				"intervals": [0,2,3,5,7,8,10]
+			},
+			"melodic-minor":{
+				"intervals":[0,2,3,5,7,9,11,12,10,8,7,5,3,2,0]
+			},
+			"harmonic-minor":{
+				"intervals": [0,2,3,5,7,8,11]
+			},
+			"chromatic":{
+				"intervals": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 			}
 		},
 		"unicode": {

@@ -1481,6 +1481,7 @@ function mutName(modelname:string){
 	name=name.replace("-experimental","#");
 	name=name.replace("-Instruct","");
 	name=name.replace("-instruct","");
+	name=name.replace("-generate","");
 	const namebits=name.split("-");
 	const muts=namebits.slice(0,3);
 	const bit=namebits[3]||"0";
