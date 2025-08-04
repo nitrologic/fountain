@@ -1,3 +1,9 @@
+	addiu	$sp,$sp,-36
+	add	$s8,$zero,$zero
+	lw	$ra,0($sp)
+	addiu	$sp,$sp,4
+
+
 #mipsel-elf-gcc -v -march=mips1 -msoft-float -nostdlib -Ttext=0x80010000 -o test.elf test.c
 #mipsel-elf-gcc -x c++ -march=mips1 -msoft-float -nostdlib -c -o test.o test.cpp
 
