@@ -18,7 +18,7 @@ import { rgbShade, greyShade, ansiFG } from "./sloputil.js";
 // GPU graphics port
 // ======================================================
 
-const MaxFrame=24000;
+const MaxFrame=50;//24000;
 
 // ======================================================
 // MIPS R3000 SIMULATION AHEAD
@@ -660,7 +660,7 @@ function parseElf(elfData) {
 		console.error("Invalid ELF magic");
 		return false;
 	}
-	const cpuclass=view.getUint8(4); 
+	const cpuclass=view.getUint8(4);
 	const lsb=view.getUint8(5);
 	const fam=view.getUint16(18, true);
 	console.log("parseElf",{cpuclass,lsb,fam});
@@ -673,6 +673,8 @@ function parseElf(elfData) {
 	const e_phoff=view.getUint32(28, true); // Program header offset
 	const e_phnum=view.getUint16(44, true); // Number of program headers
 	const e_phentsize=view.getUint16(42, true); // Size of each program header
+
+	console.log("entry point",e_entry.toString(16));
 	// Load program segments
 	for (let i=0; i < e_phnum; i++) {
 		const phoff=e_phoff + i * e_phentsize;
@@ -681,9 +683,7 @@ function parseElf(elfData) {
 		const p_vaddr=view.getUint32(phoff + 8, true);
 		const p_filesz=view.getUint32(phoff + 16, true);
 		const p_memsz=view.getUint32(phoff + 20, true);
-
 		const vaddr24=p_vaddr&PCMASK;
-
 		// Only load PT_LOAD segments (type 1)
 		if (p_type===1) {
 			// Ensure address is within ram bounds
@@ -691,43 +691,41 @@ function parseElf(elfData) {
 				console.error(`Segment at 0x${p_vaddr.toString(16)} exceeds RAM size`);
 				return false;
 			}
-
 			// Copy segment data to ram
 			const ramIdx=vaddr24 >> 2; // Word-aligned index
 			for (let j=0; j < p_filesz; j += 4) {
 				const val=view.getUint32(p_offset + j, true);
 				ram[ramIdx + (j >> 2)]=val;
 				const loc=vaddr24+j;
-				const op=val;				
-				console.log(r3000.disassemble(op,loc));
+				const op=val;
+				if(true||j<32){
+					console.log(r3000.disassemble(op,loc));
+				}
 			}
-
 			// Zero-fill any remaining memory (if p_memsz > p_filesz, e.g., for .bss)
 			for (let j=p_filesz; j < p_memsz; j += 4) {
 				ram[ramIdx + (j >> 2)]=0;
 			}
-	
 			console.log(`Loaded segment: vaddr=0x${p_vaddr.toString(16)}, size=0x${p_filesz.toString(16)}`);
 		}
 	}
-
+	return e_entry;
 }
-
-
-
 
 // --allow-read
 
-console.log("test6 homegrown mips r3000 emulator");
 
-const elf=await Deno.readFile("../sandbox/test.elf");
+const elf=await Deno.readFile("../sandbox/mips1.elf");
 
 //const elf=await Deno.readFile("../slop/test2.elf");
 
 //dumpBin(elf);
 
-parseElf(elf);
+const entry=parseElf(elf);
+startVector=entry;
 
+console.log("test6 homegrown mips r3000 emulator");
+console.log("0x"+startVector.toString(16));
 
 self.onmessage=(e)=>{
 	const slip=e.data||{};

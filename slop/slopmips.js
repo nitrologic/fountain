@@ -43,6 +43,13 @@ function padHex6(i24){
 	return i24.toString(16).padStart(6,"0");
 }
 
+function hex(i32){
+	if(i32<0){
+		return "-0x"+(-i32).toString(16);
+	}
+	return "0x"+i32.toString(16);
+}
+
 export class R3000 {
 	dump(ops) {
 		let n = (ops[ops.length - 2] >> 2);
@@ -99,7 +106,7 @@ export class R3000 {
 			case 'A': // nop
 				break;
 			case 'B': // system,???
-				output += `0x${(op >>> 6 & 0x000fffff).toString(16)}`;
+				output+=hex((op>>>6)&0x000fffff);
 				break;
 			case 'C': // lwc,swc
 				output += `${rt},${imm}(${rs})`;
@@ -120,31 +127,31 @@ export class R3000 {
 				output += rs;
 				break;
 			case 'I': // addi,addiu,slti,sltiu,andi,ori,xori
-				output += `${rt},${rs},0x${imm.toString(16)}`;
+				output += `${rt},${rs},${hex(imm)}`;
 				break;
 			case 'J': // jr
 				output += rs;
 				break;
 			case 'K': // break
-				output += `0x${((op >>> 6) & 0xfffff).toString(16)}`;
+				output+=hex((op >>> 6) & 0xfffff);
 				break;
 			case 'L': // mult,multu,div,divu
 				output += `${rs},${rt}`;
 				break;
 			case 'M': // j,jal
-				output += `0x${(loc & 0xf0000000 | (op & 0x03ffffff) << 2).toString(16)}`;
+				output+=hex((loc&0xf0000000)|((op&0x03ffffff)<<2));
 				break;
 			case 'N': // lui
-				output += `${rt},0x${imm.toString(16)}`;
+				output += `${rt},${hex(imm)}`;
 				break;
 			case 'O': // lb,lh,lwl,lw,lbu,lhu,lwr,sb,sh,swl,sw,swr
-				output += `${rt},0x${imm.toString(16)}(${rs})`;
+				output += `${rt},${hex(imm)}(${rs})`;
 				break;
 			case 'P': // beq,bne
 				output += `${rs},${rt},${imm}`;
 				break;
 			case 'Q': // cop0,cop1,cop2,cop3
-				output += `0x${(op & 0x1ffffff).toString(16)}`;
+				output+=hex(op & 0x1ffffff);
 				break;
 			case 'R': // sll,srl,sra
 				output += `${rd},${rt},${(op >>> 6) & 31}`;
