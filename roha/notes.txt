@@ -1,3 +1,21 @@
+	"command-a-03-2025@cohere":{
+		"pricing":[0.50,2.0],
+		"purpose":"canadian something"
+	},
+	"command-r-plus-08-2024@cohere":{
+		"pricing":[1.50,2.0],
+		"purpose":"canadian 128K context window"
+	},
+	"command-r@cohere":{
+		"pricing":[1.50,2.0],
+		"purpose":"canadian 128K context window"
+	},
+	"command-a-vision@cohere":{
+		"pricing":[1.50,2.0],
+		"purpose":"canadian 128K context window"
+	},
+
+
 		if (e_shstrndx < e_shnum) {
 			const shstrtab_shoff = e_shoff + (e_shstrndx * e_shentsize);
 			shstrtab_offset = view.getUint32(shstrtab_shoff + 16, true);

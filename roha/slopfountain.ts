@@ -9,8 +9,10 @@ import { Anthropic } from "npm:@anthropic-ai/sdk";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
-import { contentType } from "https://deno.land/std/media_types/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
+
+//import { contentType } from "https://deno.land/std/media_types/mod.ts";
+
 
 const fountainVersion="1.3.3";
 const defaultModel="deepseek-chat@deepseek";
@@ -1018,6 +1020,8 @@ async function connectGoogle(account,config){
 
 // API support for anthropic
 
+// TODO: file API support needed to avoid rate limits on plain chat
+
 function anthropicSystem(payload){
 	const system=[];
 	for(const item of payload.messages){
@@ -1030,19 +1034,63 @@ function anthropicSystem(payload){
 	return system;
 }
 
+function anthropicFile(blob){
+	console.log("[CLAUDE] file blob",blob);
+	blob.path
+}
+
+/*
+  path: "C:/nitrologic/fountain/roha/slopfountain.ts",
+  length: 94875,
+  type: "video/mp2t",
+  tag: ""
+
+if(item.name=="blob"){
+						blob=JSON.parse(text);
+						continue;
+					}
+					// should this be title?
+					if(item.name=="image"){
+						const mimeType=blob.type;
+						const data=text;
+						echo("[GEMINI] image",mimeType);
+						contents.push({role:"user",parts:[{inlineData:{mimeType,data}}]});
+						continue;
+					}
+*/
+
+// payload should be multi:false
+
 function anthropicMessages(payload){
 	const messages=[];
+	let blob={};
 	for(const item of payload.messages){
+//		console.log("[CLAUDE] item ",item);
 		switch(item.role){
-			case "user":
-				// item role name type
-				messages.push({role:"user",name:item.name,content:item.content});
+			case "user":{
+					const name=item.name;
+					if(name=="blob"){
+						blob=JSON.parse(item.content);
+						continue;
+					}
+					if(name=="image" || name=="content"){
+						const id=anthropicFile(blob);
+					}else{
+						// item role name type
+//						messages.push({role:"user",name:item.name,content:item.content});
+						const content=item.name?item.name+": "+item.content:item.content;
+						messages.push({role:"user",content:content});
+					}
+				}
 				break;
 			case "assistant":
 				if(item.tool_calls){
-					// list.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
+					// TODO: test me
+					messages.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
 				}else{
-					messages.push({role:"assistant",name:item.name,content:item.content});
+//					messages.push({role:"assistant",name:item.name,content:item.content});
+					const content=item.name?item.name+": "+item.content:item.content;
+					messages.push({role:"assistant",content});
 				}
 				break;
 		}
@@ -1110,7 +1158,9 @@ async function connectAnthropic(account,config){
 						const messages=anthropicMessages(payload);
 //						echo("[CLAUDE] ",messages);
 						const temperature=grokTemperature;
-						const request={model,max_tokens:1024,temperature,system,messages};
+						// TODO: anthropic max_tokens
+						const max_tokens=2048;//was 1024
+						const request={model,max_tokens,temperature,system,messages};
 						if (payload.tools) {
 							request.tools=anthropicTools(payload);
 						}
@@ -2030,10 +2080,6 @@ async function shareDir(dir:string, tag:string, depth=1) {
 	}
 }
 
-function fileType(extension){
-	return contentType(extension) || "application/octet-stream";
-}
-
 function annotateCode(name,description){
 	echo("annotateCode",name,description);
 }
@@ -2049,6 +2095,38 @@ const textExtensions=[
 	"sh", "bat",
 	"log","py","csv","xml","ini"
 ];
+
+const fileTypes={
+	"js": "application/javascript",
+	"ts": "application/typescript",
+	"txt": "text/plain",
+	"json": "application/json",
+	"md": "text/markdown",
+	"css": "text/css",
+	"html": "text/html",
+	"svg": "image/svg+xml",
+	"cpp": "text/x-c++src",
+	"c": "text/x-csrc",
+	"h": "text/x-chdr",
+	"cs": "text/x-csharp",
+	"s": "text/x-asm",
+	"java": "text/x-java",
+	"sh": "text/x-shellscript",
+	"bat": "text/x-batch",
+	"log": "text/plain",
+	"py": "text/x-python",
+	"csv": "text/csv",
+	"xml": "application/xml",
+	"ini": "text/plain",
+	"jpg": "image/jpeg",
+	"jpeg": "image/jpeg",
+	"png": "image/png",
+	"mp3": "audio/mpeg"
+};
+
+function fileType(extension:string){
+	return fileTypes[extension.toLowerCase()] || "application/octet-stream";
+}
 
 async function shareBlob(path,size,tag){
 	const extension=path.split(".").pop().toLowerCase();
@@ -3379,6 +3457,8 @@ let termSize = Deno.consoleSize();
 echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
+
+echo("filetype ts = ",fileType("ts"));
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes);
 echo(birds);
