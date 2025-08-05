@@ -101,7 +101,7 @@ export class R3000 {
 		rt = mipsRegs[(op >>> 16) & 31];
 		rs = mipsRegs[(op >>> 21) & 31];
 
-		let output=padHex6(loc)+" "+padHex(op)+" "+mop.substring(1)+" ";
+		let output=padHex(loc)+" "+padHex(op)+" "+mop.substring(1)+" ";
 		switch (mop[0]) {
 			case 'A': // nop
 				break;

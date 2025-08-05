@@ -4,8 +4,6 @@
 
 import { mipsRegs, R3000 } from "./slopmips.js";
 
-// MIPS ELF tools
-
 export function dumpBin(bin){
 	const len=bin.length;
 	let bytes=[];
@@ -18,7 +16,6 @@ export function dumpBin(bin){
 			bytes.length=0;
 		}
 	}
-
 }
 
 // ======================================================
@@ -32,10 +29,63 @@ const ELF_CLASS32=1;
 const ELF_DATA2LSB=1;
 const ELF_EM_MIPS=8;
 
-export function parseElf1(elfData,ram) {
+const SHT_OBJECT = 1;
+const SHT_SYMTAB = 2;
+const SHT_STRTAB = 3;
+
+const ELF_BINDING_LOCAL=0;
+const ELF_BINDING_GLOBAL=1;
+
+const ELF_TYPE_NONE=0;
+const ELF_TYPE_OBJECT=1;
+const ELF_TYPE_FUNCTION=2;
+const ELF_TYPE_SECTION=3;
+const ELF_TYPE_FILE=4;
+
+function parseStringTable(view, offset, size) {
+	const strings = [];
+	let buffer = "";
+	for (let i = 0; i < size; i++) {
+		const char = view.getUint8(offset + i);
+		if (char === 0) {
+			if (buffer.length > 0) {
+				strings.push(buffer);
+				buffer = '';
+			}
+		} else {
+			buffer += String.fromCharCode(char);
+		}
+	}
+	if (buffer.length > 0) {
+		strings.push(buffer);
+	}
+	return strings;
+}
+
+function parseSymbolTable(view, offset, size, string_base) {
+	const symbols = [];
+	for (let i = 0; i < size; i += 16) {
+		const st_name  = view.getUint32(offset + i, true);
+		const st_value = view.getUint32(offset + i + 4, true);
+		const st_size = view.getUint32(offset + i + 8, true);
+		const st_info = view.getUint8(offset + i + 12);
+		let name = '';
+		if (st_name) {
+			for (let j = st_name; ; j++) {
+				const char = view.getUint8(string_base + j);
+				if (!char) break;
+				name += String.fromCharCode(char);
+			}
+		}
+		symbols.push({name,value: st_value,size: st_size,type: st_info & 0xF,binding: st_info >> 4});
+	}
+	return symbols;
+}
+
+export function parseElf(elfData, ram, cpu) {
 	const RamSize=ram.length;
 	const view=new DataView(elfData.buffer);
-// Verify ELF header
+	// Verify ELF header
 	if (view.getUint32(0, true) !== ELF_MAGIC) {
 		console.error("Invalid ELF magic");
 		return false;
@@ -54,9 +104,7 @@ export function parseElf1(elfData,ram) {
 	const e_shoff = view.getUint32(32, true);
 	const e_phnum=view.getUint16(44, true); // Number of program headers
 	const e_phentsize=view.getUint16(42, true); // Size of each program header
-
 	const pc_mask=0x00fffffc;
-
 	console.log("entry point",e_entry.toString(16));
 	// Load program segments
 	for (let i=0; i < e_phnum; i++) {
@@ -80,10 +128,11 @@ export function parseElf1(elfData,ram) {
 				const val=view.getUint32(p_offset + j, true);
 				ram[ramIdx + (j >> 2)]=val;
 				const loc=vaddr24+j;
+				const loc32=p_vaddr+j;
 				const op=val;
-//				if(true||j<32){
-//					console.log(r3000.disassemble(op,loc));
-//				}
+				if(j<32){
+					console.log(cpu.disassemble(op,loc32));
+				}
 			}
 			// Zero-fill any remaining memory (if p_memsz > p_filesz, e.g., for .bss)
 			for (let j=p_filesz; j < p_memsz; j += 4) {
@@ -95,73 +144,62 @@ export function parseElf1(elfData,ram) {
 	return e_entry;
 }
 
-export function parseElf(elfData, ram) {
-	const RamSize=ram.length;
+export function parseElfSymbols(elfData) {
 	const view=new DataView(elfData.buffer);
 	// Verify ELF header
-	if (view.getUint32(0, true) !== ELF_MAGIC) {
-		console.error("Invalid ELF magic");
-		return false;
-	}
-	const cpuclass=view.getUint8(4);
-	const lsb=view.getUint8(5);
-	const fam=view.getUint16(18, true);
-	console.log("parseElf",{cpuclass,lsb,fam});
-	if (cpuclass !== ELF_CLASS32 || lsb !== ELF_DATA2LSB || fam !== ELF_EM_MIPS) {
-		console.error("Unsupported ELF format (not 32-bit, little-endian MIPS)");
-		return false;
-	}
+	if (view.getUint32(0, true) !== ELF_MAGIC) {console.error("Invalid ELF magic");return false;}
 	// Read ELF header fields
 	const e_entry=view.getUint32(24, true); // Entry point address
 	const e_phoff=view.getUint32(28, true); // Program header offset
 	const e_shoff = view.getUint32(32, true);
-	const e_phnum=view.getUint16(44, true); // Number of program headers
-	const e_phentsize=view.getUint16(42, true); // Size of each program header
+	const e_phentsize=view.getUint16(42, true);
+	const e_phnum=view.getUint16(44, true);
+	const e_shentsize=view.getUint16(46, true);
+	const e_shnum=view.getUint16(48, true);
+	const e_shstrndx = view.getUint16(50, true);
 
-	const pc_mask=0x00fffffc;
+	if (!e_shoff || !e_shnum) {
+		console.log("No section headers found");
+		return e_entry;
+	}
 
-	console.log("entry point",e_entry.toString(16));
+	// Get string table offset
+	const shstrtab_off = e_shoff + (e_shstrndx * e_shentsize);
+	const shstrtab_offset = view.getUint32(shstrtab_off + 16, true);
 
+	let string_base = 0;
+
+	let symbols = [];
+	let strings = [];
+
+	console.log("* entry point",e_entry.toString(16));
 	if (e_shoff && e_shnum) {
-		const shstrtab_offset = view.getUint32( e_shoff + (e_shstrndx * e_shentsize) + 16,true);
 		for (let i = 0; i < e_shnum; i++) {
 			const shoff = e_shoff + (i * e_shentsize);
-			const sh_type = view.getUint32(shoff + 4, true);
 			const sh_name = view.getUint32(shoff, true);
+			const sh_type = view.getUint32(shoff + 4, true);
 			const sh_addr = view.getUint32(shoff + 12, true);
 			const sh_offset = view.getUint32(shoff + 16, true);
 			const sh_size = view.getUint32(shoff + 20, true);
-			let name = '';
-			for (let j = sh_name; ; j++) {
-				const char = view.getUint8(shstrtab_offset + j);
-				if (!char) break;
-				name += String.fromCharCode(char);
+			let name="";
+			for (let j = 0; ; j++) {
+				const ch = view.getUint8(shstrtab_offset + sh_name + j);
+				if (ch === 0) break;
+				name += String.fromCharCode(ch);
 			}
-			if (sh_type === 2) {
-				const symtab = parseSymbolTable(view, sh_offset, sh_size,elfData, e_shoff, e_shentsize);
-				console.log('Symbols:', symtab);
+			if(sh_type==SHT_STRTAB){
+				string_base=sh_offset;
+				strings=parseStringTable(view,sh_offset,sh_size);
+				console.log('Strings:', strings);
+				if (name === '.strtab') {
+					string_base = sh_offset;
+				}
+			}
+			if (sh_type === SHT_SYMTAB) {
+				symbols=parseSymbolTable(view, sh_offset, sh_size, string_base);
+//				console.log('Symbols:', symbols);
 			}
 		}
 	}
-}
-
-function parseSymbolTable(view, offset, size, elfData, shoff, shentsize) {
-	const symbols = [];
-	const strtab_offset = 0;
-	for (let i = 0; i < size; i += 16) {
-		const st_name  = view.getUint32(offset + i, true);
-		const st_value = view.getUint32(offset + i + 4, true);
-		const st_size = view.getUint32(offset + i + 8, true);
-		const st_info = view.getUint8(offset + i + 12);
-		let name = '';
-		if (st_name) {
-			for (let j = st_name; ; j++) {
-				const char = view.getUint8(strtab_offset + j);
-				if (!char) break;
-				name += String.fromCharCode(char);
-			}
-		}
-		symbols.push({name,value: st_value,size: st_size,type: st_info & 0xF,binding: st_info >> 4});
-	}
-	return symbols;
+	return {symbols,strings};
 }
