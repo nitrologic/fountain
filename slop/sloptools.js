@@ -95,13 +95,10 @@ export function parseElf1(elfData,ram) {
 	return e_entry;
 }
 
-
-
 export function parseElf(elfData, ram) {
-
 	const RamSize=ram.length;
 	const view=new DataView(elfData.buffer);
-// Verify ELF header
+	// Verify ELF header
 	if (view.getUint32(0, true) !== ELF_MAGIC) {
 		console.error("Invalid ELF magic");
 		return false;
