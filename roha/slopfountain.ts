@@ -5,7 +5,8 @@
 // Tested with Deno 2.4.2, V8 13.7.152.14, TypeScript 5.8.3
 
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
-import { Anthropic } from "npm:@anthropic-ai/sdk";
+import { toFile, Anthropic } from "npm:@anthropic-ai/sdk";
+
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
@@ -1020,7 +1021,9 @@ async function connectGoogle(account,config){
 
 // API support for anthropic
 
-// TODO: file API support needed to avoid rate limits on plain chat
+// TODO: test file API support needed to avoid rate limits on plain chat
+// TODO: use hash for file name to solve duplicates
+// TODO: connect await anthropicStatus(sdk); to standard API Status endpoint
 
 function anthropicSystem(payload){
 	const system=[];
@@ -1034,34 +1037,32 @@ function anthropicSystem(payload){
 	return system;
 }
 
-function anthropicFile(blob){
-	console.log("[CLAUDE] file blob",blob);
-	blob.path
+const anthropicStore:Record<string, string>={};
+async function anthropicStatus(sdk){
+	const files = await sdk.beta.files.list({betas: ['files-api-2025-04-14']});
+	echo("[CLAUDE] File shares");
+	for (const file of files.data) {
+		// type:"file" id size_bytes created_at filename mime_type downloadable
+		//"filename":"ab8dfb2e61711d61f5a68f15310a069c1e7e0c52db1713cfb45af80123748e1d"
+		const hash=file.filename;
+		if(hash.length==64){
+			anthropicStore[hash]=file.id;
+			echo("[CLAUDE]",file.id,hash);
+		}
+	}
 }
-
-/*
-  path: "C:/nitrologic/fountain/roha/slopfountain.ts",
-  length: 94875,
-  type: "video/mp2t",
-  tag: ""
-
-if(item.name=="blob"){
-						blob=JSON.parse(text);
-						continue;
-					}
-					// should this be title?
-					if(item.name=="image"){
-						const mimeType=blob.type;
-						const data=text;
-						echo("[GEMINI] image",mimeType);
-						contents.push({role:"user",parts:[{inlineData:{mimeType,data}}]});
-						continue;
-					}
-*/
-
-// payload should be multi:false
-
-function anthropicMessages(payload){
+async function anthropicFile(sdk,blob){	//sdk=anthropic.beta
+	//	console.log("[CLAUDE] file blob",blob);
+	const hash=await hashFile(blob.path);
+	if(hash in anthropicStore) return anthropicStore[hash];
+	const fileContent = await Deno.readFile(blob.path);
+	const name=hash;//blob.path;
+	const file = await toFile(fileContent,name,{type:blob.type});
+	const result = await sdk.beta.files.upload({file,betas:['files-api-2025-04-14']});
+	anthropicStore[hash]=result.id;
+	return result.id;
+}
+async function anthropicMessages(sdk,payload){
 	const messages=[];
 	let blob={};
 	for(const item of payload.messages){
@@ -1074,7 +1075,11 @@ function anthropicMessages(payload){
 						continue;
 					}
 					if(name=="image" || name=="content"){
-						const id=anthropicFile(blob);
+						const id=await anthropicFile(sdk,blob);
+						const fileref="please see file reference "+id;
+						const content=item.name?item.name+": "+fileref:fileref;
+						messages.push({role:"user",content});
+//						echo("[CLAUDE]",content);
 					}else{
 						// item role name type
 //						messages.push({role:"user",name:item.name,content:item.content});
@@ -1141,6 +1146,8 @@ async function connectAnthropic(account,config){
 		modelList.push(...list);
 		const sdk=new Anthropic({apiKey});
 
+		await anthropicStatus(sdk);
+
 		return {
 			sdk,
 			apiKey,
@@ -1155,7 +1162,7 @@ async function connectAnthropic(account,config){
 						const model=payload.model;
 						const system=anthropicSystem(payload);
 //						echo("[CLAUDE] ",payload);
-						const messages=anthropicMessages(payload);
+						const messages=await anthropicMessages(sdk,payload);
 //						echo("[CLAUDE] ",messages);
 						const temperature=grokTemperature;
 						// TODO: anthropic max_tokens
