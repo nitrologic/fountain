@@ -71,6 +71,7 @@ type ConfigFlags = {
 	returntopush: boolean;
 	slow: boolean;
 	slops: boolean;
+	budget: false;
 };
 
 class Plop {
@@ -313,7 +314,8 @@ const flagNames={
 	resetcounters : "factory reset when reset",
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed",
-	slops : "console worker scripts"
+	slops : "console worker scripts",
+	budget : "cheap models for the win"
 };
 
 const emptyConfig:ConfigFlags={
@@ -333,7 +335,8 @@ const emptyConfig:ConfigFlags={
 	resetcounters:false,
 	returntopush:false,
 	slow:false,
-	slops:false
+	slops:false,
+	budget:false
 };
 
 const emptyRoha={
@@ -2337,7 +2340,8 @@ async function modelCommand(words){
 			const account=modelAccounts[provider];
 			const emoji=account.emoji||"";
 			const mut=mutName(modelname);
-			const cheap = priced && priced[0]<3.01;
+			let cheap = priced && priced[0]<3.01;
+			if(!roha.config.budget) cheap=priced;
 			if(cheap || all){
 				const pricing=(rated&&rated.pricing)?stringifyArray(rated.pricing):"";
 				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));

@@ -38,6 +38,21 @@
 			"▫️": {"char": "▫️", "codepoint": "25AB", "name": "WHITE SMALL SQUARE","style":"BUG"}
 		}
 	},
+	"heads":{
+		"group": "Masks",
+		"tags": ["face", "emoji", "mythical"],
+		"wide": 2,
+		"emoji": {
+			"👹": {"char": "👹", "codepoint": "1F479", "name": "JAPANESE OGRE"},
+			"👺": {"char": "👺", "codepoint": "1F47A", "name": "JAPANESE GOBLIN"},
+			"👻": {"char": "👻", "codepoint": "1F47B", "name": "GHOST"},
+			"👼": {"char": "👼", "codepoint": "1F47C", "name": "BABY ANGEL"},
+			"👽": {"char": "👽", "codepoint": "1F47D", "name": "EXTRATERRESTRIAL ALIEN"},
+			"👾": {"char": "👾", "codepoint": "1F47E", "name": "ALIEN MONSTER"},
+			"😈": {"char": "😈", "codepoint": "1F47F", "name": "SMILING FACE WITH HORNS"},
+			"💀": {"char": "💀", "codepoint": "1F480", "name": "SKULL"}
+		}
+	},
 	"emoji-face": {
 		"group": "Smileys",
 		"tags": ["face", "emoji"],
