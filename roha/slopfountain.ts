@@ -2,29 +2,27 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-// Tested with Deno 2.4.2, V8 13.7.152.14, TypeScript 5.8.3
+// Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
 
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
-import { toFile, Anthropic } from "npm:@anthropic-ai/sdk";
-
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
+import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 
-//import { contentType } from "https://deno.land/std/media_types/mod.ts";
+const fountainVersion="1.3.4";
 
-
-const fountainVersion="1.3.3";
-const defaultModel="deepseek-chat@deepseek";
 const fountainName="fountain "+fountainVersion;
-const rohaTitle=fountainName+" ⛲ ";
+const defaultModel="deepseek-chat@deepseek";
 
 const terminalColumns=100;
 const statsColumn=50;
 const clipLog=1800;
 
 // system prompt
+
+const rohaTitle=fountainName+" ⛲ ";
 
 const rohaMihi="Welcome to the fountain - we've got fun and games. A many:many user model research project.";
 
@@ -33,6 +31,8 @@ const rohaGuide=[
 	"Keep response short and only post code on request.",
 	"Use tabs for indenting js and json files."
 ]
+
+// startup config
 
 const welcome=await Deno.readTextFile("welcome.txt");
 
@@ -77,6 +77,8 @@ type ConfigFlags = {
 	budget: false;
 };
 
+// a shared context state 
+// TODO: support multiple models and users with distinct contexts
 class Plop {
 	constructor(
 		public role: string,
@@ -84,9 +86,7 @@ class Plop {
 		public content: string
 	) {
 	}
-}
-
-// a shared context state with multiple models
+};
 
 let rohaHistory:Plop[]=[];
 
@@ -101,7 +101,6 @@ function popHistory():Plop[]|false{
 	if(sessionStack.length==0) return false;
 	return sessionStack.pop()||false;
 }
-
 
 let rohaModel="mut";	//mut name excludes preview version details
 let rohaUser=username+"@"+userdomain;
@@ -232,26 +231,6 @@ function echoKey(key:object,wide:number){
 	const rtext=stringRight(text,wide);
 	echo(rtext);
 }
-
-/*
-function stringFit2(text,width){
-	// this code needs love
-	const wide=stringWidth(text);
-	if(width>wide){
- 		let wide = 0;
-		let clip = "";
-		for (const ch of text) {
-			const w = isDoubleWidth(ch.codePointAt(0)) ? 2 : 1;
-			if (wide + w > width) break;
-			clip += ch;
-			wide += w;
-		}
-		return clip;
-	}
-	const pad=" ".repeat(wide-width);
-	return text+pad;
-}
-*/
 
 function parseUnicode(){
 	for(const group in unicodeSpec){
@@ -1021,17 +1000,7 @@ async function connectGoogle(account,config){
 
 // API support for anthropic
 
-// TODO: test file API support needed to avoid rate limits on plain chat
-// TODO: use hash for file name to solve duplicates
-// TODO: connect await anthropicStatus(sdk); to standard API Status endpoint
-
-//Oops. rate_limit_error This request would exceed the rate limit for your organization (58fe2390-2bb6-4c31-9a42-525531a73246) of 30,000 input tokens per minute. 
-//For details, refer to: https://docs.anthropic.com/en/api/rate-limits. You can see the response headers for current usage. 
-// Please reduce the prompt length or the maximum tokens requested, or try again later. 
-// You may also contact sales at https://www.anthropic.com/contact-sales to discuss your options for a rate limit increase.
-
-// how to limit 30,000 input tokens per minute?
-// file sharing was supposed to fix this :(
+const anthropicStore:Record<string, string>={};
 
 function anthropicSystem(payload){
 	const system=[];
@@ -1044,8 +1013,6 @@ function anthropicSystem(payload){
 	}
 	return system;
 }
-
-const anthropicStore:Record<string, string>={};
 
 async function anthropicStatus(anthropic,flush=false){
 //	echo("[ANTRHOPIC] File shares");
@@ -1063,6 +1030,7 @@ async function anthropicStatus(anthropic,flush=false){
 		}
 	}
 }
+
 async function anthropicFile(anthropic,blob){	//sdk=anthropic.beta
 	//	console.log("[CLAUDE] file blob",blob);
 	const hash=await hashFile(blob.path);
@@ -1280,171 +1248,7 @@ async function connectAnthropic(account,config){
 	}
 }
 
-// API support for cohere
-
-function getDottedDate(name:string):number{
-	const n=name.length;
-	const year=parseInt(name.substring(n-4,n));
-	const month=parseInt(name.substring(n-7,n-5));
-//	echo("[GETDATE]",year,month);
-	const date=new Date(Date.UTC(year, month - 1, 1));
-	return Math.floor(date.getTime()/1000);
-}
-
-function getDate(yearmonthday:string):number{
-	const date=new Date(yearmonthday+"T00:00:00Z");
-	const time=Math.floor(date.getTime()/1000);
-//	echo("[GETDATE]",time);
-	return time;
-}
-
-
-function specCohereModel(model,account){
-	if(roha.config.debugging) echo("[cohere] spec",model);
-	const name=model.name+"@"+account;
-	const exists=name in roha.mut;
-	const info=exists?roha.mut[name]:{name,notes:[],errors:[],relays:0,cost:0};
-	info.id=model.name;
-	info.object="model";
-	const modelname=model.name;
-	const dated=(modelname.endsWith(2024)||modelname.endsWith(2025));
-	const created=(dated)?getDottedDate(modelname):"created";
-//	echo("COHERE",created);
-	info.created=created;
-	info.owner="owner";
-	if (!info.notes) info.notes=[];
-	if (!info.errors) info.errors=[];
-//	echo("mut",name,info);
-	roha.mut[name]=info;
-}
-
-function prepareCohereRequest(payload){
-	const history=[];
-	let blob={};
-	for(const item of payload.messages){
-		const content=item.content;
-		switch(item.role){
-			case "system":
-				history.push({role:"system",content});
-				break;
-			case "user":
-				if(item.name=="blob"){
-					blob=JSON.parse(content);
-					continue;
-				}
-				if(item.name=="image"){
-					const image_url={url:"https://jpeg.org/images/jpeg-home.jpg"}
-					history.push({role:"user",content:[{type:"image_url",image_url}]});
-					continue;
-//					const mediatype=blob.type;
-//					const image_url={url:"data:"+mediatype+";base64,"+content};
-// [<media-type>][;base64],<data>"
-// TODO: url=data:[<media-type>][;base64],<data>
-//					history.push({role:"user",content:[{type:"image",data}]});
-				}
-				history.push({role:"user",content});
-				break;
-			case "assistant":
-				history.push({role:"assistant",content});
-				break;
-		}
-	}
-	const temperature=grokTemperature;
-	const request={
-		model:payload.model,
-		temperature,
-		stream:false,
-		messages:history
-	};
-	return request;
-}
-
-async function connectCohere(account,config) {
-	try{
-		const baseURL=config.url;
-		const apiKey=getEnv(config.env);
-		if(!apiKey) return null;
-		const headers={
-			"Authorization":"Bearer "+apiKey,
-			"Content-Type":"application/json",
-			"Accept":"application/json",
-			"X-Client-Name": "slopfountain.ts"
-		};
-		const response=await fetch(baseURL+"/models",{method:"GET",headers});
-		if (!response.ok) return null;
-		const reply=await response.json();
-//		echo(reply.models);
-		const list=[];
-		for (const model of reply.models) {
-			const name=model.name+"@"+account;
-			list.push(name);
-			specCohereModel(model,account);
-		}
-		list.sort();
-		modelList=modelList.concat(list);
-		return {
-			apiKey,
-			headers,
-			baseURL,
-			modelList:list,
-			models: {
-				list: async () => models, // Return cached models or fetch fresh
-			},
-			chat: {
-				completions: {
-					create: async (payload) => {
-						const model=payload.model;
-						const content=prepareCohereRequest(payload);
-						const url=baseURL+"/chat";
-						const usage={prompt_tokens:0,completion_tokens:0,total_tokens:0};
-						if(roha.config.debugging){
-							echo("[cohere] url",url);
-							//echo("[cohere] content",content);
-							//echo("[cohere] usage",usage);
-							echo("[cohere] headers",headers);
-						}
-						try{
-							const response=await fetch(url,{method:"POST",headers,body:JSON.stringify(content)});
-							if(roha.config.debugging){
-								echo("[cohere] response.ok",response.ok);
-							}
-							if (response.ok) {
-								//[cohere] json
-								// {"id":"5b7e6d03-d348-40b8-8178-a60ad55d792e","message":{"role":"assistant","content":[{"type":"text","text":"Hello! How can I assist you today?"}]},
-								// "finish_reason":"COMPLETE","usage":{"billed_units":{"input_tokens":1,"output_tokens":9},"tokens":{"input_tokens":496,"output_tokens":11}}}
-								const reply=[];
-								const json=await response.json();
-								const role=json.message.role;
-								for(const item of json.message.content){
-									if(item.type=="text") reply.push(item.text);
-								}
-								const text=reply.join("\n");
-								// echo("[cohere]",text)
-								const tokens=json.usage.tokens;
-								const total_tokens=tokens.input_tokens+tokens.output_tokens;
-								const usage={prompt_tokens:tokens.input_tokens,completion_tokens:tokens.output_tokens,total_tokens};
-								return {model,choices:[{message:{content:text}}],usage};
-							}
-							echo("[cohere] status",response.status,response.statusText);
-							if(roha.config.debugging)
-								echo("[cohere] content",content);
-						}catch(e){
-							echo("[cohere] exception",e.message);
-						}
-						return {model,choices:[],usage};
-					},
-				},
-			},
-
-		}
-	} catch (error) {
-		echo(`Account ${account} fetch error: ${error.message}`);
-		return null;
-	}
-
-}
-
-// API support for deepseek
+// API support for DeepSeek
 
 async function connectDeepSeek(account,config) {
 	try{
@@ -1497,6 +1301,8 @@ async function connectDeepSeek(account,config) {
 	}
 }
 
+// API support for OpenAI
+
 async function connectOpenAI(account,config) {
 	try{
 		const apiKey=getEnv(config.env);
@@ -1537,6 +1343,8 @@ async function connectOpenAI(account,config) {
 	}
 }
 
+// Provider Accounts and Language Models
+
 async function connectAccount(account) {
 	const config=modelAccounts[account];
 	if (!config) return null;
@@ -1550,8 +1358,6 @@ async function connectAccount(account) {
 			return await connectGoogle(account,config);
 		case "Anthropic":
 			return await connectAnthropic(account,config);
-		case "Cohere":
-			return await connectCohere(account,config);
 	}
 	return null;
 }
@@ -1567,6 +1373,13 @@ function specAccount(account){
 		const lode=roha.lode[account];
 		if(roha.config.verbose) echo("[FOUNTAIN] specAccount",account,lode);
 	}
+}
+
+function getDate(yearmonthday:string):number{
+	const date=new Date(yearmonthday+"T00:00:00Z");
+	const time=Math.floor(date.getTime()/1000);
+//	echo("[GETDATE]",time);
+	return time;
 }
 
 function specModel(model,account){
