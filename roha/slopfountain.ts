@@ -1025,6 +1025,14 @@ async function connectGoogle(account,config){
 // TODO: use hash for file name to solve duplicates
 // TODO: connect await anthropicStatus(sdk); to standard API Status endpoint
 
+//Oops. rate_limit_error This request would exceed the rate limit for your organization (58fe2390-2bb6-4c31-9a42-525531a73246) of 30,000 input tokens per minute. 
+//For details, refer to: https://docs.anthropic.com/en/api/rate-limits. You can see the response headers for current usage. 
+// Please reduce the prompt length or the maximum tokens requested, or try again later. 
+// You may also contact sales at https://www.anthropic.com/contact-sales to discuss your options for a rate limit increase.
+
+// how to limit 30,000 input tokens per minute?
+// file sharing was supposed to fix this :(
+
 function anthropicSystem(payload){
 	const system=[];
 	for(const item of payload.messages){
@@ -1070,32 +1078,6 @@ async function anthropicFile(anthropic,blob){	//sdk=anthropic.beta
 	return result.id;
 }
 
-function anthropicInvoke(payload){
-	for(const item of payload.messages){
-		switch(item.role){
-			case "assistant":
-				if(item.tool_calls){
-					echo("[ANTHROPIC]",item);
-					const tool_use_id=item.toolId;
-					const toolResult={type:"tool_result",tool_use_id,content:item.content};
-				}
-				break;
-		}
-	}
-}
-
-/*
-		for (const choice of completion.choices) {
-			const calls=choice.message.tool_calls;
-			// choice has index message{role,content,refusal,annotations} finish_reason
-			if (calls) {
-				const count=increment("calls");
-				if(verbose) echo("[RELAY] calls in progress",depth,count)
-					messages.push({role:"user",content:[toolResult]});
-//					messages.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
-*/
-
-
 async function anthropicMessages(anthropic,payload){
 	const messages=[];
 	let blob={};
@@ -1112,13 +1094,7 @@ async function anthropicMessages(anthropic,payload){
 						try{
 							const id=await anthropicFile(anthropic,blob);
 							const text="File shared path:"+blob.path+" type:"+blob.type;
-//							echo("[ANTHROPIC]",text);
-							const content=[
-								{
-									type:"text",
-									text
-								},
-								{
+							const content=[{type:"text",text},{
 									type:(name=="image")?"image": "document",
 									source:{type:"file",file_id:id}
 								}
@@ -1137,7 +1113,19 @@ async function anthropicMessages(anthropic,payload){
 				break;
 			case "assistant":
 				if(item.tool_calls){
-					// now handled out of band
+					const tool_use = item.tool_calls.map(call => ({
+						type: "tool_use",
+						id: call.id,
+						name: call.function.name,
+						input: JSON.parse(call.function.arguments || "{}")
+					}));
+					const content = [];
+					if (item.content) {
+						content.push({type: "text", text: item.content});
+					}
+					content.push(...tool_use);
+					messages.push({role: "assistant", content});
+					echo("[ANTHROPIC] pushed fountain tool_calls", tool_use.length);
 				}else{
 //					messages.push({role:"assistant",name:item.name,content:item.content});
 					const content=item.name?item.name+": "+item.content:item.content;
@@ -1205,61 +1193,83 @@ async function connectAnthropic(account,config){
 			},
 			chat: {
 				completions: {
+					// grok was here
 					create: async (payload) => {
-						const model=payload.model;
-						const system=anthropicSystem(payload);
-//						echo("[CLAUDE] ",payload);
-						const messages=await anthropicMessages(sdk,payload);
-//						echo("[CLAUDE] ",messages);
-						const temperature=grokTemperature;
-						// TODO: anthropic max_tokens
-						const max_tokens=2048;//was 1024
-						const request={model,max_tokens,temperature,system,messages};
+						const model = payload.model;
+						const system = anthropicSystem(payload);
+						const messages = await anthropicMessages(sdk, payload);
+						const temperature = grokTemperature;
+						const max_tokens = 2048; // Anthropic max_tokens
+						const request = { model, max_tokens, temperature, system, messages };
 						if (payload.tools) {
-							request.tools=anthropicTools(payload);
+							request.tools = anthropicTools(payload); // Ensure this maps tools to Anthropic format
 						}
-						const options={headers:{"anthropic-beta":"files-api-2025-04-14"}};
-						const reply=await sdk.messages.create(request,options);
-						const stopped=reply.stop_reason;
-						if(stopped){
-							echo("[CLAUDE] stopped:",stopped);
-							if(stopped=="tool_use"){
-								for(const content of reply.content){
-									if(content.type == "tool_use"){
-//										result = execute_tool(content.name, content.input)
-										echo("[CLAUDE] execute:",content);	// id name input
-										const count=increment("calls");
-										const toolCalls=calls.map((tool, index) => ({
-											id: tool.id,
-											type: "function",
-											function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
-										}));
-										const toolResults=await processToolCalls(calls);
-										for (const result of toolResults) {
-											const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content:result.content};
-											rohaHistory.push(item);
-										}
-										// new behavior, message content comes after tool reports
-										const content=choice.message.content;
-										if(content){
-											if(verbose)echo("[RELAY] pushing asssistant model",depth,payload.model,mut,content);
-						//					rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
-										}
-
-
-									}
-								}
-							}
-						}
-						const usage={
-							prompt_tokens:reply.usage.input_tokens,
-							completion_tokens:reply.usage.output_tokens
+						const options = { headers: { "anthropic-beta": "files-api-2025-04-14" } };
+						const reply = await sdk.messages.create(request, options);
+						// Map Anthropic stop_reason to OpenAI finish_reason
+						const finishReasonMap = {
+							'end_turn': 'stop',
+							'tool_use': 'tool_calls',
+							'max_tokens': 'length',
+							// Add other mappings as needed
 						};
-						const content=reply.content[0].text||"";
+						const finish_reason = finishReasonMap[reply.stop_reason] || 'stop';
+						const choices = [];
+						let choiceIndex = 0;
+						const toolCalls = reply.content
+							.filter(content => content.type === 'tool_use')
+							.map((content, index) => ({
+								id: content.id,
+								type: 'function',
+								function: {
+									name: content.name,
+									arguments: JSON.stringify(content.input || {})
+								}
+							}));
+							if (toolCalls.length > 0) {
+								choices.push({
+									index: choiceIndex++,
+									message: {
+										role: 'assistant',
+										content: null, // OpenAI sets content to null when tool_calls are present
+										tool_calls: toolCalls
+									},
+									finish_reason: 'tool_calls'
+								});
+							}
+							const textContent = reply.content
+								.filter(content => content.type === 'text')
+								.map(content => content.text)
+								.join('\n'); // Combine multiple text blocks if any
+							if (textContent) {
+								choices.push({
+									index: choiceIndex++,
+									message: {
+										role: 'assistant',
+										content: textContent
+									},
+									finish_reason: finish_reason
+								});
+							}
 
-						const choices=[{message:{content}}];
+						// Construct usage object
+						const usage = {
+							prompt_tokens: reply.usage.input_tokens,
+							completion_tokens: reply.usage.output_tokens,
+							total_tokens: reply.usage.input_tokens + reply.usage.output_tokens
+						};
 
-						return {model,choices,usage};
+						// Log for debugging (optional)
+						// echo('[CLAUDE] Response:', { model, choices, usage, finish_reason });
+
+						return {
+							id: reply.id || `chatcmpl-${Date.now()}`, // Generate a unique ID if not provided
+							object: 'chat.completion',
+							created: Math.floor(Date.now() / 1000), // Unix timestamp in seconds
+							model,
+							choices,
+							usage
+						};
 					}
 				}
 			}
@@ -2566,9 +2576,6 @@ async function callCommand(command:string) {
 					}
 				}
 				echo("Current model temperature is", grokTemperature);
-				break;
-			case "balance":
-				await getBalance(words);
 				break;
 			case "forge":
 				onForge(words);
