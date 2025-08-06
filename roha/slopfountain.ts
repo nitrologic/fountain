@@ -1040,7 +1040,7 @@ function anthropicSystem(payload){
 const anthropicStore:Record<string, string>={};
 
 async function anthropicStatus(anthropic,flush=false){
-	echo("[ANTRHOPIC] File shares");
+//	echo("[ANTRHOPIC] File shares");
 	const files = await anthropic.beta.files.list({betas: ['files-api-2025-04-14']});
 	for (const file of files.data) {
 		const hash=file.filename;
@@ -1050,7 +1050,7 @@ async function anthropicStatus(anthropic,flush=false){
 		}else{
 			if(hash.length==64){
 				anthropicStore[hash]=file.id;
-				echo("[CLAUDE]",file.id,hash);
+				echo("[ANTHROPIC]",file.id,hash);
 			}
 		}
 	}
@@ -1112,7 +1112,7 @@ async function anthropicMessages(anthropic,payload){
 						try{
 							const id=await anthropicFile(anthropic,blob);
 							const text="File shared path:"+blob.path+" type:"+blob.type;
-							echo("[ANTHROPIC]",text);
+//							echo("[ANTHROPIC]",text);
 							const content=[
 								{
 									type:"text",
@@ -1228,6 +1228,25 @@ async function connectAnthropic(account,config){
 									if(content.type == "tool_use"){
 //										result = execute_tool(content.name, content.input)
 										echo("[CLAUDE] execute:",content);	// id name input
+										const count=increment("calls");
+										const toolCalls=calls.map((tool, index) => ({
+											id: tool.id,
+											type: "function",
+											function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
+										}));
+										const toolResults=await processToolCalls(calls);
+										for (const result of toolResults) {
+											const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content:result.content};
+											rohaHistory.push(item);
+										}
+										// new behavior, message content comes after tool reports
+										const content=choice.message.content;
+										if(content){
+											if(verbose)echo("[RELAY] pushing asssistant model",depth,payload.model,mut,content);
+						//					rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
+										}
+
+
 									}
 								}
 							}
@@ -3524,8 +3543,6 @@ let termSize = Deno.consoleSize();
 echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
-
-echo("filetype ts = ",fileType("ts"));
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes);
 echo(birds);
