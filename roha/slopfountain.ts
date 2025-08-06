@@ -1039,8 +1039,8 @@ function anthropicSystem(payload){
 
 const anthropicStore:Record<string, string>={};
 async function anthropicStatus(sdk){
+	echo("[ANTRHOPIC] File shares");
 	const files = await sdk.beta.files.list({betas: ['files-api-2025-04-14']});
-	echo("[CLAUDE] File shares");
 	for (const file of files.data) {
 		// type:"file" id size_bytes created_at filename mime_type downloadable
 		//"filename":"ab8dfb2e61711d61f5a68f15310a069c1e7e0c52db1713cfb45af80123748e1d"
@@ -1075,11 +1075,23 @@ async function anthropicMessages(sdk,payload){
 						continue;
 					}
 					if(name=="image" || name=="content"){
-						const id=await anthropicFile(sdk,blob);
-						const fileref="please see file reference "+id;
-						const content=item.name?item.name+": "+fileref:fileref;
-						messages.push({role:"user",content});
-//						echo("[CLAUDE]",content);
+						try{
+							const id=await anthropicFile(sdk,blob);
+							const text="File shared";
+							const content=[
+								{
+									type:"text",
+									text
+								},
+								{ 
+									type:(name=="image")?"image": "document",
+									source:{type:"file",file_id:id}
+								}
+							];
+							messages.push({role:"user",content});
+						}catch( error){
+							echo("[CLAUDE]",error);
+						}
 					}else{
 						// item role name type
 //						messages.push({role:"user",name:item.name,content:item.content});
@@ -1122,7 +1134,8 @@ async function connectAnthropic(account,config){
 		const headers={
 			"x-api-key":apiKey,
 			"Content-Type": "application/json",
-			"anthropic-version": "2023-06-01"
+			"anthropic-version": "2023-06-01",
+			"anthropic-beta": "files-api-2025-04-14"
 		};
 		const response = await fetch(baseURL+"/models",{ method: "GET", headers });
 		if (!response.ok) {
@@ -1171,12 +1184,14 @@ async function connectAnthropic(account,config){
 						if (payload.tools) {
 							request.tools=anthropicTools(payload);
 						}
-						const reply = await sdk.messages.create(request);
+						const options={headers:{"anthropic-beta":"files-api-2025-04-14"}};
+						const reply=await sdk.messages.create(request,options);
 						const usage={
 							prompt_tokens:reply.usage.input_tokens,
 							completion_tokens:reply.usage.output_tokens
 						};
 						const content=reply.content[0].text||"";
+						echo("[CLAUDE]",reply);
 						return {
 							model,
 							choices:[
