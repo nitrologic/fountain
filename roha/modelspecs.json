@@ -181,10 +181,15 @@
 		"purpose":"50MB per page analyser",
 		"press": "High-performance model for complex research tasks and multi-step workflows."
 	},
+	"claude-opus-4-1-20250805@anthropic":{
+		"pricing":[15.0,75.0],
+		"limit":[20000],
+		"purpose":"frontier model for coding, agentic search, and creative writing",
+		"reality":"rate limited 20,000 input tokens per minute"
+	},
 	"claude-opus-4-20250514@anthropic":{
 		"pricing":[15.0,75.0],
 		"limit":[20000],
-		"multi":true,
 		"purpose":"frontier model for coding, agentic search, and creative writing",
 		"reality":"rate limited 20,000 input tokens per minute"
 	},

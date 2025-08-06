@@ -1038,31 +1038,38 @@ function anthropicSystem(payload){
 }
 
 const anthropicStore:Record<string, string>={};
-async function anthropicStatus(sdk){
+
+async function anthropicStatus(anthropic,flush=true){
 	echo("[ANTRHOPIC] File shares");
-	const files = await sdk.beta.files.list({betas: ['files-api-2025-04-14']});
+	const files = await anthropic.beta.files.list({betas: ['files-api-2025-04-14']});
 	for (const file of files.data) {
-		// type:"file" id size_bytes created_at filename mime_type downloadable
-		//"filename":"ab8dfb2e61711d61f5a68f15310a069c1e7e0c52db1713cfb45af80123748e1d"
 		const hash=file.filename;
-		if(hash.length==64){
-			anthropicStore[hash]=file.id;
-			echo("[CLAUDE]",file.id,hash);
+		if(flush){
+			await anthropic.beta.files.delete(file.id,{betas:['files-api-2025-04-14']});
+			echo("[CLAUDE] deleted ",file.id);
+		}else{
+			if(hash.length==64){
+				anthropicStore[hash]=file.id;
+				echo("[CLAUDE]",file.id,hash);
+			}
 		}
 	}
 }
-async function anthropicFile(sdk,blob){	//sdk=anthropic.beta
+async function anthropicFile(anthropic,blob){	//sdk=anthropic.beta
 	//	console.log("[CLAUDE] file blob",blob);
 	const hash=await hashFile(blob.path);
 	if(hash in anthropicStore) return anthropicStore[hash];
 	const fileContent = await Deno.readFile(blob.path);
 	const name=hash;//blob.path;
-	const file = await toFile(fileContent,name,{type:blob.type});
-	const result = await sdk.beta.files.upload({file,betas:['files-api-2025-04-14']});
+	let fileType=blob.type;
+	if(fileType.startsWith("text/")) fileType="text/plain";
+	if(fileType.startsWith("application/")) fileType="text/plain";
+	const file = await toFile(fileContent,name,{type:fileType});
+	const result = await anthropic.beta.files.upload({file,betas:['files-api-2025-04-14']});
 	anthropicStore[hash]=result.id;
 	return result.id;
 }
-async function anthropicMessages(sdk,payload){
+async function anthropicMessages(anthropic,payload){
 	const messages=[];
 	let blob={};
 	for(const item of payload.messages){
@@ -1076,7 +1083,7 @@ async function anthropicMessages(sdk,payload){
 					}
 					if(name=="image" || name=="content"){
 						try{
-							const id=await anthropicFile(sdk,blob);
+							const id=await anthropicFile(anthropic,blob);
 							const text="File shared";
 							const content=[
 								{
@@ -1556,11 +1563,12 @@ function mutName(modelname:string){
 	name=name.replace("-experimental","#");
 	name=name.replace("-Instruct","");
 	name=name.replace("-instruct","");
+	name=name.replace("-preview","");
 	name=name.replace("-generate","");
 	const namebits=name.split("-");
 	const muts=namebits.slice(0,3);
-	const bit=namebits[3]||"0";
-	if (isNaN(parseFloat(bit))) muts.push(bit);
+	const bit=namebits[3]||"0.0";
+	if ((bit.length==1)||isNaN(parseFloat(bit))) muts.push(bit);
 	return muts.join("-");
 }
 
@@ -2119,8 +2127,8 @@ const textExtensions=[
 ];
 
 const fileTypes={
-	"js": "application/javascript",
-	"ts": "application/typescript",
+	"js": "text/x-javascript",
+	"ts": "text/x-typescript",
 	"txt": "text/plain",
 	"json": "application/json",
 	"md": "text/markdown",
