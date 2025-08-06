@@ -1039,7 +1039,7 @@ function anthropicSystem(payload){
 
 const anthropicStore:Record<string, string>={};
 
-async function anthropicStatus(anthropic,flush=true){
+async function anthropicStatus(anthropic,flush=false){
 	echo("[ANTRHOPIC] File shares");
 	const files = await anthropic.beta.files.list({betas: ['files-api-2025-04-14']});
 	for (const file of files.data) {
@@ -1069,6 +1069,33 @@ async function anthropicFile(anthropic,blob){	//sdk=anthropic.beta
 	anthropicStore[hash]=result.id;
 	return result.id;
 }
+
+function anthropicInvoke(payload){
+	for(const item of payload.messages){
+		switch(item.role){
+			case "assistant":
+				if(item.tool_calls){
+					echo("[ANTHROPIC]",item);
+					const tool_use_id=item.toolId;
+					const toolResult={type:"tool_result",tool_use_id,content:item.content};
+				}
+				break;
+		}
+	}
+}
+
+/*
+		for (const choice of completion.choices) {
+			const calls=choice.message.tool_calls;
+			// choice has index message{role,content,refusal,annotations} finish_reason
+			if (calls) {
+				const count=increment("calls");
+				if(verbose) echo("[RELAY] calls in progress",depth,count)
+					messages.push({role:"user",content:[toolResult]});
+//					messages.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
+*/
+
+
 async function anthropicMessages(anthropic,payload){
 	const messages=[];
 	let blob={};
@@ -1084,20 +1111,21 @@ async function anthropicMessages(anthropic,payload){
 					if(name=="image" || name=="content"){
 						try{
 							const id=await anthropicFile(anthropic,blob);
-							const text="File shared";
+							const text="File shared path:"+blob.path+" type:"+blob.type;
+							echo("[ANTHROPIC]",text);
 							const content=[
 								{
 									type:"text",
 									text
 								},
-								{ 
+								{
 									type:(name=="image")?"image": "document",
 									source:{type:"file",file_id:id}
 								}
 							];
 							messages.push({role:"user",content});
 						}catch( error){
-							echo("[CLAUDE]",error);
+							echo("[ANTHROPIC]",error);
 						}
 					}else{
 						// item role name type
@@ -1109,8 +1137,7 @@ async function anthropicMessages(anthropic,payload){
 				break;
 			case "assistant":
 				if(item.tool_calls){
-					// TODO: test me
-					messages.push({role:item.role,content:item.content,tool_calls:item.tool_calls});
+					// now handled out of band
 				}else{
 //					messages.push({role:"assistant",name:item.name,content:item.content});
 					const content=item.name?item.name+": "+item.content:item.content;
@@ -1193,19 +1220,27 @@ async function connectAnthropic(account,config){
 						}
 						const options={headers:{"anthropic-beta":"files-api-2025-04-14"}};
 						const reply=await sdk.messages.create(request,options);
+						const stopped=reply.stop_reason;
+						if(stopped){
+							echo("[CLAUDE] stopped:",stopped);
+							if(stopped=="tool_use"){
+								for(const content of reply.content){
+									if(content.type == "tool_use"){
+//										result = execute_tool(content.name, content.input)
+										echo("[CLAUDE] execute:",content);	// id name input
+									}
+								}
+							}
+						}
 						const usage={
 							prompt_tokens:reply.usage.input_tokens,
 							completion_tokens:reply.usage.output_tokens
 						};
 						const content=reply.content[0].text||"";
-						echo("[CLAUDE]",reply);
-						return {
-							model,
-							choices:[
-								{message:{content}}
-							],
-							usage
-						};
+
+						const choices=[{message:{content}}];
+
+						return {model,choices,usage};
 					}
 				}
 			}
@@ -2994,8 +3029,10 @@ function inlineHistory(history){
 
 
 // fountain relay
+
 // returns spend
 // warning - tool_calls resolved with recursion
+// endpoints may provide alternative implementations of completions - watch for bugs
 
 async function relay(depth:number) {
 	const debugging=roha.config.debugging&&roha.config.verbose;
