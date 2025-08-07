@@ -4,6 +4,9 @@
 
 // Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
 
+// next up:
+// don't share dir .files
+
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
@@ -226,6 +229,11 @@ function stringRight(text:string,width:number):string{
 	const pad=(width>n)?" ".repeat(width-n):"";
 	return pad+text;
 }
+
+function echoComment(){
+	
+}
+
 function echoKey(key:object,wide:number){
 	const text=JSON.stringify(key);
 	const rtext=stringRight(text,wide);
@@ -1455,7 +1463,7 @@ async function resetModel(modelname:string){
 	const provider=modelAccount[1];
 	const account=modelAccounts[provider];
 	if(!account){
-		echo("[reset] account not found",modelname);
+		echoWarning("[reset] account not found",modelname);
 		return;
 	}
 	grokModel=modelname;
@@ -1940,9 +1948,11 @@ async function shareDir(dir:string, tag:string, depth=1) {
 		const paths=[];
 		for await (const file of Deno.readDir(dir)) {
 			if(file.isDirectory){
-				const path = resolvePath(dir, file.name);
-				if(depth<5){
-					shareDir(path, tag, depth + 1);
+				if(!file.name.startsWith(".")){
+					const path = resolvePath(dir, file.name);
+					if(depth<5){
+						shareDir(path, tag, depth + 1);
+					}
 				}
 			}else{
 				if (file.isFile && !file.name.startsWith(".")) {
@@ -2972,7 +2982,7 @@ async function relay(depth:number) {
 				await writeForge();
 			}else{
 				if(verbose){
-					echo("modelSpecs not found for",grokModel);
+					echoWarning("modelSpecs not found for",grokModel);
 				}
 			}
 			mutspec.prompt_tokens=(mutspec.prompt_tokens|0)+spent[0];

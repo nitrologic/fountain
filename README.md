@@ -5,41 +5,18 @@
 
 Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM tool
 
-Exposing 285 models from 11 providers the research project Fountain 1.3.4 ⛲ is nearing 4000 lines 
-of Deno javascript. Yikes!
+Exposing 295 (was 285) models from 11 providers the research project Fountain 1.3.4 ⛲ 
+is nearing 4000 lines of Deno javascript. Yikes!
 
-Large source codes for the win, 3385 lines of javascript with only 380 typeScript errors.
+Large source codes for the win, 3385 lines of javascript and only 380 typeScript issues...
 
 Providing a common context the roha history model began in March 2025 echoing the common API and 
-intended as a bolt on to the DSPTool project.
+intended as a bolt on to the DSPTool project, my DIY computer science system lab / platform.
 
 > maximum prompt length exceeded
 
 Up against the context window of /model 0, my trusted companion DeepSeek, the slop fountain source
 can still be consumed in single servings.
-
-## Viscera 
-
-# 𓄲 𓄳 𓄴 𓄵 𓄶 𓄷
-
-# 𓄲𓄷𓄶𓄷𓄶𓄷𓄶𓄷𓄶𓄷𓄶𓄴
-
-````
-					"codes":"𓄲𓄳𓄴𓄵𓄶𓄷",
-					"name":"Viscera",
-					"block": "Egyptian Hieroglyphs",
-					"category": "So",
-					"tags": ["hieroglyphs", "plain","intestines","ea9625"],
-					"wide": 1,
-					"glyphs": [
-						{"point":"𓄲","sim":"e"},
-						{"point":"𓄳","sim":"a"},
-						{"point":"𓄴","sim":"9"},
-						{"point":"𓄵","sim":"g6"},
-						{"point":"𓄶","sim":"z2"},
-						{"point":"𓄷","sim":"s5"}
-					]
-````
 
 ## Researcher Links
 
