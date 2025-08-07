@@ -1653,7 +1653,7 @@ function insertTable(result:string[],table:string[][]){
 	const widths=[];
 	for(const row of table){
 		for(let i=0;i<row.length;i++){
-			const w=2+row[i].length|0;
+			const w=row[i].length|1;
 			if(w>(widths[i]|0)) widths[i]=w;
 		}
 	}
