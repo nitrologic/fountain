@@ -1,3 +1,8 @@
+https://en.wiktionary.org/wiki/%F0%93%84%88
+
+https://en.wiktionary.org/wiki/𓄈
+
+
 //		const value=(Array.isArray(c))?boxCell(w,c):(c||"");
 // todo: clip string for tables or go multi line cells?
 function boxCell(width,array){
