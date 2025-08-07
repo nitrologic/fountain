@@ -63,26 +63,35 @@ function parseStringTable(view, offset, size) {
 }
 
 function parseSymbolTable(view, offset, size, string_base) {
+	const symbolTable={};
 	const symbols = [];
 	for (let i = 0; i < size; i += 16) {
 		const st_name  = view.getUint32(offset + i, true);
 		const st_value = view.getUint32(offset + i + 4, true);
 		const st_size = view.getUint32(offset + i + 8, true);
 		const st_info = view.getUint8(offset + i + 12);
+		if(st_value==0) continue;	// ignore nulls
 		let name = '';
 		if (st_name) {
+//			console.log("st_name",st_name);
 			for (let j = st_name; ; j++) {
 				const char = view.getUint8(string_base + j);
 				if (!char) break;
 				name += String.fromCharCode(char);
 			}
 		}
-		symbols.push({name,value: st_value,size: st_size,type: st_info & 0xF,binding: st_info >> 4});
+		symbols.push({name,value: st_value.toString(16),size: st_size,type: st_info & 0xF,binding: st_info >> 4});
+		if(name.length&&st_value){
+			const address=st_value.toString(16);
+			symbolTable[address]=name;
+		}
 	}
-	return symbols;
+	return {symbols,symbolTable};
 }
 
 export function parseElf(elfData, ram, cpu) {
+	let symbols = [];
+	let strings = [];
 	const RamSize=ram.length;
 	const view=new DataView(elfData.buffer);
 	// Verify ELF header
@@ -104,8 +113,15 @@ export function parseElf(elfData, ram, cpu) {
 	const e_shoff = view.getUint32(32, true);
 	const e_phnum=view.getUint16(44, true); // Number of program headers
 	const e_phentsize=view.getUint16(42, true); // Size of each program header
-	const pc_mask=0x00fffffc;
+
+	const e_shnum = view.getUint16(48, true);
+	const e_shentsize = view.getUint16(46, true);
+	const e_shstrndx = view.getUint16(50, true);
+
+	const pc_mask = 0x00fffffc;
+
 	console.log("entry point",e_entry.toString(16));
+
 	// Load program segments
 	for (let i=0; i < e_phnum; i++) {
 		const phoff=e_phoff + i * e_phentsize;
@@ -117,6 +133,7 @@ export function parseElf(elfData, ram, cpu) {
 		const vaddr24=p_vaddr&pc_mask;
 		// Only load PT_LOAD segments (type 1)
 		if (p_type===1) {
+			console.log(`Loading segment: vaddr=0x${p_vaddr.toString(16)}, size=0x${p_filesz.toString(16)}`);
 			// Ensure address is within ram bounds
 			if (vaddr24 + p_memsz > RamSize) {
 				console.error(`Segment at 0x${p_vaddr.toString(16)} exceeds RAM size`);
@@ -130,76 +147,66 @@ export function parseElf(elfData, ram, cpu) {
 				const loc=vaddr24+j;
 				const loc32=p_vaddr+j;
 				const op=val;
-				if(j<32){
-					console.log(cpu.disassemble(op,loc32));
+				if(j<3200){
+//					console.log(cpu.disassemble(op,loc32));
 				}
 			}
 			// Zero-fill any remaining memory (if p_memsz > p_filesz, e.g., for .bss)
 			for (let j=p_filesz; j < p_memsz; j += 4) {
 				ram[ramIdx + (j >> 2)]=0;
 			}
-			console.log(`Loaded segment: vaddr=0x${p_vaddr.toString(16)}, size=0x${p_filesz.toString(16)}`);
 		}
 	}
-	return e_entry;
-}
 
-export function parseElfSymbols(elfData) {
-	const view=new DataView(elfData.buffer);
-	// Verify ELF header
-	if (view.getUint32(0, true) !== ELF_MAGIC) {console.error("Invalid ELF magic");return false;}
-	// Read ELF header fields
-	const e_entry=view.getUint32(24, true); // Entry point address
-	const e_phoff=view.getUint32(28, true); // Program header offset
-	const e_shoff = view.getUint32(32, true);
-	const e_phentsize=view.getUint16(42, true);
-	const e_phnum=view.getUint16(44, true);
-	const e_shentsize=view.getUint16(46, true);
-	const e_shnum=view.getUint16(48, true);
-	const e_shstrndx = view.getUint16(50, true);
-
-	if (!e_shoff || !e_shnum) {
-		console.log("No section headers found");
-		return e_entry;
-	}
-
-	// Get string table offset
-	const shstrtab_off = e_shoff + (e_shstrndx * e_shentsize);
-	const shstrtab_offset = view.getUint32(shstrtab_off + 16, true);
-
-	let string_base = 0;
-
-	let symbols = [];
-	let strings = [];
-
-	console.log("* entry point",e_entry.toString(16));
+// Parse section headers for symbols and strings
 	if (e_shoff && e_shnum) {
-		for (let i = 0; i < e_shnum; i++) {
-			const shoff = e_shoff + (i * e_shentsize);
-			const sh_name = view.getUint32(shoff, true);
-			const sh_type = view.getUint32(shoff + 4, true);
-			const sh_addr = view.getUint32(shoff + 12, true);
-			const sh_offset = view.getUint32(shoff + 16, true);
-			const sh_size = view.getUint32(shoff + 20, true);
-			let name="";
-			for (let j = 0; ; j++) {
-				const ch = view.getUint8(shstrtab_offset + sh_name + j);
-				if (ch === 0) break;
-				name += String.fromCharCode(ch);
-			}
-			if(sh_type==SHT_STRTAB){
-				string_base=sh_offset;
-				strings=parseStringTable(view,sh_offset,sh_size);
-				console.log('Strings:', strings);
-				if (name === '.strtab') {
-					string_base = sh_offset;
+
+		const shstrtab_off = e_shoff + e_shstrndx * e_shentsize;
+		const shstrtab_offset = view.getUint32(shstrtab_off + 16, true);
+		const shstrtab_size = view.getUint32(shstrtab_off + 20, true);
+
+		let string_base = 0;
+
+		// two passes needed so symbol table can preceed string table
+
+		for(let pass=0;pass<2;pass++){
+
+			for (let i = 0; i < e_shnum; i++) {
+				const shoff = e_shoff + i * e_shentsize;
+				const sh_type = view.getUint32(shoff + 4, true);
+				const sh_offset = view.getUint32(shoff + 16, true);
+				const sh_size = view.getUint32(shoff + 20, true);
+				const sh_name = view.getUint32(shoff, true);
+		
+				let name = "";
+				for (let j = sh_name; ; j++) {
+					const ch = view.getUint8(shstrtab_offset + j);
+					if (!ch) break;
+					name += String.fromCharCode(ch);
+				}
+//				console.log("sh_name => ",name);
+				// strings before symbols...
+				if( pass==0 ){
+					if (sh_type === SHT_STRTAB && name === ".strtab") {
+						string_base = sh_offset;
+						strings = parseStringTable(view, sh_offset, sh_size);
+					}
+				}else{
+					if (sh_type === SHT_SYMTAB && name === ".symtab") {
+						console.log("Symbols name:",name);
+						if(!string_base){
+							console.log("No String base for symbols");
+							continue;
+						}
+						symbols = parseSymbolTable(view, sh_offset, sh_size, string_base);
+					}
 				}
 			}
-			if (sh_type === SHT_SYMTAB) {
-				symbols=parseSymbolTable(view, sh_offset, sh_size, string_base);
-//				console.log('Symbols:', symbols);
-			}
 		}
+	} else {
+		console.log("No section headers found; skipping symbol parsing");
 	}
-	return {symbols,strings};
+
+
+	return {entry:e_entry,strings,symbols};
 }

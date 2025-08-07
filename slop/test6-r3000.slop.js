@@ -4,7 +4,7 @@
 
 import { mipsRegs, R3000 } from "./slopmips.js";
 import { rgbShade, greyShade, ansiFG } from "./sloputil.js";
-import { parseElf, parseElfSymbols, dumpBin } from"./sloptools.js";
+import { parseElf, dumpBin } from"./sloptools.js";
 
 // reset signal with blank line from slopshop host
 
@@ -631,14 +631,20 @@ let frameCount=-1;
 // --allow-read
 
 const elf=await Deno.readFile("../sandbox/mips1.elf");
+//const elf=await Deno.readFile("../sandbox/mips2.elf");
 
 //const elf=await Deno.readFile("../slop/test2.elf");
 
 //dumpBin(elf);
+//{symbols,entry}
+//const symbols=parseElfSymbols(elf);
 
-const symbols=parseElfSymbols(elf);
-const entry=parseElf(elf,ram,r3000);
-startVector=entry;
+const runtime=parseElf(elf,ram,r3000);
+
+//console.log("runtime strings",runtime.strings);
+console.log("runtime symbols",runtime.symbols);
+
+startVector=runtime.entry;
 
 console.log("test6 homegrown mips r3000 emulator");
 console.log("0x"+startVector.toString(16));
