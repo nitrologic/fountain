@@ -1579,6 +1579,20 @@ const disableScroll=new Uint8Array([27, 91, 55, 59, 49, 59, 114]);
 const restoreScroll=new Uint8Array([27, 91, 114]);
 
 
+
+// dash: "---- ---- ---- ----"
+// array: [1,2,0.3]
+// result: 1.00 2.00 0.30
+function dashString(dash,array){
+	const dashes=dash.split(" ");
+	return array.map((v, i) => {
+		const w = dashes[i]?.length ?? 1;
+		const ch = ['-', '·'][i % 2] || '-'; // simple pattern; extend as needed
+		const n  = Math.round(v * w);
+		return ch.repeat(Math.max(0, n));
+	});
+}
+
 // box drawing code
 
 const TopLeft=0;
@@ -1601,23 +1615,9 @@ function boxTop(widths){
 	const tr=box.charAt(TopRight);
 	const bits=[];
 	for(const wid of widths){
-		const n=wid.length;
-		bits.push(h.repeat(n));
+		bits.push(h.repeat(wid));
 	}
 	return tl+bits.join(hd)+tr;
-}
-
-// dash: "---- ---- ---- ----"
-// array: [1,2,0.3]
-// result: 1.00 2.00 0.30
-function dashString(dash,array){
-	const dashes=dash.split(" ");
-	return array.map((v, i) => {
-		const w = dashes[i]?.length ?? 1;
-		const ch = ['-', '·'][i % 2] || '-'; // simple pattern; extend as needed
-		const n  = Math.round(v * w);
-		return ch.repeat(Math.max(0, n));
-	});
 }
 
 function boxCells(widths,cells){
@@ -1682,7 +1682,7 @@ function insertTable(result:string[],table:string[][]){
 	let header=true;
 	for(const row of table){
 		if(header){
-			result.push(boxSplit(widths));
+			result.push(boxTop(widths));
 			result.push(boxCells(widths,row));
 			result.push(boxSplit(widths));
 			header=false
@@ -1726,12 +1726,13 @@ function mdToAnsi(md) {
 					if(splits>2){
 						let trim=split.slice(1,splits-1);
 						table.push(trim);
-						echo("[TABLE]",trim)
+//						echo("[TABLE]",trim)
 					}
+					continue;
 				}else{
 					if(table.length) {
 						insertTable(result,table);
-						echo("[TABLE] inserted",table.length)
+//						echo("[TABLE] inserted",table.length)
 						table.length=0;
 					}
 				}
