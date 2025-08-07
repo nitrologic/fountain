@@ -13,6 +13,11 @@ Large source codes for the win, 3385 lines of javascript with only 380 typeScrip
 Providing a common context the roha history model began in March 2025 echoing the common API and 
 intended as a bolt on to the DSPTool project.
 
+> maximum prompt length exceeded
+
+Up against the context window of /model 0, my trusted companion DeepSeek, the slop fountain source
+can still be consumed in single servings.
+
 ## Researcher Links
 
 * [fountain.md](roha/fountain.md) Configuration

@@ -1625,9 +1625,9 @@ function boxCells(widths,cells){
 	const v=box.charAt(Vertical);
 	const bits=[];
 	for(let i=0;i<widths.length;i++){
-		const w=widths[i].length;
+		const w=widths[i];
 		const c=cells[i];
-		const value=(Array.isArray(c))?dashString(widths[i],c):(c||"");
+		const value=(Array.isArray(c))?dashString(w,c):(c||"");
 // todo: clip string for tables or go multi line cells?
 		const indent=(w>2)?" ":"";
 		const cell=indent+value;
@@ -1647,7 +1647,7 @@ function boxSplit(widths){
 	const vl=box.charAt(VerticalLeft);
 	const bits=[];
 	for(let i=0;i<widths.length;i++){
-		const w=widths[i].length;
+		const w=widths[i];
 		bits.push(h.repeat(w));
 	}
 	return vr+bits.join(x)+vl;
@@ -1661,8 +1661,7 @@ function boxBottom(widths){
 	const br=box.charAt(BottomRight);
 	const bits=[];
 	for(const wid of widths){
-		const n=wid.length;
-		bits.push(h.repeat(n));
+		bits.push(h.repeat(wid));
 	}
 	return bl+bits.join(hu)+br;
 }
@@ -1672,13 +1671,33 @@ let colorCycle=0;
 
 // warning - do not call echo from here
 
+function insertTable(result:string[],table:string[][]){
+	const widths=[];
+	for(const row of table){
+		for(let i=0;i<row.length;i++){
+			const w=2+row[i].length|0;
+			if(w>(widths[i]|0)) widths[i]=w;
+		}
+	}
+	let header=true;
+	for(const row of table){
+		if(header){
+			result.push(boxSplit(widths));
+			result.push(boxCells(widths,row));
+			result.push(boxSplit(widths));
+			header=false
+		}else{
+			result.push(boxCells(widths,row));
+		}
+	}
+	result.push(boxBottom(widths));
+}
+
 function mdToAnsi(md) {
 	const broken=roha.config.broken;
 	const lines=md.split("\n");
 	let inCode=false;
-	let inTable=false;
-	let headings=[];
-	let widths=[];
+	let table=[];
 	const result=broken?[ReplyBlock]:[];
 	let poplast=false;
 	for (let line of lines) {
@@ -1702,41 +1721,18 @@ function mdToAnsi(md) {
 					line=pageBreak.substring(0,terminalColumns-10);
 				}
 				if(line.startsWith("|")){
-					if(headings.length&&widths.length){
-						result.push(boxSplit(widths));
-						headings=[];
-					}
 					const split=line.split("|");
 					const splits=split.length;
 					if(splits>2){
 						let trim=split.slice(1,splits-1);
-						if(!inTable) {
-							inTable=true;
-							headings=trim;
-							continue;
-						}else{
-							const spacer=(trim[0]||"").startsWith("-");
-							if(spacer){
-								widths=trim;
-								result.push(boxTop(widths));
-								let wide=0;
-								for(let i=0;i<widths.length;i++){
-									const w=widths[i].length;
-									wide+=w+1;
-								}
-								trim=headings;
-							}
-							if(widths){
-								line=boxCells(widths,trim);
-							}
-						}
+						table.push(trim);
+						echo("[TABLE]",trim)
 					}
 				}else{
-					if(inTable) {
-						result.push(boxBottom(widths));
-						inTable=false;
-						headings=[];
-						widths=[];
+					if(table.length) {
+						insertTable(result,table);
+						echo("[TABLE] inserted",table.length)
+						table.length=0;
 					}
 				}
 				// headershow
@@ -1767,11 +1763,12 @@ function mdToAnsi(md) {
 	if(poplast){
 		result.pop();
 	}
-
-	if(inTable&&widths) {
-		result.push(boxBottom(widths));
+	// yuck - duplicate path way from above
+	if(table.length) {
+		insertTable(result,table);
+		echo("[TABLE] inserted",table.length)
+		table.length=0;
 	}
-
 	result.push(AnsiReset);
 	return result.join("\n");
 }
@@ -2004,6 +2001,7 @@ const textExtensions=[
 ];
 
 const fileTypes={
+	"pdf": "application/pdf",
 	"js": "text/x-javascript",
 	"ts": "text/x-typescript",
 	"txt": "text/plain",
@@ -2191,6 +2189,8 @@ async function creditAccount(credit,account){
 	await writeForge();
 }
 
+// TODO: add a topup column
+
 async function onAccount(args){
 	if(args.length>1){
 		let name=args.slice(1).join(" ");
@@ -2208,16 +2208,18 @@ async function onAccount(args){
 		for(const key in modelAccounts){
 			list.push(key);
 		}
-		echo_row("id","name","llm","credit");
-		echo_row("----","-------------","----","----------");
+		echo_row("id","name","llm","credit","topup");
+//		echo_row("----","-------------","-----","----------","--------------------");
 		for(let i=0;i<list.length;i++){
 			const key=list[i];
-			if(key in roha.lode){
+			const config=modelAccounts[key];
+			if(config && key in roha.lode){
 				const endpoint=rohaEndpoint[key];
 				const models=endpoint?.modelList||[];
 				const lode=roha.lode[key];
 				const count=models?.length|0;
-				echo_row(i,key,count,price(lode.credit));
+				const link=config.platform||"";
+				echo_row(i,key,count,price(lode.credit),link);
 			}else{
 				echo_row(i,key);
 			}
@@ -2685,6 +2687,10 @@ function squashMessages(history) {
 	}
 	return squashed;
 }
+
+// processToolCalls
+
+// {"index":0,"id":"call_0_02120a7f-2cba-46f2-b9d6-647539824a8a","type":"function","function":{"name":"read_time","arguments":"{}"}}
 
 async function processToolCalls(calls) {
 	const results=[];
