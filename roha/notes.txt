@@ -1,3 +1,16 @@
+//		const value=(Array.isArray(c))?boxCell(w,c):(c||"");
+// todo: clip string for tables or go multi line cells?
+function boxCell(width,array){
+	echo("[TABLE] boxCell",array);
+	const w=(width/array.length)|0;
+	return array.map((v, i) => {
+		const ch = ['-', '·'][i % 2] || '-'; // simple pattern; extend as needed
+		const n  = Math.round(v * w);
+		return ch.repeat(Math.max(0, n));
+	});
+}
+
+
 	if(inTable&&widths) {
 		result.push(boxBottom(widths));
 	}

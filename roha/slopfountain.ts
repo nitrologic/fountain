@@ -1578,22 +1578,7 @@ const homeCursor=new Uint8Array([27, 91, 72]);
 const disableScroll=new Uint8Array([27, 91, 55, 59, 49, 59, 114]);
 const restoreScroll=new Uint8Array([27, 91, 114]);
 
-
-
-// dash: "---- ---- ---- ----"
-// array: [1,2,0.3]
-// result: 1.00 2.00 0.30
-function dashString(dash,array){
-	const dashes=dash.split(" ");
-	return array.map((v, i) => {
-		const w = dashes[i]?.length ?? 1;
-		const ch = ['-', '·'][i % 2] || '-'; // simple pattern; extend as needed
-		const n  = Math.round(v * w);
-		return ch.repeat(Math.max(0, n));
-	});
-}
-
-// box drawing code
+// table box drawing code
 
 const TopLeft=0;
 const TopRight=1;
@@ -1626,9 +1611,7 @@ function boxCells(widths,cells){
 	const bits=[];
 	for(let i=0;i<widths.length;i++){
 		const w=widths[i];
-		const c=cells[i];
-		const value=(Array.isArray(c))?dashString(w,c):(c||"");
-// todo: clip string for tables or go multi line cells?
+		const value=cells[i];
 		const indent=(w>2)?" ":"";
 		const cell=indent+value;
 		const wide=stringWidth(cell);
@@ -1666,11 +1649,6 @@ function boxBottom(widths){
 	return bl+bits.join(hu)+br;
 }
 
-const rohaPrompt=">";
-let colorCycle=0;
-
-// warning - do not call echo from here
-
 function insertTable(result:string[],table:string[][]){
 	const widths=[];
 	for(const row of table){
@@ -1682,16 +1660,23 @@ function insertTable(result:string[],table:string[][]){
 	let header=true;
 	for(const row of table){
 		if(header){
-			result.push(boxTop(widths));
+			result.push(boxTop(widths));		
 			result.push(boxCells(widths,row));
 			result.push(boxSplit(widths));
 			header=false
 		}else{
-			result.push(boxCells(widths,row));
+			// ignore spacers
+			const content=row.join("").replaceAll("-","").replaceAll(" ","");
+			if(content.length) result.push(boxCells(widths,row));
 		}
 	}
 	result.push(boxBottom(widths));
 }
+
+const rohaPrompt=">";
+let colorCycle=0;
+
+// warning - do not call echo from here
 
 function mdToAnsi(md) {
 	const broken=roha.config.broken;
