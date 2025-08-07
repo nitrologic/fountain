@@ -18,6 +18,27 @@ intended as a bolt on to the DSPTool project.
 Up against the context window of /model 0, my trusted companion DeepSeek, the slop fountain source
 can still be consumed in single servings.
 
+## Viscera 
+
+# 𓄲 𓄳 𓄴 𓄵 𓄶 𓄷
+
+````
+					"codes":"𓄲𓄳𓄴𓄵𓄶𓄷",
+					"name":"Viscera",
+					"block": "Egyptian Hieroglyphs",
+					"category": "So",
+					"tags": ["hieroglyphs", "plain","intestines","ea9625"],
+					"wide": 1,
+					"glyphs": [
+						{"point":"𓄲","sim":"e"},
+						{"point":"𓄳","sim":"a"},
+						{"point":"𓄴","sim":"9"},
+						{"point":"𓄵","sim":"g6"},
+						{"point":"𓄶","sim":"z2"},
+						{"point":"𓄷","sim":"s5"}
+					]
+````
+
 ## Researcher Links
 
 * [fountain.md](roha/fountain.md) Configuration
