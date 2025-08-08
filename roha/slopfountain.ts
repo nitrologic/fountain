@@ -1048,10 +1048,10 @@ async function anthropicStatus(anthropic,flush=false){
 	}
 }
 
-// returns result.id or none if not compatible
+// returns result.id or none if file type not currently supported
 
-async function anthropicFile(anthropic,blob){	//sdk=anthropic.beta
-	console.log("[ANTHROPIC] file blob",blob);
+async function anthropicFile(anthropic,blob){
+//	console.log("[ANTHROPIC] file blob",blob);
 	const hash=await hashFile(blob.path);
 	if(hash in anthropicStore) return anthropicStore[hash];
 	const fileContent = await Deno.readFile(blob.path);
@@ -1084,7 +1084,7 @@ async function anthropicMessages(anthropic,payload){
 						try{
 							const id=await anthropicFile(anthropic,blob);
 							if(id){
-								echo("[ANTHROPIC] file ",blob.path,name,id);
+//								echo("[ANTHROPIC] file ",blob.path,name,id);
 								const text="File shared path:"+blob.path+" type:"+blob.type;
 								const content=[{type:"text",text},{
 										type:(name=="image")?"image": "document",
