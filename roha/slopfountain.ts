@@ -2,11 +2,6 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-// Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
-
-// next up:
-// don't share dir .files
-
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
@@ -14,9 +9,12 @@ import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 
-const fountainVersion="1.3.4";
+// Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
+
+const fountainVersion="1.3.5";
 
 const fountainName="fountain "+fountainVersion;
+
 const defaultModel="deepseek-chat@deepseek";
 
 const terminalColumns=100;
@@ -80,7 +78,7 @@ type ConfigFlags = {
 	budget: false;
 };
 
-// a shared context state 
+// a shared context state
 // TODO: support multiple models and users with distinct contexts
 class Plop {
 	constructor(
@@ -231,7 +229,7 @@ function stringRight(text:string,width:number):string{
 }
 
 function echoComment(){
-	
+
 }
 
 function echoKey(key:object,wide:number){
@@ -301,7 +299,7 @@ const flagNames={
 	debugging : "emit diagnostics",
 	pushonshare : "emit a /push after any /share",
 	rawprompt : "experimental rawmode stdin - broken paste",
-	resetcounters : "factory reset when reset",
+	resetcounters : "factory reset counters and files on reset",
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed",
 	slops : "console worker scripts",
@@ -711,6 +709,18 @@ function echo(...args:any):void{
 	}
 }
 
+async function echoFail(...args:any){
+	const lines=[];
+	for(const arg of args){
+		const line=toString(arg);
+		lines.push(line);
+	}
+	const text=lines.join(" ");
+	const styledText=ansiStyle(text,"bold",2);
+	outputBuffer.push(styledText);
+	outputBuffer.push(cleanupRequired);
+}
+
 function echoWarning(...args:any){
 	const lines=[];
 	for(const arg of args){
@@ -720,7 +730,6 @@ function echoWarning(...args:any){
 	const text=ansiStyle(lines.join(" "),"blink",1);
 	outputBuffer.push(text);
 }
-
 
 function echo_row(...cells:any):void{
 	const row = cells.map(String).join('|');
@@ -1008,8 +1017,6 @@ async function connectGoogle(account,config){
 
 // API support for anthropic
 
-const anthropicStore:Record<string, string>={};
-
 function anthropicSystem(payload){
 	const system=[];
 	for(const item of payload.messages){
@@ -1022,6 +1029,8 @@ function anthropicSystem(payload){
 	return system;
 }
 
+const anthropicStore:Record<string, string>={};
+
 async function anthropicStatus(anthropic,flush=false){
 //	echo("[ANTRHOPIC] File shares");
 	const files = await anthropic.beta.files.list({betas: ['files-api-2025-04-14']});
@@ -1033,21 +1042,26 @@ async function anthropicStatus(anthropic,flush=false){
 		}else{
 			if(hash.length==64){
 				anthropicStore[hash]=file.id;
-				echo("[ANTHROPIC]",file.id,hash);
+				if(roha.config.verbose) echo("[ANTHROPIC]",file.id,hash);
 			}
 		}
 	}
 }
 
+// returns result.id or none if not compatible
+
 async function anthropicFile(anthropic,blob){	//sdk=anthropic.beta
-	//	console.log("[CLAUDE] file blob",blob);
+	console.log("[ANTHROPIC] file blob",blob);
 	const hash=await hashFile(blob.path);
 	if(hash in anthropicStore) return anthropicStore[hash];
 	const fileContent = await Deno.readFile(blob.path);
 	const name=hash;//blob.path;
-	let fileType=blob.type;
-	if(fileType.startsWith("text/")) fileType="text/plain";
-	if(fileType.startsWith("application/")) fileType="text/plain";
+	let fileType="";
+	if(blob.type.startsWith("text/")) fileType="text/plain";
+	if(blob.type.startsWith("image/jpeg") ) fileType=blob.type;
+	if(blob.type.startsWith("image/png") ) fileType=blob.type;
+	if(blob.type=="application/pdf") fileType=blob.type;
+	if(!fileType) return null;
 	const file = await toFile(fileContent,name,{type:fileType});
 	const result = await anthropic.beta.files.upload({file,betas:['files-api-2025-04-14']});
 	anthropicStore[hash]=result.id;
@@ -1069,13 +1083,18 @@ async function anthropicMessages(anthropic,payload){
 					if(name=="image" || name=="content"){
 						try{
 							const id=await anthropicFile(anthropic,blob);
-							const text="File shared path:"+blob.path+" type:"+blob.type;
-							const content=[{type:"text",text},{
-									type:(name=="image")?"image": "document",
-									source:{type:"file",file_id:id}
-								}
-							];
-							messages.push({role:"user",content});
+							if(id){
+								echo("[ANTHROPIC] file ",blob.path,name,id);
+								const text="File shared path:"+blob.path+" type:"+blob.type;
+								const content=[{type:"text",text},{
+										type:(name=="image")?"image": "document",
+										source:{type:"file",file_id:id}
+									}
+								];
+								messages.push({role:"user",content});
+							}else{
+								echo("[ANTHROPIC] file error for ",blob.path);
+							}
 						}catch( error){
 							echo("[ANTHROPIC]",error);
 						}
@@ -1156,9 +1175,7 @@ async function connectAnthropic(account,config){
 		}
 		modelList.push(...list);
 		const sdk=new Anthropic({apiKey});
-
 		await anthropicStatus(sdk);
-
 		return {
 			sdk,
 			apiKey,
@@ -1167,6 +1184,7 @@ async function connectAnthropic(account,config){
 			models: {
 				list: async () => models, // Return cached models or fetch fresh
 			},
+			reset:async()=>{await anthropicStatus(sdk,true);},
 			chat: {
 				completions: {
 					// grok was here
@@ -1668,7 +1686,7 @@ function insertTable(result:string[],table:string[][]){
 	let header=true;
 	for(const row of table){
 		if(header){
-			result.push(boxTop(widths));		
+			result.push(boxTop(widths));
 			result.push(boxCells(widths,row));
 			result.push(boxSplit(widths));
 			header=false
@@ -1808,12 +1826,18 @@ async function resetRoha(){
 	rohaShares=[];
 	roha.sharedFiles=[];
 //	roha.tags={};
-	if(roha.config.resetcounters) roha.counters={};
+	if(roha.config.resetcounters) {
+		roha.counters={};
+		for(const account in rohaEndpoint){
+			const endpoint=rohaEndpoint[account];
+			if(endpoint.reset) await endpoint.reset();
+		}
+	}
 	increment("resets");
 	await writeForge();
 	resetHistory();
+	echo("resetRoha","All shares and history reset. Resetting model.");
 	await resetModel(roha.model||defaultModel);
-	echo("resetRoha","All shares and history reset.");
 }
 
 function resolvePath(dir,filename){
@@ -1996,12 +2020,14 @@ const textExtensions=[
 	"log","py","csv","xml","ini"
 ];
 
+// this is an anthropic thing, due for removal
+
 const fileTypes={
 	"pdf": "application/pdf",
 	"js": "text/x-javascript",
 	"ts": "text/x-typescript",
 	"txt": "text/plain",
-	"json": "application/json",
+	"json": "text/json",
 	"md": "text/markdown",
 	"css": "text/css",
 	"html": "text/html",
@@ -2025,17 +2051,22 @@ const fileTypes={
 	"mp3": "audio/mpeg"
 };
 
-function fileType(extension:string){
+const commonTextFiles=["LICENSE","README","CHANGELOG","COPYING","AUTHORS","INSTALL"];
+
+function fileType(path:string){
+	const name=path.split("/").pop();
+	if(commonTextFiles.includes(name.toUpperCase())) return "text/plain";
+	const extension=path.split(".").pop().toLowerCase();
 	return fileTypes[extension.toLowerCase()] || "application/octet-stream";
 }
 
+// TODO: support more than just text content and image base 64 blobs
+
 async function shareBlob(path,size,tag){
-	const extension=path.split(".").pop().toLowerCase();
-	const mimeType=fileType(extension);
+	const mimeType=fileType(path);
 	const metadata=JSON.stringify({ path:path,length:size,type:mimeType,tag });
 	rohaPush(metadata,"blob");
-	// TODO: test for imageExtensions
-	if (textExtensions.includes(extension)) {
+	if(mimeType.startsWith("text/")){
 		const content=await Deno.readTextFile(path);
 		rohaPush(content,"content");
 	} else {
@@ -3085,36 +3116,31 @@ async function relay(depth:number) {
 	} catch (error) {
 		const line=error.message || String(error);
 		if(line.includes("DeepSeek API error")){
-			echo(line+" - maximum prompt length exceeded?");
-			echo(cleanupRequired);
+			echoFail(line+" - maximum prompt length exceeded?");
 			return spend;
 		}
 		if(line.includes("maximum prompt length")){
-			echo("Oops, maximum prompt length exceeded.");
-			echo(line);
-			echo(cleanupRequired);
+			echoFail("Oops, maximum prompt length exceeded. ",line);
 			return spend;
 		}
 		if(line.includes("maximum context length")){
-			echo("Oops, maximum context length exceeded.");
-			echo(cleanupRequired);
+			echoFail("Oops, maximum context length exceeded.");
 			return spend;
 		}
 		const HuggingFace402="You have exceeded your monthly included credits for Inference Providers. Subscribe to PRO to get 20x more monthly included credits."
 		if(line.includes(HuggingFace402)){
-			echo("[RELAY] Hugging Face Error depth",depth,line);
+			echoWarning("[RELAY] Hugging Face Error depth",depth,line);
 			return spend;
 		}
 		const KimiK2400="Your request exceeded model token limit";
 		if(line.includes(KimiK2400)){
-			echo("[RELAY] Kimi K2 Error depth",depth,line);
+			echoWarning("[RELAY] Kimi K2 Error depth",depth,line);
 			return spend;
 		}
 		// error:{"type":"error","error":{"type":"rate_limit_error",
 		const err=(error.error&&error.error.error)?error.error.error:{};
 		if(err.type=="rate_limit_error"||err.type=="invalid_request_error"){
-			echo("Oops.",err.type,err.message);
-			echo(cleanupRequired);
+			echoFail("Oops.",err.type,err.message);
 			return spend;
 		}
 
@@ -3253,35 +3279,40 @@ echo(rohaTitle,"running from "+rohaPath);
 
 await flush();
 await readForge();
+
+// endpoints are used by models and in general to reset file API and the like
+
 const rohaEndpoint={};
-for(const account in modelAccounts){
-	const t=performance.now();
-	const endpoint=await connectAccount(account);
-	const elapsed=(performance.now()-t)/1000;
-	if(endpoint) {
-		const count=endpoint.modelList?.length||0;		//",endpoint.modelList
-		if(roha.config.verbose){
-			echo("[FORGE] Connected to",account,count,elapsed.toFixed(2)+"s");
-		}
-		rohaEndpoint[account]=endpoint;
-		specAccount(account);
-		const lode=roha.lode[account];
 
-//		echo("[SPEW]",endpoint.modelList);
-
-		if(!areSame(lode.modelList,endpoint.modelList)){
-			echo("[FORGE] modifying modelList");
-			lode.modelList=endpoint.modelList;
+async function enumerateModels(){
+	for(const account in modelAccounts){
+		const t=performance.now();
+		const endpoint=await connectAccount(account);
+		const elapsed=(performance.now()-t)/1000;
+		if(endpoint) {
+			const count=endpoint.modelList?.length||0;		//",endpoint.modelList
+			if(roha.config.verbose){
+				echo("[FORGE] Connected to",account,count,elapsed.toFixed(2)+"s");
+			}
+			rohaEndpoint[account]=endpoint;
+			specAccount(account);
+			const lode=roha.lode[account];
+	//		echo("[SPEW]",endpoint.modelList);
+			if(!areSame(lode.modelList,endpoint.modelList)){
+				echo("[FORGE] modifying modelList");
+				lode.modelList=endpoint.modelList;
+			}
+	//		echo("[FORGE] endpoint modelList",endpoint.modelList);
+		}else{
+			echoWarning("[FORGE] Endpoint failure for account",account);
 		}
-//		echo("[FORGE] endpoint modelList",endpoint.modelList);
-	}else{
-		echoWarning("[FORGE] Endpoint failure for account",account);
 	}
+	await flush();
 }
 
 // forge starts here, grok started this thing, blame grok
 
-await flush();
+await enumerateModels();
 
 resetModel(roha.model||defaultModel);
 
