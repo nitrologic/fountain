@@ -1967,15 +1967,15 @@ async function addShare(share){
 	}
 }
 
-async function shareDir(dir:string, tag:string, depth=1) {
+async function shareDir(dir:string, tag:string, depth=1, maxDepth=5) {
 	try {
 		const paths=[];
 		for await (const file of Deno.readDir(dir)) {
 			if(file.isDirectory){
 				if(!file.name.startsWith(".")){
 					const path = resolvePath(dir, file.name);
-					if(depth<5){
-						shareDir(path, tag, depth + 1);
+					if(depth<maxDepth){
+						shareDir(path, tag, depth + 1, maxDepth);
 					}
 				}
 			}else{
@@ -2574,7 +2574,8 @@ async function callCommand(command:string) {
 					const tag="";//await promptForge("Enter tag name (optional):");
 					if(stat.isDirectory){
 						echo("Share directory path:",path);
-						await shareDir(path,tag);
+						// TODO: add depth>1
+						await shareDir(path,tag,1,1);
 						await writeForge();
 					}else{
 						// attachMedia(words);
