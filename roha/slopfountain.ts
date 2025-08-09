@@ -156,6 +156,12 @@ function ansiPrompt():string{
 	return AnsiCursor + row + ";1H" + AnsiLineBlank;
 }
 
+function quoteString(line:string):string{
+	line=line.substring(1).trim();
+	echo(line);
+	return "\t"+line;
+}
+
 // application configuration
 
 const slowMillis=25;
@@ -701,9 +707,9 @@ function echo(...args:any):void{
 	const lines=[];
 	for(const arg of args){
 		const line=toString(arg);
-		lines.push(line.trim());
+		lines.push(line.trimEnd());
 	}
-	const output=lines.join(" ").trim();
+	const output=lines.join(" ").trimEnd();
 	if(output.length){
 		outputBuffer.push(output);
 	}
@@ -786,7 +792,6 @@ async function flush() {
 		await sleep(delay)
 	}
 	printBuffer=[];
-
 	const md=markdownBuffer.join("\n");
 	if(md.length){
 		if (roha.config.ansi) {
@@ -797,7 +802,6 @@ async function flush() {
 		}
 	}
 	markdownBuffer=[];
-
 	for (const output of outputBuffer) {
 		console.log(output);
 		const lines=output.split("\n");
@@ -1754,6 +1758,10 @@ function mdToAnsi(md) {
 					line=line.substring(level).trim();
 					const ink=Deno.noColor?"":AnsiColors[(colorCycle++)&7];
 					line=ink + line + AnsiReset;	//ansiPop
+				}
+				// quotes
+				if (line.startsWith("> ")) {
+					line=quoteString(line.substring(2));
 				}
 				// bullets
 				if (line.startsWith("*") || line.startsWith("+")) {
