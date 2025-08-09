@@ -3,22 +3,17 @@
 
 # 𓄷𓄲𓄲 𓄵𓄲𓄲𓄷𓄲⛲
 
-# ꔞ ꘚꘚ
-
 Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM tool
 
-Exposing 295 (was 285) models from 11 providers the research project Fountain 1.3.4 ⛲ 
-is nearing 4000 lines of Deno javascript. Yikes!
+Exposing 294 (was 285) models from 11 providers the research project Fountain 1.3.5 ⛲ is nearing 4000 lines of Deno javascript. Yikes!
 
 Large source codes for the win, 3385 lines of javascript and only 380 typeScript issues...
 
-Providing a common context the roha history model began in March 2025 echoing the common API and 
-intended as a bolt on to the DSPTool project, my DIY computer science system lab / platform.
+Providing a common context the roha history model began in March 2025 echoing the common API and intended as a bolt on to the DSPTool project, my DIY computer science system lab / platform.
 
 > maximum prompt length exceeded
 
-Up against the context window of /model 0, my trusted companion DeepSeek, the slop fountain source
-can still be consumed in single servings.
+Up against the context window of /model 0, my trusted companion DeepSeek, the slop fountain source can still be consumed in single servings.
 
 ## Researcher Links
 
@@ -35,21 +30,15 @@ Install [Deno 2.4.2](https://deno.com/)
 
 | Account Name | Emoji | Locale | Docs                                 | API       |
 |--------------|-------|--------|--------------------------------------|-----------|
-|              | 🤖    |        |
 | deepseek     | 🐋    | zh-CN  | https://api-docs.deepseek.com        | DeepSeek  |
 | moonshot     | 🎯    | zh-CN  | https://platform.moonshot.ai/docs    | OpenAI    |
 | alibaba      | 🐉    | zh-CN  | https://help.aliyun.com/zh/dashscope | OpenAI    |
-|              | 🤖    |        |
 | mistral      | ⚡️    | fr-FR  | https://docs.mistral.ai/             | OpenAI    |
-|              | 🤖    |        |
 | xai          | 🚀    | en-US  | https://x.ai/api                     | OpenAI    |
 | openai       | ⚛     | en-US  | https://platform.openai.com/docs     | OpenAI    |
 | gemini       | 🌟    | en-US  | https://ai.google.dev/docs           | Google    |
 | anthropic    | 🤖    | en-US  | https://docs.anthropic.com/          | Anthropic |
-|              | 🤖    |        |
 | hugging face | 🤗    | en-US  | https://huggingface.co/docs          | OpenAI    |
-|              | 🤖    |        |
-| cohere *     | 🧩    | en-CA  | https://docs.cohere.com/             | Cohere    |
 
 # Providers under obervation *
 
