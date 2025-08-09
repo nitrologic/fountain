@@ -3,7 +3,7 @@
 
 # 𓄷𓄲𓄲 𓄵𓄲𓄲𓄷𓄲⛲
 
-# ꔞ. 
+# ꔞ ꘚꘚ
 
 Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM tool
 
