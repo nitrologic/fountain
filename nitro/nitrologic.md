@@ -121,7 +121,6 @@ space: nitrologic/space
 vector0: nitrologic/vector0
 studio: nitrologic/studio
 nod: nitrologic/nod
-kiosk: nitrologic/kiosk
 grid: nitrologic/grid
 score: nitrologic/score
 nitro: nitrologic/nitro

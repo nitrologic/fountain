@@ -221,7 +221,6 @@ space: nitrologic/space
 vector0: nitrologic/vector0
 studio: nitrologic/studio
 nod: nitrologic/nod
-kiosk: nitrologic/kiosk
 grid: nitrologic/grid
 COLLADA2GLTF: nitrologic/COLLADA2GLTF
 monkeylanguageserver: nitrologic/monkeylanguageserver
