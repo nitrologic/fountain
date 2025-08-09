@@ -1,5 +1,5 @@
 @echo off
-echo owner,repo,exists,size_bytes,files,dirs > nitro_repos_stats.csv
+echo owner,repo,exists,size_bytes,files > nitro_repos_stats.csv
 
 for /f "tokens=1,2 delims=," %%a in (nitro_repos.csv) do call :analyse %%a %%b
 
