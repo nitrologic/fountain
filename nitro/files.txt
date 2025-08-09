@@ -35,7 +35,6 @@ geom
 glTF
 grid
 itouch
-kiosk
 libcec
 libsgd
 loadrite
@@ -50,7 +49,6 @@ mojo3d-vr
 mojolab
 mojolabs
 monkey2
-monkeylanguageserver
 mx2
 mx2core
 mx2mojo
@@ -109,6 +107,5 @@ waveform
 winding
 winmain
 wire
-wizbang
 worldbody
 yaroze
