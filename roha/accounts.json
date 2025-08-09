@@ -58,6 +58,7 @@
 		"env": "MISTRAL_API_KEY",
 		"url": "https://api.mistral.ai/v1",
 		"docs": "https://docs.mistral.ai/",
+		"platform": "https://console.mistral.ai/home",
 		"api": "OpenAI",
 		"locale": "fr-FR"
 	},
@@ -65,6 +66,7 @@
 		"emoji": "🐉",
 		"env": "ALIBABA_API_KEY",
 		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+		"platform": "https://bailian.console.alibabacloud.com/",
 		"api": "OpenAI",
 		"locale": "zh-CN"
 	},
@@ -73,6 +75,7 @@
 		"env": "HUGGINGFACE_API_KEY",
 		"url": "https://router.huggingface.co/cerebras/v1",
 		"docs":"https://huggingface.co/docs",
+		"platform": "https://huggingface.co/cerebras",
 		"api": "OpenAI",
 		"locale": "en-US"
 	},
@@ -80,7 +83,8 @@
 		"emoji": "🤗𝐍",
 		"env": "HUGGINGFACE_API_KEY",
 		"url": "https://router.huggingface.co/nscale/v1",
-		"docs":"https://huggingface.co/docs",
+		"docs": "https://huggingface.co/docs",
+		"platform": "https://huggingface.co/nscale",
 		"api": "OpenAI",
 		"locale": "en-US"
 	},
@@ -89,6 +93,7 @@
 		"env": "HUGGINGFACE_API_KEY",
 		"url": "https://router.huggingface.co/hyperbolic/v1",
 		"docs":"https://huggingface.co/docs",
+		"platform": "https://huggingface.co/hyperbolic",
 		"api": "OpenAI",
 		"locale": "en-US"
 	}
