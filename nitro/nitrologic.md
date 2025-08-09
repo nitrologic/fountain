@@ -90,7 +90,6 @@ ninjakiwi: nitrologic/ninjakiwi
 loadrite: nitrologic/loadrite
 fusion: nitrologic/fusion
 nextspace: nitrologic/nextspace
-wizbang: nitrologic/wizbang
 
 unsorted
 
@@ -101,8 +100,6 @@ acid8: nitrologic/acid8
 worldbody: nitrologic/worldbody
 deno: denoland/deno
 bbarchives: nitrologic/bbarchives
-playfab: nitrologic/playfab
-f9dasm: Arakula/f9dasm
 skidnz: nitrologic/skidnz
 plainhost: nitrologic/plainhost
 mobstar: nitrologic/mobstar
@@ -122,13 +119,11 @@ space: nitrologic/space
 vector0: nitrologic/vector0
 studio: nitrologic/studio
 nod: nitrologic/nod
-kiosk: nitrologic/kiosk
 grid: nitrologic/grid
 score: nitrologic/score
 nitro: nitrologic/nitro
 scout: nitrologic/scout
 simon: nitrologic/simon
-winding: nitrologic/winding
 drawline: nitrologic/drawline
 basement: nitrologic/basement
 django-tenants: nitrologic/django-tenants
