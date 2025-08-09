@@ -100,8 +100,6 @@ acid8: nitrologic/acid8
 worldbody: nitrologic/worldbody
 deno: denoland/deno
 bbarchives: nitrologic/bbarchives
-playfab: nitrologic/playfab
-f9dasm: Arakula/f9dasm
 skidnz: nitrologic/skidnz
 plainhost: nitrologic/plainhost
 mobstar: nitrologic/mobstar
