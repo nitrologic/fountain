@@ -20,7 +20,7 @@ while IFS=, read -r owner repo || [ -n "${owner:-}" ]; do
 	[ -z "$repo" ] && continue
 	case "$owner" in \#* ) continue ;; esac
 
-	target="$BASE_DIR/$owner/$repo"
+	target="$BASE_DIR/$repo"
 	echo "Processing $owner/$repo -> $target"
 
 	# ensure parent exists
