@@ -1927,7 +1927,8 @@ async function promptForge(message:string) {
 				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
 					bytes.push(0x0D, 0x0A);
 					const line=decoder.decode(promptBuffer);
-					let n=line.length;
+					const n = encoder.encode(line).length; 
+//					let n=line.length;
 					if (n > 0) {
 						promptBuffer=promptBuffer.slice(n);
 					}
