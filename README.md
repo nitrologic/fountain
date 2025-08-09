@@ -5,15 +5,9 @@
 
 Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM tool
 
-Exposing 294 (was 285) models from 11 providers the research project Fountain 1.3.5 ⛲ is nearing 4000 lines of Deno javascript. Yikes!
+Exposing 294 models from 11 providers the research project Fountain 1.3.5 ⛲ approaches interesting.
 
-Large source codes for the win, 3385 lines of javascript and only 380 typeScript issues...
-
-Providing a common context the roha history model began in March 2025 echoing the common API and intended as a bolt on to the DSPTool project, my DIY computer science system lab / platform.
-
-> maximum prompt length exceeded
-
-Up against the context window of /model 0, my trusted companion DeepSeek, the slop fountain source can still be consumed in single servings.
+> maximum prompt length exceeded - every model ever
 
 ## Researcher Links
 
