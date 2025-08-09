@@ -12,13 +12,14 @@ set owner=%1
 set repo=%2
 set path=nitrologic\%repo%
 
-if exist "%path%" (
+if exist "%path%\.git" (
 	set file_count=0
 	set dir_count=0
 	set total_size=0
 	pushd "%path%"
-	for /f "tokens=1,2,3,4,5" %%i in ('dir /s /-c') do (
+	for /f "tokens=1,2,3,4,5" %%i in ('dir /s /-c /A-D-H') do (
 		if "%%j"=="File(s)" (
+rem	echo Processing: %%i %%j %%k %%l %%m
 			set /a file_count+=%%i
 			set /a total_size+=%%k
 		)
