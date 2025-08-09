@@ -24,7 +24,7 @@ while IFS=, read -r owner repo || [ -n "${owner:-}" ]; do
 	echo "Processing $owner/$repo -> $target"
 
 	# ensure parent exists
-	mkdir -p "$BASE_DIR/$owner"
+	mkdir -p "$BASE_DIR"
 
 	if [ -d "$target/.git" ]; then
 		echo "Existing git repo found, pulling updates..."

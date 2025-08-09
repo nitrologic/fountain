@@ -109,6 +109,5 @@ waveform
 winding
 winmain
 wire
-wizbang
 worldbody
 yaroze

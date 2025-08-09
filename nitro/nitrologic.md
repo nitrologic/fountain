@@ -90,7 +90,6 @@ ninjakiwi: nitrologic/ninjakiwi
 loadrite: nitrologic/loadrite
 fusion: nitrologic/fusion
 nextspace: nitrologic/nextspace
-wizbang: nitrologic/wizbang
 
 unsorted
 

@@ -119,6 +119,7 @@
 1 nitrologic linux delisted and removed - obese does not come close
 2 nitrologic steamstub2 and nitrocircuit delisted - empty repos detected
 3 nitrologic dsptool - case sensitive issue 'bios/README.md' 'bios/readme.md' - fix me
+4 nitrologic boot wizbang
 
 fountain
 
@@ -217,7 +218,6 @@ wasted: nitrologic/wasted
 wire: nitrologic/wire
 stereobasic: nitrologic/stereobasic
 space: nitrologic/space
-wizbang: nitrologic/wizbang
 vector0: nitrologic/vector0
 studio: nitrologic/studio
 nod: nitrologic/nod
