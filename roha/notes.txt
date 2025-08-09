@@ -119,7 +119,7 @@
 1 nitrologic linux delisted and removed - obese does not come close
 2 nitrologic steamstub2 and nitrocircuit delisted - empty repos detected
 3 nitrologic dsptool - case sensitive issue 'bios/README.md' 'bios/readme.md' - fix me
-4 nitrologic boot wizbang
+4 nitrologic boot wizbang kiosk playfab winding
 
 fountain
 

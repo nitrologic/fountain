@@ -76,7 +76,6 @@ mojo3d-vr: nitrologic/mojo3d-vr
 mojolab: nitrologic/mojolab
 mojolabs: nitrologic/mojolabs
 bbcom: nitrologic/bbcom
-monkeylanguageserver: nitrologic/monkeylanguageserver
 libsgd: blitz-research/libsgd
 
 foss
