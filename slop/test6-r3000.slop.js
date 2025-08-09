@@ -19,7 +19,7 @@ import { parseElf, dumpBin } from"./sloptools.js";
 // GPU graphics port
 // ======================================================
 
-const MaxFrame=50;//24000;
+const MaxFrame=0;//50;//24000;
 
 // ======================================================
 // MIPS R3000 SIMULATION AHEAD
@@ -630,7 +630,7 @@ let frameCount=-1;
 
 // --allow-read
 
-const elf=await Deno.readFile("../sandbox/mips1.elf");
+const elf=await Deno.readFile("../sandbox/bin/mips1.elf");
 //const elf=await Deno.readFile("../sandbox/mips2.elf");
 
 //const elf=await Deno.readFile("../slop/test2.elf");

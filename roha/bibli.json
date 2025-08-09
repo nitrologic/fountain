@@ -447,6 +447,12 @@
 					"name":"Ogham",
 					"codes":"ᚁᚂᚃᚄᚅᚆᚇᚈᚉᚊᚋᚌᚍᚎᚏᚐᚑᚒᚓᚔᚕᚖᚗᚘᚙᚚ"
 				},
+				"hue9":{
+					"codes":[
+						"🔴🟠🟡🟢🔵🟣🟤⚫⚪",
+						"🟥🟧🟨🟩🟦🟪🟫⬛⬜"
+					]
+				},
 				"mathalpha": {
 					"name": "Mathematical Alphanumeric Symbols",
 					"block": "Mathematical Alphanumeric Symbols",
