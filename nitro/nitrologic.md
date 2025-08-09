@@ -127,7 +127,6 @@ score: nitrologic/score
 nitro: nitrologic/nitro
 scout: nitrologic/scout
 simon: nitrologic/simon
-winding: nitrologic/winding
 drawline: nitrologic/drawline
 basement: nitrologic/basement
 django-tenants: nitrologic/django-tenants
