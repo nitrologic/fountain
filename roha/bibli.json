@@ -1,6 +1,6 @@
 {
 	"name": "biblispec",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"description": "Bibliographic index of specifications",
 	"status": "A living document of linguistic latitude",
 	"copyright": "(C) 2025 Simon Armstrong",
@@ -15,6 +15,16 @@
 	"moto": "Ⲡⲉⲛⲥⲁϩ ⲉϥϯⲙⲉ ⲙⲙⲟⲛ",
 	"separator": "𓆛𓆜𓆝𓆞𓆟",
 	"spec": {
+		"faces":{
+			"name":"Face on profiles",
+			"profiles":{
+				"animals":"🐨🐼🐸🐰🐭🐯🐱🐶🐵🐥🐷🦧🐺🦊🦝🦁",
+				"masks":"👹👺👻👼👽👾😈💀",
+				"monster":"🧌🧛🧝",
+				"fancy":"🧙‍♂️🧙‍♀️🧚‍♂️🧜‍♂️🧞‍♂️🧟‍♂️🧞‍♀️🧟‍♀️"
+			},
+			"tags": ["face"]
+		},
 		"scales":{
 			"name":"Common Practice Tonality",
 			"tuning":"12-TET",
@@ -506,12 +516,6 @@
 					"name":"Ogham",
 					"creator":"Ogma",
 					"codes":"ᚁᚂᚃᚄᚅᚆᚇᚈᚉᚊᚋᚌᚍᚎᚏᚐᚑᚒᚓᚔᚕᚖᚗᚘᚙᚚ"
-				},
-				"hue9":{
-					"codes":[
-						"🔴🟠🟡🟢🔵🟣🟤⚫⚪",
-						"🟥🟧🟨🟩🟦🟪🟫⬛⬜"
-					]
 				},
 				"ꔀꘟ":{
 					"name":"Vai Syllabary",
