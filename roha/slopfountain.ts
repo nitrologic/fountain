@@ -749,15 +749,21 @@ const doubleStruck={
 	"upper": "𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ",
 	"digits": "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡"
 };
-function latinString(latin, line: string): string {
+const wideLatin={
+	"upper": "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ",
+	"digits": "０１２３４５６７８９",
+	"lower": "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ"
+}
+
+function latinString(latin, line: string, space=thinSpace): string {
 	const upper=Array.from(latin.upper);
 	const digits=Array.from(latin.digits);
 	let out="";
 	for (const ch of line) {
 		const c = ch.charCodeAt(0);
 		if (c >= 48 && c <= 57)  out += digits[c-48];
-		else if (c >= 65 && c <= 90)  out += upper[c-65]+thinSpace;
-		else if (c >= 97 && c <= 122) out += upper[c-97]+thinSpace;
+		else if (c >= 65 && c <= 90)  out += upper[c-65]+space;
+		else if (c >= 97 && c <= 122) out += upper[c-97]+space;
 		else out += ch;
 	}
 	return out;
@@ -765,7 +771,8 @@ function latinString(latin, line: string): string {
 
 function echo_latin(...cells:any):void{
 	const line = cells.map(String).join(' ');
-	outputBuffer.push(latinString(doubleStruck,line));
+	outputBuffer.push(latinString(wideLatin,line,""));
+//	outputBuffer.push(latinString(doubleStruck,line));
 //	outputBuffer.push(latinString(sansBold,line));
 }
 
