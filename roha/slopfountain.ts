@@ -118,7 +118,6 @@ let grokThink=0.0;
 // Ansi codes
 
 const AnsiReset="\x1b[0m";
-
 const AnsiHome="\x1B[H";
 const AnsiCursor="\x1B[";
 const AnsiWhite="\x1b[38;5;255m";

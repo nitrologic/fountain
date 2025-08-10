@@ -1,3 +1,5 @@
+- debounce mutiline blank line paste issue
+- add pricing to tts voice support
 - fix raw mode prompt paste bug
 - auto column width ansi tables, or default to 20
 - alibaba thinking prices
