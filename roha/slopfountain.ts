@@ -11,7 +11,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 
 // Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.3.5";
+const fountainVersion="1.3.6";
 
 const fountainName="fountain "+fountainVersion;
 
@@ -702,6 +702,8 @@ function toString(arg:unknown):string{
 }
 
 // takes both markdown and plain
+// ignores markdown
+// flattens args to single space separated line in outputBuffer
 
 function echo(...args:any):void{
 	const lines=[];
@@ -735,6 +737,36 @@ function echoWarning(...args:any){
 	}
 	const text=ansiStyle(lines.join(" "),"blink",1);
 	outputBuffer.push(text);
+}
+
+// warning non fixed widths in a fixed width world
+const sansBold={
+	"upper": "𝗔𝗕𝗖𝗗𝗘𝗙𝗚𝗛𝗜𝗝𝗞𝗟𝗠𝗡𝗢𝗣𝗤𝗥𝗦𝗧𝗨𝗩𝗪𝗫𝗬𝗭",
+	"lower": "𝗮𝗯𝗰𝗱𝗲𝗳𝗴𝗵𝗶𝗷𝗸𝗹𝗺𝗻𝗼𝗽𝗾𝗿𝘀𝘁𝘂𝘃𝘄𝘅𝘆𝘇",
+	"digits": "𝟬𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵"
+};
+const doubleStruck={
+	"upper": "𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ",
+	"digits": "𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡"
+};
+function latinString(latin, line: string): string {
+	const upper=Array.from(latin.upper);
+	const digits=Array.from(latin.digits);
+	let out="";
+	for (const ch of line) {
+		const c = ch.charCodeAt(0);
+		if (c >= 48 && c <= 57)  out += digits[c-48];
+		else if (c >= 65 && c <= 90)  out += upper[c-65]+thinSpace;
+		else if (c >= 97 && c <= 122) out += upper[c-97]+thinSpace;
+		else out += ch;
+	}
+	return out;
+}
+
+function echo_latin(...cells:any):void{
+	const line = cells.map(String).join(' ');
+	outputBuffer.push(latinString(doubleStruck,line));
+//	outputBuffer.push(latinString(sansBold,line));
 }
 
 function echo_row(...cells:any):void{
@@ -1046,7 +1078,7 @@ async function anthropicStatus(anthropic,flush=false){
 		}else{
 			if(hash.length==64){
 				anthropicStore[hash]=file.id;
-				if(roha.config.verbose) echo("[ANTHROPIC]",file.id,hash);
+				if(roha.config.debugging) echo("[ANTHROPIC]",file.id,hash);
 			}
 		}
 	}
@@ -1935,7 +1967,7 @@ async function promptForge(message:string) {
 				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
 					bytes.push(0x0D, 0x0A);
 					const line=decoder.decode(promptBuffer);
-					const n = encoder.encode(line).length; 
+					const n = encoder.encode(line).length;
 //					let n=line.length;
 					if (n > 0) {
 						promptBuffer=promptBuffer.slice(n);
@@ -3285,7 +3317,8 @@ if (!fileExists) {
 
 // forge lists models from active accounts
 
-echo(rohaTitle,"running from "+rohaPath);
+echo_latin(rohaTitle);
+echo("Running from "+rohaPath);
 
 await flush();
 await readForge();

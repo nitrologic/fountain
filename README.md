@@ -5,7 +5,9 @@
 
 Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM tool
 
-Exposing 294 models from 11 providers the research project Fountain 1.3.5 ⛲ approaches interesting.
+# 🌍🌎🌏🌐
+
+Exposing 294 models from 11 providers the research project Fountain 1.3.6 ⛲ approaches interesting.
 
 > maximum prompt length exceeded - every model ever
 
