@@ -1385,35 +1385,45 @@ async function connectDeepSeek(account,config) {
 	}
 }
 
-// API support for OpenAI
-
+// API support for OpenAI SDK
+function onSpeak(endpoint, apiKey, config) {
+	return async (payload = {}) => {
+		const url = config.url+"/audio/speech";
+		const options={
+			method: "POST",
+			headers: {
+				"Authorization": `Bearer ${apiKey}`,
+				"Content-Type":"application/json",
+				"Accept":"audio/mp3"
+			},
+			body:JSON.stringify(payload)
+		};
+		const response = await fetch(url,options);
+		if(!response.ok){
+			echo("[SPEAK] response not ok",response.statusText);
+			return null;
+		}
+		return new Uint8Array(await response.arrayBuffer());
+	};
+}
 async function connectOpenAI(account,config) {
 	try{
 		const apiKey=getEnv(config.env);
 		const endpoint=new OpenAI({ apiKey, baseURL: config.url });
 		if(roha.config.debugging){
 			debugValue("endpoint",endpoint)
-/*
-			for(const [key, value] of Object.entries(endpoint)){
-				let content=String(value);
-				content=content.replace(/\n/g, " ");
-				content=content.substring(0,30);
-				if(key!="apiKey") echo("[OPENAI] endpoint:"+key+":"+content);
-			}
-*/
 		}
-//		const models2=await listModels(config);
 		const models=await endpoint.models.list();
 		const list=[];
 		for (const model of models.data) {
 			const name=model.id+"@"+account;
 			list.push(name);
-// dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
 			specModel(model,account);
 		}
 		list.sort();
 		endpoint.modelList=list;
 		modelList=modelList.concat(list);
+		endpoint.tts = {speak: onSpeak(endpoint, apiKey, config)};
 		return endpoint;
 	}catch(error){
 		// Error: 429 "Your team ^&*^&^&*^&*
@@ -1499,7 +1509,8 @@ async function aboutModel(modelname){
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
 	if(roha.config.verbose){
-		echo("model:",{id,mut,emoji,rate,limit,modelname,balance,strict,multi,inline});
+		const keys={strict,multi,inline};
+		echo("model:",{id,mut,emoji,rate,limit,modelname,balance,keys});
 	}else{
 		echo("model:",{mut,emoji,rate,limit,balance,modelname});
 	}
@@ -1593,6 +1604,23 @@ async function listSaves(){
 	}
 }
 
+async function saveSpeech(audio: Uint8Array, format: string = "mp3"): Promise<string> {
+	try {
+		const timestamp=Math.floor(Date.now()/1000).toString(16);
+		const filename=("speech-"+timestamp)+"."+format;
+		const filePath=resolve(forgePath,filename);
+		const line="saved "+filename;
+		rohaHistory.push({role:"system",title:"saveSpeech",content:line});
+		await Deno.writeFile(filePath, audio);
+		echo("[FORGE]",line);
+		// roha.forge.push({ name: `speech-${timestamp}`, path: filePath, type: `audio/${format}` });
+		// await writeForge();
+		return filePath;
+	} catch (error) {
+		echo("[FORGE] History save error",error.message);		
+	}
+}
+
 async function saveHistory(name) {
 	try {
 		const timestamp=Math.floor(Date.now()/1000).toString(16);
@@ -1602,7 +1630,7 @@ async function saveHistory(name) {
 //		rohaHistory.push({role:"system",title:"Fountain History Saved",content:line});
 		rohaHistory.push({role:"system",title:"saveHistory",content:line});
 		await Deno.writeTextFile(filePath,JSON.stringify(rohaHistory,null,"\t"));
-		echo(line);
+		echo("[FORGE]",line);
 		roha.saves.push(filename);
 		await writeForge();
 	} catch (error) {
@@ -2370,8 +2398,8 @@ function listShares(shares){
 }
 
 // modelCommand - list table of models
-const modelKeys="📠📷📘";
-const modelKey={"📠":"Tools","📷":"Vision","📘":"Strict"};
+const modelKeys="📠📷📘🔉";
+const modelKey={"📠":"Tools","📷":"Vision","📘":"Strict","🔉":"Speech"};
 async function modelCommand(words){
 	let name=words[1];
 	if(name && name!="all"){
@@ -2403,14 +2431,18 @@ async function modelCommand(words){
 			mutspec.name=modelname;
 			const notes=[...mutspec.notes];
 			if(mutspec.hasForge) notes.push("📠");
-			const rated=modelname in modelSpecs?modelSpecs[modelname]:{};
-			if(rated.cold) notes.push("🧊");
-			if(rated.multi) notes.push("📷");
-			if(rated.strict) notes.push("📘");
-//			if(rated.inline) notes.push("📘");
+			// info is model rated stats
+			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
+			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
+			// tag model key
+			if(info.cold) notes.push("🧊");
+			if(info.multi) notes.push("📷");
+			if(info.strict) notes.push("📘");
+			if(speech) notes.push("🔉");
+//			if(info.inline) notes.push("📘");
 			const seconds=mutspec.created;
 			const created=dateStamp(seconds);
-			const priced=rated.pricing;
+			const priced=info.pricing;
 			// account from modelProvder
 			const modelProvider=modelname.split("@");
 			const provider=modelProvider[1];
@@ -2420,7 +2452,7 @@ async function modelCommand(words){
 			let cheap = priced && priced[0]<3.01;
 			if(!roha.config.budget) cheap=priced;
 			if(cheap || all){
-				const pricing=(rated&&rated.pricing)?stringifyArray(rated.pricing):"";
+				const pricing=(info&&info.pricing)?stringifyArray(info.pricing):"";
 				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
 			}
 		}
@@ -2980,7 +3012,7 @@ async function relay(depth:number) {
 	const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 	const strictMode=info&&info.strict;
 	const multiMode=info&&info.multi;
-	const speech=info&&info.endpoints.includes("v1/audio/speech");
+	const speech=info&&info.endpoints&&info.endpoints.includes("v1/audio/speech");
 //	const inlineMode=info&&info.inline;
 	const modelAccount=grokModel.split("@");
 	const model=modelAccount[0];
@@ -3026,9 +3058,24 @@ async function relay(depth:number) {
 			echo("[RELAY] payload",dump);
 		}
 
+		//[RELAY] unhandled error 404 This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?
+		//[RELAY] Error: 404 This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?
+
+		// TODO: OpenAI TTS support incoming
+		if(speech){
+			const message=payload.messages.at(-1);
+			const packet={input:message.content,model:payload.model,format:"mp3",voice:"alloy"};
+			echo("[SPEAK]",packet);			
+//			Uint8Array
+			const raw=await endpoint.tts.speak(packet);
+			const audioPath=await saveSpeech(raw,"mp3");
+			echo("[SPEAK]",audioPath);
+			open(audioPath);
+			return spend;
+		}
+
 		// [RELAY] endpoint chat completions.create
 		// this call can throw from DeepSeek API
-
 		const completion=await endpoint.chat.completions.create(payload);
 		elapsed=(performance.now()-now)/1000;
 

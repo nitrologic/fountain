@@ -1,3 +1,17 @@
+/*
+			for(const [key, value] of Object.entries(endpoint)){
+				let content=String(value);
+				content=content.replace(/\n/g, " ");
+				content=content.substring(0,30);
+				if(key!="apiKey") echo("[OPENAI] endpoint:"+key+":"+content);
+			}
+*/
+//		const models2=await listModels(config);
+// dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
+// API support for OpenAI  ?? "alloy" ?? "mp3"
+// {format:"mp3",voice:"alloy"}
+
+
 "quad-plain":{
 	"emoji":"🞎❑❐▣◢◣◤◥◧◨◩◪"
 },
