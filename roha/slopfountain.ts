@@ -3466,7 +3466,7 @@ echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
 
-open("mims.pdf")
+if (roha.config.debugging) open("mims.pdf")
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes);
 echo(birds);
