@@ -1,6 +1,6 @@
 {
 	"name": "biblispec",
-	"version": "1.1.2",
+	"version": "1.1.4",
 	"description": "Bibliographic index of specifications",
 	"status": "A living document of linguistic latitude",
 	"copyright": "(C) 2025 Simon Armstrong",
@@ -54,32 +54,78 @@
 				"intervals": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 			}
 		},
-		"pheme":{
-			"pre61": {
-				"science18": "electro helio chrono cosmo crypto dendro etymo geo glotto graph hydr patho pheno rheu seismo speleo techno topo",
-				"nature13": "aero agro eco entom ichthyo litho meteo morpho myco nepho paleo zoo zo",
-				"body12": "angio cardio dermato gastro hemato histo neuro noso odonto osteo phreno",
-				"human11": "anthro archaeo biblio bio crimino dem ethno onco orni psycho socio",
-				"meta7": "astro eno hiero philo pomo theo vexillo"
+		"glagolitic": {
+			"name": "Glagolitic",
+			"block": "Glagolitic",
+			"range": ["U+2C00", "U+2C5F"],
+			"description": "Slavic script (9th century), created by Cyril and Methodius.",
+			"alphabet": {
+				"upper": "ⰀⰁⰂⰃⰄⰅⰆⰇⰈⰉⰊⰋⰌⰍⰎⰏⰐⰑⰒⰓⰔⰕⰖⰗⰘⰙⰚⰛⰜⰝⰞⰟⰠⰡⰢⰣⰤⰥⰦⰧⰨⰩⰪⰫⰬⰭⰮⰯ",
+				"lower": "ⰰⰱⰲⰳⰴⰵⰶⰷⰸⰹⰺⰻⰼⰽⰾⰿⱀⱁⱂⱃⱄⱅⱆⱇⱈⱉⱊⱋⱌⱍⱎⱏⱐⱑⱒⱓⱔⱕⱖⱗⱘⱙⱚⱛⱜⱝⱞⱟ",
+				"numerals": "ⰁⰂⰃⰄⰅⰆⰇⰈⰉⰊⰋⰌⰍⰎⰏⰐⰑⰒⰓⰔⰕⰖⰗⰘⰙⰚⰛ"
 			},
-			"suff28":{
-				"aca14": "graphy iatry logia metry nomy ology onymy scopy sophia tics cracy ist ics etics",
-				"etc14": "al ance ence ese ism ity oid ous ty ure y archy pathy phile"
+			"lingua": {
+				"core": "ⰁⰎⰀⰃⰑⰔⰎⰑⰂⰡⰐⰠ",
+				"transliteration": {
+					"ⰁⰎⰀⰃⰑⰔⰎⰑⰂⰡⰐⰠ": "Blagoslavěnĭ",
+					"ⰔⰎⰑⰂⰑ": "Slovo",
+					"ⰜⰋⰔⰕⰠ": "Čistĭ"
+				}
+			},
+			"tags": ["slavic", "medieval", "liturgical"]
+		},
+		"linear_b": {
+			"name": "Linear B",
+			"block": "Linear B",
+			"alphabet": {
+				"codes": "𐀀𐀁𐀂𐀃𐀄𐀅𐀆𐀇𐀈𐀉𐀊𐀋𐀍𐀎𐀏𐀐𐀑𐀒𐀓𐀔𐀕𐀖𐀗𐀘𐀙𐀚𐀛𐀜𐀝𐀞𐀟𐀠𐀡𐀢𐀣𐀤𐀥𐀦𐀨𐀩𐀪𐀫𐀬𐀭𐀮𐀯𐀰𐀱𐀲𐀳𐀴𐀵𐀶𐀷𐀸𐀹𐀺𐀼𐀽𐀿",
+				"picto1": "𐂀𐂁𐂂𐂃𐂄𐂅𐂆𐂇𐂈𐂉𐂊𐂋𐂌𐂍𐂎𐂏𐂐𐂑𐂒𐂕𐂖𐂗𐂚𐂛𐂜𐂝𐂞𐂟𐂠𐂡𐂢𐂣𐂥𐂦𐂧𐂨𐂩𐂪𐂫𐂬𐂭𐂮𐂯𐂰𐂱𐂲𐂳𐂴𐂵𐂶𐂷𐂸𐂹𐂺𐂻𐂼𐂽𐂾𐂿𐃀𐃁𐃂𐃃𐃄",
+				"picto2": "𐃅𐃆𐃇𐃈𐃉𐃊𐃋𐃌𐃍𐃎𐃏𐃐𐃑𐃓𐃔𐃕𐃖𐃗𐃘𐃙𐃚𐃛𐃜𐃝𐃞𐃟𐃠𐃡𐃢𐃣𐃤𐃥𐃦𐃧𐃨𐃩𐃪𐃫𐃬𐃭𐃮𐃯𐃰𐃱𐃲𐃳𐃴𐃵𐃶𐃷𐃸𐃹𐃺"
+			},
+			"range": ["U+10000", "U+1007F"],
+			"description": "Syllabic script for Mycenaean Greek (1450 BCE).",
+			"tags": ["ancient", "greek", "syllabary"],
+			"syllabary": {
+				"a": "𐀀", "e": "𐀁", "i": "𐀂", "o": "𐀃", "u": "𐀄",
+				"da": "𐀅", "de": "𐀆", "di": "𐀇", "do": "𐀈", "du": "𐀉",
+				"ja": "𐀊", "je": "𐀋", "jo": "𐀍", "ju": "𐀎",
+				"ka": "𐀏", "ke": "𐀐", "ki": "𐀑", "ko": "𐀒", "ku": "𐀓",
+				"ma": "𐀔", "me": "𐀕", "mi": "𐀖", "mo": "𐀗", "mu": "𐀘",
+				"na": "𐀙", "ne": "𐀚", "ni": "𐀛", "no": "𐀜", "nu": "𐀝",
+				"pa": "𐀞", "pe": "𐀟", "pi": "𐀠", "po": "𐀡", "pu": "𐀢",
+				"qa": "𐀣", "qe": "𐀤", "qi": "𐀥", "qo": "𐀦",
+				"ra": "𐀨", "re": "𐀩", "ri": "𐀪", "ro": "𐀫", "ru": "𐀬",
+				"sa": "𐀭", "se": "𐀮", "si": "𐀯", "so": "𐀰", "su": "𐀱",
+				"ta": "𐀲", "te": "𐀳", "ti": "𐀴", "to": "𐀵", "tu": "𐀶",
+				"wa": "𐀷", "we": "𐀸", "wi": "𐀹", "wo": "𐀺",
+				"za": "𐀼", "ze": "𐀽", "zo": "𐀿"
+			},
+			"ideograms": {
+				"tripod": "𐃆",
+				"spear": "𐃐",
+				"man": "𐂂",
+				"woman": "𐂃",
+				"horse": "𐂄",
+				"olive": "𐂕",
+				"wine": "𐂈",
+				"chariot": "𐃏",
+				"sheep": "𐃉",
+				"grain": "𐃒",
+				"figs": "𐃔",
+				"cloth": "𐃗",
+				"bronze": "𐃘",
+				"gold": "𐃙",
+				"b146": "𐂞",
+				"b140 bronze": "𐂚"
 			}
 		},
 		"phoenician": {
 			"name": "Phoenician",
-			"description": "Ancient Semitic abjad used by the Phoenicians for trade and inscriptions, precursor to Hebrew, Greek, and Latin alphabets, written right-to-left.",
-			"alphabet": {
-				"letters": {
-					"codes": "𐤀𐤁𐤂𐤃𐤄𐤅𐤆𐤇𐤈𐤉𐤊𐤋𐤌𐤍𐤎𐤏𐤐𐤑𐤒𐤓𐤔𐤕",
-					"name": "Phoenician Letters",
-					"block": "Phoenician",
-					"category": "Lo",
-					"codePoints": ["U+10900", "U+1091F"],
-					"range": [67840, 67871],
-					"usage": "Consonantal alphabet for the Phoenician language, used in Mediterranean inscriptions."
-				}
+			"description": "Ancient Semitic abjad used by the Phoenicians for trade and inscriptions, written right-to-left.",
+			"codePoints": ["U+10900", "U+1091F"],
+			"range": [67840, 67871],
+			"alphabet":{
+				"abjad":"𐤀𐤁𐤂𐤃𐤄𐤅𐤆𐤇𐤈𐤉𐤊𐤋𐤌𐤍𐤎𐤏𐤐𐤑𐤒𐤓𐤔𐤕"
 			},
 			"lingua": {
 				"core": "alef bet gimel dalet he waw zayin het",
@@ -93,7 +139,6 @@
 			"name": "Hebrew",
 			"description": "Semitic script, abjad layout with Unicode vowel points",
 			"alphabet": {
-					"lower": "אבגדהוזחטיכלמנסעפצקרשת",
 					"upper": "אבגדהוזחטיכלמנסעפצקרשת",
 					"uncommon": "ךםןףץ"
 			},
@@ -171,8 +216,7 @@
 			"description": "Indigenous language of Aotearoa, Latin script, macrons for long vowels.",
 			"alphabet": {
 				"lower": "aāeēhikmnoprtuw",
-				"upper": "AĀEĒHIKMNOPRTUW",
-				"uncommon": ""
+				"upper": "AĀEĒHIKMNOPRTUW"
 			}
 		},
 		"unicode": {

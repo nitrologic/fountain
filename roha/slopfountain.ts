@@ -13,7 +13,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 
 const fountainVersion="1.3.6";
 
-const fountainName="fountain "+fountainVersion;
+const fountainName="Fountain "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
 
@@ -266,7 +266,11 @@ function parseBibli(){
 		const keys = Object.keys(item);
 		echo(tag,index,keys.join(" "));
 		if(item.alphabet){
-			echo(tag+" alphabet:",item.alphabet);
+			for(const index in item.alphabet){
+				const codes=item.alphabet[index];
+				echo(tag,index,codes);
+			}
+//			echo(tag+" alphabet:",item.alphabet);
 		}
 		if(item.lexis){
 			const blocks=Object.keys(item.lexis);
@@ -758,12 +762,13 @@ const wideLatin={
 function latinString(latin, line: string, space=thinSpace): string {
 	const upper=Array.from(latin.upper);
 	const digits=Array.from(latin.digits);
+	const lower=Array.from(latin.lower)||upper;
 	let out="";
 	for (const ch of line) {
 		const c = ch.charCodeAt(0);
 		if (c >= 48 && c <= 57)  out += digits[c-48];
 		else if (c >= 65 && c <= 90)  out += upper[c-65]+space;
-		else if (c >= 97 && c <= 122) out += upper[c-97]+space;
+		else if (c >= 97 && c <= 122) out += lower[c-97]+space;
 		else out += ch;
 	}
 	return out;
@@ -1825,7 +1830,7 @@ function mdToAnsi(md) {
 	// yuck - duplicate path way from above
 	if(table.length) {
 		insertTable(result,table);
-		echo("[TABLE] inserted",table.length)
+		if(roha.config.debugging) echo("[TABLE] inserted",table.length)
 		table.length=0;
 	}
 	result.push(AnsiReset);
