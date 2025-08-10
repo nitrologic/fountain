@@ -121,19 +121,19 @@
 		},
 		"phoenician": {
 			"name": "Phoenician",
-			"description": "Ancient Semitic abjad used by the Phoenicians for trade and inscriptions, written right-to-left.",
+			"description": "Ancient Semitic abjad used by the Phoenicians for trade and inscriptions.",
+			"notes": "Abjad system with 22 consonants.",
 			"codePoints": ["U+10900", "U+1091F"],
 			"range": [67840, 67871],
 			"alphabet":{
-				"abjad":"𐤀𐤁𐤂𐤃𐤄𐤅𐤆𐤇𐤈𐤉𐤊𐤋𐤌𐤍𐤎𐤏𐤐𐤑𐤒𐤓𐤔𐤕"
+				"upper":"𐤀𐤁𐤂𐤃𐤄𐤅𐤆𐤇𐤈𐤉𐤊𐤋𐤌𐤍𐤎𐤏𐤐𐤑𐤒𐤓𐤔𐤕"
 			},
 			"lingua": {
 				"core": "alef bet gimel dalet he waw zayin het",
 				"verbs": "ktb (write), qn (acquire), bny (build)",
-				"concepts": "yam (sea), mlk (king), bt (house)",
-				"notes": "Abjad system with 22 consonants; no vowel notation. Influenced Greek and subsequent alphabets."
+				"concepts": "yam (sea), mlk (king), bt (house)"
 			},
-			"tags": ["semitic", "abjad", "phoenician", "mediterranean", "alphabetic", "ancient"]
+			"tags": ["right-to-left", "RTL", "semitic", "abjad", "phoenician", "mediterranean", "alphabetic", "ancient"]
 		},
 		"hebrew": {
 			"name": "Hebrew",
@@ -166,8 +166,8 @@
 			"name": "Coptic",
 			"description": "Final stage of Egyptian, written with Greek-derived script",
 			"alphabet": {
-				"lower": "ⲁⲃⲅⲇⲉⲋⲍⲏⲑⲓⲕⲗⲙⲛⲝⲟⲡⲣⲥⲧⲩⲫⲯⲱ",
 				"upper": "ⲀⲂⲄⲆⲈⲊⲌⲎⲐⲒⲔⲖⲘⲚⲜⲞⲠⲢⲤⲦⲨⲪⲮⲰ",
+				"lower": "ⲁⲃⲅⲇⲉⲋⲍⲏⲑⲓⲕⲗⲙⲛⲝⲟⲡⲣⲥⲧⲩⲫⲯⲱ",
 				"extras": "ϢϤϦϨϪϬϮ"
 			}
 		},
@@ -175,8 +175,8 @@
 			"name": "Greek",
 			"description": "Greek linguistic roots and Unicode characters",
 			"alphabet": {
-				"lower": "αβγδεζηθικλμνξοπρστυφχψω",
 				"upper": "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ",
+				"lower": "αβγδεζηθικλμνξοπρστυφχψω",
 				"uncommon": "ϝϛϟϡϣϥϧϩϫϭϯϰϱϲϳ"
 			},
 			"lingua": {
@@ -195,8 +195,8 @@
 			"name": "Latin",
 			"description": "Latin linguistic roots and Unicode characters",
 			"alphabet": {
-				"lower": "abcdefghijklmnopqrstuvwxyz",
 				"upper": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+				"lower": "abcdefghijklmnopqrstuvwxyz",
 				"uncommon": "ÆæŒœÞþÐðƷʒȜȝ"
 			},
 			"lingua": {
@@ -215,8 +215,8 @@
 			"name": "Te Reo Māori",
 			"description": "Indigenous language of Aotearoa, Latin script, macrons for long vowels.",
 			"alphabet": {
-				"lower": "aāeēhikmnoprtuw",
-				"upper": "AĀEĒHIKMNOPRTUW"
+				"upper": "AĀEĒHIKMNOPRTUW",
+				"lower": "aāeēhikmnoprtuw"
 			}
 		},
 		"unicode": {

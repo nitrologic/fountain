@@ -266,9 +266,10 @@ function parseBibli(){
 		const keys = Object.keys(item);
 		echo(tag,index,keys.join(" "));
 		if(item.alphabet){
-			for(const index in item.alphabet){
-				const codes=item.alphabet[index];
-				echo(tag,index,codes);
+			for (const [key, codes] of Object.entries(item.alphabet)) {
+//			for(const index in item.alphabet){
+//				const codes=item.alphabet[index];
+				echo(tag,key,codes);
 			}
 //			echo(tag+" alphabet:",item.alphabet);
 		}
