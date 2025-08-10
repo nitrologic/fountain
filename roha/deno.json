@@ -1,7 +1,7 @@
 {
 	"tasks":{
 		"hello": "deno run slophello.ts",
-		"slopfountain": "deno run --allow-net --allow-env --allow-read --allow-write=./forge slopfountain.ts",
+		"slopfountain": "deno run --allow-run --allow-net --allow-env --allow-read --allow-write=./forge slopfountain.ts",
 		"slopresponse": "deno run --allow-net --allow-env --allow-sys --allow-read slopresponse.ts",
 		"slopshop": "deno run --allow-net --allow-env --allow-sys --allow-read slopshop.ts",
 		"slopnet": "deno run --allow-net --allow-env --allow-sys --allow-read slopnet.ts",

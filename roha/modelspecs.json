@@ -1,4 +1,10 @@
 {
+	"gpt-4o-mini-tts@openai":{
+		"pricing":[0.60,12.0],
+		"purpose":"gpt-5",
+		"endpoints":["v1/audio/speech"],
+		"modality":[["text"],["audio"]]
+	},
 	"gpt-5-2025-08-07@openai":{
 		"pricing":[1.25,0.125,10.0],
 		"purpose":"gpt-5"

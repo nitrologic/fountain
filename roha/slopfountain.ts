@@ -9,6 +9,8 @@ import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 
+import open from 'jsr:@rdsq/open';
+
 // Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
 
 const fountainVersion="1.3.6";
@@ -206,8 +208,9 @@ function dateStamp(seconds:number){
 	}
 	return "---";
 }
-
-const thinSpace=" ";
+const spaces=" ​‌‍";//hair, 0 non joiner, joiner
+const thinSpace="​‌‍";//" ";
+const hairSpace=" ";
 function padChars(text:string):string{
 	return [...text].join(thinSpace);
 }
@@ -264,7 +267,7 @@ function parseBibli(){
 	for(const index in bibli.spec){
 		const item=bibli.spec[index];
 		const keys = Object.keys(item);
-		echo(tag,index,keys.join(" "));
+		echo_bold(tag,index,keys.join(" "));
 		if(item.alphabet){
 			for (const [key, codes] of Object.entries(item.alphabet)) {
 //			for(const index in item.alphabet){
@@ -763,7 +766,7 @@ const wideLatin={
 function latinString(latin, line: string, space=thinSpace): string {
 	const upper=Array.from(latin.upper);
 	const digits=Array.from(latin.digits);
-	const lower=Array.from(latin.lower)||upper;
+	const lower=latin.lower?Array.from(latin.lower):upper;
 	let out="";
 	for (const ch of line) {
 		const c = ch.charCodeAt(0);
@@ -777,9 +780,15 @@ function latinString(latin, line: string, space=thinSpace): string {
 
 function echo_latin(...cells:any):void{
 	const line = cells.map(String).join(' ');
-	outputBuffer.push(latinString(wideLatin,line,""));
+//	outputBuffer.push(latinString(wideLatin,line,""));
 //	outputBuffer.push(latinString(doubleStruck,line));
-//	outputBuffer.push(latinString(sansBold,line));
+	outputBuffer.push(latinString(sansBold,line));
+}
+
+function echo_bold(...cells:any):void{
+	const line = cells.map(String).join(' ');
+	const text=ansiStyle(line,"bold",3);
+	outputBuffer.push(text);
 }
 
 function echo_row(...cells:any):void{
@@ -2961,6 +2970,9 @@ function inlineHistory(history){
 // warning - tool_calls resolved with recursion
 // endpoints may provide alternative implementations of completions - watch for bugs
 
+// https://platform.openai.com/docs/api-reference/audio/createSpeech
+const voices=["alloy","ash","ballad","coral","echo","fable","onyx","nova","sage","shimmer","verse"];
+const fomats=["mp3","opus","aac","flac","wav","pcm"]
 async function relay(depth:number) {
 	const debugging=roha.config.debugging&&roha.config.verbose;
 	const now=performance.now();
@@ -2968,6 +2980,7 @@ async function relay(depth:number) {
 	const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 	const strictMode=info&&info.strict;
 	const multiMode=info&&info.multi;
+	const speech=info&&info.endpoints.includes("v1/audio/speech");
 //	const inlineMode=info&&info.inline;
 	const modelAccount=grokModel.split("@");
 	const model=modelAccount[0];
@@ -3452,6 +3465,8 @@ let termSize = Deno.consoleSize();
 echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
+
+open("mims.pdf")
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes);
 echo(birds);
