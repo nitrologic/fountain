@@ -535,7 +535,6 @@ function listHistory(){
 	const size=unitString(total,4,"B");
 	echo("History size",size);
 }
-
 function logHistory(){
 	const wide=terminalColumns;
 	let history=rohaHistory;
@@ -1399,7 +1398,7 @@ function onSpeak(endpoint, apiKey, config) {
 		};
 		const response = await fetch(url,options);
 		if(!response.ok){
-			echo("[SPEAK] response not ok",response.statusText);
+			echo("[SAY] response not ok",response.statusText);
 			return null;
 		}
 		return new Uint8Array(await response.arrayBuffer());
@@ -1611,12 +1610,12 @@ async function saveSpeech(audio: Uint8Array, format: string = "mp3"): Promise<st
 		const line="saved "+filename;
 		rohaHistory.push({role:"system",title:"saveSpeech",content:line});
 		await Deno.writeFile(filePath, audio);
-		echo("[FORGE]",line);
+		echo("[SAY]",line);
 		// roha.forge.push({ name: `speech-${timestamp}`, path: filePath, type: `audio/${format}` });
 		// await writeForge();
 		return filePath;
 	} catch (error) {
-		echo("[FORGE] History save error",error.message);		
+		echo("[SAY] Speech save error",error.message);
 	}
 }
 
@@ -2396,9 +2395,54 @@ function listShares(shares){
 	shareList=list;
 }
 
+
+// const defaultVoice="gpt-4o-mini-tts@openai"
+// https://platform.openai.com/docs/api-reference/audio/createSpeech
+// model # 62 model: {"id":0,"mut":"gpt-4o-mini-tts","emoji":"🌐","rate":[0.6,12],"limit":0,
+// "modelname":"gpt-4o-mini-tts@openai","balance":"$-2.4927","keys":{"strict":false,"multi":false,"inline":false}}
+
+const voices=["alloy","ash","ballad","coral","echo","fable","onyx","nova","sage","shimmer","verse"];
+const fomats=["mp3","opus","aac","flac","wav","pcm"]
+
+const defaultVoice={
+	name:"alloy",
+	format:"mp3",
+	model:"gpt-4o-mini-tts@openai"
+};
+async function say(text:string){
+	const voice=defaultVoice;
+	const modelProvider=voice.model.split("@");
+	const modelname=modelProvider[0];
+	const provider=modelProvider[1];
+	const endpoint=rohaEndpoint[provider];
+	if(!endpoint.tts){
+		echo("[SAY] no tts on endpoint",provider);
+		return;
+	}
+	const packet={input:text,model:modelname,format:voice.format,voice:voice.name};
+//	echo("[SPEAK]",packet);
+	const raw=await endpoint.tts.speak(packet);
+	if(raw){
+		const audioPath=await saveSpeech(raw,"mp3");
+		echo("[SAY]",audioPath);
+		open(audioPath);
+	}else{
+		echo("[SAY] endpoint tts speak failure",packet);
+	}
+}
+
+async function sayCommand(words){
+	const messages=rohaHistory;
+	const message=messages.at(-1);
+//	echo("[SAY] ",message);
+	await say(message.content);
+}
+
 // modelCommand - list table of models
+
 const modelKeys="📠📷📘🔉";
 const modelKey={"📠":"Tools","📷":"Vision","📘":"Strict","🔉":"Speech"};
+
 async function modelCommand(words){
 	let name=words[1];
 	if(name && name!="all"){
@@ -2561,6 +2605,10 @@ async function callCommand(command:string) {
 				break;
 			case "time":
 				echo("Current time:", new Date().toString());
+				break;
+			case "say":
+				await sayCommand(words);
+				echo(":)");
 				break;
 			case "log":
 				logHistory();
@@ -3001,9 +3049,6 @@ function inlineHistory(history){
 // warning - tool_calls resolved with recursion
 // endpoints may provide alternative implementations of completions - watch for bugs
 
-// https://platform.openai.com/docs/api-reference/audio/createSpeech
-const voices=["alloy","ash","ballad","coral","echo","fable","onyx","nova","sage","shimmer","verse"];
-const fomats=["mp3","opus","aac","flac","wav","pcm"]
 async function relay(depth:number) {
 	const debugging=roha.config.debugging&&roha.config.verbose;
 	const now=performance.now();
@@ -3064,7 +3109,7 @@ async function relay(depth:number) {
 		if(speech){
 			const message=payload.messages.at(-1);
 			const packet={input:message.content,model:payload.model,format:"mp3",voice:"alloy"};
-			echo("[SPEAK]",packet);			
+			echo("[SPEAK]",packet);
 //			Uint8Array
 			const raw=await endpoint.tts.speak(packet);
 			const audioPath=await saveSpeech(raw,"mp3");

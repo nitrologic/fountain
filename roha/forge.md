@@ -77,6 +77,10 @@ Provides a quick overview of chat history.
 
 Dumps context onto poorly formatted wall.
 
+### /say
+
+Produce audible speech from previous or specified text.
+
 ### /cd
 
 Change the working directory. 
