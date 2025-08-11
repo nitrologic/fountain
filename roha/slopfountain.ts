@@ -919,7 +919,6 @@ async function geminiSay(content:string){
     };
 	const reply = await model.generateContent(packet);
 	if(reply.response.candidates){
-		echo("[GEMINI]",reply.response.candidates.length);
 		for(const candidate of reply.response.candidates){
 			if (candidate.content&&candidate.content.parts){
 				for(const part of candidate.content.parts){
@@ -928,7 +927,8 @@ async function geminiSay(content:string){
 						const mimeType=part.inlineData.mimeType;
 						const audioBuffer=decodeBase64(audioData);
 						echo("[GEMINI] inlineData",mimeType,audioBuffer.length);
-						await saveGeminiSpeech(audioBuffer,mimeType);
+						const filename=await saveGeminiSpeech(audioBuffer,mimeType);
+						open(filename);
 					}
 				}
 			}
