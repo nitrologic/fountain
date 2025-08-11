@@ -13,10 +13,9 @@ import open from 'jsr:@rdsq/open';
 
 // Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.3.6";
-
+const fountainVersion="1.3.7";
+const thinSpace="​‌‍";
 const fountainName="Fountain "+fountainVersion;
-
 const defaultModel="deepseek-chat@deepseek";
 
 const terminalColumns=100;
@@ -207,9 +206,7 @@ function dateStamp(seconds:number){
 	}
 	return "---";
 }
-const spaces=" ​‌‍";//hair, 0 non joiner, joiner
-const thinSpace="​‌‍";//" ";
-const hairSpace=" ";
+
 function padChars(text:string):string{
 	return [...text].join(thinSpace);
 }
@@ -2395,21 +2392,24 @@ function listShares(shares){
 	shareList=list;
 }
 
+// OpenAI voice support
 
-// const defaultVoice="gpt-4o-mini-tts@openai"
-// https://platform.openai.com/docs/api-reference/audio/createSpeech
-// model # 62 model: {"id":0,"mut":"gpt-4o-mini-tts","emoji":"🌐","rate":[0.6,12],"limit":0,
-// "modelname":"gpt-4o-mini-tts@openai","balance":"$-2.4927","keys":{"strict":false,"multi":false,"inline":false}}
+const GeminiVoices=["Zephyr","Puck","Charon","Kore","Fenrir","Leda","Orus","Aoede",
+	"Callirrhoe","Autonoe","Enceladus","Iapetus","Umbriel","Algieba","Despina","Erinome",
+	"Algenib","Rasalgethi","Laomedeia","Achernar","Alnilam","Schedar","Gacrux","Pulcherrima",
+	"Achird","Zubenelgenubi","Vindemiatrix","Sadachbia","Sadaltager","Sulafat"];
 
-const voices=["alloy","ash","ballad","coral","echo","fable","onyx","nova","sage","shimmer","verse"];
-const fomats=["mp3","opus","aac","flac","wav","pcm"]
+const OpenAIVoices=["alloy","ash","ballad","coral","echo","fable","onyx","nova","sage","shimmer","verse"];
+
+const OpenAIFormats=["mp3","opus","aac","flac","wav","pcm"]
 
 const defaultVoice={
 	name:"alloy",
 	format:"mp3",
 	model:"gpt-4o-mini-tts@openai"
 };
-async function say(text:string){
+
+async function gptSay(text:string){
 	const voice=defaultVoice;
 	const modelProvider=voice.model.split("@");
 	const modelname=modelProvider[0];
@@ -2431,11 +2431,13 @@ async function say(text:string){
 	}
 }
 
+// gemini-2.5-flash-tts
+
 async function sayCommand(words){
 	const messages=rohaHistory;
 	const message=messages.at(-1);
 //	echo("[SAY] ",message);
-	await say(message.content);
+	await gptSay(message.content);
 }
 
 // modelCommand - list table of models
@@ -2454,16 +2456,6 @@ async function modelCommand(words){
 	}else{
 		echoKey(modelKey,100);
 		echo_row("id","☐","model","account","🧮","📆","💰",modelKeys);
-		echo_row(
-			"-----",
-			"--",
-			"--------------------------",
-			"------------",
-			"-----",
-			"------------",
-			"---  ----  ---- ---",
-			"---------"
-		);
 		const all=(name && name=="all");
 		for(let i=0;i<modelList.length;i++){
 			const modelname=modelList[i];

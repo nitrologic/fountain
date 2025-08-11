@@ -1,3 +1,104 @@
+const transcript = await ai.models.generateContent({
+   model: "gemini-2.0-flash",
+   contents: "Generate a short transcript around 100 words that reads like it was clipped from a podcast by excited herpetologists. The hosts names are Dr. Anya and Liam.",
+   })
+
+const response = await ai.models.generateContent({
+   model: "gemini-2.5-flash-preview-tts",
+   contents: transcript,
+   config: {
+	responseModalities: ['AUDIO'],
+	speechConfig: {
+	   multiSpeakerVoiceConfig: {
+		speakerVoiceConfigs: [
+			 {
+			   speaker: "Dr. Anya",
+			   voiceConfig: {
+				prebuiltVoiceConfig: {voiceName: "Kore"},
+			   }
+			},
+			{
+			   speaker: "Liam",
+			   voiceConfig: {
+				prebuiltVoiceConfig: {voiceName: "Puck"},
+			  }
+			}
+		    ]
+		  }
+		}
+	}
+  });
+}
+// ..JavaScript code for exporting .wav file for output audio
+
+await main();
+
+
+Gemini 2.5 Flash Preview TTS
+Gemini 2.5 Pro Preview TTS
+
+
+
+export const GEMINI_TTS_VOICES = ["Zephyr","Puck","Charon","Kore","Fenrir","Leda","Orus","Aoede","Callirrhoe","Autonoe","Enceladus","Iapetus","Umbriel","Algieba","Despina","Erinome","Algenib","Rasalgethi","Laomedeia","Achernar","Alnilam","Schedar","Gacrux","Pulcherrima","Achird","Zubenelgenubi","Vindemiatrix","Sadachbia","Sadaltager","Sulafat"] as const;
+
+const result = await model.generateContent({
+  contents: [{ role: "user", parts: [{ text: "Hello from Gemini TTS!" }] }],
+  generationConfig: {
+    responseMimeType: "audio/mp3", // or audio/wav, audio/ogg, etc.
+    speechConfig: {
+	voiceConfig: {
+	  voiceName: "Puck", // try "Kore", "Puck", "Charon" etc.
+	}
+    }
+  }
+});
+
+// Result contains binary audio data in base64
+const audioBase64 = result.response.candidates[0].content.parts[0].inlineData.data;
+
+// Save to file
+await Deno.writeFile(
+  "output.mp3",
+  Uint8Array.from(atob(audioBase64), c => c.charCodeAt(0))
+);
+
+console.log("Saved output.mp3");
+
+model: {"id":0,"mut":"gemini-2.5-flash-tts","emoji":"🌟","rate":[],"limit":0,"modelname":"models/gemini-2.5-flash-preview-tts@gemini","balance":"$-1.7031","keys":{"strict":false,"multi":false,"inline":false}}
+> hi gemini
++
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_paid_tier_input_token_count","quotaId":"GenerateContentPaidTierInputTokensPerModelPerMinute","quotaDimensions":{"location":"global","model":"gemini-2.5-flash-tts"},"quotaValue":"10000"}]},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"47s"}]
+>
+
+// -PlayAI
+
+const groqEnglishVoices = [
+  "Arista", "Atlas", "Basil", "Briggs", "Calum",
+  "Celeste", "Cheyenne", "Chip", "Cillian", "Deedee",
+  "Fritz", "Gail", "Indigo", "Mamaw", "Mason",
+  "Mikail", "Mitch", "Quinn", "Thunder"
+  // Add the remaining 7 if/when documented
+];
+
+const groqArabicVoices = ["Ahmad", "Amira", "Khalid", "Nasser"];
+
+function listGroqVoices() {
+  echo("English Voices (playai-tts):");
+  groqEnglishVoices.forEach((voice, index) => echo(`${index + 1}. ${voice}`));
+
+  echo("\nArabic Voices (playai-tts-arabic):");
+  groqArabicVoices.forEach((voice, index) => echo(`${index + 1}. ${voice}`));
+}
+
+
+
+
+// const defaultVoice="gpt-4o-mini-tts@openai"
+// https://platform.openai.com/docs/api-reference/audio/createSpeech
+// model # 62 model: {"id":0,"mut":"gpt-4o-mini-tts","emoji":"🌐","rate":[0.6,12],"limit":0,
+// "modelname":"gpt-4o-mini-tts@openai","balance":"$-2.4927","keys":{"strict":false,"multi":false,"inline":false}}
+
+
 			if(line.includes(AnsiPasteStart)){
 				echo("[ANSI] paste begin");
 			}
@@ -29,12 +130,12 @@ console.log(AnsiBracketedPasteEnable);
 	"emoji":"🞎❑❐▣◢◣◤◥◧◨◩◪"
 },
 
-# ꔀ ꔁ ꔂ ꔃ ꔄ ꔅ ꔆ ꔇ ꔈ ꔉ ꔊ ꔋ ꔌ ꔍ ꔎ ꔏ ꔐ ꔑ ꔒ ꔓ ꔔ ꔕ ꔖ ꔗ ꔘ ꔙ ꔚ ꔛ 
-# ꔜ ꔝ ꔞ. ꔟ ꔠ ꔡ ꔢ ꔣ ꔤ ꔥ ꔦ ꔧ ꔨ ꔩ ꔪ ꔫ ꔬ ꔭ ꔮ ꔯ ꔰ ꔱ ꔲ ꔳ ꔴ ꔵ ꔶ ꔷ 
+# ꔀ ꔁ ꔂ ꔃ ꔄ ꔅ ꔆ ꔇ ꔈ ꔉ ꔊ ꔋ ꔌ ꔍ ꔎ ꔏ ꔐ ꔑ ꔒ ꔓ ꔔ ꔕ ꔖ ꔗ ꔘ ꔙ ꔚ ꔛ
+# ꔜ ꔝ ꔞ. ꔟ ꔠ ꔡ ꔢ ꔣ ꔤ ꔥ ꔦ ꔧ ꔨ ꔩ ꔪ ꔫ ꔬ ꔭ ꔮ ꔯ ꔰ ꔱ ꔲ ꔳ ꔴ ꔵ ꔶ ꔷ
 
 ꔸꔹꔺꔻꔼꔽꔾꔿꕀꕁꕂꕃꕄꕅꕆꕇꕈꕉꕊꕋꕌꕍꕎꕏꕐꕑꕒꕓꕔꕕꕖꕗꕘꕙꕚꕛꕜꕝꕞꕟꕠꕡꕢꕣꕤꕥꕦꕧꕨꕩꕪꕫꕬꕭꕮꕯꕰꕱꕲꕳꕴꕵꕶꕷꕸꕹꕺꕻꕼꕽꕾꕿꖀꖁꖂꖃꖄꖅꖆꖇꖈꖉꖊꖋꖌꖍꖎꖏꖐꖑꖒꖓꖔꖕꖖꖗꖘꖙꖚꖛꖜꖝꖞꖟꖠꖡꖢꖣꖤꖥꖦꖧꖨꖩꖪꖫꖬꖭꖮꖯꖰꖱꖲꖳꖴꖵꖶꖷꖸꖹꖺꖻꖼꖽꖾꖿꗀꗁꗂꗃꗄꗅꗆꗇꗈꗉꗊꗋꗌꗍꗎꗏꗐꗑꗒꗓꗔꗕꗖꗗꗘꗙꗚꗛꗜꗝꗞꗟꗠꗡꗢꗣꗤꗥꗦꗧꗨꗩꗪꗫꗬꗭꗮꗯꗰꗱꗲꗳꗴꗵꗶꗷꗸꗹꗺꗻꗼꗽꗾꗿꘀꘁꘂꘃꘄꘅꘆꘇꘈꘉꘊꘋꘌ꘍꘎꘏ꘐꘑꘒꘓꘔꘕꘖꘗꘘꘙꘚꘛꘜꘝꘞꘟ",
 
-ꔞ. 
+ꔞ.
 
 𝖠𝖡𝖢𝖣𝖤𝖥𝖦𝖧𝖨𝖩𝖪𝖫𝖬𝖭𝖮𝖯𝖰𝖱𝖲𝖳𝖴𝖵𝖶𝖷𝖸𝖹
 𝖺𝖻𝖼𝖽𝖾𝖿𝗀𝗁𝗂𝗃𝗄𝗅𝗆𝗇𝗈𝗉𝗊𝗋𝗌𝗍𝗎𝗏𝗐𝗑𝗒𝗓
@@ -300,7 +401,7 @@ freeaudio: nitrologic/freeaudio
 
 𝐀𝐁
 
-## Viscera 
+## Viscera
 
 # 𓄲 𓄳 𓄴 𓄵 𓄶 𓄷
 
@@ -353,7 +454,7 @@ function boxCell(width,array){
 The current local time is 7/08/2025, 9:02:20 AM (Pacific/Auckland timezone). Let me know if
 you'd like to test anything else!
 {account:deepseek,spent:0.0001,balance:-0.2219}
- fountain 1.3.4 ⛲  deepseek-chat 🐋 deepseek-chat@deepseek 1.0° 🪣 $0.000 509B 3.53s 
+ fountain 1.3.4 ⛲  deepseek-chat 🐋 deepseek-chat@deepseek 1.0° 🪣 $0.000 509B 3.53s
 [RELAY] calls in progress 0 223
 [RELAY] processToolCalls call_0_02120a7f-2cba-46f2-b9d6-647539824a8a {"index":0,"id":"call_0_02120a7f-2cba-46f2-b9d6-647539824a8a","type":"function","function":{"name":"read_time","arguments":"{}"}}
 item
@@ -366,9 +467,9 @@ item
 // TODO: use hash for file name to solve duplicates
 // TODO: connect await anthropicStatus(sdk); to standard API Status endpoint
 
-//Oops. rate_limit_error This request would exceed the rate limit for your organization (58fe2390-2bb6-4c31-9a42-525531a73246) of 30,000 input tokens per minute. 
-//For details, refer to: https://docs.anthropic.com/en/api/rate-limits. You can see the response headers for current usage. 
-// Please reduce the prompt length or the maximum tokens requested, or try again later. 
+//Oops. rate_limit_error This request would exceed the rate limit for your organization (58fe2390-2bb6-4c31-9a42-525531a73246) of 30,000 input tokens per minute.
+//For details, refer to: https://docs.anthropic.com/en/api/rate-limits. You can see the response headers for current usage.
+// Please reduce the prompt length or the maximum tokens requested, or try again later.
 // You may also contact sales at https://www.anthropic.com/contact-sales to discuss your options for a rate limit increase.
 
 // how to limit 30,000 input tokens per minute?
@@ -1210,7 +1311,7 @@ export function parseElf1(elfData,ram) {
 
 
 ELF Header:
-  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00 
+  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
   Class:                             ELF32
   Data:                              2's complement, little endian
   Version:                           1 (current)
@@ -3127,23 +3228,23 @@ console.log(blits.join(""));
 {
   "hieroglyph": {
     "base": {
-      "description": "Egyptian Hieroglyph A001 (Seated Man)",
-      "codepoint": "U+13000",
-      "character": "𓀀"
+	"description": "Egyptian Hieroglyph A001 (Seated Man)",
+	"codepoint": "U+13000",
+	"character": "𓀀"
     },
     "variants": [
-      {
+	{
 	"rotation": "90 degrees",
 	"variation_selector": "VS1",
 	"codepoint": "U+13000 U+FE00",
 	"character_sequence": "𓀀︀"
-      },
-      {
+	},
+	{
 	"rotation": "180 degrees",
 	"variation_selector": "VS2",
 	"codepoint": "U+13000 U+FE01",
 	"character_sequence": "𓀀︁"
-      }
+	}
     ]
   }
 

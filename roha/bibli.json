@@ -15,6 +15,32 @@
 	"moto": "Ⲡⲉⲛⲥⲁϩ ⲉϥϯⲙⲉ ⲙⲙⲟⲛ",
 	"separator": "𓆛𓆜𓆝𓆞𓆟",
 	"spec": {
+		"BCP47": {
+			"ar-EG": "Arabic (Egyptian)",
+			"de-DE": "German (Germany)",
+			"en-US": "English (US)",
+			"es-US": "Spanish (US)",
+			"fr-FR": "French (France)",
+			"hi-IN": "Hindi (India)",
+			"id-ID": "Indonesian (Indonesia)",
+			"it-IT": "Italian (Italy)",
+			"ja-JP": "Japanese (Japan)",
+			"ko-KR": "Korean (Korea)",
+			"pt-BR": "Portuguese (Brazil)",
+			"ru-RU": "Russian (Russia)",
+			"nl-NL": "Dutch (Netherlands)",
+			"pl-PL": "Polish (Poland)",
+			"th-TH": "Thai (Thailand)",
+			"tr-TR": "Turkish (Turkey)",
+			"vi-VN": "Vietnamese (Vietnam)",
+			"ro-RO": "Romanian (Romania)",
+			"uk-UA": "Ukrainian (Ukraine)",
+			"bn-BD": "Bengali (Bangladesh)",
+			"en-IN": "English (India)",
+			"mr-IN": "Marathi (India)",
+			"ta-IN": "Tamil (India)",
+			"te-IN": "Telugu (India)"
+		},
 		"faces":{
 			"name":"Face on profiles",
 			"profiles":{
