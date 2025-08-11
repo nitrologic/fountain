@@ -1,3 +1,83 @@
+// "role":"model"},
+// "finishReason":"STOP","index":0}],
+// "usageMetadata":{"promptTokenCount":8,
+// "candidatesTokenCount":71,"totalTokenCount":79,
+// "promptTokensDetails":[{"modality":"TEXT","tokenCount":8}],
+// "candidatesTokensDetails":[{"modality":"AUDIO","tokenCount":71}]},
+// "modelVersion":"gemini-2.5-flash-preview-tts",
+// "responseId":"pFqZaMfNB6-Iz7IPza_ksAc"
+
+
+//	return response;
+/*
+	const model=genAI.getGenerativeModel({model:GeminiFlashTTS});
+	echo("[GEMINI] model",model);
+	const request = {
+		contents: [{
+			role: "user",
+			parts: [{ text: content }],
+		}],
+		generationConfig: {responseMimeType: "audio/mp3"}
+	};
+	try{
+		const response = await model.generateContent(request);
+		const audioData = response?.candidates?.[0]?.content?.parts?.[0]?.audio;
+	//if (!audioData) {throw new Error("No audio data found in response");}
+		echo("[GEMINI] Audio Data", audioData);
+		return audioData; // Return base64-encoded audio or audio URL
+	} catch (error) {
+		console.error("[GEMINI] Error:", error.message);
+		throw error;
+	}
+}
+*/
+
+//	const request = {model: GeminiFlashTTS,contents: [{ role: "user", parts: [{ content }] }],};
+//	const transcript=await model.generateContent(request);
+//	const text = transcript?.candidates?.[0]?.content?.parts?.[0]?.text;
+//	echo("[GEMINI] Say",text)
+
+/*
+	if (!generatedText) throw new Error("Failed to generate text");
+	const model=genAI.getGenerativeModel({model:GeminiFlashTTS});
+	const transcript = await genAI.models.generateContent({model:GeminiFlashTTS,contents:text});
+	const prompt={
+		model: "gemini-2.5-flash-preview-tts",
+		contents: transcript,
+		config: {
+			responseModalities: ['AUDIO'],
+			speechConfig: {
+				multiSpeakerVoiceConfig: {
+					speakerVoiceConfigs: [
+						{
+							speaker: "Dr. Anya",
+							voiceConfig: {
+								prebuiltVoiceConfig: {voiceName: "Kore"},
+							}
+						},
+						{
+							speaker: "Liam",
+							voiceConfig: {
+								prebuiltVoiceConfig: {voiceName: "Puck"},
+							}
+						}
+					]
+				}
+			}
+		}
+	};
+	const response = await genAI.models.generateContent(prompt);
+}
+*/
+
+
+model: {"id":0,"mut":"gemini-2.5-flash-tts","emoji":"🌟","rate":[],"limit":0,"modelname":
+"models/gemini-2.5-flash-preview-tts@gemini","balance":"$-1.7031","keys":{"strict":false,"multi":false,"inline":false}}
+> hi gemini
++
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent: [400 Bad Request] Multiturn chat is not enabled for models/gemini-2.5-flash-preview-tts
+>
+
 const transcript = await ai.models.generateContent({
    model: "gemini-2.0-flash",
    contents: "Generate a short transcript around 100 words that reads like it was clipped from a podcast by excited herpetologists. The hosts names are Dr. Anya and Liam.",

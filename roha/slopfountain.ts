@@ -8,6 +8,7 @@ import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
+import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 
 import open from 'jsr:@rdsq/open';
 
@@ -895,6 +896,88 @@ async function listModels(config){
 }
 
 // API support for gemini
+
+// https://ai.google.dev/gemini-api/docs/speech-generation
+
+const previewTTS="models/gemini-2.5-flash-preview-tts";
+
+async function geminiSay(content:string){
+	const endpoint=rohaEndpoint["gemini"];
+	const apiKey=endpoint.apiKey;
+	const genAI=new GoogleGenerativeAI(apiKey);
+	const model = genAI.getGenerativeModel({ model: previewTTS });
+    const packet = {
+      contents: [{parts: [{ text: content }],},],
+      generationConfig: {
+        responseModalities: ["AUDIO"],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: {voiceName: "Kore"},
+          },
+        },
+      },
+    };
+	const reply = await model.generateContent(packet);
+	if(reply.response.candidates){
+		echo("[GEMINI]",reply.response.candidates.length);
+		for(const candidate of reply.response.candidates){
+			if (candidate.content&&candidate.content.parts){
+				for(const part of candidate.content.parts){
+					if(part.inlineData){
+						const audioData=part.inlineData.data;
+						const mimeType=part.inlineData.mimeType;
+						const audioBuffer=decodeBase64(audioData);
+						echo("[GEMINI] inlineData",mimeType,audioBuffer.length);
+						await saveGeminiSpeech(audioBuffer,mimeType);
+					}
+				}
+			}
+		}
+	}else{
+		echo("[GEMINI]",reply);
+	}
+}
+
+async function saveGeminiSpeech(audio: Uint8Array, mimeType:string): Promise<string> {
+	// expecting audio/L16;codec=pcm;rate=24000
+	const format:string = "wav";
+	const timestamp=Math.floor(Date.now()/1000).toString(16);
+	const filename=("speech-"+timestamp)+"."+format;
+	const filePath=resolve(forgePath,filename);
+	const line="saved "+filename;
+	rohaHistory.push({role:"system",title:"saveSpeech",content:line});
+// Create a WAV header (44 bytes)
+	const header = new Uint8Array(44);
+	const view = new DataView(header.buffer);
+// RIFF chunk descriptor
+	view.setUint32(0, 0x52494646, false); // "RIFF"
+	view.setUint32(4, 36 + audio.length, true); // File size - 8
+	view.setUint32(8, 0x57415645, false); // "WAVE"
+// Format subchunk
+	view.setUint32(12, 0x666d7420, false); // "fmt "
+	view.setUint32(16, 16, true); // Subchunk size (16 for PCM)
+	view.setUint16(20, 1, true); // Audio format (1 = PCM)
+	view.setUint16(22, 1, true); // Channels (1 = mono)
+	view.setUint32(24, 24000, true); // Sample rate (16kHz)
+	view.setUint32(28, 24000 * 2, true); // Byte rate (sample rate * bytes per sample)
+	view.setUint16(32, 2, true); // Block align (channels * bytes per sample)
+	view.setUint16(34, 16, true); // Bits per sample (16-bit)
+// Data subchunk
+	view.setUint32(36, 0x64617461, false); // "data"
+	view.setUint32(40, audio.length, true); // Data size
+// Combine header and audio data
+	const wavBytes = new Uint8Array(header.length + audio.length);
+	wavBytes.set(header, 0);
+	wavBytes.set(audio, header.length);
+	try {
+		await Deno.writeFile(filePath, wavBytes);
+		echo("[SAY]", line);
+		return filePath;
+	} catch (error) {
+		echo("[SAY] Speech save error", error.message);
+		throw error; // Re-throw to handle the error upstream
+	}
+}
 
 // https://ai.google.dev/gemini-api/docs/text-generation
 
@@ -2431,13 +2514,12 @@ async function gptSay(text:string){
 	}
 }
 
-// gemini-2.5-flash-tts
-
 async function sayCommand(words){
 	const messages=rohaHistory;
 	const message=messages.at(-1);
 //	echo("[SAY] ",message);
-	await gptSay(message.content);
+//	await gptSay(message.content);
+	await geminiSay(message.content);
 }
 
 // modelCommand - list table of models
