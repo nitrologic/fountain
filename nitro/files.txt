@@ -57,7 +57,6 @@ nano
 nextspace
 ninjakiwi
 nitro
-nitrocircuit
 nitroclient
 nitrodocs
 nitrojs

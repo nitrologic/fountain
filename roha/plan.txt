@@ -1,3 +1,4 @@
+- copy button on code blocks - trim source - tabs not space
 - debounce mutiline blank line paste issue
 - add pricing to tts voice support
 - fix raw mode prompt paste bug

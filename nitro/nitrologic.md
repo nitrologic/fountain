@@ -156,6 +156,5 @@ uae: nitrologic/uae
 nitrojs: nitrologic/nitrojs
 emu: nitrologic/emu
 nitroclient: nitrologic/nitroclient
-nitrocircuit: nitrologic/nitrocircuit
 nitrodocs: nitrologic/nitrodocs
 abc: nitrologic/abc

@@ -9,6 +9,7 @@ Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM too
 
 # 🔇🔈🔉🔊
 
+# ꕶꕷꗟꖘꗇꗈ ꔬꔭꔻꔼꔰꔷꔹ
 
 Exposing 294 models from 11 providers the research project Fountain 1.3.6 ⛲ approaches interesting.
 

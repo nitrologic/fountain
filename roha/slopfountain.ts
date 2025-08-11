@@ -2459,7 +2459,6 @@ function readable(text){
 	return text;
 }
 
-
 function listShares(shares){
 	const list=[];
 	let count=0;
@@ -2789,7 +2788,7 @@ async function callCommand(command:string) {
 					const stat=await Deno.stat(path);
 					const tag="";//await promptForge("Enter tag name (optional):");
 					if(stat.isDirectory){
-						echo("Share directory path:",path);
+						echo("Share directory <shallow> path:",path);
 						// TODO: add depth>1
 						await shareDir(path,tag,1,1);
 						await writeForge();
