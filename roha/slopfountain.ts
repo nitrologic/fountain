@@ -15,7 +15,7 @@ import open from 'jsr:@rdsq/open';
 
 // Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.3.7";
+const fountainVersion="1.3.8";
 const thinSpace="​‌‍";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
@@ -1088,14 +1088,14 @@ async function connectGoogleVoice(){
 		geminiSpeechClient = new TextToSpeechClient(apiKey);
 		if(geminiSpeechClient){
 			echo("[GCLOUD] speech client is up but not authenticated");
-/*			
+/*
 			const result=[];
 			const response=await geminiSpeechClient.listVoices();
 			for (const voice of response.voices) {
 				result.push(voice.name+" "+JSON.stringify(voice));
 			}
 			echo("[GOOGLE] voices\n\t",result.join("\n\t"));
-*/			
+*/
 		}
 	} catch (error) {
 		console.error("connectGoogleVoice error:",error.message);
@@ -1106,7 +1106,7 @@ async function connectGoogleVoice(){
 let geminiCallCount=0;
 
 async function connectGoogle(account,config){
-	await connectGoogleVoice();
+//	await connectGoogleVoice();
 	try{
 		const baseURL=config.url;
 		const apiKey=getEnv(config.env);
@@ -2380,6 +2380,66 @@ function listTags(){
 		list.push(name);
 	}
 	tagList=list;
+}
+async function clipText(text: string): Promise<void> {
+	if (typeof text !== "string") {
+		throw new Error("Input must be a string");
+	}
+	let clipCmd: string;
+	let args: string[] = [];
+	let encodedText: Uint8Array;
+	// Determine the clipboard command and encoding based on the operating system
+	switch (Deno.build.os) {
+		case "darwin":
+			clipCmd = "pbcopy";
+			args = [];
+			encodedText = new TextEncoder().encode(text); // UTF-8 for macOS
+			break;
+		case "windows":
+			clipCmd = "clip";
+			args = [];
+			// Convert to UTF-16LE with BOM for Windows
+			const encoder = new TextEncoder();
+			const textBuffer = encoder.encode(text); // Encode to UTF-8 first
+			const utf16le = new Uint8Array(text.length * 2 + 2); // Allocate for UTF-16LE (2 bytes per char) + BOM
+			utf16le[0] = 0xFF; // BOM: FF FE for UTF-16LE
+			utf16le[1] = 0xFE;
+			// Convert UTF-8 to UTF-16LE
+			let offset = 2;
+			for (let i = 0; i < text.length; i++) {
+				const charCode = text.charCodeAt(i);
+				utf16le[offset++] = charCode & 0xFF;
+				utf16le[offset++] = (charCode >> 8) & 0xFF;
+			}
+			encodedText = utf16le;
+			break;
+//			const utf16le = new Uint8Array(encoder.encode(text).buffer,0,text.length * 2);
+//			encodedText = new Uint8Array([0xFF, 0xFE, ...utf16le]);
+		case "linux":
+			clipCmd = "xclip";
+			args = ["-selection", "clipboard"];
+			encodedText = new TextEncoder().encode(text); // UTF-8 for Linux
+			break;
+		default:
+			throw new Error(`Unsupported platform: ${Deno.build.os}`);
+	}
+	try {
+		const process = Deno.run({cmd: [clipCmd, ...args],stdin: "piped",stdout: "piped",stderr: "piped",});
+		await process.stdin.write(encodedText);
+		process.stdin.close();
+		const status = await process.status();
+		if (!status.success) {
+			const stderr = await process.stderrOutput();
+			const errorText = new TextDecoder().decode(stderr);
+			throw new Error(`Failed to copy to clipboard: ${errorText}`);
+		}
+		process.close();
+	} catch (err) {
+		if (err instanceof Deno.errors.NotFound) {
+			throw new Error(`Clipboard command '${clipCmd}' not found. Ensure it is installed.`);
+		}
+		throw err;
+	}
 }
 
 async function openWithDefaultApp(path) {
@@ -3671,6 +3731,9 @@ if (roha.config.debugging) open("mims.pdf")
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes);
 echo(birds);
+
+// test birds on clipboard
+await clipText(birds);
 
 if(roha.config.listenonstart){
 	listenService();

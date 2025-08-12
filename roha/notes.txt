@@ -1,3 +1,219 @@
+async function clipTex5(text: string): Promise<void> {
+  // Ensure text is a string
+  if (typeof text !== "string") {
+    throw new Error("Input must be a string");
+  }
+
+  // Convert text to UTF-8 encoded bytes
+  const utf8Text = new TextEncoder().encode(text);
+
+  let clipCmd: string;
+  let args: string[] = [];
+
+  // Determine the clipboard command based on the operating system
+  switch (Deno.build.os) {
+    case "darwin":
+      clipCmd = "pbcopy";
+      args = [];
+      break;
+    case "windows":
+      clipCmd = "clip";
+      args = [];
+      break;
+    case "linux":
+      clipCmd = "xclip";
+      args = ["-selection", "clipboard"];
+      break;
+    default:
+      throw new Error(`Unsupported platform: ${Deno.build.os}`);
+  }
+
+  try {
+    // Check if the command exists (optional, but improves robustness)
+    await Deno.run({ cmd: [clipCmd, "--version"], stdout: "null", stderr: "null" }).status();
+
+    // Spawn the process to copy text to the clipboard
+    const process = Deno.run({
+      cmd: [clipCmd, ...args],
+      stdin: "piped",
+      stdout: "piped",
+      stderr: "piped",
+    });
+
+    // Write the UTF-8 encoded text to the process's stdin
+    await process.stdin.write(utf8Text);
+    process.stdin.close();
+
+    // Wait for the process to complete and check its status
+    const status = await process.status();
+
+    if (!status.success) {
+      const stderr = await process.stderrOutput();
+      const errorText = new TextDecoder().decode(stderr);
+      throw new Error(`Failed to copy to clipboard: ${errorText}`);
+    }
+
+    // Clean up
+    process.close();
+  } catch (err) {
+    if (err instanceof Deno.errors.NotFound) {
+      throw new Error(`Clipboard command '${clipCmd}' not found. Ensure it is installed.`);
+    }
+    throw err;
+  }
+}
+function clipText4(text) {
+	const utf8Text = Buffer.from(text, 'utf8').toString('utf8');
+	let clipCmd;
+	if (process.platform === 'darwin') {
+			clipCmd = 'pbcopy';
+	} else if (process.platform === 'win32') {
+			clipCmd = 'clip';
+	} else {
+			clipCmd = 'xclip -selection clipboard';
+	}
+
+	const { spawn } = require('child_process');
+	const proc = spawn(clipCmd, [], {
+			shell: true,
+			stdio: ['pipe', 'pipe', 'pipe']
+	});
+
+	// Write UTF-8 encoded text to stdin
+	proc.stdin.write(utf8Text, 'utf8');
+	proc.stdin.end();
+
+	proc.on('error', (err) => {
+			console.error('Clipboard error:', err);
+	});
+}
+
+async function clipText3(text: string): Promise<void> {
+	const isWindows = Deno.build.os === "windows";
+	if (isWindows) {
+		let process;
+		try {
+			process = Deno.run({cmd: ["cmd", "/c", "echo", text, "|", "clip"], stdin: "piped", stdout: "null", stderr: "null"});
+			const textEncoder = new TextEncoder();
+			await process.stdin.write(textEncoder.encode(text));
+			process.stdin.close();
+			const status = await process.status();
+			if (!status.success) throw new Error("Failed to copy text to clipboard");
+		} catch (error) {
+			console.error("Clipboard error:", error.message);
+			throw error;
+		} finally {
+			if (process) process.close();
+		}
+	} else {
+		throw new Error("Clipboard copy is only implemented for Windows");
+	}
+}
+
+async function clipText2(text: string): Promise<void> {
+	const isWindows = Deno.build.os === "windows";
+	if (isWindows) {
+		try {
+			const args={cmd: ["cmd", "/c", "echo", text, "|", "clip"], stdin: "piped", stdout: "null", stderr: "null"};
+			const process = await Deno.run(args).status();
+			const textEncoder = new TextEncoder();
+			await process.stdin.write(textEncoder.encode(text));
+			process.stdin.close();
+			if (!process.success) throw new Error("Failed to copy text to clipboard");
+		} catch (error) {
+			console.error("Clipboard error:", error.message);
+			throw error;
+		} finally {
+			process?.close();
+		}
+	} else {
+		throw new Error("Clipboard copy is only implemented for Windows");
+	}
+}
+
+
+
+{                                                                                                                                                                                                      
+        "audio-ic": {                                                                                                                                                                                  
+                "7400 Series": {                                                                                                                                                                       
+                        "manufacturer": "Texas Instruments/Fairchild",                                                                                                                                 
+                        "year": 1964,                                                                                                                                                                  
+                        "description": "TTL Logic Gates used to build oscillators in early games like Pong."                                                                                           
+                },                                                                                                                                                                                     
+                "NE555 Timer IC": {                                                                                                                                                                    
+                        "manufacturer": "Signetics",                                                                                                                                                   
+                        "year": 1971,                                                                                                                                                                  
+                        "description": "Pong's core sound generator. Versatile astable multivibrator for square-wave tones (e.g., 500-1000 Hz beeps)."                                                 
+                },                                                                                                                                                                                     
+                "3262 Timing Generator": {                                                                                                                                                             
+                        "manufacturer": "Fairchild",                                                                                                                                                   
+                        "year": 1972,                                                                                                                                                                  
+                        "description": "Video sync generator for display timing, used in early arcade tech."                                                                                           
+                },                                                                                                                                                                                     
+                "MC1408 DAC": {                                                                                                                                                                        
+                        "manufacturer": "Motorola",                                                                                                                                                    
+                        "year": 1976,                                                                                                                                                                  
+                        "description": "8-bit Digital-to-Analog Converter used in TRS-80 Color Computer for basic waveform sound generation."                                                          
+                },                                                                                                                                                                                     
+                "SN76477": {                                                                                                                                                                           
+                        "manufacturer": "Texas Instruments",                                                                                                                                           
+                        "year": 1978,                                                                                                                                                                  
+                        "description": "Complex Sound Generator chip with noise, envelope, and VCO; used in Space Invaders for effects."                                                               
+                },                                                                                                                                                                                     
+                "AY-3-8910": {                                                                                                                                                                         
+                        "manufacturer": "General Instrument",                                                                                                                                          
+                        "year": 1978,                                                                                                                                                                  
+                        "description": "Programmable Sound Generator with 3 square-wave channels; popular in arcades, MSX, and ZX Spectrum."                                                           
+                },                                                                                                                                                                                     
+                "MC1377": {                                                                                                                                                                            
+                        "manufacturer": "Motorola",                                                                                                                                                    
+                        "year": 1979,                                                                                                                                                                  
+                        "description": "Synced TV signals, indirectly gating audio via horizontal/vertical blanks."                                                                                    
+                },                                                                                                                                                                                     
+                "POKEY": {                                                                                                                                                                             
+                        "manufacturer": "Atari",                                                                                                                                                       
+                        "year": 1979,                                                                                                                                                                  
+                        "description": "Pot Keyboard Integrated Circuit for sound and input; used in Atari 8-bit computers with 4 voices and distortion effects."                                      
+                },                                                                                                                                                                                     
+                "MC6883 SAM": {                                                                                                                                                                        
+                        "manufacturer": "Motorola",                                                                                                                                                    
+                        "year": 1980,                                                                                                                                                                  
+                        "description": "Synchronous Address Multiplexer in TRS-80 CoCo; handled timing for 6-bit DAC audio output."                                                                    
+                },                                                                                                                                                                                     
+                "SP0256": {                                                                                                                                                                            
+                        "manufacturer": "General Instrument",                                                                                                                                          
+                        "year": 1980,                                                                                                                                                                  
+                        "description": "Allophone-based speech synthesizer; used in Intellivision and early educational toys for voice effects."                                                       
+                },                                                                                                                                                                                     
+                "TMS9919": {                                                                                                                                                                           
+                        "manufacturer": "Texas Instruments",                                                                                                                                           
+                        "year": 1981,                                                                                                                                                                  
+                        "description": "Sound chip with 3 tones + noise channel; powered TI-99/4A home computer audio."                                                                                
+                },                                                                                                                                                                                     
+                "SID": {                                                                                                                                                                               
+                        "manufacturer": "MOS Technology",                                                                                                                                              
+                        "year": 1982,                                                                                                                                                                  
+                        "description": "Sound Interface Device with 3 voices, programmable waveforms, filters, and ADSR envelopes; iconic in Commodore 64."                                            
+                },                                                                                                                                                                                     
+                "ULA (ZX Spectrum)": {                                                                                                                                                                 
+                        "manufacturer": "Ferranti",                                                                                                                                                    
+                        "year": 1982,                                                                                                                                                                  
+                        "description": "Custom Uncommitted Logic Array; handled basic beeper sound via single-channel square waves in early ZX Spectrum."                                              
+                }                                                                                                                                                                                      
+        }                                                                                                                                                                                              
+} 
+
+
+"audio-ic":{
+	"7400 Series",{
+		"manufacturer":"Texas Instruments/Fairchild",
+		"introduced":1960
+	}
+NE555 Timer IC (Signetics, 1971): Pong's core sound generator.
+Motorola's MC1377 (later '70s) synced TV signals
+Fairchild's 3262 Timing Generator 
+
+
 rem	echo Processing: %%i %%j %%k %%l %%m
 rem set /a file_count+=%%i
 rem set /a total_size+=%%k
