@@ -1,5 +1,7 @@
 @echo off
+chcp 65001 >nul
 setlocal EnableDelayedExpansion
+echo nitrologic clone repos ꘏ Fountain 1.3.7 ⛲  gpt-5-mini 🌐
 echo Cloning repositories.
 for /f "tokens=1,2 delims=," %%a in (nitro_repos.csv) do (
     call :clone %%a %%b

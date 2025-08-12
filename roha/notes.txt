@@ -1,3 +1,23 @@
+import { PollyClient, SynthesizeSpeechCommand } from "https://esm.sh/@aws-sdk/client-polly";
+const pollyClient = new PollyClient({region:"us-east-1" });
+async function pollySay(text: string) {
+	const command = new SynthesizeSpeechCommand({Text: text,OutputFormat: "mp3",VoiceId: "Joanna"});
+	try {
+		const response = await pollyClient.send(command);
+		console.log("Speech synthesized successfully!");  
+	} catch (error) {
+		console.error("Error synthesizing speech:", error);
+	}
+}
+pollySay("hello world");
+
+// import AWS from "npm:aws-sdk";
+// const client = new AWS.S3({ region: "eu-west-3" });
+
+//const response = await client.createBucket({Bucket: "<unique_bucket_name">}).promise();
+//console.log(response);
+
+
 const GPTVoices2=["breeze","cove","ember","juniper","sky"];
 
 
@@ -650,7 +670,6 @@ waveform: nitrologic/waveform
 itouch: nitrologic/itouch
 touch: nitrologic/touch
 postphysics: nitrologic/postphysics
-ammo.js: nitrologic/ammo.js
 voxel-model: nitrologic/voxel-model
 acid: nitrologic/acid
 asmcoder: nitrologic/asmcoder

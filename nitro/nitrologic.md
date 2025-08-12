@@ -118,7 +118,6 @@ waveform: nitrologic/waveform
 itouch: nitrologic/itouch
 touch: nitrologic/touch
 postphysics: nitrologic/postphysics
-ammo.js: nitrologic/ammo.js
 voxel-model: nitrologic/voxel-model
 acid: nitrologic/acid
 asmcoder: nitrologic/asmcoder

@@ -1,7 +1,8 @@
-chcp 65001 >nul
-echo nitrologic refresh ꘏ Fountain 1.3.7 ⛲  gpt-5-mini 🌐
 @echo off
 setlocal
+chcp 65001 >nul
+echo nitrologic refresh repos [%date% %time%]
+echo ꘏ Fountain 1.3.7 ⛲ deepseek-chat 🐋 gpt-5-mini 🌐
 set count=0
 for /D %%D in ("nitrologic\*") do (
 	if exist "%%D\.git" (
@@ -16,6 +17,8 @@ for /D %%D in ("nitrologic\*") do (
 )
 echo Updated %count% repos.
 endlocal
+
+:: origin  https://github.com/nitrologic/abc.git (push)
 
 :: simple version
 :: for /D %%D in ("nitrologic\*") do pushd "%%D" && git pull && popd

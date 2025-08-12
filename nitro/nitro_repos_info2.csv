@@ -63,8 +63,6 @@ nitrologic,waveform,yes,https://github.com/nitrologic/mobstar.git
 nitrologic,itouch,yes,https://github.com/nitrologic/waveform.git
 nitrologic,touch,yes,https://github.com/nitrologic/itouch.git
 nitrologic,postphysics,yes,https://github.com/nitrologic/touch.git
-nitrologic,ammo.js,yes,https://github.com/nitrologic/postphysics.git
-nitrologic,voxel-model,yes,https://github.com/nitrologic/ammo.js.git
 nitrologic,acid,yes,https://github.com/nitrologic/voxel-model.git
 nitrologic,asmcoder,yes,https://github.com/nitrologic/acid.git
 nitrologic,diversity,yes,https://github.com/nitrologic/asmcoder.git
