@@ -697,7 +697,6 @@ simon: nitrologic/simon
 winding: nitrologic/winding
 drawline: nitrologic/drawline
 basement: nitrologic/basement
-django-tenants: nitrologic/django-tenants
 geom: nitrologic/geom
 glTF: nitrologic/glTF
 acidpd: nitrologic/acidpd

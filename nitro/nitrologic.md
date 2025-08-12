@@ -19,16 +19,20 @@ https://github.com/nitrologic
 48 public
 63 private
 
+## forked
+
+ammo.js voxel-model linux libcec collada2 django-tenants
+gltf nitrotoken monkey2 uae blitzmax-dpi-denial
 
 ## disorder
 
 ### fountain
 
 - fountain: nitrologic/fountain
-- forge: nitrologic/forge
-- foundry: nitrologic/foundry
-- roha: nitrologic/roha
 - biblispec: nitrologic/biblispec
+- forge: nitrologic/forge *
+- foundry: nitrologic/foundry *
+- roha: nitrologic/roha *
 
 ### studio
 
@@ -109,7 +113,6 @@ nitrologic: nitrologic/nitrologic
 plainview: nitrologic/plainview
 acid8: nitrologic/acid8
 worldbody: nitrologic/worldbody
-deno: denoland/deno
 bbarchives: nitrologic/bbarchives
 skidnz: nitrologic/skidnz
 plainhost: nitrologic/plainhost
@@ -136,7 +139,6 @@ scout: nitrologic/scout
 simon: nitrologic/simon
 drawline: nitrologic/drawline
 basement: nitrologic/basement
-django-tenants: nitrologic/django-tenants
 geom: nitrologic/geom
 acidpd: nitrologic/acidpd
 axe.mod: nitrologic/axe.mod
