@@ -5,6 +5,7 @@
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
+import { TextToSpeechClient } from "npm:@google-cloud/text-to-speech";
 
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
@@ -1073,9 +1074,34 @@ function prepareGeminiContent(payload){
 	return request;
 }
 
+let geminiSpeechClient=null;
+
+async function connectGoogleVoice(){
+	const apiKey=getEnv("GOOGLE_CLOUD_KEY");
+	try{
+//		geminiSpeechClient = new TextToSpeechClient({key:apiKey});
+		geminiSpeechClient = new TextToSpeechClient(apiKey);
+		if(geminiSpeechClient){
+			echo("[GCLOUD] speech client is up but not authenticated");
+//			const response=await geminiSpeechClient.listVoices();
+/*			
+			const result=[];
+			for (const voice of response.voices) {
+				result.push(voice.name+" "+JSON.stringify(voice));
+			}
+			echo("[GOOGLE] voices\n\t",result.join("\n\t"));
+*/			
+		}
+	} catch (error) {
+		console.error("connectGoogleVoice error:",error.message);
+		return null;
+	}
+}
+
 let geminiCallCount=0;
 
 async function connectGoogle(account,config){
+	await connectGoogleVoice();
 	try{
 		const baseURL=config.url;
 		const apiKey=getEnv(config.env);
@@ -2784,6 +2810,7 @@ async function callCommand(command:string) {
 					listShare();
 				}else{
 					const filename=words.slice(1).join(" ");
+					// TODO: DOS resolvePath does not correct improperly cased filenames
 					const path=resolvePath(Deno.cwd(), filename);
 					const stat=await Deno.stat(path);
 					const tag="";//await promptForge("Enter tag name (optional):");
