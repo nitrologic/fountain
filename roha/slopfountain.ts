@@ -16,9 +16,16 @@ import open from 'jsr:@rdsq/open';
 // Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
 
 const fountainVersion="1.3.8";
-const thinSpace="​‌‍";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
+
+//- U+200B ZERO WIDTH SPACE (​)
+//- U+200C ZERO WIDTH NON-JOINER (‌)
+//- U+200D ZERO WIDTH JOINER (‍)
+const splitSpace="​‌‍";
+
+const thinSpace="\u2009";
+const hairSpace="\u200A";
 
 const terminalColumns=100;
 const statsColumn=50;
