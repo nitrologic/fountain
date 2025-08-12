@@ -48,7 +48,6 @@ nitrologic,vsynth,yes,29
 nitrologic,freeaudio,yes,21
 
 nitrologic,miditool,yes,3
-nitrologic,libcec,yes,3
 nitrologic,acidvm,yes,2
 nitrologic,picotool,yes,2
 nitrologic,loadrite,yes,1
@@ -70,7 +69,6 @@ nitrologic,mojo3d-vr,yes,31
 nitrologic,mojolab,yes,24
 nitrologic,mojolabs,yes,4
 nitrologic,bbcom,yes,15
-nitrologic,COLLADA2GLTF,yes,3
 nitrologic,bbarchives,yes,16
 nitrologic,skidnz,yes,2
 nitrologic,plainhost,yes,4

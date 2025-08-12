@@ -606,7 +606,6 @@ vsynth: nitrologic/vsynth
 miditool: nitrologic/miditool
 audiotool: nitrologic/audiotool
 hidapi: libusb/hidapi
-libcec: nitrologic/libcec
 
 embedded
 
@@ -685,7 +684,6 @@ vector0: nitrologic/vector0
 studio: nitrologic/studio
 nod: nitrologic/nod
 grid: nitrologic/grid
-COLLADA2GLTF: nitrologic/COLLADA2GLTF
 score: nitrologic/score
 nitro: nitrologic/nitro
 m2: nitrologic/m2

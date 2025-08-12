@@ -46,7 +46,6 @@ gltf nitrotoken monkey2 uae blitzmax-dpi-denial
 - miditool: nitrologic/miditool
 - audiotool: nitrologic/audiotool
 - hidapi: libusb/hidapi
-- libcec: nitrologic/libcec
 
 ## embedded
 
@@ -96,7 +95,6 @@ gltf nitrotoken monkey2 uae blitzmax-dpi-denial
 
 ## foss
 
-- COLLADA2GLTF: nitrologic/COLLADA2GLTF
 - glTF: nitrologic/glTF
 
 ## career private

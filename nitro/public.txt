@@ -9,8 +9,6 @@ blitz3d
 blitzmax
 blitzmax-dpi-denial
 blitzmax20
-COLLADA2GLTF
-django-tenants
 drawline
 emu
 ffmpeg
@@ -20,7 +18,6 @@ foundry
 fountain
 freeaudio
 glTF
-libcec
 libsgd
 m2
 maxgui2.mod

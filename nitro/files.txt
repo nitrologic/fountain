@@ -16,7 +16,6 @@ blitz3d
 blitzmax
 blitzmax-dpi-denial
 blitzmax20
-COLLADA2GLTF
 diversity
 drawline
 dspstudio
@@ -33,7 +32,6 @@ geom
 glTF
 grid
 itouch
-libcec
 libsgd
 loadrite
 m2
