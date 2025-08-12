@@ -33,7 +33,6 @@ studio
 nod
 kiosk
 grid
-monkeylanguageserver
 score
 nitro
 bakery

@@ -1,3 +1,8 @@
+rem	echo Processing: %%i %%j %%k %%l %%m
+rem set /a file_count+=%%i
+rem set /a total_size+=%%k
+
+
 import { PollyClient, SynthesizeSpeechCommand } from "https://esm.sh/@aws-sdk/client-polly";
 const pollyClient = new PollyClient({region:"us-east-1" });
 async function pollySay(text: string) {

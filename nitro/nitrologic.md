@@ -26,6 +26,11 @@ gltf nitrotoken monkey2 uae blitzmax-dpi-denial
 
 ## disorder
 
+## nitrologic github
+
+- nitrologic.github.io: nitrologic/nitrologic.github.io
+- nitrologic: nitrologic/nitrologic
+
 ### fountain
 
 - fountain: nitrologic/fountain
@@ -50,11 +55,11 @@ gltf nitrotoken monkey2 uae blitzmax-dpi-denial
 ## embedded
 
 - yaroze: nitrologic/yaroze
-- acidvm: nitrologic/acidvm
 - picotool: nitrologic/picotool
 - pico-sdk: raspberrypi/pico-sdk
 - skid30: nitrologic/skid30
 - stereobasic: nitrologic/stereobasic
+- acidvm: nitrologic/acidvm
 
 ## local terrain
 
@@ -71,10 +76,12 @@ gltf nitrotoken monkey2 uae blitzmax-dpi-denial
 - stage3: nitrologic/stage3
 - stage4: nitrologic/stage4
 
-## blitz monkey2
+## blitz
 
 - blitz2: nitrologic/blitz2
+- acidpd: nitrologic/acidpd
 - blitz3d: nitrologic/blitz3d
+- bbarchives: nitrologic/bbarchives
 - steamstub: nitrologic/steamstub
 - steamstub2: nitrologic/steamstub2
 - blitzmax: blitz-research/blitzmax
@@ -82,20 +89,19 @@ gltf nitrotoken monkey2 uae blitzmax-dpi-denial
 - blitzmax-dpi-denial: nitrologic/blitzmax-dpi-denial
 - maxide: nitrologic/maxide
 - maxgui2.mod: nitrologic/maxgui2.mod
+
+## monkey2
+
 - monkey2: nitrologic/monkey2
+- axe.mod: nitrologic/axe.mod
 - m2: nitrologic/m2
 - mx2: nitrologic/mx2
+- ffmpeg: nitrologic/ffmpeg
 - mx2core: nitrologic/mx2core
 - mx2mojo: nitrologic/mx2mojo
-- mojo3d-vr: nitrologic/mojo3d-vr
 - mojolab: nitrologic/mojolab
 - mojolabs: nitrologic/mojolabs
 - bbcom: nitrologic/bbcom
-- libsgd: blitz-research/libsgd
-
-## foss
-
-- glTF: nitrologic/glTF
 
 ## career private
 
@@ -104,27 +110,35 @@ gltf nitrotoken monkey2 uae blitzmax-dpi-denial
 - fusion: nitrologic/fusion
 - nextspace: nitrologic/nextspace
 
+## acid private
+
+- acid: nitrologic/acid
+- skidnz: nitrologic/skidnz
+
+## mirrors
+
+- glTF: nitrologic/glTF
+- mojo3d-vr: nitrologic/mojo3d-vr
+- libsgd: blitz-research/libsgd
+- voxel-model: nitrologic/voxel-model
+- linux: nitrologic/linux
+- uae: nitrologic/uae
+
+
 unsorted
 
-nitrologic.github.io: nitrologic/nitrologic.github.io
-nitrologic: nitrologic/nitrologic
 plainview: nitrologic/plainview
 acid8: nitrologic/acid8
 worldbody: nitrologic/worldbody
-bbarchives: nitrologic/bbarchives
-skidnz: nitrologic/skidnz
 plainhost: nitrologic/plainhost
 mobstar: nitrologic/mobstar
 waveform: nitrologic/waveform
 itouch: nitrologic/itouch
 touch: nitrologic/touch
 postphysics: nitrologic/postphysics
-voxel-model: nitrologic/voxel-model
-acid: nitrologic/acid
 asmcoder: nitrologic/asmcoder
 diversity: nitrologic/diversity
 wasted: nitrologic/wasted
-linux: nitrologic/linux
 wire: nitrologic/wire
 space: nitrologic/space
 vector0: nitrologic/vector0
@@ -138,22 +152,19 @@ simon: nitrologic/simon
 drawline: nitrologic/drawline
 basement: nitrologic/basement
 geom: nitrologic/geom
-acidpd: nitrologic/acidpd
-axe.mod: nitrologic/axe.mod
 mod: nitrologic/mod
 n3d: nitrologic/n3d
 nitrovr: nitrologic/nitrovr
 winmain: nitrologic/winmain
 shape: nitrologic/shape
-nitrotoken: nitrologic/nitrotoken
 nano: nitrologic/nano
 sphinx: nitrologic/sphinx
 media: nitrologic/media
-ffmpeg: nitrologic/ffmpeg
-nitrosdk: nitrologic/nitrosdk
-uae: nitrologic/uae
-nitrojs: nitrologic/nitrojs
 emu: nitrologic/emu
+
+nitrotoken: nitrologic/nitrotoken
+nitrojs: nitrologic/nitrojs
 nitroclient: nitrologic/nitroclient
 nitrodocs: nitrologic/nitrodocs
+nitrosdk: nitrologic/nitrosdk
 abc: nitrologic/abc
