@@ -2,8 +2,7 @@
 	"gpt-4o-mini-tts@openai":{
 		"pricing":[0.60,12.0],
 		"purpose":"gpt-5",
-		"endpoints":["v1/audio/speech"],
-		"modality":[["text"],["audio"]]
+		"endpoints":["v1/audio/speech"]
 	},
 	"gpt-5-2025-08-07@openai":{
 		"pricing":[1.25,0.125,10.0],
@@ -127,6 +126,14 @@
 	"gpt-4.5-preview-2025-02-27@openai":{
 		"pricing":[75.00,37.50,150.00],
 		"purpose":"burn money"
+	},
+	"models/gemini-2.5-flash-preview-tts@gemini":{
+		"endpoints":["v1/audio/speech"],
+		"pricing":[0.50,10.0]
+	},
+	"models/gemini-2.5-pro-preview-tts@gemini":{
+		"endpoints":["v1/audio/speech"],
+		"pricing":[1.00,20.0]
 	},
 	"models/gemini-2.5-pro-preview-06-05@gemini":{
 		"pricing":[1.25,10.0],

@@ -900,9 +900,14 @@ async function listModels(config){
 
 // https://ai.google.dev/gemini-api/docs/speech-generation
 
+const GeminiVoices=["Zephyr","Puck","Charon","Kore","Fenrir","Leda","Orus","Aoede",
+	"Callirrhoe","Autonoe","Enceladus","Iapetus","Umbriel","Algieba","Despina","Erinome",
+	"Algenib","Rasalgethi","Laomedeia","Achernar","Alnilam","Schedar","Gacrux","Pulcherrima",
+	"Achird","Zubenelgenubi","Vindemiatrix","Sadachbia","Sadaltager","Sulafat"];
+
 const previewTTS="models/gemini-2.5-flash-preview-tts";
 
-async function geminiSay(content:string){
+async function geminiSay(content:string,voiceName="Kore"){
 	const endpoint=rohaEndpoint["gemini"];
 	const apiKey=endpoint.apiKey;
 	const genAI=new GoogleGenerativeAI(apiKey);
@@ -913,7 +918,7 @@ async function geminiSay(content:string){
         responseModalities: ["AUDIO"],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: {voiceName: "Kore"},
+            prebuiltVoiceConfig: {voiceName},
           },
         },
       },
@@ -1083,9 +1088,9 @@ async function connectGoogleVoice(){
 		geminiSpeechClient = new TextToSpeechClient(apiKey);
 		if(geminiSpeechClient){
 			echo("[GCLOUD] speech client is up but not authenticated");
-//			const response=await geminiSpeechClient.listVoices();
 /*			
 			const result=[];
+			const response=await geminiSpeechClient.listVoices();
 			for (const voice of response.voices) {
 				result.push(voice.name+" "+JSON.stringify(voice));
 			}
@@ -2502,23 +2507,11 @@ function listShares(shares){
 
 // OpenAI voice support
 
-const GeminiVoices=["Zephyr","Puck","Charon","Kore","Fenrir","Leda","Orus","Aoede",
-	"Callirrhoe","Autonoe","Enceladus","Iapetus","Umbriel","Algieba","Despina","Erinome",
-	"Algenib","Rasalgethi","Laomedeia","Achernar","Alnilam","Schedar","Gacrux","Pulcherrima",
-	"Achird","Zubenelgenubi","Vindemiatrix","Sadachbia","Sadaltager","Sulafat"];
+const GPTVoices=["alloy","ash","ballad","coral","echo","fable","onyx","nova","sage","shimmer","verse"];
+const GPTFormats=["mp3","opus","aac","flac","wav","pcm"]
+const DefaultGPTVoice={name:"alloy",format:"mp3",model:"gpt-4o-mini-tts@openai"};
 
-const OpenAIVoices=["alloy","ash","ballad","coral","echo","fable","onyx","nova","sage","shimmer","verse"];
-
-const OpenAIFormats=["mp3","opus","aac","flac","wav","pcm"]
-
-const defaultVoice={
-	name:"alloy",
-	format:"mp3",
-	model:"gpt-4o-mini-tts@openai"
-};
-
-async function gptSay(text:string){
-	const voice=defaultVoice;
+async function gptSay(text:string,voice=DefaultGPTVoice){
 	const modelProvider=voice.model.split("@");
 	const modelname=modelProvider[0];
 	const provider=modelProvider[1];
@@ -2536,6 +2529,18 @@ async function gptSay(text:string){
 		open(audioPath);
 	}else{
 		echo("[SAY] endpoint tts speak failure",packet);
+	}
+}
+
+async function auditionCommand(words){
+	for(const voice of GPTVoices){
+		const text="Hi, I am "+voice+" a ChatGPT voice."
+		await gptSay(text,{name:voice,format:"mp3",model:"gpt-4o-mini-tts@openai"});
+	}
+	return;
+	for(const voice of GeminiVoices){
+		const text="Hi, I am "+voice+" a Gemini voice."
+		await geminiSay(text,voice);
 	}
 }
 
@@ -2708,6 +2713,10 @@ async function callCommand(command:string) {
 			case "say":
 				await sayCommand(words);
 				echo(":)");
+				break;
+			case "audition":
+				await auditionCommand();
+				echo(":O");
 				break;
 			case "log":
 				logHistory();
