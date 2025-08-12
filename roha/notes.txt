@@ -650,7 +650,6 @@ waveform: nitrologic/waveform
 itouch: nitrologic/itouch
 touch: nitrologic/touch
 postphysics: nitrologic/postphysics
-ammo.js: nitrologic/ammo.js
 voxel-model: nitrologic/voxel-model
 acid: nitrologic/acid
 asmcoder: nitrologic/asmcoder
@@ -678,7 +677,6 @@ simon: nitrologic/simon
 winding: nitrologic/winding
 drawline: nitrologic/drawline
 basement: nitrologic/basement
-django-tenants: nitrologic/django-tenants
 geom: nitrologic/geom
 glTF: nitrologic/glTF
 acidpd: nitrologic/acidpd

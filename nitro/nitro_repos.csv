@@ -62,7 +62,6 @@ nitrologic,waveform
 nitrologic,itouch
 nitrologic,touch
 nitrologic,postphysics
-nitrologic,ammo.js
 nitrologic,voxel-model
 nitrologic,acid
 nitrologic,asmcoder
@@ -80,7 +79,6 @@ nitrologic,scout
 nitrologic,simon
 nitrologic,drawline
 nitrologic,basement
-nitrologic,django-tenants
 nitrologic,geom
 nitrologic,acidpd
 nitrologic,axe.mod

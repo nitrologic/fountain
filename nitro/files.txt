@@ -3,7 +3,6 @@ acid
 acid8
 acidpd
 acidvm
-ammo.js
 asmcoder
 audiotool
 axe.mod
@@ -19,7 +18,6 @@ blitzmax-dpi-denial
 blitzmax20
 COLLADA2GLTF
 diversity
-django-tenants
 drawline
 dspstudio
 dsptool

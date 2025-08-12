@@ -63,7 +63,6 @@ nitrologic,waveform,yes,1
 nitrologic,itouch,yes,1
 nitrologic,touch,yes,1
 nitrologic,postphysics,yes,1
-nitrologic,ammo.js,yes,1
 nitrologic,voxel-model,yes,1
 nitrologic,acid,yes,1
 nitrologic,asmcoder,yes,1
@@ -81,7 +80,6 @@ nitrologic,scout,yes,1
 nitrologic,simon,yes,1
 nitrologic,drawline,yes,1
 nitrologic,basement,yes,1
-nitrologic,django-tenants,yes,1
 nitrologic,geom,yes,1
 nitrologic,acidpd,yes,1
 nitrologic,axe.mod,yes,1

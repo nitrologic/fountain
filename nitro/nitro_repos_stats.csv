@@ -63,7 +63,6 @@ nitrologic,waveform,yes,74892,62
 nitrologic,itouch,yes,208918,68
 nitrologic,touch,yes,349568,118
 nitrologic,postphysics,yes,8470614,146
-nitrologic,ammo.js,yes,74702,56
 nitrologic,voxel-model,yes,162752392,2816
 nitrologic,acid,yes,858259564,254
 nitrologic,asmcoder,yes,499525654,9138
@@ -81,7 +80,6 @@ nitrologic,scout,yes,237752330,4628
 nitrologic,simon,yes,3088796,136
 nitrologic,drawline,yes,54006,58
 nitrologic,basement,yes,364870,84
-nitrologic,django-tenants,yes,23921430,188
 nitrologic,geom,yes,1161282,276
 nitrologic,acidpd,yes,20757266,220
 nitrologic,axe.mod,yes,40923526,4064
