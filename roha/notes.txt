@@ -1,3 +1,6 @@
+const GPTVoices2=["breeze","cove","ember","juniper","sky"];
+
+
 OpenAI Spec Notes
 
 Request body

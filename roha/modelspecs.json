@@ -1,4 +1,9 @@
 {
+	"tts-1@openai":{
+		"pricing":[0.60,12.0],
+		"purpose":"tts $4 per 1000 seconds",
+		"endpoints":["v1/audio/speech"]
+	},
 	"gpt-4o-mini-tts@openai":{
 		"pricing":[0.60,12.0],
 		"purpose":"gpt-5",

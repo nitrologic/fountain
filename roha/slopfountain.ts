@@ -2535,7 +2535,8 @@ async function gptSay(text:string,voice=DefaultGPTVoice){
 async function auditionCommand(words){
 	for(const voice of GPTVoices){
 		const text="Hi, I am "+voice+" a ChatGPT voice."
-		await gptSay(text,{name:voice,format:"mp3",model:"gpt-4o-mini-tts@openai"});
+//		await gptSay(text,{name:voice,format:"mp3",model:"gpt-4o-mini-tts@openai"});
+		await gptSay(text,{name:voice,format:"mp3",model:"tts-1@openai"});
 	}
 	return;
 	for(const voice of GeminiVoices){
