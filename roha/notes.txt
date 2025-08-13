@@ -1,4 +1,13 @@
-
+[KOHA] Updated files 779 of 784
+[RELAY] unhandled error 429 Request too large for gpt-5-mini in organization org-RlPKVTtIcVKuq2L2IRaA4XDZ on tokens per min (TPM): Limit 2000000, Requested 7427883. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.
+[RELAY] Error: 429 Request too large for gpt-5-mini in organization org-RlPKVTtIcVKuq2L2IRaA4XDZ on tokens per min (TPM): Limit 2000000, Requested 7427883. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.
+    at APIError.generate (https://deno.land/x/openai@v4.69.0/error.ts:101:14)
+    at OpenAI.makeStatusError (https://deno.land/x/openai@v4.69.0/core.ts:504:21)
+    at OpenAI.makeRequest (https://deno.land/x/openai@v4.69.0/core.ts:586:24)
+    at eventLoopTick (ext:core/01_core.js:178:7)
+    at async relay (file:///Users/simon/fountain/roha/slopfountain.ts:3328:20)
+    at async chat (file:///Users/simon/fountain/roha/slopfountain.ts:3616:5)
+    at async file:///Users/simon/fountain/roha/slopfountain.ts:3780:2
 
 # ꔀ ꔁ ꔂ ꔃ ꔄ ꔅ ꔆ ꔇ ꔈ ꔉ ꔊ ꔋ ꔌ ꔍ ꔎ ꔏ ꔐ ꔑ ꔒ ꔓ ꔔ ꔕ ꔖ ꔗ ꔘ ꔙ ꔚ ꔛ 
 # ꔜ ꔝ ꔞ. ꔟ ꔠ ꔡ ꔢ ꔣ ꔤ ꔥ ꔦ ꔧ ꔨ ꔩ ꔪ ꔫ ꔬ ꔭ ꔮ ꔯ ꔰ ꔱ ꔲ ꔳ ꔴ ꔵ ꔶ ꔷ 

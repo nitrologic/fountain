@@ -2911,7 +2911,10 @@ async function callCommand(command:string) {
 				if (words.length==1){
 					listShare();
 				}else{
-					const filename=words.slice(1).join(" ");
+					const r=words[1];
+					const hasDepth=r.startsWith("/r");
+					const depth=hasDepth?Number(r.substring(2))||1:1;
+					const filename=words.slice(hasDepth?2:1).join(" ");
 					// TODO: DOS resolvePath does not correct improperly cased filenames
 					const path=resolvePath(Deno.cwd(), filename);
 					const stat=await Deno.stat(path);
@@ -2919,7 +2922,7 @@ async function callCommand(command:string) {
 					if(stat.isDirectory){
 						echo("Share directory <shallow> path:",path);
 						// TODO: add depth>1
-						await shareDir(path,tag,1,1);
+						await shareDir(path,tag,1,depth);
 						await writeForge();
 					}else{
 						// attachMedia(words);
