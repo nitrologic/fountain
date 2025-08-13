@@ -907,7 +907,9 @@ async function listModels(config){
 
 const SiriVoices=["Aaron", "Nicky", "Ava", "Fred", "Sandy", "Moira", "Tessa", "Daniel",	"Karen", "Rishi", "Arthur", "Martha", "Nova", "Catherine", "Gordon", "Aria"];
 
-async function macosSay(message:string,voiceName="Aria"){
+const AppleVoices=["Agnes","Albert","Aaron","Nicky","Ava","Fred","Sandy","Moira","Tessa","Daniel","Karen","Rishi","Arthur","Martha","Nova","Catherine","Gordon","Aria"];
+
+async function appleSay(message:string,voiceName="Aria"){
 	const cmd = voiceName ? ["say", "-v", voiceName, message] : ["say", message];
 	const process = Deno.run({cmd,stdout: "piped",stderr: "piped",});
 	const { code } = await process.status();
@@ -923,19 +925,6 @@ async function macosSay(message:string,voiceName="Aria"){
 // API support for gemini
 
 // https://ai.google.dev/gemini-api/docs/speech-generation
-
-
-const { code } = await process.status();
-
-if (code === 0) {
-  console.log("Message spoken successfully!");
-} else {
-  const error = await process.stderrOutput();
-  console.error(`Error: ${new TextDecoder().decode(error)}`);
-}
-
-process.close();
-}
 
 const GeminiVoices=["Zephyr","Puck","Charon","Kore","Fenrir","Leda","Orus","Aoede",
 	"Callirrhoe","Autonoe","Enceladus","Iapetus","Umbriel","Algieba","Despina","Erinome",
@@ -2630,6 +2619,11 @@ async function gptSay(text:string,voice=DefaultGPTVoice){
 }
 
 async function auditionCommand(words){
+	for(const voice of AppleVoices){
+		const text="Hi, I am "+voice+" an Apple voice."
+		await appleSay(text,voice);
+	}
+	return;
 	for(const voice of GPTVoices){
 		const text="Hi, I am "+voice+" a ChatGPT voice."
 //		await gptSay(text,{name:voice,format:"mp3",model:"gpt-4o-mini-tts@openai"});
