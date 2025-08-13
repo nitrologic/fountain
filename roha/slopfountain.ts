@@ -908,6 +908,7 @@ async function listModels(config){
 const SiriVoices=["Aaron", "Nicky", "Ava", "Fred", "Sandy", "Moira", "Tessa", "Daniel",	"Karen", "Rishi", "Arthur", "Martha", "Nova", "Catherine", "Gordon", "Aria"];
 
 const AppleVoices=["Agnes","Albert","Aaron","Nicky","Ava","Fred","Sandy","Moira","Tessa","Daniel","Karen","Rishi","Arthur","Martha","Nova","Catherine","Gordon","Aria"];
+const AppleVoices2=["Daniel","Bells","Bubbles","Alice","Albert","Bad News"];
 
 async function appleSay(message:string,voiceName="Aria"){
 	const cmd = voiceName ? ["say", "-v", voiceName, message] : ["say", message];
@@ -2619,7 +2620,7 @@ async function gptSay(text:string,voice=DefaultGPTVoice){
 }
 
 async function auditionCommand(words){
-	for(const voice of AppleVoices){
+	for(const voice of AppleVoices2){
 		const text="Hi, I am "+voice+" an Apple voice."
 		await appleSay(text,voice);
 	}
