@@ -37,31 +37,38 @@
 	},
 	"meta-llama/Meta-Llama-3.1-405B-Instruct@hyperbolic":{
 		"pricing": [0.55, 2.19],
-		"purpose": "405B Multimodal"
+		"purpose": "405B Multimodal",
+		"released": "2024-07-23"
 	},
 	"Qwen/Qwen2.5-VL-72B-Instruct@hyperbolic":{
 		"pricing": [0.55, 0.14, 2.19],
-		"purpose": "72B Multimodal"
+		"purpose": "72B Multimodal",
+		"released": "2024-09-12"
 	},
 	"llama-3.3-70b@cerebras":{
 		"pricing": [1.60,6.40],
-		"purpose": "happyface cerebras hosted llama 3.3"
+		"purpose": "happyface cerebras hosted llama 3.3",
+		"released": "2024-12-06"
 	},
 	"llama-4-maverick-17b-128e-instruct@cerebras":{
 		"pricing": [1.60,6.40],
-		"purpose": "happyface cerebras hosted llama 4 maverick"
+		"purpose": "happyface cerebras hosted llama 4 maverick",
+		"released": "2025-03-09"
 	},
 	"llama-4-scout-17b-16e-instruct@cerebras":{
 		"pricing": [1.60,6.40],
-		"purpose": "happyface cerebras hosted llama 4 scout"
+		"purpose": "happyface cerebras hosted llama 4 scout",
+		"released": "2025-03-09"
 	},
 	"llama3.1-8b@cerebras":{
 		"pricing": [1.60,6.40],
-		"purpose": "happyface cerebras hosted llama 3.1"
+		"purpose": "happyface cerebras hosted llama 3.1",
+		"released": "2024-07-23"
 	},
 	"qwen-3-32b@cerebras":{
 		"pricing": [1.60,6.40],
-		"purpose": "happyface cerebras hosted qwen 3"
+		"purpose": "happyface cerebras hosted qwen 3",
+		"released": "2025-05-15"
 	},
 	"qwen-max@alibaba":{
 		"pricing": [1.60,6.40],
@@ -134,10 +141,12 @@
 	},
 	"models/gemini-2.5-flash-preview-tts@gemini":{
 		"endpoints":["v1/audio/speech"],
+		"released":"2025-05-20",
 		"pricing":[0.50,10.0]
 	},
 	"models/gemini-2.5-pro-preview-tts@gemini":{
 		"endpoints":["v1/audio/speech"],
+		"released":"2025-05-20",
 		"pricing":[1.00,20.0]
 	},
 	"models/gemini-2.5-pro-preview-06-05@gemini":{
@@ -266,6 +275,7 @@
 	},
 	"meta-llama/Llama-3.1-8B-Instruct@nscale":{
 		"pricing":[0.88,0.15,2.5],
-		"purpose":"zuk llama"
+		"purpose":"zuk llama",
+		"released": "2024-07-23"
 	}
 }
