@@ -628,6 +628,9 @@ let refreshTick=0;
 let tickCount=0;
 let frameCount=-1;
 
+// safetyCheck
+
+if(false){
 // --allow-read
 
 const elf=await Deno.readFile("../sandbox/bin/mips1.elf");
@@ -668,6 +671,7 @@ self.onmessage=(e)=>{
 			break;
 	}
 };
+}
 
 try {
 	self.postMessage({success:true,event:"start",time:startTime});

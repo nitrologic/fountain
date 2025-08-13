@@ -13,19 +13,20 @@ import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 
 import open from 'jsr:@rdsq/open';
 
+
 // Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
 
 const fountainVersion="1.3.8";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
 
-//- U+200B ZERO WIDTH SPACE (​)
-//- U+200C ZERO WIDTH NON-JOINER (‌)
-//- U+200D ZERO WIDTH JOINER (‍)
-const splitSpace="​‌‍";
+const ThinSpace="\u2009";
+const HairSpace="\u200A";
 
-const thinSpace="\u2009";
-const hairSpace="\u200A";
+const ZeroWidthSpace="\u200B";
+const ZeroWidthNonJoiner="\u200C";
+const ZeroJoiner="\u200D";
+const NoSpace="​‌‍";//- U+200B ZERO WIDTH SPACE (​) U+200C ZERO WIDTH NON-JOINER (‌) U+200D ZERO WIDTH JOINER (‍)
 
 const terminalColumns=100;
 const statsColumn=50;
@@ -216,8 +217,8 @@ function dateStamp(seconds:number){
 	return "---";
 }
 
-function padChars(text:string):string{
-	return [...text].join(thinSpace);
+function padChars(text:string,pad:string=ThinSpace):string{
+	return [...text].join(pad);
 }
 
 function stringifyArray(array:[]):string{
@@ -767,7 +768,7 @@ const wideLatin={
 	"lower": "ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ"
 }
 
-function latinString(latin, line: string, space=thinSpace): string {
+function latinString(latin, line: string, space=ThinSpace): string {
 	const upper=Array.from(latin.upper);
 	const digits=Array.from(latin.digits);
 	const lower=latin.lower?Array.from(latin.lower):upper;
@@ -3736,11 +3737,12 @@ echo("use /help for latest and exit to quit");
 
 if (roha.config.debugging) open("mims.pdf")
 
-const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes);
+const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
 
+//echo("\t"+birds+" ",navigator.userAgent,navigator.languages);
 // test birds on clipboard
-await clipText(birds);
+//await clipText("\t"+birds);
 
 if(roha.config.listenonstart){
 	listenService();

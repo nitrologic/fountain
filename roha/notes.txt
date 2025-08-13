@@ -1,3 +1,30 @@
+if (!("requestMIDIAccess" in navigator)) {
+	console.error("Web MIDI API not supported in this environment.");
+	Deno.exit(1);
+}
+const midiAccess = await navigator.requestMIDIAccess();
+console.log("MIDI Devices:");
+// List input devices (e.g., MIDI keyboards)
+midiAccess.inputs.forEach((input) => {
+	console.log(`Input: ${input.name} (${input.manufacturer})`);
+		input.onmidimessage = (event) => {
+		console.log("MIDI Message:", event.data);
+	};
+});
+// List output devices (e.g., synthesizers)
+midiAccess.outputs.forEach((output) => {
+	console.log(`Output: ${output.name} (${output.manufacturer})`);
+});
+
+
+import { Input } from "https://deno.land/x/cliffy@v1.0.0-rc.3/prompt/input.ts";
+//  minLength: 8,
+async function cliffyPrompt(prompt:string):Promise<string>{
+	return await Input.prompt({message:prompt,allowTab:true});
+}
+	return cliffyPrompt(message);
+
+
 async function clipTex5(text: string): Promise<void> {
   // Ensure text is a string
   if (typeof text !== "string") {
