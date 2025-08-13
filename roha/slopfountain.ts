@@ -13,7 +13,6 @@ import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 
 import open from 'jsr:@rdsq/open';
 
-
 // Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
 
 const fountainVersion="1.3.8";
@@ -904,9 +903,39 @@ async function listModels(config){
 	return null;
 }
 
+// native macos
+
+const SiriVoices=["Aaron", "Nicky", "Ava", "Fred", "Sandy", "Moira", "Tessa", "Daniel",	"Karen", "Rishi", "Arthur", "Martha", "Nova", "Catherine", "Gordon", "Aria"];
+
+async function macosSay(message:string,voiceName="Aria"){
+	const cmd = voiceName ? ["say", "-v", voiceName, message] : ["say", message];
+	const process = Deno.run({cmd,stdout: "piped",stderr: "piped",});
+	const { code } = await process.status();
+	if (code === 0) {
+		console.log("Message spoken successfully!");
+	} else {
+		const error = await process.stderrOutput();
+		console.error(`Error: ${new TextDecoder().decode(error)}`);
+	}
+	process.close();	
+}
+
 // API support for gemini
 
 // https://ai.google.dev/gemini-api/docs/speech-generation
+
+
+const { code } = await process.status();
+
+if (code === 0) {
+  console.log("Message spoken successfully!");
+} else {
+  const error = await process.stderrOutput();
+  console.error(`Error: ${new TextDecoder().decode(error)}`);
+}
+
+process.close();
+}
 
 const GeminiVoices=["Zephyr","Puck","Charon","Kore","Fenrir","Leda","Orus","Aoede",
 	"Callirrhoe","Autonoe","Enceladus","Iapetus","Umbriel","Algieba","Despina","Erinome",
