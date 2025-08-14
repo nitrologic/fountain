@@ -102,7 +102,13 @@ Thanks to the Slop Fountain models for all the assistance.
 
 # images in view
 
+Large Language Models shine in the things you don't know category.
+
+As project bibli expands it's JSON prompts such as the following provide interesting trails down rabbit holes.
+
 <img src="grok3ogham.png" width="720"> 
 <img src="grok4-klingon.png" width="720"> 
+
+Correctly and carefully finalising attributes of written languages, who would have thought...
 
 <img src="sonnet4cherokee.png" width="720"> 
