@@ -2632,11 +2632,10 @@ async function gptSay(text:string,voice=DefaultGPTVoice){
 	}
 }
 
+// work in progress voice audition tests
+
 async function auditionCommand(words){
-	for(const voice of AppleVoices2){
-		const text="Hi, I am "+voice+" an Apple voice."
-		await appleSay(text,voice);
-	}
+	echo("[AUDITION] no voice groups in line, please modify and rebuild - async function auditionCommand" );
 	return;
 	for(const voice of GPTVoices){
 		const text="Hi, I am "+voice+" a ChatGPT voice."
@@ -2648,6 +2647,12 @@ async function auditionCommand(words){
 		const text="Hi, I am "+voice+" a Gemini voice."
 		await geminiSay(text,voice);
 	}
+	return;
+	for(const voice of AppleVoices2){
+		const text="Hi, I am "+voice+" an Apple voice."
+		await appleSay(text,voice);
+	}
+	return;
 }
 
 async function sayCommand(words){

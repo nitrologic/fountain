@@ -1,0 +1,7 @@
+import { resolve } from "https://deno.land/std/path/mod.ts";
+
+const windowsPath1:string=resolve("C:\\","winDOWS");
+const windowsPath2:string=resolve("C:\\winDOWS","spEEch");
+
+console.log(windowsPath1);
+console.log(windowsPath2);

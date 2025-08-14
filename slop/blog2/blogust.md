@@ -55,10 +55,6 @@ Note to self: when I retire I am going to come back to my old code.
 
 <img src="r3000love.png" width="720"> 
 
-![](monkeydungminers.png)
-
-### hiero
-
 # project bibli
 
 The main side project by far and more of the learn many things every moment camp.
