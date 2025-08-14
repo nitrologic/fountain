@@ -77,13 +77,9 @@ Kimi K2 API knows all about the intestines of a bull.
 
 Border line brand / source recognition
 
-## correct 
+# a month ago
 
-<img src="sequoyah.png" width="720"> 
-
-# so long ago
-
-This screenshot has aged well, deep seek still and always model 0.
+This screenshot has aged well, two sprints later and deep seek still and always model 0.
 
 <img src="deepseekismodel0.png" width="720">
 
@@ -110,5 +106,3 @@ Thanks to the Slop Fountain models for all the assistance.
 <img src="grok4-klingon.png" width="720"> 
 
 <img src="sonnet4cherokee.png" width="720"> 
-
-<img src="sonnet-oddballs.png" width="720"> 

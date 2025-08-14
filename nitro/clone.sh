@@ -1,7 +1,7 @@
 # !/usr/bin/env bash
 set -u
 
-CSV_FILE="nitrologic_github_repos.csv"
+CSV_FILE="nitrologic_github.csv"
 BASE_DIR="nitrologic"   # clones will go into $BASEDIR/<owner>/<repo>
 SHALLOW="--depth 1"     # set to "" for full clones
 
