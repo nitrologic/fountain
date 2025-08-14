@@ -18,7 +18,7 @@ Exposing 297 models from 11 providers the research project Fountain 1.3.8 ⛲ ap
 
 # blog posts
 
-* [blog slops](slop\blog2\blogust.md)
+* [blog slops](slop/blog2/blogust.md) 𐃅 recent test slop for fountain dwellers
 * [blog-fountain](slop/blog/blogfountain.md) recent fountain models under test
 * [blog-forge](https://github.com/nitrologic/forge/blob/main/blog.md) archived forge model under test
 
