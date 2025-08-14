@@ -15,8 +15,6 @@ nitrologic,acidvm,yes,1
 nitrologic,picotool,yes,1
 nitrologic,skid30,yes,1
 nitrologic,stereobasic,yes,1
-nitrologic,ninjakiwi,yes,1
-nitrologic,loadrite,yes,1
 nitrologic,fusion,yes,1
 nitrologic,nextspace,yes,1
 nitrologic,roa,yes,1
@@ -92,7 +90,6 @@ nitrologic,sphinx,yes,1
 nitrologic,media,yes,1
 nitrologic,ffmpeg,yes,1
 nitrologic,nitrosdk,yes,1
-nitrologic,uae,yes,1
 nitrologic,nitrojs,yes,1
 nitrologic,emu,yes,1
 nitrologic,nitroclient,yes,1

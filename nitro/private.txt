@@ -11,14 +11,12 @@ audiotool
 skidnz
 plainhost
 waveform
-loadrite
 itouch
 touch
 pipeline2
 skidroa
 fusion
 acid
-ninjakiwi
 acidvm
 diversity
 roanz

@@ -1147,7 +1147,6 @@ steamstub2: nitrologic/steamstub2
 steamstub: nitrologic/steamstub
 nitrosdk: nitrologic/nitrosdk
 maxide: nitrologic/maxide
-uae: nitrologic/uae
 nitrojs: nitrologic/nitrojs
 emu: nitrologic/emu
 nitroclient: nitrologic/nitroclient

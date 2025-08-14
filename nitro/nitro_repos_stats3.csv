@@ -15,8 +15,6 @@ nitrologic,acidvm,yes,23912448,609
 nitrologic,picotool,yes,524288,33
 nitrologic,skid30,yes,128585728,815
 nitrologic,stereobasic,yes,77791232,99
-nitrologic,ninjakiwi,yes,131072,1
-nitrologic,loadrite,yes,8089600,111
 nitrologic,fusion,yes,255336448,539
 nitrologic,nextspace,yes,291590144,2359
 nitrologic,roa,yes,114937856,1089
@@ -92,7 +90,6 @@ nitrologic,sphinx,yes,884736,53
 nitrologic,media,yes,77119488,24
 nitrologic,ffmpeg,yes,400531456,6126
 nitrologic,nitrosdk,yes,33038336,662
-nitrologic,uae,no,0,0
 nitrologic,nitrojs,yes,39346176,1201
 nitrologic,emu,yes,113197056,3776
 nitrologic,nitroclient,yes,15339520,131

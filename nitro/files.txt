@@ -33,7 +33,6 @@ glTF
 grid
 itouch
 libsgd
-loadrite
 m2
 maxgui2.mod
 maxide
@@ -51,7 +50,6 @@ mx2mojo
 n3d
 nano
 nextspace
-ninjakiwi
 nitro
 nitroclient
 nitrodocs
@@ -92,7 +90,6 @@ stereobasic
 studio
 tileshop
 touch
-uae
 vector0
 voxel-model
 vsynth

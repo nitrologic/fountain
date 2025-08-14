@@ -16,7 +16,6 @@ nitrologic,geom,yes,271
 nitrologic,forge,yes,242
 nitrologic,wire,yes,239
 nitrologic,scout,yes,234
-nitrologic,ninjakiwi,yes,234
 nitrologic,audiotool,yes,219
 nitrologic,pipeline2,yes,216
 nitrologic,sphinx,yes,201
@@ -50,7 +49,6 @@ nitrologic,freeaudio,yes,21
 nitrologic,miditool,yes,3
 nitrologic,acidvm,yes,2
 nitrologic,picotool,yes,2
-nitrologic,loadrite,yes,1
 nitrologic,roa,yes,7
 nitrologic,roagrid,yes,5
 nitrologic,tileshop,yes,3
@@ -96,7 +94,6 @@ nitrologic,nano,yes,9
 nitrologic,media,yes,70
 nitrologic,ffmpeg,yes,11
 nitrologic,nitrosdk,yes,7
-nitrologic,uae,yes,81
 nitrologic,nitrojs,yes,71
 nitrologic,emu,yes,4
 nitrologic,nitroclient,yes,3

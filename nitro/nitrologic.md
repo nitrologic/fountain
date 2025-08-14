@@ -10,6 +10,7 @@ Slowly the nitrologic archives are dropped in the fountain.
 2. nitrologic steamstub2 and nitrocircuit delisted - empty repos detected
 3. nitrologic dsptool - case sensitive issue 'bios/README.md' 'bios/readme.md' - fix me
 4. nitrologic evict wizbang kiosk playfab winding
+5. nitrologic evict loadrite ninjakiwi uae
 
 ## housekeeping
 
@@ -21,8 +22,8 @@ https://github.com/nitrologic
 
 ## forked
 
-ammo.js voxel-model linux libcec collada2 django-tenants
-gltf nitrotoken monkey2 uae blitzmax-dpi-denial
+uae ammo.js voxel-model linux libcec collada2 django-tenants
+gltf nitrotoken monkey2 blitzmax-dpi-denial
 
 ## disorder
 
@@ -123,7 +124,6 @@ gltf nitrotoken monkey2 uae blitzmax-dpi-denial
 - voxel-model: nitrologic/voxel-model
 - linux: nitrologic/linux
 - uae: nitrologic/uae
-
 
 unsorted
 

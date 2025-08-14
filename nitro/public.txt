@@ -39,7 +39,6 @@ skid30
 stage2
 steamstub
 steamstub2
-uae
 voxel-model
 vsynth
 worldbody
