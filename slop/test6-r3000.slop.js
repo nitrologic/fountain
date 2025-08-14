@@ -483,7 +483,6 @@ function regBits(i32){
 // register contents 32 * 4 x 8 braille bits chars
 
 function frontPanel2(){
-//	return "hello world";
 	const bank=[];
 	const fg0=ansiFG(7);
 	const fg1=ansiFG(greyShade(13/23.0));
@@ -515,7 +514,6 @@ function logLines(lines,count){
 
 function frontPanel(){
 	const sticker="⛲R3000"
-//	return "hello world";
 	const bank=[];
 	const fg0=ansiFG(7);
 	const fg1=ansiFG(greyShade(13/23.0));

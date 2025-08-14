@@ -260,6 +260,12 @@ function parseUnicode(){
 	}
 }
 
+function formatObject(obj: Record<string, unknown>): string {
+	return Object.entries(obj)
+		.map(([key, value]) => `${key}:${value}`)
+		.join(', ');
+}
+
 function parseBibli(){
 	const tag=roha.config.verbose?"[BIBLI]":"";
 	const glyphs=bibli.separator;
@@ -273,6 +279,10 @@ function parseBibli(){
 	for(const index in bibli.spec){
 		const item=bibli.spec[index];
 		const keys = Object.keys(item);
+		if(index=="shortcode"){
+			echo(formatObject(item));
+			continue;
+		}
 		echo_bold(tag,index,keys.join(" "));
 		if(item.alphabet){
 			for (const [key, codes] of Object.entries(item.alphabet)) {
@@ -3598,7 +3608,7 @@ async function chat() {
 					continue;
 				}
 				creditCommand="";
-			}else{				
+			}else{
 				line=await promptForge(lines.length?"+":rohaPrompt);
 			}
 			if (line === "") {

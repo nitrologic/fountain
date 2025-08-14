@@ -1,3 +1,7 @@
+			"brown_mushroom": "🍄‍🟫",
+			"mirror_ball": "🪩",
+
+
 [KOHA] Updated files 779 of 784
 [RELAY] unhandled error 429 Request too large for gpt-5-mini in organization org-RlPKVTtIcVKuq2L2IRaA4XDZ on tokens per min (TPM): Limit 2000000, Requested 7427883. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.
 [RELAY] Error: 429 Request too large for gpt-5-mini in organization org-RlPKVTtIcVKuq2L2IRaA4XDZ on tokens per min (TPM): Limit 2000000, Requested 7427883. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.
