@@ -10,11 +10,9 @@
 
 ## August 2025
 
-During development of Slop Fountain a side project began.
-
-Questions of attribution continue to nag. Some appropriate decisions have been made.
-
-Project bibli began as a json itch. Influenced by close childhood friendship with Pears Clopedia. Origin story below.
+* During development of Slop Fountain a side project began.
+* Questions of attribution continue to nag. Some appropriate decisions have been made.
+* Project bibli began as a json itch, memories of close childhood friendship with Pears Clopedia continue.
 
 ## Latest 
 
