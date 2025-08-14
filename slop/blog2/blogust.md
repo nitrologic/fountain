@@ -71,11 +71,7 @@ Kimi K2 API knows all about the intestines of a bull.
 
 <img src="kimikviscera.png" width="720"> 
 
-# branding times
-
-Border line brand / source recognition
-
-# a month ago
+# just a month ago
 
 This screenshot has aged well, two sprints later and deep seek still and always model 0.
 
