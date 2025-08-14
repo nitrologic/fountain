@@ -86,6 +86,7 @@ type ConfigFlags = {
 	slow: boolean;
 	slops: boolean;
 	budget: false;
+	syncRelay: boolean;
 };
 
 // a shared context state
@@ -322,7 +323,8 @@ const flagNames={
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed",
 	slops : "console worker scripts",
-	budget : "cheap models for the win"
+	budget : "cheap models for the win",
+	syncRelay : "one thing at a time mode"
 };
 
 const emptyConfig:ConfigFlags={
@@ -343,7 +345,8 @@ const emptyConfig:ConfigFlags={
 	returntopush:false,
 	slow:false,
 	slops:false,
-	budget:false
+	budget:false,
+	syncRelay:true
 };
 
 const emptyRoha={
@@ -917,25 +920,12 @@ async function macosSay(message:string,voiceName="Aria"){
 		const error = await process.stderrOutput();
 		console.error(`Error: ${new TextDecoder().decode(error)}`);
 	}
-	process.close();	
+	process.close();
 }
 
 // API support for gemini
 
 // https://ai.google.dev/gemini-api/docs/speech-generation
-
-
-const { code } = await process.status();
-
-if (code === 0) {
-  console.log("Message spoken successfully!");
-} else {
-  const error = await process.stderrOutput();
-  console.error(`Error: ${new TextDecoder().decode(error)}`);
-}
-
-process.close();
-}
 
 const GeminiVoices=["Zephyr","Puck","Charon","Kore","Fenrir","Leda","Orus","Aoede",
 	"Callirrhoe","Autonoe","Enceladus","Iapetus","Umbriel","Algieba","Despina","Erinome",
@@ -3252,6 +3242,23 @@ function inlineHistory(history){
 
 // fountain relay
 
+// work in progress new async mode
+
+let relayTaskPromise: Promise<void> | null = null;
+let completionQueue: string[] = [];
+
+async function beginRelay() {
+	const send = () => {
+	if (completionQueue.length === 0) return;
+		const text = completionQueue.shift();
+		rohaHistory.push({role:"assistant", content:text});
+		flush();
+	};
+	const spend = await relay(0);
+	completionQueue.push("completion ready");
+	setImmediate(send);
+}
+
 // returns spend
 // warning - tool_calls resolved with recursion
 // endpoints may provide alternative implementations of completions - watch for bugs
@@ -3580,7 +3587,7 @@ async function chat() {
 					continue;
 				}
 				creditCommand="";
-			}else{
+			}else{				
 				line=await promptForge(lines.length?"+":rohaPrompt);
 			}
 			if (line === "") {
@@ -3609,13 +3616,24 @@ async function chat() {
 			await logForge(line,rohaUser)
 		}
 
-		if (lines.length){
-			const query=lines.join("\n");
-			if(query.length){
-				const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
-				const name=rohaNic;//||rohaUser;
-				rohaHistory.push({ role: "user", name, content: query });
-				await relay(0);
+		const syncRelay=roha.config.syncRelay;
+		if(syncRelay){
+			if (lines.length){
+				const query=lines.join("\n");
+				if(query.length){
+					const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
+					rohaHistory.push({ role: "user", name:rohaNic, content: query });
+					await relay(0);
+				}
+			}
+		}else{
+			if (lines.length){
+				const query=lines.join("\n");
+				if(query.length){
+					const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
+					rohaHistory.push({ role: "user", name:rohaNic, content: query });
+					beginRelay(0);
+				}
 			}
 		}
 	}

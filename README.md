@@ -1,15 +1,9 @@
 [![Deno](https://img.shields.io/badge/deno-2.4.2-black?logo=deno)](https://deno.land/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 
-# 𓄷𓄲𓄲 𓄵𓄲𓄲𓄷𓄲⛲
+# ꕶLOP Fountain ⛲
 
-Home of nitrologic slop fountain — a 4th generation roha foundry forge LLM tool
-
-# 🌍🌎🌏🌐
-
-# 🔇🔈🔉🔊
-
-# ꕶꕷꗟꖘꗇꗈ ꔬꔭꔻꔼꔰꔷꔹ
+Home of nitrologic slop fountain — the 4th generation roha foundry forge LLM tool.
 
 Exposing 297 models from 11 providers the research project Fountain 1.3.8 ⛲ approaches interesting.
 
@@ -21,6 +15,12 @@ Exposing 297 models from 11 providers the research project Fountain 1.3.8 ⛲ ap
 * [forge.md](roha/forge.md) Command Set
 * [plan.txt](roha/plan.txt) On the list
 * [license](LICENSE) Copyright (c) 2025 Simon Armstrong - MIT License
+
+# blog posts
+
+* [blog-slop] (slop/blog2/blogust.ms) (NEW) recent test slop for fountain dwellers
+* [blog-fountain](slop/blog/blogfountain.md) recent fountain models under test
+* [blog-forge](https://github.com/nitrologic/forge/blob/main/blog.md) archived forge model under test
 
 ## Developer setup
 
@@ -39,21 +39,3 @@ Install [Deno 2.4.2](https://deno.com/)
 | gemini       | 🌟    | en-US  | https://ai.google.dev/docs           | Google    |
 | anthropic    | 🤖    | en-US  | https://docs.anthropic.com/          | Anthropic |
 | hugging face | 🤗    | en-US  | https://huggingface.co/docs          | OpenAI    |
-
-# Providers under obervation *
-
-```
-	"cohere": {
-		"emoji": "🧩",
-		"env": "COHERE_API_KEY",
-		"url": "https://api.cohere.com/v2",
-		"docs": "https://docs.cohere.com/reference/about",
-		"api": "Cohere",
-		"locale": "en-CA"
-	},
-````
-
-# blog posts
-
-* [blog-fountain](slop/blog/blogfountain.md) recent fountain models under test
-* [blog-forge](https://github.com/nitrologic/forge/blob/main/blog.md) archived forge model under test
