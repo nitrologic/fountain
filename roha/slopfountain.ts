@@ -280,7 +280,7 @@ function parseBibli(){
 		const item=bibli.spec[index];
 		const keys = Object.keys(item);
 		if(index=="shortcode"){
-			echo(formatObject(item));
+			echo(tag,index,formatObject(item));
 			continue;
 		}
 		echo_bold(tag,index,keys.join(" "));
@@ -3575,6 +3575,10 @@ async function relay(depth:number) {
 	return spend;
 }
 
+function replaceShortCodes(text: string): string {
+	return text.replace(/:([a-z_]+):/g, (match, code) => {return bibli.spec.shortcode[code] || match;});
+}
+
 // while true promptForge, callCommand and solicit completion
 // note - google and deepseek api provides alternative endpoint for this function
 
@@ -3619,11 +3623,12 @@ async function chat() {
 				}
 				break;
 			}
-			if(!line) break;//simon was here
+			if(!line) break; // simon was here
 			if (line === "exit") {
 				break dance;
 			}
-
+			// simon was here
+			line=replaceShortCodes(line);
 			if (line.startsWith("/")&&!line.startsWith("//")) {
 				const command=line.substring(1).trim();
 				let dirty=await callCommand(command);
