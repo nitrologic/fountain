@@ -73,6 +73,8 @@ Skipping Egyptian hieroglyphs the bibli spec goes in search of roots.
 
 This subject here would make an excellent prompt fountain quizz.
 
+Kimi K2 API knows all about the intestines of a bull.
+
 <img src="kimikviscera.png" width="720"> 
 
 # branding times
