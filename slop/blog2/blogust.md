@@ -88,6 +88,9 @@ When the Slop Fountain chat system adopts a new persona model.
 
 <img src="faceshires.png" width="720"> 
 <img src="facesinmd.png" width="720"> 
+
+What you see in your VSCode editor is not what you get in your VSCode terminal.
+
 <img src="facesinvscode.png" width="720"> 
 
 Thanks to the Slop Fountain models for all the assistance.
