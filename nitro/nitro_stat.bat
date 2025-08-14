@@ -1,11 +1,15 @@
 @echo off
+set src=nitrologic_github.csv
+set dest=nitro_repos_stats_dos.csv
 chcp 65001 >nul
 setlocal
-echo nitrologic updating stats [%date% %time%]
-echo Fountain 1.3.7 ⛲  grok-4-0709 🚀
-echo owner,repo,exists,size_bytes,files > nitro_repos_stats.csv
-for /f "tokens=1,2 delims=," %%a in (nitro_repos.csv) do call :analyse %%a %%b
-echo updated nitro_repos_stats.csv
+
+echo nitro_stat.bat updating stats [%date% %time%]
+echo Fountain 1.3.8 ⛲  grok-4-0709 🚀 , deepseek-chat 🐋
+
+echo owner,repo,exists,size_bytes,files >  %dest%
+for /f "tokens=1,2 delims=," %%a in (%src%) do call :analyse %%a %%b
+echo updated  %dest%
 pause
 goto :eof
 
@@ -25,8 +29,8 @@ if exist "%path%\.git" (
 		)
 	)
 	popd
-	>>nitro_repos_stats.csv echo %owner%,%repo%,yes,!total_size!,!file_count!
+	>>%dest% echo %owner%,%repo%,yes,!total_size!,!file_count!
 ) else (
-	>>nitro_repos_stats.csv echo %owner%,%repo%,no,0,0,0
+	>>%dest% echo %owner%,%repo%,no,0,0
 )
 goto :eof
