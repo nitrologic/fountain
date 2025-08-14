@@ -910,7 +910,10 @@ async function listModels(config){
 
 const SiriVoices=["Aaron", "Nicky", "Ava", "Fred", "Sandy", "Moira", "Tessa", "Daniel",	"Karen", "Rishi", "Arthur", "Martha", "Nova", "Catherine", "Gordon", "Aria"];
 
-async function macosSay(message:string,voiceName="Aria"){
+const AppleVoices=["Agnes","Albert","Aaron","Nicky","Ava","Fred","Sandy","Moira","Tessa","Daniel","Karen","Rishi","Arthur","Martha","Nova","Catherine","Gordon","Aria"];
+const AppleVoices2=["Daniel","Bells","Bubbles","Alice","Albert","Bad News"];
+
+async function appleSay(message:string,voiceName="Aria"){
 	const cmd = voiceName ? ["say", "-v", voiceName, message] : ["say", message];
 	const process = Deno.run({cmd,stdout: "piped",stderr: "piped",});
 	const { code } = await process.status();
@@ -2620,6 +2623,11 @@ async function gptSay(text:string,voice=DefaultGPTVoice){
 }
 
 async function auditionCommand(words){
+	for(const voice of AppleVoices2){
+		const text="Hi, I am "+voice+" an Apple voice."
+		await appleSay(text,voice);
+	}
+	return;
 	for(const voice of GPTVoices){
 		const text="Hi, I am "+voice+" a ChatGPT voice."
 //		await gptSay(text,{name:voice,format:"mp3",model:"gpt-4o-mini-tts@openai"});
@@ -2906,7 +2914,10 @@ async function callCommand(command:string) {
 				if (words.length==1){
 					listShare();
 				}else{
-					const filename=words.slice(1).join(" ");
+					const r=words[1];
+					const hasDepth=r.startsWith("/r");
+					const depth=hasDepth?Number(r.substring(2))||1:1;
+					const filename=words.slice(hasDepth?2:1).join(" ");
 					// TODO: DOS resolvePath does not correct improperly cased filenames
 					const path=resolvePath(Deno.cwd(), filename);
 					const stat=await Deno.stat(path);
@@ -2914,7 +2925,7 @@ async function callCommand(command:string) {
 					if(stat.isDirectory){
 						echo("Share directory <shallow> path:",path);
 						// TODO: add depth>1
-						await shareDir(path,tag,1,1);
+						await shareDir(path,tag,1,depth);
 						await writeForge();
 					}else{
 						// attachMedia(words);
