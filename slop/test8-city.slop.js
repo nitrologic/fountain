@@ -3,12 +3,17 @@
 const hue9=["🔴🟠🟡🟢🔵🟣🟤⚫⚪","🟥🟧🟨🟩🟦🟪🟫⬛⬜"];
 const square6="🔳🔲◼️◻️▪️▫️";
 
-function grid(bg){
-	return (bg.repeat(8)+"\n").repeat(8);
+const Wide=36;
+
+function grid(bg,mg,fg){
+	const top=(bg.repeat(Wide)+"\n").repeat(11);
+	const mid=(mg.repeat(Wide)+"\n").repeat(1);
+	const bot=(fg.repeat(Wide)+"\n").repeat(12);
+	return top+mid+bot;
 }
 
 function frontPanel(){
-	return grid("🟦");
+	return grid("🟦","🟧","⬜");
 //	return (hue9[0].repeat(7)+"\n").repeat(24);
 }
 

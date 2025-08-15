@@ -1,11 +1,11 @@
 @echo off
-set src=nitrologic_github.csv
-set dest=nitro_repos_stats_dos.csv
+set src=../nitrologic_github.csv
+set dest=../audit/nitro_repos_stats_dos.csv
 chcp 65001 >nul
 setlocal
 
 echo nitro_stat.bat updating stats [%date% %time%]
-echo Fountain 1.3.8 ⛲  grok-4-0709 🚀 , deepseek-chat 🐋
+echo Fountain 1.3.8 ⛲  grok-4-0709 🚀 deepseek-chat 🐋
 
 echo owner,repo,exists,size_bytes,files >  %dest%
 for /f "tokens=1,2 delims=," %%a in (%src%) do call :analyse %%a %%b
