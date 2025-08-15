@@ -1,3 +1,13 @@
+rawprompt - experimental rawmode stdin - broken paste is true
+Slop Fountain has crashed, darn, this release will be stable soon: ReferenceError: rawPrompt is not defined
+    at promptForge (file:///C:/nitrologic/fountain/roha/slopfountain.ts:2129:2)
+    at chat (file:///C:/nitrologic/fountain/roha/slopfountain.ts:3551:16)
+    at eventLoopTick (ext:core/01_core.js:218:9)
+    at async file:///C:/nitrologic/fountain/roha/slopfountain.ts:3761:2
+exitForge Ending session.
+
+
+
 [BIBLI] shortcode grinning:😀, smiley:😃, smile:😄, grin:😁, laughing:😆, sweat_smile:😅, rofl:🤣, joy:😂, 
 plunger:🪠, robot:🤖, unicorn:🦄,  heart:❤️, thumbsup:👍, fire:🔥, star:⭐, eyes:👀, 
 check:✅, warning:⚠️, question:❓, exclamation:❗, zzz:💤, clock:⏰, hourglass:⏳, 

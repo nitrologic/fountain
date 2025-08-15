@@ -2,6 +2,8 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
+import { rawPrompt } from "./sloprawprompt.ts";
+
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
@@ -2101,118 +2103,10 @@ function resolvePath(dir,filename){
 	return path;
 }
 
-// a raw mode prompt replacement
-// roha.config.rawprompt is not default
-// arrow navigation and tab completion incoming
-// a reminder to enable rawprompt for new modes
-
-// new version with timeout
-//const promptTimeout = new AbortController();
-//const text=SaveCursorA + AnsiHome + AnsiClear + frame + RestoreCursorA;
-
-const slopFrames=[];
-
-let promptBuffer=new Uint8Array(0);
-let slopFrame=0;
-
-const writer=Deno.stdout.writable.getWriter();
-
-async function refreshBackground(ms,line) {
-	await new Promise(resolve => setTimeout(resolve, ms));
-	if(slopFrames.length&&slopFrame!=slopFrames.length){
-		slopFrame=slopFrames.length;
-		const frame=slopFrames[slopFrame-1];
-//		const message=AnsiHome + frame + AnsiCursor + row + ";1H\n" + prompt+line;
-		const message=AnsiHome + frame + ansiPrompt() + line;
-		await writer.write(encoder.encode(message));
-		await writer.ready;
-	}
-}
-
-// promptForge 𓅠
-
-const reader=Deno.stdin.readable.getReader();
-
 async function promptForge(message:string) {
 	if(!roha.config.rawprompt) return prompt(message);
-	let result="";
-	if(message){
-		await writer.write(encoder.encode(message));
-		await writer.ready;
-	}
-	// todo: paging tests
-	if(roha.config.page) {
-		await writer.write(homeCursor);
-	}
-
-	let busy=true;
-	let timer;
-
-	if(roha.config.refreshBackground){
-		timer = setInterval(async() => {
-			const line=decoder.decode(promptBuffer);
-			await refreshBackground(5,message+line);
-		}, 1000);
-	}
-
-	Deno.stdin.setRaw(true);
-
-	while (busy) {
-		try {
-			const { value, done }=await reader.read();
-			if (done || !value) break;
-			const bytes=[];
-			for (const byte of value) {
-				if (byte === 0x7F || byte === 0x08) { // Backspace
-					if (promptBuffer.length > 0) {
-						promptBuffer=promptBuffer.slice(0, -1);
-						bytes.push(0x08, 0x20, 0x08);
-					}
-				} else if (byte === 0x1b) { // Escape sequence
-					if (value.length === 1) {
-						await exitForge();
-						Deno.exit(0);
-					}
-					if (value.length === 3) {
-						if (value[1] === 0xf4 && value[2] === 0x50) {
-							echo("F1");
-						}
-					}
-					break;
-				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
-					bytes.push(0x0D, 0x0A);
-					const line=decoder.decode(promptBuffer);
-					const n = encoder.encode(line).length;
-//					let n=line.length;
-					if (n > 0) {
-						promptBuffer=promptBuffer.slice(n);
-					}
-					result=line.trimEnd();
-					await logForge(result, "stdin");
-					busy=false;
-				} else {
-					bytes.push(byte);
-					const buf=new Uint8Array(promptBuffer.length + 1);
-					buf.set(promptBuffer);
-					buf[promptBuffer.length]=byte;
-					promptBuffer=buf;
-				}
-			}
-			if (bytes.length) await writer.write(new Uint8Array(bytes));
-		}catch(error){
-			console.error("Prompt error:", error);
-			if(roha.config.rawprompt){
-				console.error("Please consider disabling rawprompt in config");
-			}
-			busy=false;
-		}
-	}
-	Deno.stdin.setRaw(false);
-//	reader.cancel();
-
-	if (timer) clearInterval(timer);
-	if(roha.config.page) await writer.write(homeCursor);
-	return result;
+	const refreshInterval=roha.config.refreshBackground;
+	return rawPrompt(message,refreshInterval);
 }
 
 async function addShare(share){
@@ -2947,7 +2841,7 @@ async function callCommand(command:string) {
 				}else{
 					const r=words[1];
 					const hasDepth=r.startsWith("/r");
-					const depth=hasDepth?Number(r.substring(2))||1:1;
+					const depth=hasDepth?Number(r.substring(2))||5:1;
 					const filename=words.slice(hasDepth?2:1).join(" ");
 					// TODO: DOS resolvePath does not correct improperly cased filenames
 					const path=resolvePath(Deno.cwd(), filename);
