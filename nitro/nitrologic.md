@@ -1,4 +1,4 @@
-the sprawl
+Welcom to the sprawl
 
 # 𓄷𓄲𓄵 𓄷𓄲𓄲 ⛲
 
@@ -20,8 +20,8 @@ the last line of interest from common dir command:
 > dir /s /-c /A-D-H
 
 Note the modern use of setlocal enabledelayedexpansion which complicates the already
-confusing notion that variables and logic live in alternative universed in the .bat
-universe and may have contributed to the downfall of the common .bat environment.
+confusing notion that variables and logic dwell in alternate universe in the batched
+brains of Gates and Allen. Long live the common .bat !environment!.
 
 ```
 @echo off
@@ -64,16 +64,23 @@ goto :eof
 
 ## housekeeping
 
-> dir nitrologic /b > files.txt
+Some notes as we begin a tidy up of https://github.com/nitrologic containing some 48 public and 63 private repos.
 
-https://github.com/nitrologic
-48 public
-63 private
+## forked repos
 
-## forked
+Some mirrored code from elsewhere is detected including
 
-uae ammo.js voxel-model linux libcec collada2 django-tenants
-gltf nitrotoken monkey2 blitzmax-dpi-denial
+* uae
+* ammo.js
+* voxel-model
+* linux
+* libcec
+* collada2
+* django-tenants
+* gltf
+* nitrotoken
+* monkey2
+* blitzmax-dpi-denial
 
 ## disorder
 
