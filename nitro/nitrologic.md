@@ -10,7 +10,7 @@ Slowly the nitrologic archives are dropped in the fountain.
 2. nitrologic steamstub2 and nitrocircuit delisted - empty repos detected
 3. nitrologic dsptool - case sensitive issue 'bios/README.md' 'bios/readme.md' - fix me
 4. nitrologic evict wizbang kiosk playfab winding
-5. nitrologic evict loadrite ninjakiwi uae
+5. nitrologic evict loadrite ninjakiwi uae nextspace
 
 ## housekeeping
 

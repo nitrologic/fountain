@@ -36,7 +36,6 @@ nitro
 bakery
 stage3
 mojolabs
-nextspace
 scout
 tileshop
 simon

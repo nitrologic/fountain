@@ -49,7 +49,6 @@ mx2core
 mx2mojo
 n3d
 nano
-nextspace
 nitro
 nitroclient
 nitrodocs

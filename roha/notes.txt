@@ -1116,7 +1116,6 @@ score: nitrologic/score
 nitro: nitrologic/nitro
 m2: nitrologic/m2
 mx2: nitrologic/mx2
-nextspace: nitrologic/nextspace
 scout: nitrologic/scout
 tileshop: nitrologic/tileshop
 simon: nitrologic/simon
