@@ -260,6 +260,10 @@ function parseUnicode(){
 	}
 }
 
+function formatValues(o): string {
+	return Object.values(o).join(" ");
+}
+
 function formatObject(obj: Record<string, unknown>): string {
 	return Object.entries(obj)
 		.map(([key, value]) => `${key}:${value}`)
@@ -280,7 +284,8 @@ function parseBibli(){
 		const item=bibli.spec[index];
 		const keys = Object.keys(item);
 		if(index=="shortcode"){
-			echo(tag,index,formatObject(item));
+//			echo(tag,index,formatObject(item));
+			echo(tag,index,formatValues(item));
 			continue;
 		}
 		echo_bold(tag,index,keys.join(" "));
@@ -795,11 +800,22 @@ function latinString(latin, line: string, space=ThinSpace): string {
 	return out;
 }
 
-function echo_latin(...cells:any):void{
+// badly spaced in windows
+function echo_sansBold(...cells:any):void{
+	const line = cells.map(String).join("");
+	outputBuffer.push(latinString(sansBold,line,""));
+}
+
+// kinda cool big and spacey on windows
+function echo_wideLatin(...cells:any):void{
+	const line = cells.map(String).join("");
+	outputBuffer.push(latinString(wideLatin,line,""));
+}
+
+// meh
+function echo_doubleStruck(...cells:any):void{
 	const line = cells.map(String).join(' ');
-//	outputBuffer.push(latinString(wideLatin,line,""));
-//	outputBuffer.push(latinString(doubleStruck,line));
-	outputBuffer.push(latinString(sansBold,line));
+	outputBuffer.push(latinString(doubleStruck,line));
 }
 
 function echo_bold(...cells:any):void{
@@ -3690,7 +3706,7 @@ if (!fileExists) {
 
 // forge lists models from active accounts
 
-echo_latin(rohaTitle);
+echo_wideLatin(rohaTitle);
 echo("Running from "+rohaPath);
 
 await flush();
