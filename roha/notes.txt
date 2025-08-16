@@ -1,3 +1,194 @@
+// Enhanced ANSI constants
+
+const ANSI = {
+	SAVE_CURSOR: '\x1B[s',
+	RESTORE_CURSOR: '\x1B[u',
+	CLEAR_LINE: '\x1B[2K',
+	CLEAR_RIGHT: '\x1B[0K',
+	HISTORY_COLOR: '\x1B[38;5;245m',
+	RESET_COLOR: '\x1B[0m',
+	CURSOR_HIDE: '\x1B[?25l',
+	CURSOR_SHOW: '\x1B[?25h'
+};
+
+// State management
+
+class InputState {
+	private _buffer: Uint8Array = new Uint8Array(0);
+	private _cursorPos = 0;
+	private _historyIndex = -1;
+	private _savedInput = "";
+
+	get buffer(): Uint8Array {
+	return this._buffer;
+	}
+
+	set buffer(value: Uint8Array) {
+	this._buffer = value;
+	this._cursorPos = value.length;
+	}
+
+	get cursorPos(): number {
+	return this._cursorPos;
+	}
+
+	set cursorPos(pos: number) {
+	this._cursorPos = Math.max(0, Math.min(pos, this._buffer.length));
+	}
+
+	get historyIndex(): number {
+	return this._historyIndex;
+	}
+
+	set historyIndex(index: number) {
+	this._historyIndex = index;
+	if (index === -1 && this._savedInput) {
+	this.buffer = encoder.encode(this._savedInput);
+	this._savedInput = "";
+	}
+	}
+
+	saveCurrentInput() {
+	if (this._historyIndex === -1) {
+	this._savedInput = decoder.decode(this._buffer);
+	}
+	}
+	}
+
+	const state = new InputState();
+	const history: string[] = [];
+
+	async function handleArrowKey(code: number) {
+	switch(code) {
+	case CURSOR_UP:
+	if (history.length === 0) return;
+	if (state.historyIndex === -1) state.saveCurrentInput();
+	state.historyIndex = Math.min(state.historyIndex + 1, history.length - 1);
+	await updateDisplay(history[state.historyIndex]);
+	break;
+
+	case CURSOR_DOWN:
+	if (state.historyIndex === -1) return;
+	state.historyIndex = Math.max(-1, state.historyIndex - 1);
+	const displayText = state.historyIndex >= 0
+	? history[state.historyIndex]
+	: state._savedInput;
+	await updateDisplay(displayText);
+	break;
+
+	case CURSOR_LEFT:
+	state.cursorPos--;
+	await moveCursor(state.cursorPos);
+	break;
+
+	case CURSOR_RIGHT:
+	state.cursorPos++;
+	await moveCursor(state.cursorPos);
+	break;
+	}
+	}
+
+	async function updateDisplay(text: string) {
+	// Save cursor, clear line, write new content
+	await writer.write(encoder.encode(
+	`\r${ANSI.CLEAR_LINE}${text}`
+	));
+	state.buffer = encoder.encode(text);
+	}
+
+	async function moveCursor(pos: number) {
+	const moveSeq = `\x1B[${pos + 1}G`; // Move to column (1-based)
+	await writer.write(encoder.encode(moveSeq));
+	state.cursorPos = pos;
+	}
+
+	async function handleCharacterInput(byte: number) {
+	// Reset history navigation on regular input
+	if (state.historyIndex !== -1) {
+	state.historyIndex = -1;
+	}
+
+	// Insert character at cursor position
+	const newBuffer = new Uint8Array(state.buffer.length + 1);
+	newBuffer.set(state.buffer.subarray(0, state.cursorPos));
+	newBuffer[state.cursorPos] = byte;
+	newBuffer.set(
+	state.buffer.subarray(state.cursorPos),
+	state.cursorPos + 1
+	);
+
+	state.buffer = newBuffer;
+	state.cursorPos++;
+
+	// Optimized display update
+	await writer.write(encoder.encode(
+	`\x1B[s${decoder.decode(newBuffer.subarray(state.cursorPos - 1))}\x1B[u`
+	));
+	}
+
+	export async function rawPrompt(message: string, refreshInterval: boolean) {
+	// Initial setup
+	await writer.write(encoder.encode(`${message}${ANSI.CURSOR_SHOW}`));
+
+	let timer: number | undefined;
+	if (refreshInterval) {
+	timer = setInterval(async () => {
+	const line = decoder.decode(state.buffer);
+	await refreshBackground(5, message + line);
+	}, 1000);
+	}
+
+	try {
+	Deno.stdin.setRaw(true);
+	let busy = true;
+
+	while (busy) {
+	const { value, done } = await reader.read();
+	if (done || !value) break;
+
+	for (const byte of value) {
+	if (byte === 0x1b && value.length >= 3 && value[1] === 0x5b) {
+	await handleArrowKey(value[2]);
+	}
+	else if (byte === 0x7F || byte === 0x08) { // Backspace
+	if (state.buffer.length > 0 && state.cursorPos > 0) {
+	const newBuffer = new Uint8Array(state.buffer.length - 1);
+	newBuffer.set(state.buffer.subarray(0, state.cursorPos - 1));
+	newBuffer.set(
+		state.buffer.subarray(state.cursorPos),
+		state.cursorPos - 1
+	);
+
+	await writer.write(encoder.encode(
+		`\x1B[D\x1B[s${decoder.decode(newBuffer.subarray(state.cursorPos - 1))} \x1B[u`
+	));
+
+	state.buffer = newBuffer;
+	state.cursorPos--;
+	}
+	}
+	else if (byte === 0x0A || byte === 0x0D) { // Enter
+	const result = decoder.decode(state.buffer).trim();
+	if (result) history.unshift(result); // Add to history
+	busy = false;
+	}
+	else if (byte >= 32 && byte <= 126) { // Printable ASCII
+	await handleCharacterInput(byte);
+	}
+	}
+	}
+
+	return decoder.decode(state.buffer).trim();
+	} finally {
+	if (timer) clearInterval(timer);
+	Deno.stdin.setRaw(false);
+	await writer.write(encoder.encode(ANSI.CURSOR_SHOW));
+	}
+	}
+
+
+
+
 rawprompt - experimental rawmode stdin - broken paste is true
 Slop Fountain has crashed, darn, this release will be stable soon: ReferenceError: rawPrompt is not defined
     at promptForge (file:///C:/nitrologic/fountain/roha/slopfountain.ts:2129:2)
@@ -8,19 +199,19 @@ exitForge Ending session.
 
 
 
-[BIBLI] shortcode grinning:😀, smiley:😃, smile:😄, grin:😁, laughing:😆, sweat_smile:😅, rofl:🤣, joy:😂, 
-plunger:🪠, robot:🤖, unicorn:🦄,  heart:❤️, thumbsup:👍, fire:🔥, star:⭐, eyes:👀, 
-check:✅, warning:⚠️, question:❓, exclamation:❗, zzz:💤, clock:⏰, hourglass:⏳, 
-lightnin ng:⚡, rainbow:🌈, moon:🌙, sun:☀️, cloud:☁️, umbrella:☔, snowman:⛄, cat:🐱, dog:🐶, pizza:🍕, 
-beer:🍺, coffee:☕, cake:🎂, music:🎵, phone: :📱, computer:💻, book:📖, money:💵, gift:🎁, balloon:🎈, 
-rocket:🚀, car:🚗, plane:✈️, bike:🚲, football:⚽, basketball:🏀, tennis:🎾, medal:  🏅, trophy:🏆, melting_face:🫠, 
-face_with_peeking_eye:🫢, saluting_face:🫡, dotted_line_face:🫥, face_with_diagonal_mouth:🫣, pregnant_person    n:🫄, 
-person_with_crown:🫅, people_hugging:🫂, hand_with_index_finger_and_thumb_crossed:🫰, rightwards_pushing_hand:🫷, 
-leftwards_pushing_hand    d:🫸, palm_down_hand:🫳, palm_up_hand:🫴, index_pointing_at_viewer:🫵, troll:🧌, wing:🪽, 
-goose:🪿, black_bird:🪿, beans:🫘, pouring_liquid:🫗        🫗, jar:🫙, maracas:🪇, flute:🪈, nest_with_eggs:🪺, 
+[BIBLI] shortcode grinning:😀, smiley:😃, smile:😄, grin:😁, laughing:😆, sweat_smile:😅, rofl:🤣, joy:😂,
+plunger:🪠, robot:🤖, unicorn:🦄,  heart:❤️, thumbsup:👍, fire:🔥, star:⭐, eyes:👀,
+check:✅, warning:⚠️, question:❓, exclamation:❗, zzz:💤, clock:⏰, hourglass:⏳,
+lightnin ng:⚡, rainbow:🌈, moon:🌙, sun:☀️, cloud:☁️, umbrella:☔, snowman:⛄, cat:🐱, dog:🐶, pizza:🍕,
+beer:🍺, coffee:☕, cake:🎂, music:🎵, phone: :📱, computer:💻, book:📖, money:💵, gift:🎁, balloon:🎈,
+rocket:🚀, car:🚗, plane:✈️, bike:🚲, football:⚽, basketball:🏀, tennis:🎾, medal:  🏅, trophy:🏆, melting_face:🫠,
+face_with_peeking_eye:🫢, saluting_face:🫡, dotted_line_face:🫥, face_with_diagonal_mouth:🫣, pregnant_person    n:🫄,
+person_with_crown:🫅, people_hugging:🫂, hand_with_index_finger_and_thumb_crossed:🫰, rightwards_pushing_hand:🫷,
+leftwards_pushing_hand    d:🫸, palm_down_hand:🫳, palm_up_hand:🫴, index_pointing_at_viewer:🫵, troll:🧌, wing:🪽,
+goose:🪿, black_bird:🪿, beans:🫘, pouring_liquid:🫗        🫗, jar:🫙, maracas:🪇, flute:🪈, nest_with_eggs:🪺,
 empty_nest:🪹, hook:🪝, low_battery:🪫, crutch:🩼, shaking_face:🫨, pink_heart:🩷, light_b          blue_heart:🩵,
-grey_heart:🩶, khanda:🪯, wireless:🛜, phoenix:🪶, broken_chain:⛓️‍💥, ⊛ ginger_root:🫚, moose:🫎, donkey:🫏, 
-hair_pick:🪮, fol          lding_hand_fan:🪭, pea_pod:🫛, hyacinth:🪻, jellyfish:🪼, shovel:🫷, lime:🫒, 
+grey_heart:🩶, khanda:🪯, wireless:🛜, phoenix:🪶, broken_chain:⛓️‍💥, ⊛ ginger_root:🫚, moose:🫎, donkey:🫏,
+hair_pick:🪮, fol          lding_hand_fan:🪭, pea_pod:🫛, hyacinth:🪻, jellyfish:🪼, shovel:🫷, lime:🫒,
 fingerprint:🫳‍🟦, family_with_children:👨‍👩‍👧‍👦
 
 Here are the Linear B number signs in Unicode:
@@ -80,18 +271,18 @@ The number system is decimal but uses distinct symbols for each power of ten. Wo
 full Unicode ranges or usage examples?
 
 
-[BIBLI] shortcode 
+[BIBLI] shortcode
 
-grinning:😀, smiley:😃, smile:😄, grin:😁, laughing:😆, sweat_smile:😅, rofl:🤣, joy:😂, 
-plunger:🪠, robot:🤖, unicorn:🦄,  heart:❤️, thumbsup:👍, fire:🔥, star:⭐, eyes:👀, check:✅, warning:⚠️, 
-question:❓, exclamation:❗, zzz:💤, clock:⏰, hourglass:⏳, lightnin ng:⚡, rainbow:🌈, 
-moon:🌙, sun:☀️, cloud:☁️, umbrella:☔, snowman:⛄, cat:🐱, dog:🐶, pizza:🍕, 
-beer:🍺, coffee:☕, cake:🎂, music:🎵, phone: :📱, computer:💻, book:📖, money:💵, 
-gift:🎁, balloon:🎈, rocket:🚀, car:🚗, plane:✈️, bike:🚲, 
-football:⚽, basketball:🏀, tennis:🎾, medal:  🏅, trophy:🏆, 
-melting_face:🫠, face_with_peeking_eye:🫢, saluting_face:🫡, dotted_line_face:🫥, 
-face_with_diagonal_mouth:🫣, 
-pregnant_person:🫄, person_with_crown:🫅, people_hugging:🫂, hand_with_index_finger_and_thumb_crossed:🫰, rightwards_pushing_hand:🫷, leftw     wards_pushing_hand:🫸, palm_down_hand:🫳, palm_up_hand:🫴, index_pointing_at_viewer:🫵, troll:🧌, wing:🪽, goose:🪿, black_bird:🪿, beans:🫘,          pouring_liquid:🫗, jar:🫙, maracas:🪇, flute:🪈, nest_with_eggs:🪺, empty_nest:🪹, hook:🪝, low_battery:🪫, crutch:🩼, shaking_face:🫨, pink_         _heart:🩷, light_blue_heart:🩵, grey_heart:🩶, khanda:🪯, wireless:🛜, phoenix:🪶, broken_chain:⛓️‍💥, ⊛ ginger_root:🫚, moose:🫎, donkey:🫏,            hair_pick:🪮, folding_hand_fan:🪭, pea_pod:🫛, hyacinth:🪻, jellyfish:🪼, shovel:🫷, lime:🫒, fingerprint:🫳‍🟦, family_with_children:👨‍👩‍ 
+grinning:😀, smiley:😃, smile:😄, grin:😁, laughing:😆, sweat_smile:😅, rofl:🤣, joy:😂,
+plunger:🪠, robot:🤖, unicorn:🦄,  heart:❤️, thumbsup:👍, fire:🔥, star:⭐, eyes:👀, check:✅, warning:⚠️,
+question:❓, exclamation:❗, zzz:💤, clock:⏰, hourglass:⏳, lightnin ng:⚡, rainbow:🌈,
+moon:🌙, sun:☀️, cloud:☁️, umbrella:☔, snowman:⛄, cat:🐱, dog:🐶, pizza:🍕,
+beer:🍺, coffee:☕, cake:🎂, music:🎵, phone: :📱, computer:💻, book:📖, money:💵,
+gift:🎁, balloon:🎈, rocket:🚀, car:🚗, plane:✈️, bike:🚲,
+football:⚽, basketball:🏀, tennis:🎾, medal:  🏅, trophy:🏆,
+melting_face:🫠, face_with_peeking_eye:🫢, saluting_face:🫡, dotted_line_face:🫥,
+face_with_diagonal_mouth:🫣,
+pregnant_person:🫄, person_with_crown:🫅, people_hugging:🫂, hand_with_index_finger_and_thumb_crossed:🫰, rightwards_pushing_hand:🫷, leftw     wards_pushing_hand:🫸, palm_down_hand:🫳, palm_up_hand:🫴, index_pointing_at_viewer:🫵, troll:🧌, wing:🪽, goose:🪿, black_bird:🪿, beans:🫘,          pouring_liquid:🫗, jar:🫙, maracas:🪇, flute:🪈, nest_with_eggs:🪺, empty_nest:🪹, hook:🪝, low_battery:🪫, crutch:🩼, shaking_face:🫨, pink_         _heart:🩷, light_blue_heart:🩵, grey_heart:🩶, khanda:🪯, wireless:🛜, phoenix:🪶, broken_chain:⛓️‍💥, ⊛ ginger_root:🫚, moose:🫎, donkey:🫏,            hair_pick:🪮, folding_hand_fan:🪭, pea_pod:🫛, hyacinth:🪻, jellyfish:🪼, shovel:🫷, lime:🫒, fingerprint:🫳‍🟦, family_with_children:👨‍👩‍
 
 			"brown_mushroom": "🍄‍🟫",
 			"mirror_ball": "🪩",
@@ -108,12 +299,12 @@ pregnant_person:🫄, person_with_crown:🫅, people_hugging:🫂, hand_with_ind
     at async chat (file:///Users/simon/fountain/roha/slopfountain.ts:3616:5)
     at async file:///Users/simon/fountain/roha/slopfountain.ts:3780:2
 
-# ꔀ ꔁ ꔂ ꔃ ꔄ ꔅ ꔆ ꔇ ꔈ ꔉ ꔊ ꔋ ꔌ ꔍ ꔎ ꔏ ꔐ ꔑ ꔒ ꔓ ꔔ ꔕ ꔖ ꔗ ꔘ ꔙ ꔚ ꔛ 
-# ꔜ ꔝ ꔞ. ꔟ ꔠ ꔡ ꔢ ꔣ ꔤ ꔥ ꔦ ꔧ ꔨ ꔩ ꔪ ꔫ ꔬ ꔭ ꔮ ꔯ ꔰ ꔱ ꔲ ꔳ ꔴ ꔵ ꔶ ꔷ 
+# ꔀ ꔁ ꔂ ꔃ ꔄ ꔅ ꔆ ꔇ ꔈ ꔉ ꔊ ꔋ ꔌ ꔍ ꔎ ꔏ ꔐ ꔑ ꔒ ꔓ ꔔ ꔕ ꔖ ꔗ ꔘ ꔙ ꔚ ꔛ
+# ꔜ ꔝ ꔞ. ꔟ ꔠ ꔡ ꔢ ꔣ ꔤ ꔥ ꔦ ꔧ ꔨ ꔩ ꔪ ꔫ ꔬ ꔭ ꔮ ꔯ ꔰ ꔱ ꔲ ꔳ ꔴ ꔵ ꔶ ꔷ
 
 ꔸꔹꔺꔻꔼꔽꔾꔿꕀꕁꕂꕃꕄꕅꕆꕇꕈꕉꕊꕋꕌꕍꕎꕏꕐꕑꕒꕓꕔꕕꕖꕗꕘꕙꕚꕛꕜꕝꕞꕟꕠꕡꕢꕣꕤꕥꕦꕧꕨꕩꕪꕫꕬꕭꕮꕯꕰꕱꕲꕳꕴꕵꕶꕷꕸꕹꕺꕻꕼꕽꕾꕿꖀꖁꖂꖃꖄꖅꖆꖇꖈꖉꖊꖋꖌꖍꖎꖏꖐꖑꖒꖓꖔꖕꖖꖗꖘꖙꖚꖛꖜꖝꖞꖟꖠꖡꖢꖣꖤꖥꖦꖧꖨꖩꖪꖫꖬꖭꖮꖯꖰꖱꖲꖳꖴꖵꖶꖷꖸꖹꖺꖻꖼꖽꖾꖿꗀꗁꗂꗃꗄꗅꗆꗇꗈꗉꗊꗋꗌꗍꗎꗏꗐꗑꗒꗓꗔꗕꗖꗗꗘꗙꗚꗛꗜꗝꗞꗟꗠꗡꗢꗣꗤꗥꗦꗧꗨꗩꗪꗫꗬꗭꗮꗯꗰꗱꗲꗳꗴꗵꗶꗷꗸꗹꗺꗻꗼꗽꗾꗿꘀꘁꘂꘃꘄꘅꘆꘇꘈꘉꘊꘋꘌ꘍꘎꘏ꘐꘑꘒꘓꘔꘕꘖꘗꘘꘙꘚꘛꘜꘝꘞꘟ",
 
-ꔞ. 
+ꔞ.
 
 𝖠𝖡𝖢𝖣𝖤𝖥𝖦𝖧𝖨𝖩𝖪𝖫𝖬𝖭𝖮𝖯𝖰𝖱𝖲𝖳𝖴𝖵𝖶𝖷𝖸𝖹
 𝖺𝖻𝖼𝖽𝖾𝖿𝗀𝗁𝗂𝗃𝗄𝗅𝗆𝗇𝗈𝗉𝗊𝗋𝗌𝗍𝗎𝗏𝗐𝗑𝗒𝗓
