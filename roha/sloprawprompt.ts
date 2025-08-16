@@ -18,10 +18,13 @@ let slopFrame=0;
 let inCode=false;
 let codePos=0;
 
-const SAVE_CURSOR = '\x1B[s';
-const RESTORE_CURSOR = '\x1B[u';
-const CLEAR_LINE = '\x1B[2K';
-const ANSI_CLEAR_LINE = '\x1B[K';
+const ANSI={
+	SAVE_CURSOR:'\x1B[s',
+	RESTORE_CURSOR:'\x1B[u',
+	CLEAR_LINE:'\x1B[K',
+	CLEAR_LINE_START:'\x1B[1K',
+	CLEAR_LINE_FULL:'\x1B[2K'
+};
 
 const encoder=new TextEncoder();
 const decoder=new TextDecoder("utf-8");
@@ -54,7 +57,7 @@ async function navigateHistory(direction: 'up'|'down') {
 	// 1. Move to start of line
 	// 2. Clear line
 	// 3. Write new content
-	await writer.write(encoder.encode('\r' + CLEAR_LINE + displayText));
+	await writer.write(encoder.encode('\r' + ANSI.CLEAR_LINE + displayText));
 	promptBuffer = encoder.encode(displayText);
 }
 
@@ -87,7 +90,7 @@ function replaceText(count:number,text:string):[]{
 			bytes.push(0x08);
 		}
 	}
-	const raw=encoder.encode(ANSI_CLEAR_LINE+text);//.normalize("NFKC"));
+	const raw=encoder.encode(ANSI.CLEAR_LINE+text);//.normalize("NFKC"));
 	for(let i=0;i<raw.length;i++){
 		bytes.push(raw[i]);
 	}

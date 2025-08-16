@@ -1002,7 +1002,7 @@ async function geminiSay(content:string,voiceName="Kore"){
 	}
 }
 
-async function saveGeminiSpeech(audio: Uint8Array, mimeType:string): Promise<string> {
+async function saveGeminiSpeech(audio: Uint8Array, mimeType:string, metaData:string[]): Promise<string> {
 	// expecting audio/L16;codec=pcm;rate=24000
 	const format:string = "wav";
 	const timestamp=Math.floor(Date.now()/1000).toString(16);
