@@ -2106,7 +2106,12 @@ function resolvePath(dir,filename){
 async function promptForge(message:string) {
 	if(!roha.config.rawprompt) return prompt(message);
 	const refreshInterval=roha.config.refreshBackground;
-	return rawPrompt(message,refreshInterval);
+	const reply=await rawPrompt(message,refreshInterval);
+	if(reply===null){
+		await exitForge();
+		Deno.exit(0);
+	} 
+	return reply;
 }
 
 async function addShare(share){

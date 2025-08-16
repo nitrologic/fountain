@@ -3,31 +3,7 @@
 // arrow navigation and tab completion incoming
 // a reminder to enable rawprompt for new modes
 
-// new version with timeout
-
-// const promptTimeout = new AbortController();
-
-// const text=SaveCursorA + AnsiHome + AnsiClear + frame + RestoreCursorA;
-
-// stdin logging disabled
-
-// purpose of promptBuffer? - delete key stuff? - array of codepoints?
-
-let promptBuffer=new Uint8Array(0);
-let slopFrame=0;
-let inCode=false;
-let codePos=0;
-
-const ANSI={
-	SAVE_CURSOR:'\x1B[s',
-	RESTORE_CURSOR:'\x1B[u',
-	CLEAR_LINE:'\x1B[K',
-	CLEAR_LINE_START:'\x1B[1K',
-	CLEAR_LINE_FULL:'\x1B[2K'
-};
-
-const encoder=new TextEncoder();
-const decoder=new TextDecoder("utf-8");
+// shortcode input support
 
 const reader=Deno.stdin.readable.getReader();
 const writer=Deno.stdout.writable.getWriter();
@@ -35,20 +11,80 @@ const writer=Deno.stdout.writable.getWriter();
 const bibli=JSON.parse(await Deno.readTextFile("./bibli.json"));
 const shortcode=bibli.spec.shortcode;
 
+function replaceShortcode(input:string): string {
+	return input.replace(/:([a-z_]+):/g, (match, code) => {
+		return shortcode[code] || match;
+	});
+}
+
+// grapheme clusters are the new u8
+
+const encoder=new TextEncoder();
+const decoder=new TextDecoder("utf-8");
+const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
+
+let grapheme:string[]=[];
+
+function addInput(input:string) {
+	grapheme.push(...(input.match(/(\p{Emoji_Presentation}|\p{Extended_Pictographic}\u200D?)+|./gu) || []));
+//	grapheme.push(...[...segmenter.segment(input)].map(segment => segment.segment));
+}
+
+function backspace(bytes:number[]) {
+	if (grapheme.length){
+		const lastChar = grapheme.pop()!;
+		const width = stringWidth(lastChar) || 1;
+		for (let i = 0; i < width; i++) {
+			bytes.push(0x08, 0x20, 0x08);
+		}
+	}
+}
+
+function replaceText(bytes:[],count:number,text:string){
+	for(let i=0;i<count;i++){
+		backspace(bytes);
+	}
+	const raw=encoder.encode(ANSI.CLEAR_LINE+text);
+	for(let i=0;i<raw.length;i++){
+		bytes.push(raw[i]);
+	}
+}
+
+// grapheme geometry
+
+// a simple fallback for platforms with special needs - windows terminals :eyes:
+// emoji wide char groups may need cludge for abnormal plungers
+// unicode ranges featuring wide chars
+
+const WideRanges = [
+	[0x1100, 0x115F],[0x2329, 0x232A],[0x2E80, 0x303E],[0x3040, 0xA4CF],[0xAC00, 0xD7A3],
+	[0xF900, 0xFAFF],[0xFE10, 0xFE19],[0xFE30, 0xFE6F],[0xFF00, 0xFF60],[0xFFE0, 0xFFE6],
+	[0x1F000, 0x1F02F],[0x1F0A0, 0x1F0FF],[0x1F100, 0x1F1FF],[0x1F300, 0x1F9FF],
+	[0x20000, 0x2FFFD],[0x30000, 0x3FFFD]
+];
+const isWide = (cp: number) => WideRanges.some(([start, end]) => cp >= start && cp <= end);
+export function stringWidth(text:string):number{
+	let w = 0;
+	for (const ch of text) {
+		const codePoint=ch.codePointAt(0) ?? 0;
+		w += isWide(codePoint) ? 2 : 1;
+	}
+	return w;
+}
+
+// terminal history 
+
 let currentInput="";
 let historyIndex = -1;
 const history:string[]=[];
 
 async function navigateHistory(direction: 'up'|'down') {
-	// Save current input if we're just starting history navigation
 	if (historyIndex === -1 && direction === 'up') {
-		currentInput = decoder.decode(promptBuffer);
+		currentInput=grapheme.join("");
 	}
-
 	// Calculate new index
 	const newIndex = Math.max(-1,
-	Math.min(historyIndex + (direction === 'up' ? 1 : -1),
-	history.length - 1));
+	Math.min(historyIndex + (direction === 'up' ? 1 : -1), history.length - 1));
 	if (newIndex === historyIndex) return;
 	historyIndex = newIndex;
 	// Get the history item or current input
@@ -58,8 +94,13 @@ async function navigateHistory(direction: 'up'|'down') {
 	// 2. Clear line
 	// 3. Write new content
 	await writer.write(encoder.encode('\r' + ANSI.CLEAR_LINE + displayText));
-	promptBuffer = encoder.encode(displayText);
+	grapheme = [...segmenter.segment(displayText)].map(segment => segment.segment);
 }
+
+const CURSOR_UP=65;
+const CURSOR_DOWN=66;
+const CURSOR_LEFT=67;
+const CURSOR_RIGHT=68;
 
 function onCursor(code: number) {
 	switch(code) {
@@ -72,30 +113,17 @@ function onCursor(code: number) {
 	}
 }
 
-const CURSOR_UP=65;
-const CURSOR_DOWN=66;
-const CURSOR_LEFT=67;
-const CURSOR_RIGHT=68;
+let slopFrame=0;
+let inCode=false;
+let codePos=0;
 
-function replaceShortcode(text: string): string {
-	return text.replace(/:([a-z_]+):/g, (match, code) => {
-		return bibli.spec.shortcode[code] || match;
-	});
-}
-function replaceText(count:number,text:string):[]{
-	const bytes=[];
-	if (promptBuffer.length > 0) {
-		promptBuffer=promptBuffer.slice(0,-count);
-		for(let i=0;i<count;i++){
-			bytes.push(0x08);
-		}
-	}
-	const raw=encoder.encode(ANSI.CLEAR_LINE+text);//.normalize("NFKC"));
-	for(let i=0;i<raw.length;i++){
-		bytes.push(raw[i]);
-	}
-	return bytes;
-}
+const ANSI={
+	SAVE_CURSOR:'\x1B[s',
+	RESTORE_CURSOR:'\x1B[u',
+	CLEAR_LINE:'\x1B[K',
+	CLEAR_LINE_START:'\x1B[1K',
+	CLEAR_LINE_FULL:'\x1B[2K'
+};
 
 export async function rawPrompt(message:string,refreshInterval:boolean) {
 	let result="";
@@ -107,19 +135,15 @@ export async function rawPrompt(message:string,refreshInterval:boolean) {
 //	if(roha.config.page) {
 //		await writer.write(homeCursor);
 //	}
-
 	let busy=true;
 	let timer;
-
 	if(refreshInterval){
 		timer = setInterval(async() => {
-			const line=decoder.decode(promptBuffer);
+			const line=grapheme.join("");
 			await refreshBackground(5,message+line);
 		}, 1000);
 	}
-
 	Deno.stdin.setRaw(true);
-
 	while (busy) {
 		try {
 			const { value, done }=await reader.read();
@@ -127,53 +151,39 @@ export async function rawPrompt(message:string,refreshInterval:boolean) {
 			let bytes=[];
 			for (const byte of value) {
 				if (byte === 0x7F || byte === 0x08) { // Backspace
-					if (promptBuffer.length > 0) {
-						promptBuffer=promptBuffer.slice(0, -1);
-						bytes.push(0x08, 0x20, 0x08);
-					}
+					backspace(bytes);
 				} else if (byte === 0x1b) { // Escape sequence
 					if (value.length === 1) {
-						throw("ExitForge");
-//						await exitForge();
-//						Deno.exit(0);
+						return null;
 					}
 					if (value.length >= 3) {
 						if (value[1] === 0xf4 && value[2] === 0x50) {
 							console.log("[RAW] F1");
 						}
-
 						 if (value[1] === 0x5b) { // CSI
-//							console.log("[RAW] 0x5B ",value[2]);
 							onCursor(value[2]);
 						 }
 					}
 					break;
 				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
 					bytes.push(0x0D, 0x0A);
-					const line=decoder.decode(promptBuffer);
-					const n = encoder.encode(line).length;
-//					let n=line.length;
-					if (n > 0) {
-						promptBuffer=promptBuffer.slice(n);
-					}
+					const line=grapheme.join("");
+					grapheme=[];
 					result=line.trimEnd();
 //					await logForge(result, "stdin");
 					busy=false;
 				} else {
 					bytes.push(byte);
-					// this is a heavy weight ooverwrite of promptBuffer
-					const buf=new Uint8Array(promptBuffer.length + 1);
-					buf.set(promptBuffer);
-					buf[promptBuffer.length]=byte;
-					promptBuffer=buf;
+					const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
+					addInput(char);
 					if (byte === 0x3A) { // Colon ':'
-						const n=promptBuffer.length;
+						const n=grapheme.length;
 						if(inCode){
 							if(n>codePos){
-								const words=promptBuffer.subarray(codePos,n-1);
-								const lower=decoder.decode(words).toLowerCase();
+								const words=grapheme.slice(codePos, n - 1).join("");
+								const lower=words.toLowerCase();
 								if(lower in shortcode){
-									bytes=replaceText(n-codePos,shortcode[lower]+"\u200c");	//FE0F
+									replaceText(bytes,n-codePos,shortcode[lower]+"\ufe0f");	//200c FE0F
 								}
 							}
 							inCode=false;
@@ -210,8 +220,8 @@ export async function refreshBackground(ms,line) {
 	if(slopFrames.length&&slopFrame!=slopFrames.length){
 		slopFrame=slopFrames.length;
 		const frame=slopFrames[slopFrame-1];
-//		const message=AnsiHome + frame + AnsiCursor + row + ";1H\n" + prompt+line;
-		const message=AnsiHome + frame + ansiPrompt() + line;
+//		const message=ANSI.Home + frame + AnsiCursor + row + ";1H\n" + prompt+line;
+		const message=ANSI.Home + frame + ansiPrompt() + line;
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}

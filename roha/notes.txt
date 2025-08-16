@@ -1,3 +1,11 @@
+					//decoder.decode(promptBuffer);
+//					const n = encoder.encode(line).length;
+//					let n=line.length;
+//					if (n > 0) {
+//						promptBuffer=promptBuffer.slice(n);
+//					}
+
+
 // Enhanced ANSI constants
 
 const ANSI = {
