@@ -1,23 +1,24 @@
-// a raw mode prompt replacement
-// roha.config.rawprompt is not default
-// arrow navigation and tab completion incoming
-// a reminder to enable rawprompt for new modes
+// sloprawprompt.ts - A raw mode prompt replacement for slop fountain
+// Copyright (c) 2025 Simon Armstrong
+// Licensed under the MIT License
 
-// shortcode input support
+// rawPrompt(message:string,refreshInterval:boolean)
+
+// history, shortcode input, async cursor keys
+
+// fountain users - roha.config.rawprompt is not currently default
 
 const reader=Deno.stdin.readable.getReader();
 const writer=Deno.stdout.writable.getWriter();
 
+// shortcode :heart: mapping
+
 const bibli=JSON.parse(await Deno.readTextFile("./bibli.json"));
 const shortcode=bibli.spec.shortcode;
 
-function old_replaceShortcode(input:string): string {
-	return input.replace(/:([a-z_]+):/g, (match, code) => {
-		return shortcode[code] || match;
-	});
-}
+// grapheme clusters are the new u8 ???
 
-// grapheme clusters are the new u8
+// see stringWidth(text:string) below for bespoke column counting of wide emoji
 
 const encoder=new TextEncoder();
 const decoder=new TextDecoder("utf-8");
@@ -52,9 +53,11 @@ function replaceText(bytes:[],count:number,text:string){
 
 // grapheme geometry
 
-// a simple fallback for platforms with special needs - windows terminals :eyes:
+// a simple fallback for platforms with special needs 
+// > windows terminals :eyes:
+
 // emoji wide char groups may need cludge for abnormal plungers
-// unicode ranges featuring wide chars
+// unicode ranges currently featuring wide chars
 
 const WideRanges = [
 	[0x1100, 0x115F],[0x2329, 0x232A],[0x2600, 0x26FF],
