@@ -11,7 +11,7 @@ const writer=Deno.stdout.writable.getWriter();
 const bibli=JSON.parse(await Deno.readTextFile("./bibli.json"));
 const shortcode=bibli.spec.shortcode;
 
-function replaceShortcode(input:string): string {
+function old_replaceShortcode(input:string): string {
 	return input.replace(/:([a-z_]+):/g, (match, code) => {
 		return shortcode[code] || match;
 	});
@@ -44,7 +44,7 @@ function replaceText(bytes:[],count:number,text:string){
 	for(let i=0;i<count;i++){
 		backspace(bytes);
 	}
-	const raw=encoder.encode(ANSI.CLEAR_LINE+text);
+	const raw=encoder.encode(text);
 	for(let i=0;i<raw.length;i++){
 		bytes.push(raw[i]);
 	}
@@ -57,7 +57,8 @@ function replaceText(bytes:[],count:number,text:string){
 // unicode ranges featuring wide chars
 
 const WideRanges = [
-	[0x1100, 0x115F],[0x2329, 0x232A],[0x2E80, 0x303E],[0x3040, 0xA4CF],[0xAC00, 0xD7A3],
+	[0x1100, 0x115F],[0x2329, 0x232A],[0x2600, 0x26FF],
+	[0x2E80, 0x303E],[0x3040, 0xA4CF],[0xAC00, 0xD7A3],
 	[0xF900, 0xFAFF],[0xFE10, 0xFE19],[0xFE30, 0xFE6F],[0xFF00, 0xFF60],[0xFFE0, 0xFFE6],
 	[0x1F000, 0x1F02F],[0x1F0A0, 0x1F0FF],[0x1F100, 0x1F1FF],[0x1F300, 0x1F9FF],
 	[0x20000, 0x2FFFD],[0x30000, 0x3FFFD]
@@ -72,7 +73,7 @@ export function stringWidth(text:string):number{
 	return w;
 }
 
-// terminal history 
+// terminal history
 
 let currentInput="";
 let historyIndex = -1;
@@ -99,11 +100,17 @@ async function navigateHistory(direction: 'up'|'down') {
 
 const CURSOR_UP=65;
 const CURSOR_DOWN=66;
-const CURSOR_LEFT=67;
-const CURSOR_RIGHT=68;
+const CURSOR_RIGHT=67;
+const CURSOR_LEFT=68;
 
-function onCursor(code: number) {
+function onCursor(bytes,code: number) {
 	switch(code) {
+		case CURSOR_LEFT:
+			bytes.push(0x1B, 0x5B, 0x44);
+			break;
+		case CURSOR_RIGHT:
+			bytes.push(0x1B, 0x5B, 0x43);
+			break;
 		case CURSOR_UP:
 			navigateHistory('up');
 			break;
@@ -161,7 +168,7 @@ export async function rawPrompt(message:string,refreshInterval:boolean) {
 							console.log("[RAW] F1");
 						}
 						 if (value[1] === 0x5b) { // CSI
-							onCursor(value[2]);
+							onCursor(bytes,value[2]);
 						 }
 					}
 					break;
@@ -183,7 +190,8 @@ export async function rawPrompt(message:string,refreshInterval:boolean) {
 								const words=grapheme.slice(codePos, n - 1).join("");
 								const lower=words.toLowerCase();
 								if(lower in shortcode){
-									replaceText(bytes,n-codePos,shortcode[lower]+"\ufe0f");	//200c FE0F
+									const count=stringWidth(words)+2;
+									replaceText(bytes,count,shortcode[lower]+"\ufe0f");	//200c FE0F
 								}
 							}
 							inCode=false;

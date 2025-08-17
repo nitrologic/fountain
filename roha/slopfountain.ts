@@ -15,7 +15,7 @@ import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 
 import open from 'jsr:@rdsq/open';
 
-// Tested with Deno 2.4.3, V8 13.7.152.14, TypeScript 5.8.3
+// Testing with Deno 2.4.4, V8 13.7.152.14, TypeScript 5.8.3
 
 const fountainVersion="1.3.8";
 const fountainName="Fountain "+fountainVersion;
