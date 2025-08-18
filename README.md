@@ -5,9 +5,18 @@
 
 Home of nitrologic slop fountain — the 4th generation roha foundry forge LLM tool.
 
-Exposing 297 models from 11 providers the research project Fountain 1.3.8 ⛲ approaches interesting.
+Exposing 297 models from 11 providers the research project Fountain 1.4.0 ⛲ approaches interesting.
 
 > maximum prompt length exceeded - every model ever
+
+## Latest Commits
+
+The raw prompt mode is a low level keyboard driver designed to add new features to Fountain input
+
+* shortcode :eyes: type : eyes :
+* tab support - huh, no wonder the vanilla Deno prompt() is tab free
+* history support - cursor up to step back through command history like a real shell
+* async cursor keys - prepare to fire cursor and extended key presses at slop workers in focus
 
 ## Researcher Links
 

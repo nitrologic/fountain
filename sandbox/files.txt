@@ -101,7 +101,7 @@ README
 fixinc_list
 gsyslimits.h
 include
-macro_list
+macro_listls
 mkheaders.conf
 
 ./mipsel-elf/lib/gcc/mipsel-elf/15.1.0/install-tools/include:
