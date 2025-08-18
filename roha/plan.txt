@@ -1,3 +1,4 @@
+- polish raw mode - backspace tab blocks
 - click mouse - cursor controls - ui plan
 - copy button on code blocks - trim source - tabs not space
 - debounce mutiline blank line paste issue

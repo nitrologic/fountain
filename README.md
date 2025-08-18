@@ -34,7 +34,7 @@ The raw prompt mode is a low level keyboard driver designed to add new features 
 
 ## Developer setup
 
-Install [Deno 2.4.2](https://deno.com/)
+Install [Deno 2.4](https://deno.com/)
 
 ## Example output
 

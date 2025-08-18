@@ -1,8 +1,8 @@
-Welcom to the sprawl
-
 # 𓄷𓄲𓄵 𓄷𓄲𓄲 ⛲
 
-Slowly the nitrologic archives are dropped in the fountain.
+Welcome to the sprawl.
+
+As the nitrologic archives luge toward the fountains:
 
 ## recent changes
 

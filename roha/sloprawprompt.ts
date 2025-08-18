@@ -31,12 +31,25 @@ function addInput(input:string) {
 //	grapheme.push(...[...segmenter.segment(input)].map(segment => segment.segment));
 }
 
+const TabWidth=8;
 function backspace(bytes:number[]) {
 	if (grapheme.length){
 		const lastChar = grapheme.pop()!;
-		const width = stringWidth(lastChar) || 1;
-		for (let i = 0; i < width; i++) {
-			bytes.push(0x08, 0x20, 0x08);
+		const isTab=(lastChar=="\t");
+		if(isTab){
+			// instead of tracking cursor pos 
+			// pos is position at end of prompt
+			const pos=stringWidth(grapheme.join(""));
+			const tabStop=(pos/TabWidth)|0;
+			const spaces = TabWidth - (pos % TabWidth);
+			for (let i = 0; i < spaces; i++) {
+				bytes.push(0x08);
+			}
+		}else{
+			const width = stringWidth(lastChar) || 1;
+			for (let i = 0; i <	 width; i++) {
+				bytes.push(0x08, 0x20, 0x08);
+			}
 		}
 	}
 }
@@ -53,7 +66,7 @@ function replaceText(bytes:[],count:number,text:string){
 
 // grapheme geometry
 
-// a simple fallback for platforms with special needs 
+// a simple fallback for platforms with special needs
 // > windows terminals :eyes:
 
 // emoji wide char groups may need cludge for abnormal plungers
@@ -105,8 +118,15 @@ const CURSOR_UP=65;
 const CURSOR_DOWN=66;
 const CURSOR_RIGHT=67;
 const CURSOR_LEFT=68;
+const CSI_HOME=72;
+const CSI_END=70;
+const CSI_EXT0=50;
+const CSI_EXT1=51;
+const CSI_EXT3=53;
+const CSI_EXT4=54;
 
-function onCursor(bytes,code: number) {
+function onCSI(bytes,codes:number[]) {
+	const code=codes[2];
 	switch(code) {
 		case CURSOR_LEFT:
 			bytes.push(0x1B, 0x5B, 0x44);
@@ -120,6 +140,18 @@ function onCursor(bytes,code: number) {
 		case CURSOR_DOWN:
 			navigateHistory('down');
 			break;
+		case CSI_HOME:
+		case CSI_END:
+			console.log("[RAW] CSI home end",codes[2]);
+			break;
+		case CSI_EXT0:
+		case CSI_EXT1:
+		case CSI_EXT3:
+		case CSI_EXT4:
+			console.log("[RAW] CSI EXT ",codes[2],codes[3]);
+			break;
+		default:
+			console.log("[RAW] CSI ? ",codes)
 	}
 }
 
@@ -170,8 +202,8 @@ export async function rawPrompt(message:string,refreshInterval:boolean) {
 						if (value[1] === 0xf4 && value[2] === 0x50) {
 							console.log("[RAW] F1");
 						}
-						 if (value[1] === 0x5b) { // CSI
-							onCursor(bytes,value[2]);
+						 if (value[1] === 0x5b) { // cursor and past handlers
+							onCSI(bytes,value);
 						 }
 					}
 					break;
