@@ -21,12 +21,17 @@ The crosstool-ng project was used to build bare metal MIPS toolchain.
 
 > ct-ng menuconfig
 
-### build for 25 minutes or until risen
+### build for 25..45 minutes or until risen
 
-> ct-ng build -j8
-
+> ct-ng build
 
 ## current status
+
+With the bare metal C++ compiler we can bolt on our own stdlib.
+
+But having a newlib fail to build??? Oh...
+
+There are some .h header files in play from the C side features in files.txt which we could check in on first.
 
 ````
 [INFO ]  Installing core C gcc compiler: done in 1516.22s (at 31:34)
