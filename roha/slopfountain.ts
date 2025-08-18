@@ -12,12 +12,13 @@ import { TextToSpeechClient } from "npm:@google-cloud/text-to-speech";
 import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
+import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 
 import open from 'jsr:@rdsq/open';
 
 // Testing with Deno 2.4.4, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.4.0";
+const fountainVersion="1.4.1";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
 
@@ -1747,6 +1748,42 @@ function dropShares(){
 	if(roha.config.commitShares) echo("With commitShares enabled consider /reset.")
 }
 
+async function shareSlop(path:string,depth:number){
+	const stat=await Deno.stat(path);
+	const tag="";
+	//await promptForge("Enter tag name (optional):");
+	if(stat.isDirectory){
+		echo("Share directory <shallow> path:",path);
+		// TODO: consider depth>1
+		await shareDir(path,tag,1,depth);
+	}else{
+		// attachMedia(words);
+		const size=stat.size;
+		const modified=stat.mtime.getTime();
+		echo("Share file path:",path," size:",size," ");
+		const hash=await hashFile(path,size);
+		echo("hash:",hash);
+		await addShare({path,size,modified,hash,tag});
+	}
+}
+async function shareCommand(words:string[]){
+	const tag="";
+	const r=words[1];
+	const hasDepth=r.startsWith("/r");
+	const depth=hasDepth?Number(r.substring(2))||5:1;
+	const filename=words.slice(hasDepth?2:1).join(" ");
+	const pattern=filename;
+	for await (const entry of expandGlob(pattern)) {
+		if (entry.isFile) {
+			await shareSlop(entry.path,depth);
+		}
+		if(entry.isDirectory){
+			await shareDir(entry.path,tag,1,depth);
+		}
+	}
+	await writeForge();
+}
+
 function listShare(){
 	const list=[];
 	let count=0;
@@ -2110,7 +2147,7 @@ async function promptForge(message:string) {
 	if(reply===null){
 		await exitForge();
 		Deno.exit(0);
-	} 
+	}
 	return reply;
 }
 
@@ -2124,7 +2161,7 @@ async function addShare(share){
 
 async function shareDir(dir:string, tag:string, depth=1, maxDepth=5) {
 	try {
-		const paths=[];
+		const paths:string[]=[];
 		for await (const file of Deno.readDir(dir)) {
 			if(file.isDirectory){
 				if(!file.name.startsWith(".")){
@@ -2135,7 +2172,7 @@ async function shareDir(dir:string, tag:string, depth=1, maxDepth=5) {
 				}
 			}else{
 				if (file.isFile && !file.name.startsWith(".")) {
-					paths.push(resolvePath(dir, file.name));
+					paths.push(file);
 				}
 			}
 		}
@@ -2844,28 +2881,7 @@ async function callCommand(command:string) {
 				if (words.length==1){
 					listShare();
 				}else{
-					const r=words[1];
-					const hasDepth=r.startsWith("/r");
-					const depth=hasDepth?Number(r.substring(2))||5:1;
-					const filename=words.slice(hasDepth?2:1).join(" ");
-					// TODO: DOS resolvePath does not correct improperly cased filenames
-					const path=resolvePath(Deno.cwd(), filename);
-					const stat=await Deno.stat(path);
-					const tag="";//await promptForge("Enter tag name (optional):");
-					if(stat.isDirectory){
-						echo("Share directory <shallow> path:",path);
-						// TODO: add depth>1
-						await shareDir(path,tag,1,depth);
-						await writeForge();
-					}else{
-						// attachMedia(words);
-						const size=stat.size;
-						const modified=stat.mtime.getTime();
-						echo("Share file path:",path," size:",size," ");
-						const hash=await hashFile(path,size);
-						echo("hash:",hash);
-						await addShare({path,size,modified,hash,tag});
-					}
+					await shareCommand(words);
 					await writeForge();
 				}
 				break;

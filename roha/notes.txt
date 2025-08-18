@@ -1,3 +1,15 @@
+/*
+// TODO: DOS resolvePath does not correct improperly cased filenames
+//	const path=resolvePath(Deno.cwd(), filename);
+	try{
+		const path=resolvePath(Deno.cwd(), filename);
+	const stat=await Deno.stat(path);
+	for await (const entry of expandGlob(pattern)) {
+		if (entry.isFile) {
+		await shareSlop(entry.path);
+*/
+
+
 					//decoder.decode(promptBuffer);
 //					const n = encoder.encode(line).length;
 //					let n=line.length;
