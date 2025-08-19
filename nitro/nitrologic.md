@@ -1,4 +1,4 @@
-# 𓄷𓄲𓄵 𓄷𓄲𓄲 ⛲
+# 𓄵 𓄷𓄲𓄵 ⛲
 
 Welcome to the sprawl.
 
@@ -65,6 +65,22 @@ goto :eof
 ## housekeeping
 
 Some notes as we begin a tidy up of https://github.com/nitrologic containing some 48 public and 63 private repos.
+
+## audio endpoints noted
+
+* https://www.mixcloud.com/nitrologic/
+* https://nitrologic.bandcamp.com/
+* https://soundcloud.com/nitrologic
+
+> explore nitro nitrologic nitro [media](nitrologic/nitro/media)
+
+## song list from nitro media
+
+* [helpless](nitrologic/nitro/media/helpless.md)
+* [fade into you](nitrologic/nitro/media/fadeintoyou.md)
+* [hallelujah](nitrologic/nitro/media/hallelujah.md)
+* [somonelikeyou](nitrologic/nitro/media/somonelikeyou.md)
+* [stretched](nitrologic/nitro/media/stretched.md)
 
 ## forked repos
 
