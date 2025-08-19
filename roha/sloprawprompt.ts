@@ -120,6 +120,7 @@ const CURSOR_RIGHT=67;
 const CURSOR_LEFT=68;
 const CSI_HOME=72;
 const CSI_END=70;
+const CSI_STATUS=48;
 const CSI_EXT0=50;
 const CSI_EXT1=51;
 const CSI_EXT3=53;
@@ -140,11 +141,18 @@ function onCSI(bytes,codes:number[]) {
 		case CURSOR_DOWN:
 			navigateHistory('down');
 			break;
+		case CSI_STATUS:
+			console.log("[RAW] CSI status",codes[3]);
+			break;
 		case CSI_HOME:
 		case CSI_END:
 			console.log("[RAW] CSI home end",codes[2]);
 			break;
 		case CSI_EXT0:
+			if(codes[3]==50){
+				console.log("[RAW] printer OK");
+				break;
+			}
 		case CSI_EXT1:
 		case CSI_EXT3:
 		case CSI_EXT4:

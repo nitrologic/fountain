@@ -2,27 +2,20 @@
 // (c)2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
-import { resolve } from "https://deno.land/std/path/mod.ts";
-
+import { rawPrompt } from "./sloprawprompt.ts";
 import { echo, fileLength, Ansi } from "./slopshoptools.ts";
 
+import { resolve } from "https://deno.land/std/path/mod.ts";
+
 // scans the slop folder for .slop.js workers *
-
-// todo:
-
-// frame multiple viewports
-// const message=AnsiHome+frame+ansiPrompt()+AnsiPink+line+AnsiDefault;
-// ts support via modular plugin
-// smooth out clock ticks at both ends
 
 const BackgroundPeriod=200;
 const BackgroundDutyCycle=25;
 
 const _verbose=false;
-const rawPrompt=true;
+const _rawPrompt=true;
 
 const exitMessage="Ending session.";
-
 
 async function readFileNames(path:string,suffix:string):Promise<string[]>{
 	const result=[];
@@ -51,7 +44,7 @@ const slopFrames:string[]=[];
 const slopnames=await readFileNames(slopPath,".slop.js");
 const slopEvents:Event[]=[];
 
-console.log("[SHLOP] slop shop 0.2");
+console.log("[SHLOP] slop shop 0.3");
 console.log("[SHLOP] serving slopnames");
 console.log("[SHLOP]",slopnames);
 console.log("[SHLOP] enter to start type exit to end");
@@ -89,22 +82,6 @@ class Event{
 		this.code=code;
 	}
 };
-
-// [ 27 ] Escape
-// [ 9 ] Tab
-
-// 27, 91, 
-
-// [ 65..68 ] Up Down Right Left
-// [ 80..83 ] F1 F2 F3 F4
-// [  49, 53, 126 ] F5
-// [  49, 55, 126 ] F6
-// [  49, 56, 126 ] F7
-// [  49, 57, 126 ] F8
-// [  50, 48, 126 ] F9
-// [  50, 49, 126 ] F10
-// [  50, 51, 126 ] F11
-// [  50, 52, 126 ] F12
 
 const joyx=new Lever();
 const joyy=new Lever();
@@ -206,7 +183,6 @@ function ansiPrompt(){
 	return Ansi.Cursor + row + ";1H";// + AnsiBlankLine;
 }
 
-
 let slopFrame=0;
 let slopEvent=0;
 const reader=Deno.stdin.readable.getReader();
@@ -247,10 +223,59 @@ function exitSlop(){
 let _promptBuffer=new Uint8Array(0);
 
 async function promptSlop(message:string) {
-	if(!rawPrompt){
+	if(!_rawPrompt){
 		const response=await prompt(message);
 		return response;
 	}
+	const result=await rawPrompt(message,BackgroundDutyCycle);
+	return result;
+}
+
+while(true){
+	const input=await(promptSlop("]"));
+	if(input=="exit") break;
+	if(input==""){
+		console.log("[SHLOP] reset");
+		resetWorkers();
+		resetJoy();
+		continue;
+	}
+	console.log("[SHLOP] ",input);
+}
+
+console.log("oh no, bye");
+
+exitSlop();
+Deno.exit(0);
+
+
+
+// [ 27 ] Escape
+// [ 9 ] Tab
+
+// 27, 91, 
+
+// [ 65..68 ] Up Down Right Left
+// [ 80..83 ] F1 F2 F3 F4
+// [  49, 53, 126 ] F5
+// [  49, 55, 126 ] F6
+// [  49, 56, 126 ] F7
+// [  49, 57, 126 ] F8
+// [  50, 48, 126 ] F9
+// [  50, 49, 126 ] F10
+// [  50, 51, 126 ] F11
+// [  50, 52, 126 ] F12
+
+
+// todo:
+
+// frame multiple viewports
+// const message=AnsiHome+frame+ansiPrompt()+AnsiPink+line+AnsiDefault;
+// ts support via modular plugin
+// smooth out clock ticks at both ends
+
+
+/*
 	let result="";
 	if(message){
 		await writer.write(encoder.encode(message));
@@ -318,21 +343,4 @@ async function promptSlop(message:string) {
 	Deno.stdin.setRaw(false);
 	return result;
 }
-
-while(true){
-	const input=await(promptSlop("]"));
-	if(input=="exit") break;
-	if(input==""){
-		console.log("[SHLOP] reset");
-		resetWorkers();
-		resetJoy();
-		continue;
-	}
-	console.log("[SHLOP] ",input);
-}
-
-console.log("oh no, bye");
-
-exitSlop();
-Deno.exit(0);
-
+*/

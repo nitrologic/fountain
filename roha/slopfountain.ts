@@ -30,7 +30,8 @@ const ZeroWidthNonJoiner="\u200C";
 const ZeroJoiner="\u200D";
 const NoSpace="​‌‍";//- U+200B ZERO WIDTH SPACE (​) U+200C ZERO WIDTH NON-JOINER (‌) U+200D ZERO WIDTH JOINER (‍)
 
-const terminalColumns=100;
+const terminalColumns=100;	// default value for wordWrap()
+const slopColumns=64;		// speculative
 const statsColumn=50;
 const clipLog=1800;
 
@@ -129,6 +130,13 @@ let grokThink=0.0;
 
 // Ansi codes
 
+const ANSI={
+	DEVICE_STATUS:"\x1b[5n",
+	DSR:"\x1b[6n"
+};
+
+const AnsiTabs4="\x1b[4g";
+const AnsiTabs8="\x1b[8g";
 const AnsiReset="\x1b[0m";
 const AnsiHome="\x1B[H";
 const AnsiCursor="\x1B[";
@@ -1766,6 +1774,12 @@ async function shareSlop(path:string,depth:number){
 		await addShare({path,size,modified,hash,tag});
 	}
 }
+
+// TODO: split the screen and display slop in right column
+
+function slopCommand(words:string[]){
+}
+
 async function shareCommand(words:string[]){
 	const tag="";
 	const r=words[1];
@@ -2894,6 +2908,9 @@ async function callCommand(command:string) {
 					dirty=await commitShares(tag);
 				}
 				break;
+			case "slop":
+				slopCommand(words);
+				break;
 			default:
 				echo("Command not recognised",words[0]);
 				return false; // Command not recognized
@@ -3743,6 +3760,18 @@ let termSize = Deno.consoleSize();
 echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
+
+//if(roha.config.ansi) 
+//	console.log(AnsiTabs4);//AnsiReset)
+
+// Disable proportional spacing
+//console.log(ANSI.DEVICE_STATUS+" sent DEVICE_STATUS");	//ANSI.DSR+" sent ANSI.DSR");
+//console.log(ANSI.DSR+" sent DEVICE_DSR");	//ANSI.DSR+" sent ANSI.DSR");
+
+for(let i=1;i<7;i++){
+	const code="\x1b["+i+"n";
+	console.log(code+" - i",i);
+}
 
 if (roha.config.debugging) open("mims.pdf")
 

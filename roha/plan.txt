@@ -1,4 +1,4 @@
-- polish raw mode - backspace tab blocks
+- polish raw mode - first backspaced tab, pasting emoji shows ???
 - click mouse - cursor controls - ui plan
 - copy button on code blocks - trim source - tabs not space
 - debounce mutiline blank line paste issue
