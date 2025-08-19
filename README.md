@@ -25,9 +25,9 @@ The raw prompt mode is a low level keyboard driver designed to add new features 
 * [plan.txt](roha/plan.txt) On the list
 * [license](LICENSE) Copyright (c) 2025 Simon Armstrong - MIT License
 
-# blog posts
+# blog commentary
 
-* [blog-nitrologic](nitro/nitrologic.md) a stream of notions in recreational programming
+* [blog-nitrologic](nitro/nitrologic.md) the sprawl - a stream of notions in recreational programming
 * [blog slops](slop/blog2/blogust.md) 𐃅 recent test slop for fountain dwellers
 * [blog-fountain](slop/blog/blogfountain.md) recent fountain models under test
 * [blog-forge](https://github.com/nitrologic/forge/blob/main/blog.md) archived forge model under test
