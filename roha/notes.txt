@@ -1,3 +1,43 @@
+[EXTRA]    Configuring binutils
+[EXTRA]    Building binutils
+[EXTRA]    Installing binutils
+[INFO ]  Installing binutils for host: done in 123.68s (at 06:18)
+[INFO ]  =================================================================
+[INFO ]  Installing C library headers
+[INFO ]  Installing C library headers: done in 0.02s (at 06:18)
+[INFO ]  =================================================================
+[INFO ]  Installing core C gcc compiler
+[EXTRA]    Configuring core C gcc compiler
+[EXTRA]    Building gcc
+[EXTRA]    Installing gcc
+[EXTRA]    Housekeeping for core gcc compiler
+[EXTRA]       '' --> lib (gcc)   lib (os)
+[INFO ]  Installing core C gcc compiler: done in 1510.37s (at 31:28)
+[INFO ]  =================================================================
+[INFO ]  Installing C library
+[EXTRA]    Configuring C library
+[EXTRA]    Building C library
+[ERROR]    /home/skid/crosstool-ng/.build/mipsel-elf/src/newlib/libgloss/mips/test.c:12:3: error: 'return' with no value, in function returning non-void [-Wreturn-mismatch]
+[ERROR]    make[5]: *** [Makefile:105: test.o] Error 1
+[ERROR]    make[5]: *** Waiting for unfinished jobs....
+[ERROR]    make[4]: *** [Makefile:9835: all-recursive] Error 1
+[ERROR]    make[3]: *** [Makefile:3158: all] Error 2
+[ERROR]    make[2]: *** [Makefile:9531: all-target-libgloss] Error 2
+[ERROR]    make[1]: *** [Makefile:882: all] Error 2
+[ERROR]   
+[ERROR]  >>
+[ERROR]  >>  Build failed in step 'Installing C library'
+[ERROR]  >>        called in step '(top-level)'
+[ERROR]  >>
+[ERROR]  >>  Error happened in: CT_DoExecLog[scripts/functions@378]
+[ERROR]  >>        called from: newlib_main[scripts/build/libc/newlib.sh@116]
+[ERROR]  >>        called from: do_libc_main[scripts/build/libc.sh@33]
+[ERROR]  >>        called from: main[scripts/crosstool-NG.sh@712]
+
+
+>[RAW] CSI status 110
+[RAW] CSI EXT  53 48
+
 await raceRead(){
 	const readPromise = reader.read();
 	const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Read timeout")), 100));

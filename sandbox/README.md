@@ -2,7 +2,7 @@
 
 I wrote a Java VM for Playstation 1 in 1996
 
-I was hoping to effect a home computer using the action replay cartridge and a PC keybord adapter I had prototyped with a Scenix SX28.
+I was hoping to effect a home computer using the Action Replay cartridge and a PC keybord adapter I had prototyped with a Scenix SX28.
 
 Java was from the future and the MIPS processors were straight out of Jurassic Park.
 
@@ -11,7 +11,7 @@ The crosstool-ng project was used to build bare metal MIPS toolchain.
 # recent journey back
 
 
-## bare metal compilers
+## [SLOP] bare metal compilers
 
 ### install crosstooll ng
 
