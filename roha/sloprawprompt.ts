@@ -126,7 +126,9 @@ const CSI_EXT1=51;
 const CSI_EXT3=53;
 const CSI_EXT4=54;
 
+// 0x1b 0x5b 
 function onCSI(bytes,codes:number[]) {
+	let n=3;
 	const code=codes[2];
 	switch(code) {
 		case CURSOR_LEFT:
@@ -142,7 +144,7 @@ function onCSI(bytes,codes:number[]) {
 			navigateHistory('down');
 			break;
 		case CSI_STATUS:
-			console.log("[RAW] CSI status",codes[3]);
+			console.log("[RAW] CSI status",codes);
 			break;
 		case CSI_HOME:
 		case CSI_END:
@@ -151,16 +153,19 @@ function onCSI(bytes,codes:number[]) {
 		case CSI_EXT0:
 			if(codes[3]==50){
 				console.log("[RAW] printer OK");
+				n=4;
 				break;
 			}
 		case CSI_EXT1:
 		case CSI_EXT3:
 		case CSI_EXT4:
 			console.log("[RAW] CSI EXT ",codes[2],codes[3]);
+			n=4;
 			break;
 		default:
 			console.log("[RAW] CSI ? ",codes)
 	}
+	return n;
 }
 
 let slopFrame=0;

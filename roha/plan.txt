@@ -1,4 +1,5 @@
-- polish raw mode - first backspaced tab, pasting emoji shows ???
+- raw mode - first backspaced tab, pasting emoji shows ??? - delete mid line
+- tabs=8 char for "xterm-256color" (vscode)
 - click mouse - cursor controls - ui plan
 - copy button on code blocks - trim source - tabs not space
 - debounce mutiline blank line paste issue
