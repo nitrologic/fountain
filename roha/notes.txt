@@ -1,3 +1,34 @@
+// const writer=Deno.stdout.writable.getWriter();
+// promptForge 𓅠
+/*
+const slopFrames=[];
+
+export async function refreshBackground(ms,line) {
+	await new Promise(resolve => setTimeout(resolve, ms));
+	if(slopFrames.length&&slopFrame!=slopFrames.length){
+		slopFrame=slopFrames.length;
+		const frame=slopFrames[slopFrame-1];
+//		const message=ANSI.Home + frame + AnsiCursor + row + ";1H\n" + prompt+line;
+		const message=ANSI.Home + frame + ansiPrompt() + line;
+		await writer.write(encoder.encode(message));
+		await writer.ready;
+	}
+}
+*/
+
+//	reader.cancel();
+	if (timer) clearInterval(timer);
+//	if(roha.config.page) await writer.write(homeCursor);
+
+
+	if(refreshInterval && refreshHandler){
+		timer = setInterval(async() => {
+			const line=grapheme.join("");
+			await refreshHandler(5,message+line);
+		}, 1000);
+	}
+
+
 //if(roha.config.ansi) 
 //	console.log(AnsiTabs4);//AnsiReset)
 

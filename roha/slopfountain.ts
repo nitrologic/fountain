@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-import { rawPrompt } from "./sloprawprompt.ts";
+import { slopPrompt, rawPrompt } from "./sloprawprompt.ts";
 
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
@@ -2157,7 +2157,7 @@ function resolvePath(dir,filename){
 async function promptForge(message:string) {
 	if(!roha.config.rawprompt) return prompt(message);
 	const refreshInterval=roha.config.refreshBackground;
-	const reply=await rawPrompt(message,refreshInterval);
+	const reply=await rawPrompt(message);
 	if(reply===null){
 		await exitForge();
 		Deno.exit(0);

@@ -2,7 +2,8 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-// rawPrompt(message:string,refreshInterval:boolean)
+// rawPrompt(message:string)
+// intervalPrompt(message:string,refreshInterval:number,handler)
 
 // history, shortcode input, async cursor keys
 
@@ -208,7 +209,8 @@ async function readWithTimeout(reader, interval) {
 }
 
 // returns a line of keyboard input while refreshing background tasks
-export async function rawPrompt2(message:string,interval:boolean,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
+
+export async function slopPrompt(message:string,interval:boolean,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	let result="";
 	if(message){
 		await writer.write(encoder.encode(message));
@@ -294,20 +296,14 @@ export async function rawPrompt2(message:string,interval:boolean,refreshHandler?
 	return result;
 }
 
-export async function rawPrompt(message:string,refreshInterval:boolean,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
+export async function rawPrompt(message:string){
+	// refreshInterval:boolean,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	let result="";
 	if(message){
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
 	let busy=true;
-	let timer;
-	if(refreshInterval && refreshHandler){
-		timer = setInterval(async() => {
-			const line=grapheme.join("");
-			await refreshHandler(5,message+line);
-		}, 1000);
-	}
 	Deno.stdin.setRaw(true);
 	while (true) {
 		try {
@@ -371,28 +367,7 @@ export async function rawPrompt(message:string,refreshInterval:boolean,refreshHa
 		}
 	}
 	Deno.stdin.setRaw(false);
-//	reader.cancel();
-	if (timer) clearInterval(timer);
-//	if(roha.config.page) await writer.write(homeCursor);
 	history.push(result);
 	inCode=false;
 	return result;
 }
-
-// const writer=Deno.stdout.writable.getWriter();
-// promptForge 𓅠
-/*
-const slopFrames=[];
-
-export async function refreshBackground(ms,line) {
-	await new Promise(resolve => setTimeout(resolve, ms));
-	if(slopFrames.length&&slopFrame!=slopFrames.length){
-		slopFrame=slopFrames.length;
-		const frame=slopFrames[slopFrame-1];
-//		const message=ANSI.Home + frame + AnsiCursor + row + ";1H\n" + prompt+line;
-		const message=ANSI.Home + frame + ansiPrompt() + line;
-		await writer.write(encoder.encode(message));
-		await writer.ready;
-	}
-}
-*/
