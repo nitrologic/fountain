@@ -3761,20 +3761,6 @@ echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
 
-//if(roha.config.ansi) 
-//	console.log(AnsiTabs4);//AnsiReset)
-
-// Disable proportional spacing
-//console.log(ANSI.DEVICE_STATUS+" sent DEVICE_STATUS");	//ANSI.DSR+" sent ANSI.DSR");
-//console.log(ANSI.DSR+" sent DEVICE_DSR");	//ANSI.DSR+" sent ANSI.DSR");
-
-for(let i=1;i<7;i++){
-	const code="\x1b["+i+"n";
-	console.log(code+" - i",i);
-}
-
-if (roha.config.debugging) open("mims.pdf")
-
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
 

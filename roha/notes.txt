@@ -1,3 +1,19 @@
+//if(roha.config.ansi) 
+//	console.log(AnsiTabs4);//AnsiReset)
+
+// Disable proportional spacing
+//console.log(ANSI.DEVICE_STATUS+" sent DEVICE_STATUS");	//ANSI.DSR+" sent ANSI.DSR");
+//console.log(ANSI.DSR+" sent DEVICE_DSR");	//ANSI.DSR+" sent ANSI.DSR");
+
+for(let i=1;i<7;i++){
+	const code="\x1b["+i+"n";
+	console.log(code+" - i",i);
+}
+
+if (roha.config.debugging) open("mims.pdf")
+
+
+
 [EXTRA]    Configuring binutils
 [EXTRA]    Building binutils
 [EXTRA]    Installing binutils
