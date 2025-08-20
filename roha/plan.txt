@@ -1,10 +1,7 @@
-- polish raw mode - first backspaced tab, pasting emoji shows ???
+- polish raw mode - first backspaced tab, pasting emoji shows ???, fix rawPrompt2
 - click mouse - cursor controls - ui plan
 - copy button on code blocks - trim source - tabs not space
-- debounce mutiline blank line paste issue
 - add pricing to tts voice support
-- fix raw mode prompt paste bug
-- auto column width ansi tables, or default to 20
 - alibaba thinking prices
 - test tools read_time submit_file read_file
 - second moonshot api via anthropic url api.moonshot.ai/anthropic

@@ -6,6 +6,7 @@ export const Ansi={
 	Reset:"\x1BC",
 	Defaults:"\x1B[0m",//"\x1B[39;49m",//\x1B[0m",
 	Home:"\x1B[H",
+	Aqua:"\x1B[38;5;122m",
 	Pink:"\x1B[38;5;206m",
 	HideCursor:"\x1b[?25l",
 	ShowCursor:"\x1b[?25h",

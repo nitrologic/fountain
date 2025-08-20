@@ -2,7 +2,9 @@
 // (c)2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
-import { rawPrompt } from "./sloprawprompt.ts";
+// latest : rawkey code from sloprawprompt 
+
+import { rawPrompt, writeMessage } from "./sloprawprompt.ts";
 import { echo, fileLength, Ansi } from "./slopshoptools.ts";
 
 import { resolve } from "https://deno.land/std/path/mod.ts";
@@ -185,26 +187,17 @@ function ansiPrompt(){
 
 let slopFrame=0;
 let slopEvent=0;
-const reader=Deno.stdin.readable.getReader();
-const writer=Deno.stdout.writable.getWriter();
-async function refreshBackground(pause:number,line:string) {
 
+async function refreshSlop(pause:number,line:string) {
 	if(slopFrames.length&&slopFrame!=slopFrames.length){
-//		slopFrame=slopFrames.length;
-//		const frame=slopFrames[slopFrame-1];
 		const frame=slopFrames[slopFrame++];
-// Ansi.Clear does not help scroll buffer issue, Ansi.Reset does in vscode...
-		const message=Ansi.Reset+Ansi.Defaults+Ansi.Home+frame+Ansi.Defaults+ansiPrompt()+Ansi.Pink+line;
-		await writer.write(encoder.encode(message));
-		await writer.ready;
+		const message=Ansi.Reset+Ansi.Defaults+Ansi.Home+frame+Ansi.Defaults+ansiPrompt()+Ansi.Aqua+line;
+		writeMessage(message);
 	}
-
 	await new Promise(resolve => setTimeout(resolve, pause));
 	const events=flushSlopEvents();
-
 	const e=new Event("refresh",[slopFrame]);
 	events.push(e);
-
 	if(events.length){
 		// all slop workers get all events
 		for(const worker of slops){
@@ -220,14 +213,12 @@ function exitSlop(){
 	console.log("[SHLOP] exitSlop clearing raw",exitMessage);
 }
 
-let _promptBuffer=new Uint8Array(0);
-
 async function promptSlop(message:string) {
 	if(!_rawPrompt){
 		const response=await prompt(message);
 		return response;
 	}
-	const result=await rawPrompt(message,BackgroundDutyCycle);
+	const result=await rawPrompt(message,BackgroundDutyCycle,refreshSlop);
 	return result;
 }
 
@@ -240,107 +231,13 @@ while(true){
 		resetJoy();
 		continue;
 	}
+	if(input===null){
+		break;
+	}
 	console.log("[SHLOP] ",input);
 }
 
-console.log("oh no, bye");
+console.log("[SHLOP] oh no, bye");
 
 exitSlop();
 Deno.exit(0);
-
-
-
-// [ 27 ] Escape
-// [ 9 ] Tab
-
-// 27, 91, 
-
-// [ 65..68 ] Up Down Right Left
-// [ 80..83 ] F1 F2 F3 F4
-// [  49, 53, 126 ] F5
-// [  49, 55, 126 ] F6
-// [  49, 56, 126 ] F7
-// [  49, 57, 126 ] F8
-// [  50, 48, 126 ] F9
-// [  50, 49, 126 ] F10
-// [  50, 51, 126 ] F11
-// [  50, 52, 126 ] F12
-
-
-// todo:
-
-// frame multiple viewports
-// const message=AnsiHome+frame+ansiPrompt()+AnsiPink+line+AnsiDefault;
-// ts support via modular plugin
-// smooth out clock ticks at both ends
-
-
-/*
-	let result="";
-	if(message){
-		await writer.write(encoder.encode(message));
-		await writer.ready;
-	}
-	Deno.stdin.setRaw(true);
-	// TODO: document me
-	const timer = setInterval(async() => {
-		const line=decoder.decode(_promptBuffer);
-		await refreshBackground(BackgroundDutyCycle,message+line);
-	}, BackgroundPeriod);
-	let busy=true;
-	while (busy) {
-		try {
-//			const timeout = setTimeout(() => {refreshBackground(5)}, 1000); // 5-second timeout
-			const { value, done }=await reader.read();
-			if (done || !value) break;
-			let bytes=[];
-			for (const byte of value) {
-				if (byte === 0x7F || byte === 0x08) { // Backspace
-					if (_promptBuffer.length > 0) {
-						_promptBuffer=_promptBuffer.slice(0, -1);
-						bytes.push(0x08, 0x20, 0x08);
-					}
-				} else if (byte === 0x1b) { // Escape sequence
-					if (value.length === 1) {
-						exitSlop();
-						Deno.exit(0);
-//						onKey(27);
-					}
-					onKey(value);
-					if (value.length === 3) {
-						if (value[1] === 0xf4 && value[2] === 0x50) {
-							echo("[SHLOP] F1");
-						}
-					}
-					break;
-				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
-					bytes.push(0x0D, 0x0A);
-					const line=decoder.decode(_promptBuffer);
-					let n=line.length;
-					if (n > 0) {
-						_promptBuffer=_promptBuffer.slice(n);
-					}
-					result=line.trimEnd();
-					echo("[SHLOP] stdin",result);
-					busy=false;
-				} else if (byte==0x09){
-					onKey(value);
-				} else {
-					bytes.push(byte);
-					const buf=new Uint8Array(_promptBuffer.length + 1);
-					buf.set(_promptBuffer);
-					buf[_promptBuffer.length]=byte;
-					_promptBuffer=buf;
-				}
-			}
-			if (bytes.length) await writer.write(new Uint8Array(bytes));
-		}catch(error){
-			console.error("Prompt error:", error);
-			busy=false;
-		}
-	}
-	clearInterval(timer);
-	Deno.stdin.setRaw(false);
-	return result;
-}
-*/

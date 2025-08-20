@@ -1,3 +1,147 @@
+await raceRead(){
+	const readPromise = reader.read();
+	const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Read timeout")), 100));
+	({ value, done } = await Promise.race([readPromise, timeoutPromise]).catch((err) => {return { value: null, done: true };}});
+}
+
+
+// todo: paging tests
+//	if(roha.config.page) {
+//		await writer.write(homeCursor);
+//	}
+
+
+//let _promptBuffer=new Uint8Array(0);
+//const reader=Deno.stdin.readable.getReader();
+//const writer=Deno.stdout.writable.getWriter();
+//		slopFrame=slopFrames.length;
+//		const frame=slopFrames[slopFrame-1];
+// Ansi.Clear does not help scroll buffer issue, Ansi.Reset does in vscode...
+//		const message=Ansi.Reset+Ansi.Defaults+Ansi.Home+frame+Ansi.Defaults+ansiPrompt()+Ansi.Pink+line;
+
+
+
+// [ 27 ] Escape
+// [ 9 ] Tab
+
+// 27, 91, 
+
+// [ 65..68 ] Up Down Right Left
+// [ 80..83 ] F1 F2 F3 F4
+// [  49, 53, 126 ] F5
+// [  49, 55, 126 ] F6
+// [  49, 56, 126 ] F7
+// [  49, 57, 126 ] F8
+// [  50, 48, 126 ] F9
+// [  50, 49, 126 ] F10
+// [  50, 51, 126 ] F11
+// [  50, 52, 126 ] F12
+
+
+// todo:
+
+// frame multiple viewports
+// const message=AnsiHome+frame+ansiPrompt()+AnsiPink+line+AnsiDefault;
+// ts support via modular plugin
+// smooth out clock ticks at both ends
+
+
+/*
+	let result="";
+	if(message){
+		await writer.write(encoder.encode(message));
+		await writer.ready;
+	}
+	Deno.stdin.setRaw(true);
+	// TODO: document me
+	const timer = setInterval(async() => {
+		const line=decoder.decode(_promptBuffer);
+		await refreshBackground(BackgroundDutyCycle,message+line);
+	}, BackgroundPeriod);
+	let busy=true;
+	while (busy) {
+		try {
+//			const timeout = setTimeout(() => {refreshBackground(5)}, 1000); // 5-second timeout
+			const { value, done }=await reader.read();
+			if (done || !value) break;
+			let bytes=[];
+			for (const byte of value) {
+				if (byte === 0x7F || byte === 0x08) { // Backspace
+					if (_promptBuffer.length > 0) {
+						_promptBuffer=_promptBuffer.slice(0, -1);
+						bytes.push(0x08, 0x20, 0x08);
+					}
+				} else if (byte === 0x1b) { // Escape sequence
+					if (value.length === 1) {
+						exitSlop();
+						Deno.exit(0);
+//						onKey(27);
+					}
+					onKey(value);
+					if (value.length === 3) {
+						if (value[1] === 0xf4 && value[2] === 0x50) {
+							echo("[SHLOP] F1");
+						}
+					}
+					break;
+				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
+					bytes.push(0x0D, 0x0A);
+					const line=decoder.decode(_promptBuffer);
+					let n=line.length;
+					if (n > 0) {
+						_promptBuffer=_promptBuffer.slice(n);
+					}
+					result=line.trimEnd();
+					echo("[SHLOP] stdin",result);
+					busy=false;
+				} else if (byte==0x09){
+					onKey(value);
+				} else {
+					bytes.push(byte);
+					const buf=new Uint8Array(_promptBuffer.length + 1);
+					buf.set(_promptBuffer);
+					buf[_promptBuffer.length]=byte;
+					_promptBuffer=buf;
+				}
+			}
+			if (bytes.length) await writer.write(new Uint8Array(bytes));
+		}catch(error){
+			console.error("Prompt error:", error);
+			busy=false;
+		}
+	}
+	clearInterval(timer);
+	Deno.stdin.setRaw(false);
+	return result;
+}
+*/
+
+
+Interrupts and flow control
+- Ctrl+C or Ctrl+Break — interrupt/terminate the running program (if it supports it).
+- Ctrl+S — pause output (XOFF).
+- Ctrl+Q — resume output (XON).
+- Ctrl+Z — end‑of‑file marker (can be typed on a line to mark EOF in files).
+- Ctrl+Alt+Del — soft reboot (depends on hardware/VM).
+
+COMMAND.COM (command line) editing & history shortcuts
+- F1 — retype previous command one character at a time (press repeatedly to add more).
+- F2 <char> — copy previous command up to (but not including) the next occurrence of <char>.
+- F3 — repeat the previous command (whole).
+- F4 <char> — delete from current cursor position up to the next occurrence of <char>.
+- F5 — repeat the previous command (alias of F3 on many versions).
+- F6 — insert Ctrl+Z (EOF) into the line.
+- F7 — display command history (numbered list).
+- F8 — cycle backward through command history, matching what you’ve typed so far.
+- F9 — type the number of a history entry (from F7) to recall it.
+- Alt+F7 — clear the command history (on many DOS versions).
+
+Other keys
+- Ins — toggle insert mode (depends on environment).
+- Home / End / PgUp / PgDn / ← → — move cursor in environments that support line editing.
+- Tab completion is not native to classic COMMAND.COM (present in later shells like cmd.exe).
+
+
 /*
 // TODO: DOS resolvePath does not correct improperly cased filenames
 //	const path=resolvePath(Deno.cwd(), filename);

@@ -6,12 +6,11 @@
 
 // history, shortcode input, async cursor keys
 
-// fountain users - roha.config.rawprompt is not currently default
+// fountain users - enable roha.config.rawprompt to test
 
-const reader=Deno.stdin.readable.getReader();
 const writer=Deno.stdout.writable.getWriter();
 
-// shortcode :heart: mapping
+// shortcode :heart: mapping :eyes:
 
 const bibli=JSON.parse(await Deno.readTextFile("./bibli.json"));
 const shortcode=bibli.spec.shortcode;
@@ -37,7 +36,7 @@ function backspace(bytes:number[]) {
 		const lastChar = grapheme.pop()!;
 		const isTab=(lastChar=="\t");
 		if(isTab){
-			// instead of tracking cursor pos 
+			// instead of tracking cursor pos
 			// pos is position at end of prompt
 			const pos=stringWidth(grapheme.join(""));
 			const tabStop=(pos/TabWidth)|0;
@@ -175,31 +174,66 @@ const ANSI={
 	CLEAR_LINE_FULL:'\x1B[2K'
 };
 
-export async function rawPrompt(message:string,refreshInterval:boolean) {
+export async function writeMessage(message:string){
+	await writer.write(encoder.encode(message));
+	await writer.ready;
+}
+
+const reader=Deno.stdin.readable.getReader();
+
+function timeout(ms) {
+  var timeoutId;
+  var rejectPromise = new Promise(function(_, reject) {
+    timeoutId = setTimeout(function() { reject(new Error("Read timeout")); }, ms);
+  });
+  return { promise: rejectPromise, cleanup: function() { clearTimeout(timeoutId); } };
+}
+
+async function readWithTimeout(reader, interval) {
+	try {
+		var readPromise = reader.read();
+		var timeoutObj = timeout(interval);
+		var result = await Promise.race([readPromise, timeoutObj.promise]);
+		timeoutObj.cleanup();
+		return result;
+	} catch (err) {
+		if (err.message === "Read timeout") return { value: null, done: false };
+		throw err;
+	}
+}
+
+// returns a line of keyboard input while refreshing background tasks
+export async function rawPrompt2(message:string,interval:boolean,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	let result="";
 	if(message){
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
-// todo: paging tests
-//	if(roha.config.page) {
-//		await writer.write(homeCursor);
-//	}
 	let busy=true;
-	let timer;
-	if(refreshInterval){
-		timer = setInterval(async() => {
-			const line=grapheme.join("");
-			await refreshBackground(5,message+line);
-		}, 1000);
-	}
-	Deno.stdin.setRaw(true);
-	while (busy) {
+	while (true) {
 		try {
-			const { value, done }=await reader.read();
-			if (done || !value) break;
+			const valueDone = await interval?readWithTimeout(reader,100):reader.read();
+			const value=valueDone.value;
+			const done=valueDone.done;
+			if(!value&&!done&&busy){
+				if(refreshHandler){
+					const line=grapheme.join("");
+					await refreshHandler(5,message+line);
+				}
+				//timeout
+				continue;
+			}
+			if(!busy) {
+				const line=grapheme.join("");
+				grapheme=[];
+				result=line.trimEnd();
+				break;
+			}
+			if(done || !value) break;
+			busy=true;
+//			const {value,done}=await reader.read();
 			let bytes=[];
-			for (const byte of value) {
+			for (const byte of value||[]) {
 				if (byte === 0x7F || byte === 0x08) { // Backspace
 					backspace(bytes);
 				} else if (byte === 0x1b) { // Escape sequence
@@ -217,9 +251,88 @@ export async function rawPrompt(message:string,refreshInterval:boolean) {
 					break;
 				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
 					bytes.push(0x0D, 0x0A);
-					const line=grapheme.join("");
-					grapheme=[];
-					result=line.trimEnd();
+//					await logForge(result, "stdin");
+					busy=false;
+				} else {
+					bytes.push(byte);
+					const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
+					addInput(char);
+					if (byte === 0x3A) { // Colon ':'
+						const n=grapheme.length;
+						if(inCode){
+							if(n>codePos){
+								const words=grapheme.slice(codePos, n - 1).join("");
+								const lower=words.toLowerCase();
+								if(lower in shortcode){
+									const count=stringWidth(words)+2;
+									replaceText(bytes,count,shortcode[lower]+"\ufe0f");	//200c FE0F
+								}
+							}
+							inCode=false;
+						}else{
+							inCode=true;
+							codePos=n;
+						}
+					}
+				}
+			}
+			if (bytes.length) await writer.write(new Uint8Array(bytes));
+		}catch(error){
+			console.error("Prompt error:", error);
+			console.error("Please consider disabling rawprompt in config");
+			busy=false;
+		}
+	}
+	Deno.stdin.setRaw(false);
+	history.push(result);
+	inCode=false;
+	return result;
+}
+
+export async function rawPrompt(message:string,refreshInterval:boolean,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
+	let result="";
+	if(message){
+		await writer.write(encoder.encode(message));
+		await writer.ready;
+	}
+	let busy=true;
+	let timer;
+	if(refreshInterval && refreshHandler){
+		timer = setInterval(async() => {
+			const line=grapheme.join("");
+			await refreshHandler(5,message+line);
+		}, 1000);
+	}
+	Deno.stdin.setRaw(true);
+	while (true) {
+		try {
+			if(!busy) {
+				const line=grapheme.join("");
+				grapheme=[];
+				result=line.trimEnd();
+				break;
+			}
+			const {value,done}=await reader.read();
+			if (done || !value) break;
+			let bytes=[];
+			for (const byte of value||[]) {
+				if (byte === 0x7F || byte === 0x08) { // Backspace
+					backspace(bytes);
+				} else if (byte === 0x1b) { // Escape sequence
+					if (value.length === 1) {
+						return null;
+					}
+					if (value.length >= 3) {
+						if (value[1] === 0xf4 && value[2] === 0x50) {
+							console.log("[RAW] F1");
+						}
+						 if (value[1] === 0x5b) { // cursor and past handlers
+							onCSI(bytes,value);
+						 }
+					}
+					break;
+				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
+					bytes.push(0x0D, 0x0A);
 //					await logForge(result, "stdin");
 					busy=false;
 				} else {
@@ -263,7 +376,7 @@ export async function rawPrompt(message:string,refreshInterval:boolean) {
 
 // const writer=Deno.stdout.writable.getWriter();
 // promptForge 𓅠
-
+/*
 const slopFrames=[];
 
 export async function refreshBackground(ms,line) {
@@ -277,3 +390,4 @@ export async function refreshBackground(ms,line) {
 		await writer.ready;
 	}
 }
+*/
