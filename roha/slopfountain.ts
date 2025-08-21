@@ -85,6 +85,7 @@ type ConfigFlags = {
 	debugging: boolean;
 	pushonshare: boolean;
 	rawprompt: boolean;
+	slopprompt: boolean;
 	resetcounters: boolean;
 	returntopush: boolean;
 	slow: boolean;
@@ -344,7 +345,8 @@ const flagNames={
 	logging : "log all output to file",
 	debugging : "emit diagnostics",
 	pushonshare : "emit a /push after any /share",
-	rawprompt : "experimental rawmode stdin - broken paste",
+	rawprompt : "rawmode stdin with shortcode support",
+	slopprompt : "experimental interactive stdin",
 	resetcounters : "factory reset counters and files on reset",
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed",
@@ -367,6 +369,7 @@ const emptyConfig:ConfigFlags={
 	debugging:false,
 	pushonshare:false,
 	rawprompt:false,
+	slopprompt:false,
 	resetcounters:false,
 	returntopush:false,
 	slow:false,
@@ -2154,10 +2157,14 @@ function resolvePath(dir,filename){
 	return path;
 }
 
+function onRefresh(frame:number,message:string){
+//	console.log("!~",frame,message);
+}
+
 async function promptForge(message:string) {
 	if(!roha.config.rawprompt) return prompt(message);
-	const refreshInterval=roha.config.refreshBackground;
-	const reply=await rawPrompt(message);
+	const refresh=roha.config.slopprompt;
+	const reply=await refresh?slopPrompt(message,500,onRefresh):rawPrompt(message);
 	if(reply===null){
 		await exitForge();
 		Deno.exit(0);

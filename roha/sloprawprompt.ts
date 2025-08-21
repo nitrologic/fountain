@@ -9,6 +9,7 @@
 
 // fountain users - enable roha.config.rawprompt to test
 
+const reader=Deno.stdin.readable.getReader();
 const writer=Deno.stdout.writable.getWriter();
 
 // shortcode :heart: mapping :eyes:
@@ -185,62 +186,42 @@ export async function writeMessage(message:string){
 	await writer.ready;
 }
 
-const reader=Deno.stdin.readable.getReader();
-
-function timeout(ms) {
-  var timeoutId;
-  var rejectPromise = new Promise(function(_, reject) {
-    timeoutId = setTimeout(function() { reject(new Error("Read timeout")); }, ms);
-  });
-  return { promise: rejectPromise, cleanup: function() { clearTimeout(timeoutId); } };
-}
-
-async function readWithTimeout(reader, interval) {
-	try {
-		var readPromise = reader.read();
-		var timeoutObj = timeout(interval);
-		var result = await Promise.race([readPromise, timeoutObj.promise]);
-		timeoutObj.cleanup();
-		return result;
-	} catch (err) {
-		if (err.message === "Read timeout") return { value: null, done: false };
-		throw err;
-	}
-}
-
 // returns a line of keyboard input while refreshing background tasks
 
-export async function slopPrompt(message:string,interval:boolean,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
+export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	let result="";
 	if(message){
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
 	let busy=true;
-	while (true) {
+	Deno.stdin.setRaw(true);
+	while(true){
 		try {
-			const valueDone = await interval?readWithTimeout(reader,100):reader.read();
-			const value=valueDone.value;
-			const done=valueDone.done;
-			if(!value&&!done&&busy){
-				if(refreshHandler){
+			const readPromise=reader.read();
+			let winner=null;
+			while(true){
+				const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
+				winner = await Promise.race([readPromise,timerPromise]);
+				if(winner==null){
+					if(!busy) {
+						const line=grapheme.join("");
+						grapheme=[];
+						result=line.trimEnd();
+						break;
+					}
 					const line=grapheme.join("");
-					await refreshHandler(5,message+line);
+					await refreshHandler(5,"massage:"+line);
+					continue;
 				}
-				//timeout
-				continue;
-			}
-			if(!busy) {
-				const line=grapheme.join("");
-				grapheme=[];
-				result=line.trimEnd();
 				break;
 			}
-			if(done || !value) break;
+			if(!winner) break;// we break for break breaks
 			busy=true;
-//			const {value,done}=await reader.read();
+			const { value, done } = winner;
+			if (done || !value) break;
 			let bytes=[];
-			for (const byte of value||[]) {
+			for (const byte of value) {
 				if (byte === 0x7F || byte === 0x08) { // Backspace
 					backspace(bytes);
 				} else if (byte === 0x1b) { // Escape sequence

@@ -4,7 +4,7 @@
 
 // latest : rawkey code from sloprawprompt 
 
-import { rawPrompt, writeMessage } from "./sloprawprompt.ts";
+import { slopPrompt, rawPrompt, writeMessage } from "./sloprawprompt.ts";
 import { echo, fileLength, Ansi } from "./slopshoptools.ts";
 
 import { resolve } from "https://deno.land/std/path/mod.ts";
@@ -218,7 +218,7 @@ async function promptSlop(message:string) {
 		const response=await prompt(message);
 		return response;
 	}
-	const result=await rawPrompt(message,BackgroundDutyCycle,refreshSlop);
+	const result=await slopPrompt(message,BackgroundDutyCycle,refreshSlop);
 	return result;
 }
 
