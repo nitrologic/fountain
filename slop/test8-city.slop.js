@@ -17,7 +17,7 @@ function frontPanel(){
 //	return (hue9[0].repeat(7)+"\n").repeat(24);
 }
 
-const MaxFrame=1000;
+const MaxFrame=0;
 
 const tickLog=[];
 

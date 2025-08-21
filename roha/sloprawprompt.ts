@@ -188,6 +188,8 @@ export async function writeMessage(message:string){
 
 // returns a line of keyboard input while refreshing background tasks
 
+let readPromise;
+
 export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	let result="";
 	if(message){
@@ -198,7 +200,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 	Deno.stdin.setRaw(true);
 	while(true){
 		try {
-			const readPromise=reader.read();
+			if(!readPromise) readPromise=reader.read();
 			let winner=null;
 			while(true){
 				const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
@@ -216,7 +218,10 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				}
 				break;
 			}
-			if(!winner) break;// we break for break breaks
+			if(!winner) {
+				break;// we break for break breaks
+			}
+			readPromise=null;
 			busy=true;
 			const { value, done } = winner;
 			if (done || !value) break;

@@ -5,7 +5,7 @@
 
 const ledArray = ["⚫", "⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", "🟤"]
 
-const MaxFrames=0;
+const MaxFrames=150;
 
 const period=150;
 
