@@ -1,11 +1,9 @@
+- control function macro keys
+- audition markup with meta data
 - drop individual share by index
-- polish raw mode - first backspaced tab, pasting emoji shows ???, fix rawPrompt2
-- click mouse - cursor controls - ui plan
-- copy button on code blocks - trim source - tabs not space
-- investigate mistral ocr
-- pass image meta data 
+- tab backspace test
+- raw mode delete key
+- mouse control
+- copy paste clipboard code blocks
 - slopnet telnet connections
 - slopstudio web connections
-- explore vector_store and fine tuning of models
-- optional data:text/css,content uri for text type content
-- fork experimental branch and rescue stuff.txt

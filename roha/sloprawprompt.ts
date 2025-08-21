@@ -4,6 +4,8 @@
 
 // todo: setRaw options
 
+// todo: backspace may cause critical failure
+
 // rawPrompt(message:string)
 // intervalPrompt(message:string,refreshInterval:number,handler)
 
@@ -30,7 +32,8 @@ const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
 let grapheme:string[]=[];
 
 function addInput(input:string) {
-	grapheme.push(...(input.match(/(\p{Emoji_Presentation}|\p{Extended_Pictographic}\u200D?)+|./gu) || []));
+	grapheme.push(...(input.match(/(\p{Emoji}\uFE0F?|\p{Emoji_Presentation}|\p{Extended_Pictographic}\u200D?[\p{Emoji_Modifier}\uFE0F]*)+|./gu) || []));
+//	grapheme.push(...(input.match(/(\p{Emoji_Presentation}|\p{Extended_Pictographic}\u200D?)+|./gu) || []));
 //	grapheme.push(...[...segmenter.segment(input)].map(segment => segment.segment));
 }
 
@@ -187,8 +190,19 @@ const ANSI={
 	CLEAR_LINE_FULL:'\x1B[2K'
 };
 
+function harden(text:string,maxLength:number){
+	let s = text.normalize("NFC");
+	// Replace lone surrogate halves with replacement char
+	s = s.replace(/[\uD800-\uDFFF]/g, "\uFFFD");
+	// Allow tab/newline/carriage-return and ESC (for ANSI), strip other C0 control chars
+	s = s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1A\x1C-\x1F]/g, "");
+	// TODO: log delta
+	if (s.length > maxLength) s = s.slice(0, maxLength) + "\u2026";
+	return s;
+}
+
 export async function writeMessage(message:string){
-	await writer.write(encoder.encode(message));
+	await writer.write(encoder.encode(harden(message,8e6)));
 	await writer.ready;
 }
 
@@ -200,11 +214,12 @@ const prompt="]";
 // fuzzy readPromise life time seems to work well allows read timeouts
 let readPromise;
 let counter=0;
+const decoderStream=new TextDecoder("utf-8",{stream:true});
 export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	Deno.stdin.setRaw(true);
 	let result="";
 	if(message){
-		await writer.write(encoder.encode(message));
+		await writer.write(encoder.encode(harden(message,1e6)));
 		await writer.ready;
 	}
 	let busy=true;
@@ -256,9 +271,15 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				bytes.push(0x0D,0x0A);
 				busy=false;
 			} else {
-				bytes.push(byte);
-				const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
-				addInput(char);
+				if(byte<32){
+					console.log("[RAW] bad byte",byte);
+					break;
+				}
+				bytes.push(...encoder.encode(char));
+    		    addInput(char);	
+//				bytes.push(byte);
+//				const char = decoderStream.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
+//				addInput(char);
 				if (byte === 0x3A) { // Colon ':'
 					const n=grapheme.length;
 					if(inCode){
@@ -281,7 +302,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			}
 		}
 		if (bytes.length) {
-			await writer.write(new Uint8Array(bytes));
+			const rawBytes=new Uint8Array(bytes);
+			await writer.write(rawBytes);
 			await writer.ready;
 		}
 	}
@@ -332,7 +354,7 @@ export async function rawPrompt(message:string){
 					busy=false;
 				} else {
 					bytes.push(byte);
-					const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
+					const char = decoderStream.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
 					addInput(char);
 					if (byte === 0x3A) { // Colon ':'
 						const n=grapheme.length;

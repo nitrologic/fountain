@@ -1,3 +1,89 @@
+>hi gpt5 mini
++testing is going well, model 72 did well
++>we will start with some stress tests
++
+Great. Rea+dy. Here's a compact stress pack-pick any by number (and give sizes/counts):
+
+1) Long-context echo/Q+A: big prompts (e.g., 50-200 KB); report latency/tokens/spend
+2) Token-throughput: many small turns;+ measure T/s and TPM behavior
+3) Tool-call storm: +chained readtime ␦ submitfile ␦ fetch_file; malformed args recovery
+4) Reasoning/temperature sweep: +temp and thinking budget grid
+5) Markdown/Unicode:+ tables, wide glyphs, ANSI safety rendering
+6) Mod+el churn: rapid model switches across accounts
+7) +Parallel load: syncRelay off, N concurrent turns; contention/ordering
+8) File-share diff: comment on+ new/changed shares; large-file gating
+
+Tell me wh+ich set (e.g., 1,3,7) and target sizes (KB, calls, concurrency).
+
+{account:openai,spent:0.2002,balan+ce:-3.4480}
+ Fountain 1.4.2 ?  gpt-5-2025 ?? gpt-5+-2025-08-07@openai 1.0Prompt error: InvalidData: Windows stdio in console mode does not support writing non-UTF-8 byte sequences
+    at async Object.write (ext:deno_web/06_streams.js:1180:9) {
+  name: "InvalidData"
+}
+Please consider disabling rawprompt in config
+Slop Fountain has crashed, darn, this release will be stable soon: InvalidData: Windows stdio in console mode does not support writing non-UTF-8 byte sequences
+    at async Object.write (ext:deno_web/06_streams.js:1180:9) {
+  name: "InvalidData"
+}
+error: Uncaught (in promise) BadResource: Bad resource ID
+        console.log("exitForge",exitMessage)
+                ^
+    at Object.print (ext:core/01_core.js:679:28)
+    at Console.<anonymous> (ext:runtime/98_global_scope_shared.js:136:46)
+    at console.log (ext:deno_console/01_console.js:3142:20)
+    at exitForge (file:///C:/nitrologic/fountain/roha/slopfountain.ts:418:10)
+    at eventLoopTick (ext:core/01_core.js:179:7)
+    at async file:///C:/nitrologic/fountain/roha/slopfountain.ts:3792:2
+
+C:\nitrologic\fountain>
+
+
+Great. Rea+dy. Here's a compact stress pack-pick any by number (and give sizes/counts):
+
+1) Long-context echo/Q+A: big prompts (e.g., 50-200 KB); report latency/tokens/spend
+2) Token-throughput: many small turns;+ measure T/s and TPM behavior
+3) Tool-call storm: +chained readtime ␦ submitfile ␦ fetch_file; malformed args recovery
+4) Reasoning/temperature sweep: +temp and thinking budget grid
+5) Markdown/Unicode:+ tables, wide glyphs, ANSI safety rendering
+6) Mod+el churn: rapid model switches across accounts
+7) +Parallel load: syncRelay off, N concurrent turns; contention/ordering
+8) File-share diff: comment on+ new/changed shares; large-file gating
+
+Tell me wh+ich set (e.g., 1,3,7) and target sizes (KB, calls, concurrency).
+
+{account:openai,spent:0.2002,balan+ce:-3.4480}
+ Fountain 1.4.2 ?  gpt-5-2025 ?? gpt-5+-2025-08-07@openai 1.0Prompt error: InvalidData: Windows stdio in console mode does not support writing non-UTF-8 byte sequences
+    at async Object.write (ext:deno_web/06_streams.js:1180:9) {
+  name: "InvalidData"
+}
+Please consider disabling rawprompt in config
+Slop Fountain has crashed, darn, this release will be stable soon: InvalidData: Windows stdio in console mode does not support writing non-UTF-8 byte sequences
+    at async Object.write (ext:deno_web/06_streams.js:1180:9) {
+  name: "InvalidData"
+}
+error: Uncaught (in promise) BadResource: Bad resource ID
+        console.log("exitForge",exitMessage)
+                ^
+    at Object.print (ext:core/01_core.js:679:28)
+    at Console.<anonymous> (ext:runtime/98_global_scope_shared.js:136:46)
+    at console.log (ext:deno_console/01_console.js:3142:20)
+    at exitForge (file:///C:/nitrologic/fountain/roha/slopfountain.ts:418:10)
+    at eventLoopTick (ext:core/01_core.js:179:7)
+    at async file:///C:/nitrologic/fountain/roha/slopfountain.ts:3792:2
+
+C:\nitrologic\fountain>
+
+
+
+
+ctrl f1 - macro key 0
+
+[RAW] CSI ?  Uint8Array(6) [ 27, 91, 49, 59, 53, 80 ]
+
+ctrl shift f1 - program from history
+
+[RAW] CSI ?  Uint8Array(6) [ 27, 91, 49, 59, 54, 80 ]
+
 ╭╮╱╲
 ╰╯╲╱
 ╳╳╳╳╳
