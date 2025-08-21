@@ -186,10 +186,11 @@ export async function writeMessage(message:string){
 	await writer.ready;
 }
 
+// slopPrompt
 // returns a line of keyboard input while refreshing background tasks
-
+// leaves raw mode on to fix Windows scroll issue
+// fuzzy readPromise life time seems to work well allows read timeouts
 let readPromise;
-
 export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	Deno.stdin.setRaw(true);
 	let result="";
@@ -225,6 +226,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		busy=true;
 		const { value, done } = winner;
 		if (done || !value) break;
+		// value is Uint8Array - 	
 		for (const byte of value) {
 			if (byte === 0x7F || byte === 0x08) { // Backspace
 				backspace(bytes);
@@ -241,7 +243,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 						}
 				}
 				break;
-			} else if (byte==0x0D || (byte==0x0A)) { // Enter key					
+			} else if ((byte==0x0D) || (byte==0x0A)) { // Enter key					
 				bytes.push(0x0D,0x0A);
 				busy=false;
 			} else {
@@ -272,7 +274,6 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			await writer.ready;
 		}
 	}
-	Deno.stdin.setRaw(false);
 	history.push(result);
 	inCode=false;
 	return result;

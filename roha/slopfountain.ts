@@ -18,7 +18,7 @@ import open from 'jsr:@rdsq/open';
 
 // Testing with Deno 2.4.4, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.4.1";
+const fountainVersion="1.4.2";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
 
