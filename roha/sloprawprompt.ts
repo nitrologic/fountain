@@ -2,6 +2,8 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
+// todo: setRaw options
+
 // rawPrompt(message:string)
 // intervalPrompt(message:string,refreshInterval:number,handler)
 
@@ -30,6 +32,35 @@ let grapheme:string[]=[];
 function addInput(input:string) {
 	grapheme.push(...(input.match(/(\p{Emoji_Presentation}|\p{Extended_Pictographic}\u200D?)+|./gu) || []));
 //	grapheme.push(...[...segmenter.segment(input)].map(segment => segment.segment));
+}
+
+function forwardCursor(bytes) {
+	bytes.push(0x1b,'[','C',';');	//\x1b[C`
+}
+
+// unicode paster
+
+const utf8Decoder = new TextDecoder('utf-8', { fatal: false, ignoreBOM: false });
+let utf8Buffer = new Uint8Array();
+
+function appendBytes(buf: Uint8Array): string {
+	const complete = new Uint8Array(utf8Buffer.length + buf.length);
+	complete.set(utf8Buffer);
+	complete.set(buf, utf8Buffer.length);
+	let decoded = '';
+	try {
+		decoded = utf8Decoder.decode(complete, { stream: true });
+		utf8Buffer = new Uint8Array(); // token fully consumed → empty
+	} catch {
+		// incomplete sequence → hold for next chunk
+		utf8Buffer = complete;
+	}
+	return decoded;
+}
+
+function appendByte(byte){
+	const chars = appendBytes(new Uint8Array([byte]));                                                                                                                                                                    
+	for (const ch of [...chars]) addInput(ch); 	
 }
 
 const TabWidth=8;
@@ -186,11 +217,14 @@ export async function writeMessage(message:string){
 	await writer.ready;
 }
 
+const prompt="]";
+
 // slopPrompt
 // returns a line of keyboard input while refreshing background tasks
 // leaves raw mode on to fix Windows scroll issue
 // fuzzy readPromise life time seems to work well allows read timeouts
 let readPromise;
+let counter=0;
 export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	Deno.stdin.setRaw(true);
 	let result="";
@@ -214,7 +248,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					break;
 				}
 				const line=grapheme.join("");
-				await refreshHandler(5,"massage:"+line);
+				await refreshHandler(counter++,prompt+line);
 				continue;
 			}
 			break;
@@ -248,8 +282,9 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				busy=false;
 			} else {
 				bytes.push(byte);
-				const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
-				addInput(char);
+//				const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
+//				addInput(char);
+				appendBytes(byte);
 				if (byte === 0x3A) { // Colon ':'
 					const n=grapheme.length;
 					if(inCode){
@@ -258,8 +293,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 							const lower=words.toLowerCase();
 							if(lower in shortcode){
 								const count=stringWidth(words)+2;
-								const glyph=shortcode[lower];
-//								replaceText(bytes,count,glyph+"\uFE0F");
+								const glyph=shortcode[lower]+"\uFE0F";
 								replaceText(bytes,count,glyph);
 								grapheme.push(glyph);
 							}
@@ -324,8 +358,9 @@ export async function rawPrompt(message:string){
 					busy=false;
 				} else {
 					bytes.push(byte);
-					const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
-					addInput(char);
+//					const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
+//					addInput(char);
+					appendByte(byte);
 					if (byte === 0x3A) { // Colon ':'
 						const n=grapheme.length;
 						if(inCode){
