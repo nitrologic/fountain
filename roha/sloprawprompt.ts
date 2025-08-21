@@ -182,7 +182,7 @@ const ANSI={
 };
 
 export async function writeMessage(message:string){
-	await writer.write(encoder.encode(message));
+	await writer.write("[WSLOP]"+encoder.encode(message));
 	await writer.ready;
 }
 
@@ -191,89 +191,85 @@ export async function writeMessage(message:string){
 let readPromise;
 
 export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
+	Deno.stdin.setRaw(true);
 	let result="";
 	if(message){
 		await writer.write(encoder.encode(message));
 		await writer.ready;
 	}
 	let busy=true;
-	Deno.stdin.setRaw(true);
 	while(true){
-		try {
-			if(!readPromise) readPromise=reader.read();
-			let winner=null;
-			while(true){
-				const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
-				winner = await Promise.race([readPromise,timerPromise]);
-				if(winner==null){
-					if(!busy) {
-						const line=grapheme.join("");
-						grapheme=[];
-						result=line.trimEnd();
-						break;
-					}
+		let bytes=[];
+		if(!readPromise) readPromise=reader.read();
+		let winner=null;
+		while(true){
+			const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
+			winner = await Promise.race([readPromise,timerPromise]);
+			if(winner==null){
+				if(!busy) {
 					const line=grapheme.join("");
-					await refreshHandler(5,"massage:"+line);
-					continue;
+					grapheme=[];
+					result=line.trimEnd();
+					break;
+				}
+				const line=grapheme.join("");
+				await refreshHandler(5,"massage:"+line);
+				continue;
+			}
+			break;
+		}
+		if(!winner) {
+			break;// we break for break breaks
+		}
+		readPromise=null;
+		busy=true;
+		const { value, done } = winner;
+		if (done || !value) break;
+		for (const byte of value) {
+			if (byte === 0x7F || byte === 0x08) { // Backspace
+				backspace(bytes);
+			} else if (byte === 0x1b) { // Escape sequence
+				if (value.length === 1) {
+					return null;
+				}
+				if (value.length >= 3) {
+					if (value[1] === 0xf4 && value[2] === 0x50) {
+						console.log("[RAW] F1");
+					}
+						if (value[1] === 0x5b) { // cursor and past handlers
+						onCSI(bytes,value);
+						}
 				}
 				break;
-			}
-			if(!winner) {
-				break;// we break for break breaks
-			}
-			readPromise=null;
-			busy=true;
-			const { value, done } = winner;
-			if (done || !value) break;
-			let bytes=[];
-			for (const byte of value) {
-				if (byte === 0x7F || byte === 0x08) { // Backspace
-					backspace(bytes);
-				} else if (byte === 0x1b) { // Escape sequence
-					if (value.length === 1) {
-						return null;
-					}
-					if (value.length >= 3) {
-						if (value[1] === 0xf4 && value[2] === 0x50) {
-							console.log("[RAW] F1");
-						}
-						 if (value[1] === 0x5b) { // cursor and past handlers
-							onCSI(bytes,value);
-						 }
-					}
-					break;
-				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
-					bytes.push(0x0D, 0x0A);
-//					await logForge(result, "stdin");
-					busy=false;
-				} else {
-					bytes.push(byte);
-					const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
-					addInput(char);
-					if (byte === 0x3A) { // Colon ':'
-						const n=grapheme.length;
-						if(inCode){
-							if(n>codePos){
-								const words=grapheme.slice(codePos, n - 1).join("");
-								const lower=words.toLowerCase();
-								if(lower in shortcode){
-									const count=stringWidth(words)+2;
-									replaceText(bytes,count,shortcode[lower]+"\ufe0f");	//200c FE0F
-								}
+			} else if (byte==0x0D || (byte==0x0A)) { // Enter key					
+				bytes.push(0x0D,0x0A);
+				busy=false;
+			} else {
+				bytes.push(byte);
+				const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
+				addInput(char);
+				if (byte === 0x3A) { // Colon ':'
+					const n=grapheme.length;
+					if(inCode){
+						if(n>codePos){
+							const words=grapheme.slice(codePos, n - 1).join("");
+							const lower=words.toLowerCase();
+							if(lower in shortcode){
+								const count=stringWidth(words)+2;
+								replaceText(bytes,count,shortcode[lower]+"\ufe0f");	//200c FE0F
 							}
-							inCode=false;
-						}else{
-							inCode=true;
-							codePos=n;
 						}
+						inCode=false;
+					}else{
+						inCode=true;
+						codePos=n;
 					}
 				}
 			}
-			if (bytes.length) await writer.write(new Uint8Array(bytes));
-		}catch(error){
-			console.error("Prompt error:", error);
-			console.error("Please consider disabling rawprompt in config");
-			busy=false;
+		}
+		if (bytes.length) {
+			await writer.write(new Uint8Array(bytes));
+			await writer.ready;
 		}
 	}
 	Deno.stdin.setRaw(false);
