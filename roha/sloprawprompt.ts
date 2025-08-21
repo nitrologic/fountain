@@ -38,31 +38,6 @@ function forwardCursor(bytes) {
 	bytes.push(0x1b,'[','C',';');	//\x1b[C`
 }
 
-// unicode paster
-
-const utf8Decoder = new TextDecoder('utf-8', { fatal: false, ignoreBOM: false });
-let utf8Buffer = new Uint8Array();
-
-function appendBytes(buf: Uint8Array): string {
-	const complete = new Uint8Array(utf8Buffer.length + buf.length);
-	complete.set(utf8Buffer);
-	complete.set(buf, utf8Buffer.length);
-	let decoded = '';
-	try {
-		decoded = utf8Decoder.decode(complete, { stream: true });
-		utf8Buffer = new Uint8Array(); // token fully consumed → empty
-	} catch {
-		// incomplete sequence → hold for next chunk
-		utf8Buffer = complete;
-	}
-	return decoded;
-}
-
-function appendByte(byte){
-	const chars = appendBytes(new Uint8Array([byte]));                                                                                                                                                                    
-	for (const ch of [...chars]) addInput(ch); 	
-}
-
 const TabWidth=8;
 function backspace(bytes:number[]) {
 	if (grapheme.length){
@@ -282,9 +257,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				busy=false;
 			} else {
 				bytes.push(byte);
-//				const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
-//				addInput(char);
-				appendBytes(byte);
+				const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
+				addInput(char);
 				if (byte === 0x3A) { // Colon ':'
 					const n=grapheme.length;
 					if(inCode){
@@ -358,9 +332,8 @@ export async function rawPrompt(message:string){
 					busy=false;
 				} else {
 					bytes.push(byte);
-//					const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
-//					addInput(char);
-					appendByte(byte);
+					const char = decoder.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
+					addInput(char);
 					if (byte === 0x3A) { // Colon ':'
 						const n=grapheme.length;
 						if(inCode){

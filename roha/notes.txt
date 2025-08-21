@@ -1,3 +1,30 @@
+// unicode paster
+
+const utf8Decoder = new TextDecoder('utf-8', { fatal: false, ignoreBOM: false });
+let utf8Buffer = new Uint8Array();
+
+function appendBytes(buf: Uint8Array): string {
+	const complete = new Uint8Array(utf8Buffer.length + buf.length);
+	complete.set(utf8Buffer);
+	complete.set(buf, utf8Buffer.length);
+	let decoded = '';
+	try {
+		decoded = utf8Decoder.decode(complete, { stream: true });
+		utf8Buffer = new Uint8Array(); // token fully consumed → empty
+	} catch {
+		// incomplete sequence → hold for next chunk
+		utf8Buffer = complete;
+	}
+	return decoded;
+}
+
+function appendByte(byte){
+	const chars = appendBytes(new Uint8Array([byte]));                                                                                                                                                                    
+	for (const ch of [...chars]) addInput(ch); 	
+}
+
+
+
 // const writer=Deno.stdout.writable.getWriter();
 // promptForge 𓅠
 /*
