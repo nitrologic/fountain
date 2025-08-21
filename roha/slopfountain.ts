@@ -2164,8 +2164,8 @@ function onRefresh(frame:number,message:string){
 async function promptForge(message:string) {
 	if(!roha.config.rawprompt) return prompt(message);
 	const refresh=roha.config.slopprompt;
-	const reply=await refresh?slopPrompt(message,500,onRefresh):rawPrompt(message);
-	if(reply===null){
+	const reply=await (refresh?slopPrompt(message,500,onRefresh):rawPrompt(message));
+	if(reply==null){
 		await exitForge();
 		Deno.exit(0);
 	}

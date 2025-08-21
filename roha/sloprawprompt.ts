@@ -127,7 +127,7 @@ const CSI_EXT1=51;
 const CSI_EXT3=53;
 const CSI_EXT4=54;
 
-// 0x1b 0x5b 
+// 0x1b 0x5b
 function onCSI(bytes,codes:number[]) {
 	let n=3;
 	const code=codes[2];
@@ -226,7 +226,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		busy=true;
 		const { value, done } = winner;
 		if (done || !value) break;
-		// value is Uint8Array - 	
+		// value is Uint8Array -
 		for (const byte of value) {
 			if (byte === 0x7F || byte === 0x08) { // Backspace
 				backspace(bytes);
@@ -238,12 +238,12 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					if (value[1] === 0xf4 && value[2] === 0x50) {
 						console.log("[RAW] F1");
 					}
-						if (value[1] === 0x5b) { // cursor and past handlers
+					if (value[1] === 0x5b) { // cursor and past handlers
 						onCSI(bytes,value);
-						}
+					}
 				}
 				break;
-			} else if ((byte==0x0D) || (byte==0x0A)) { // Enter key					
+			} else if ((byte==0x0D) || (byte==0x0A)) { // Enter key
 				bytes.push(0x0D,0x0A);
 				busy=false;
 			} else {
@@ -258,7 +258,10 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 							const lower=words.toLowerCase();
 							if(lower in shortcode){
 								const count=stringWidth(words)+2;
-								replaceText(bytes,count,shortcode[lower]+"\ufe0f");	//200c FE0F
+								const glyph=shortcode[lower];
+//								replaceText(bytes,count,glyph+"\uFE0F");
+								replaceText(bytes,count,glyph);
+								grapheme.push(glyph);
 							}
 						}
 						inCode=false;
