@@ -192,11 +192,6 @@ const ANSI={
 
 function harden(text:string,maxLength:number){
 	let s = text.normalize("NFC");
-	// Replace lone surrogate halves with replacement char
-	s = s.replace(/[\uD800-\uDFFF]/g, "\uFFFD");
-	// Allow tab/newline/carriage-return and ESC (for ANSI), strip other C0 control chars
-	s = s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1A\x1C-\x1F]/g, "");
-	// TODO: log delta
 	if (s.length > maxLength) s = s.slice(0, maxLength) + "\u2026";
 	return s;
 }
@@ -273,6 +268,11 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			} else {
 				if(byte<32){
 					console.log("[RAW] bad byte",byte);
+					break;
+				}
+				const char = decoderStream.decode(new Uint8Array([byte]));
+				if(!char){
+					console.log("[RAW] not char from byte",byte);
 					break;
 				}
 				bytes.push(...encoder.encode(char));
