@@ -182,7 +182,7 @@ const ANSI={
 };
 
 export async function writeMessage(message:string){
-	await writer.write("[WSLOP]"+encoder.encode(message));
+	await writer.write(encoder.encode(message));
 	await writer.ready;
 }
 
