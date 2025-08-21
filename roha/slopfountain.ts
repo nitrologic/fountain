@@ -55,7 +55,12 @@ const mutsInclude="models under test include "
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Feel free to comment if shared files are new or different.";
 const exitMessage="Ending session.";
-const boxChars=["┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
+const boxChars=[
+	"╭╮╰╯─┬┴│┤├┼",
+	"┌┐└┘─┬┴│┤├┼",
+	"╔╗╚╝═╦╩║╣╠╬",
+	"┏┓┗┛━┳┻┃┫┣╋"
+];
 const rule500= "━".repeat(500);
 const pageBreak=rule500;
 

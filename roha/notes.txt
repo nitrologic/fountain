@@ -1,3 +1,23 @@
+╭╮╱╲
+╰╯╲╱
+╳╳╳╳╳
+╳╳╳╳╳
+╳ ╳╳╳
+╳╳╳╳╳
+╳╳ ╳╳
+╳╳╳╳╳
+
+╱╲
+╲╱
+/\
+
+╭╮╭╮╭╮╭╮
+╰╰╯╰╯╰╯╯
+
+
+\/
+╲╱╱╲╭╮
+╲╱╰╯
 // unicode paster
 
 const utf8Decoder = new TextDecoder('utf-8', { fatal: false, ignoreBOM: false });
