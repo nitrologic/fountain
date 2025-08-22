@@ -5,6 +5,7 @@
 
 const ledArray = ["⚫","⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", "🟤"]
 const scanArray=["‾","⎺","⎻","─","⎼","⎽","_"];
+const barArray=["│","║","┃","┆","┇","┊","┋"]
 const MaxFrames=150;
 
 const period=50;
@@ -27,7 +28,7 @@ self.onmessage=(e)=>{
 };
 
 function blankFrame(index){
-	const array=scanArray;//ledArray
+	const array=barArray;//scanArray;//ledArray
 	const start=index%array.length;
 	const led=array[start];
 	const grid=(led.repeat(48)+"\n").repeat(5);
