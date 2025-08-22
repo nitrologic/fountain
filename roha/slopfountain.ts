@@ -55,16 +55,14 @@ const mutsInclude="models under test include "
 const cleanupRequired="Switch model, drop shares or reset history to continue.";
 const warnDirty="Feel free to comment if shared files are new or different.";
 const exitMessage="Ending session.";
-const boxChars=[
-	"╭╮╰╯─┬┴│┤├┼",
-	"┌┐└┘─┬┴│┤├┼",
-	"╔╗╚╝═╦╩║╣╠╬",
-	"┏┓┗┛━┳┻┃┫┣╋"
-];
 const rule500= "━".repeat(500);
 const pageBreak=rule500;
 
-// user environment
+const diagonalLines=["╲","╱","╳"];
+const diagonalChars=["◸↖⇖⤣◹↗⇗⤤◿↘⇘⤥◺↙⇙⤦"];
+const lineChars=["─═━┄┅┈┉","│║┃┆┇┊┋"];
+const arrowChars = ["◂←↞↤↜⥼⇐⤆","▸→↠↦↝⥽⇒⤇","▴↑↟↥⥾⇑⤊","▾↓↡↧⥿⇓⤋"];
+const boxChars=["╭╮╰╯─┬┴│┤├┼","┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
 
 function getEnv(key:string):string{
 	return Deno.env.get(key)||"";
