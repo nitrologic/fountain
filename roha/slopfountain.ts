@@ -58,11 +58,11 @@ const exitMessage="Ending session.";
 const rule500= "━".repeat(500);
 const pageBreak=rule500;
 
-//↩↪⤴⤵•‣∙◦○●◉◎◍◌◯⦾⦿⊙⊚⊛⊖⊗⊘
 const diagonalLines=["╲","╱","╳"];
 const diagonalChars=["◹↗⇗⤤➶➹","◸↖⇖⤣","◿↘⇘⤥➴➷","◺↙⇙⤦"];
 const lineChars=["─═━┄┅┈┉","│║┃┆┇┊┋"];
 const arrowChars = ["▸→↠↦↝⥽⇒⤇⟿➸➳➵➧➨","◂←↞↤↜⥼⇐⤆⬳","▴↑↟↥⥾⇑⤊","▾↓↡↧⥿⇓⤋"];
+const arrowArcs="↩↪⤶⤷⤸⤹⤾⤿⤺⤻";
 const boxChars=["╭╮╰╯─┬┴│┤├┼","┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
 const pointChars="◯⊙⊚⦾⦿◉◎◍❂○●◦";
 const starChars="✩✪✫✬✭✮✯✰✱✲✳✴✵✶✷✸✹✺✻✼✽✾✿❀❁";
