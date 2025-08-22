@@ -4,7 +4,7 @@
 // emits slow blink events start error tick
 
 const ledArray = ["⚫","⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", "🟤"]
-const scanArray=["‾","⎺","⎻","-","⎼","⎽","_"];//,"▁"];
+const scanArray=["‾","⎺","⎻","─","⎼","⎽","_"];
 const MaxFrames=150;
 
 const period=50;
@@ -30,7 +30,7 @@ function blankFrame(index){
 	const array=scanArray;//ledArray
 	const start=index%array.length;
 	const led=array[start];
-	const grid=(led.repeat(48)+"\n").repeat(2);
+	const grid=(led.repeat(48)+"\n").repeat(5);
 	return grid;
 }
 
