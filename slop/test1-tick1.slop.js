@@ -3,11 +3,11 @@
 
 // emits slow blink events start error tick
 
-const ledArray = ["⚫", "⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", "🟤"]
-
+const ledArray = ["⚫","⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", "🟤"]
+const scanArray=["‾","⎺","⎻","-","⎼","⎽","_"];//,"▁"];
 const MaxFrames=150;
 
-const period=750;
+const period=50;
 
 // display system for the test1 tick example
 
@@ -27,8 +27,9 @@ self.onmessage=(e)=>{
 };
 
 function blankFrame(index){
-	const start=index%ledArray.length;
-	const led=ledArray[start];
+	const array=scanArray;//ledArray
+	const start=index%array.length;
+	const led=array[start];
 	const grid=(led.repeat(48)+"\n").repeat(2);
 	return grid;
 }
