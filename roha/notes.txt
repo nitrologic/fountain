@@ -1,3 +1,19 @@
+import { createBot } from "https://deno.land/x/discordeno@19/mod.ts";
+
+const bot = createBot({
+  token: Deno.env.get("DISCORD_TOKEN")!,
+  intents: ["Guilds", "GuildMessages", "MessageContent"],
+});
+
+bot.events.messageCreate = (b, msg) => {
+  if (msg.content === "!ping") bot.helpers.sendMessage(msg.channelId, { content: "pong" });
+};
+
+bot.start();
+
+
+
+
 ‾⎺⎻-⎼⎽_▁
 
 ## pointChars

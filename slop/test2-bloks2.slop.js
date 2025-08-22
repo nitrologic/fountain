@@ -1,25 +1,11 @@
 // test2 bloks
 
-import { loadSprites, greyShade, pixelMap, SixShades } from "./sloputil.js";
-
-const MaxFrame=0;
-
 // big wide terminal blocks sandbox
 // half spacing and wide spacing work in progress
 
-// blokshop check list
-// enter - reset
-// exit[enter] - quit
+import { loadSprites, greyShade, pixelMap, SixShades } from "./sloputil.js";
 
-// emit check list
-// start 
-// error 
-// tick
-
-// key controls check list
-// type - onPress
-// arrow keys - up down left right
-// tab - fire
+const MaxFrame=500;
 
 const sprites=await loadSprites("../slop/slop-sprites.txt")
 const numbers=await loadSprites("../slop/slop-number-sprites.txt")

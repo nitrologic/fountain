@@ -1,14 +1,16 @@
 // worker.ts
 // basic frame counter
 
+const MaxFrames=0;
+
+const period=50;
+
 // emits slow blink events start error tick
 
 const ledArray = ["⚫","⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", "🟤"]
 const scanArray=["‾","⎺","⎻","─","⎼","⎽","_"];
 const barArray=["│","║","┃","┆","┇","┊","┋"]
-const MaxFrames=150;
 
-const period=50;
 
 // display system for the test1 tick example
 

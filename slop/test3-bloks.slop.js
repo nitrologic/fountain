@@ -1,25 +1,12 @@
-// test3 bloks
+// test3 blok wars
+
+// big block pew pew
+
+const MaxFrame=50;
+
 
 import { greyShade, pixelMap, SixShades } from "./sloputil.js";
 
-const MaxFrame=0;
-
-// big wide terminal blocks sandbox
-// half spacing and wide spacing work in progress
-
-// blokshop check list
-// enter - reset
-// exit[enter] - quit
-
-// emit check list
-// start 
-// error 
-// tick
-
-// key controls check list
-// type - onPress
-// arrow keys - up down left right
-// tab - fire
 
 async function loadSprites(path){
     const spritestxt=await Deno.readTextFile(path);
@@ -36,7 +23,7 @@ const numbers=await loadSprites("../slop/slop-number-sprites.txt")
 
 //const period=50;	//20hz chunky pixel display
 //const period=40;	//25hz chunky pixel display
-const period=20;	//50hz chunky pixel display
+const period=50;	//50hz chunky pixel display
 
 // pico is 240 x 135
 
@@ -136,7 +123,7 @@ function gameFrame(){
 
         tv.draw(sprites[0],ship.x,ship.y);
 
-        tv.drawleft(sprites[0],ship.x,ship.y);
+//        tv.drawleft(sprites[0],ship.x,ship.y);
 
         tv.draw(sprites[1],36,2);
         for(const shot of shots){
