@@ -58,11 +58,14 @@ const exitMessage="Ending session.";
 const rule500= "━".repeat(500);
 const pageBreak=rule500;
 
+//↩↪⤴⤵•‣∙◦○●◉◎◍◌◯⦾⦿⊙⊚⊛⊖⊗⊘
 const diagonalLines=["╲","╱","╳"];
-const diagonalChars=["◸↖⇖⤣◹↗⇗⤤◿↘⇘⤥◺↙⇙⤦"];
+const diagonalChars=["◹↗⇗⤤➶➹","◸↖⇖⤣","◿↘⇘⤥➴➷","◺↙⇙⤦"];
 const lineChars=["─═━┄┅┈┉","│║┃┆┇┊┋"];
-const arrowChars = ["◂←↞↤↜⥼⇐⤆","▸→↠↦↝⥽⇒⤇","▴↑↟↥⥾⇑⤊","▾↓↡↧⥿⇓⤋"];
+const arrowChars = ["▸→↠↦↝⥽⇒⤇⟿➸➳➵➧➨","◂←↞↤↜⥼⇐⤆⬳","▴↑↟↥⥾⇑⤊","▾↓↡↧⥿⇓⤋"];
 const boxChars=["╭╮╰╯─┬┴│┤├┼","┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
+const pointChars="◯⊙⊚⦾⦿◉◎◍❂○●◦";
+const starChars="✩✪✫✬✭✮✯✰✱✲✳✴✵✶✷✸✹✺✻✼✽✾✿❀❁";
 
 function getEnv(key:string):string{
 	return Deno.env.get(key)||"";
