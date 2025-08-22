@@ -2,7 +2,7 @@
 
 A research tool for advanced model manipulation.
 
-Timestamps in some file names is hex seconds since 1.1.1970.
+Timestamps in logging files use slopmarks, a hexadecimal encoding of sixteenths of a second since 2025.4.12.
 
 # documentation
 

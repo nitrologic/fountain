@@ -213,18 +213,25 @@ const bibli=JSON.parse(await Deno.readTextFile(bibliPath));
 
 const emojiIndex = {};
 
-// helper functions
+// date time helper functions
 
 const epoch:number=Date.UTC(2025,4,12);
-function timestamp():string{
+
+// slopmark() - timestamp - hexadecimal encoding of sixteenths of a second since 2025.4.12.
+
+function slopmark():string{
 	return Math.floor((Date.now()-epoch)/62.5).toString(16);
 }
 
-function unixTime(date:string){
+// unixTime() - timestamp - seconds since 1970
+
+function unixTime(date:string):number{
 	const d = new Date(date);
 	const s = d.getTime()/1000;
 	return Math.floor(s);
 }
+
+// dateStamp(seconds) - unix timestamp to string
 
 function dateStamp(seconds:number){
 	if(seconds>0){
@@ -234,6 +241,8 @@ function dateStamp(seconds:number){
 	}
 	return "---";
 }
+
+// string padding helper functions
 
 function padChars(text:string,pad:string=ThinSpace):string{
 	return [...text].join(pad);
@@ -862,7 +871,7 @@ function debugValue(title:string,value:unknown){
 
 async function logForge(lines:string,id:string){
 	if(roha.config.logging){
-		const time=timestamp();	//new Date().toISOString();
+		const time=slopmark();	//new Date().toISOString();
 		const list=[];
 		for(let line of lines.split("\n")){
 			line=stripAnsi(line);

@@ -7,9 +7,9 @@ const ledArray = ["⚫", "⚪", "🔵", "🟢", "🔴", "🟡", "🟣", "🟠", 
 
 const MaxFrames=150;
 
-const period=150;
+const period=750;
 
-const startTime=performance.now();
+// display system for the test1 tick example
 
 let frameCount=0;
 
@@ -32,6 +32,10 @@ function blankFrame(index){
 	const grid=(led.repeat(48)+"\n").repeat(2);
 	return grid;
 }
+
+// a periodic timer that posts a tick event to slopShop host
+
+const startTime=performance.now();
 
 function update() {
 	const count=frameCount++;
