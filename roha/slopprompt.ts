@@ -244,12 +244,31 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		readPromise=null;
 		busy=true;
 		const { value, done } = winner;
-
-		console.log("[RAW] value",value);
-
+//		console.log("[RAW] value",value);
 		if (done || !value) break;
-		// value is Uint8Array -
-		for (const byte of value) {
+
+		const n=value.length;
+		for(let i=0;i<n;i++){
+			const byte=value[i];
+			const marker=byte&0xf8;
+			if(marker==0xe0){// 3 byte unicode
+				const v3=value.subarray(i,i+3);
+				result=decoder.decode(v3);
+				bytes.push(...encoder.encode(result));
+//				console.log("[RAW]",result);
+				addInput(result);
+				i+=2;
+				continue;
+			}
+			if(marker==0xf0){// 4 byte unicode
+				const v4=value.subarray(i,i+4);
+				result=decoder.decode(v4);
+//				console.log("[RAW]",result);
+				bytes.push(...encoder.encode(result));
+				addInput(result);
+				i+=3;
+				continue;
+			}
 			if (byte === 0x7F || byte === 0x08) { // Backspace
 				backspace(bytes);
 			} else if (byte === 0x1b) { // Escape sequence
