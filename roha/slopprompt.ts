@@ -1,4 +1,4 @@
-// sloprawprompt.ts - A raw mode prompt replacement for slop fountain
+// slopprompt.ts - A raw mode prompt replacement for slop fountain
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
@@ -244,6 +244,9 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		readPromise=null;
 		busy=true;
 		const { value, done } = winner;
+
+		console.log("[RAW] value",value);
+
 		if (done || !value) break;
 		// value is Uint8Array -
 		for (const byte of value) {
@@ -270,6 +273,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					console.log("[RAW] bad byte",byte);
 					break;
 				}
+//				if(byte>122){⛲
+//				}
 				const char = decoderStream.decode(new Uint8Array([byte]));
 				if(!char){
 					console.log("[RAW] not char from byte",byte);

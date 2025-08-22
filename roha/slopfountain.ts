@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-import { slopPrompt, rawPrompt } from "./sloprawprompt.ts";
+import { slopPrompt, rawPrompt } from "./slopprompt.ts";
 
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
@@ -16,7 +16,7 @@ import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 
 import open from 'jsr:@rdsq/open';
 
-// Testing with Deno 2.4.4, V8 13.7.152.14, TypeScript 5.8.3
+// Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
 
 const fountainVersion="1.4.2";
 const fountainName="Fountain "+fountainVersion;

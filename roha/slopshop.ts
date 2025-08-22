@@ -2,9 +2,9 @@
 // (c)2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
-// latest : rawkey code from sloprawprompt 
+// latest : rawkey code from slopprompt 
 
-import { slopPrompt, rawPrompt, writeMessage } from "./sloprawprompt.ts";
+import { slopPrompt, rawPrompt, writeMessage } from "./slopprompt.ts";
 import { echo, fileLength, Ansi } from "./slopshoptools.ts";
 
 import { resolve } from "https://deno.land/std/path/mod.ts";
