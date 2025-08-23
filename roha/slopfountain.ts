@@ -14,6 +14,8 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 
+import { createBot } from "https://deno.land/x/discordeno@19/mod.ts";
+
 import open from 'jsr:@rdsq/open';
 
 // Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
