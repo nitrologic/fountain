@@ -14,10 +14,6 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
 import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 
-import { createBot } from "https://deno.land/x/discordeno@19/mod.ts";
-
-import open from 'jsr:@rdsq/open';
-
 // Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
 
 const fountainVersion="1.4.2";
@@ -207,6 +203,7 @@ const slopPath=resolve(appDir,"../slop");
 
 const forgePath=resolve(appDir,"forge");
 const rohaPath=resolve(forgePath,"forge.json");
+const rawPath=resolve(appDir,"../../nitrologic.github.io/raw");
 
 const modelAccounts=JSON.parse(await Deno.readTextFile(accountsPath));
 const modelSpecs=JSON.parse(await Deno.readTextFile(specsPath));
@@ -224,6 +221,14 @@ const epoch:number=Date.UTC(2025,4,12);
 function slopmark():string{
 	return Math.floor((Date.now()-epoch)/62.5).toString(16);
 }
+
+function slopDate(sixteenths:number){
+	const secs=epoch+sixteenths*62.5;
+	const date=new Date(secs);
+	return date.toDateString();
+
+}
+
 
 // unixTime() - timestamp - seconds since 1970
 
@@ -1795,7 +1800,60 @@ async function shareSlop(path:string,depth:number){
 	}
 }
 
+async function stripLog(path:string,counts){
+	let count=0;
+	let min=0;
+	let max=0;
+	try {
+		const fileContent=await Deno.readTextFile(path);
+		const lines=fileContent.split("\n");
+		for(const line of lines){
+			const hex=line.substring(0,8);	// ignore 16ths
+			const secs=parseInt(hex,16);
+			if(Number.isNaN(secs)) continue;
+			if(!min || secs<min) min=secs;
+			if(secs>max) max=secs;
+//			console.log("[STRIP]",line,secs);
+			const p0=line.indexOf("[");
+			const p1=line.indexOf("]");
+			if(p0==8 && p1>p0){
+				const from=line.substring(p0+1,p1);
+				if(from in counts) counts[from]++; else counts[from]=1;
+			}
+			count++;
+		}
+	} catch (error) {
+		echo("[STRIP] stripLog error",error.message);
+	}
+	const minDate=slopDate(min);
+	const maxDate=slopDate(max);
+	echo("[STRIP]",path,count,minDate,maxDate);
+}
+
 // TODO: split the screen and display slop in right column
+// stolen from shareDir
+async function rawCommand(words:string[]){
+	const counts={};
+	const dir=rawPath;
+//	console.log("[RAW]",dir);
+	try {
+		for await (const file of Deno.readDir(dir)) {
+			const path=resolvePath(dir, file.name);
+			const stat=await Deno.stat(path);
+			const size=stat.size||0;
+			const modified=dateStamp(stat.mtime.getTime()/1e3);
+			const hash=await hashFile(path);
+//			echo("[RAW]",file,size,modified);
+			await stripLog(path,counts);
+		}
+	} catch (error) {
+		echo("rawCommand error",String(error)); //.message
+		throw error;
+	}
+	for(const from in counts){
+		echo("RAW",from,counts[from]);
+	}
+}
 
 function slopCommand(words:string[]){
 }
@@ -2931,6 +2989,9 @@ async function callCommand(command:string) {
 					}
 					dirty=await commitShares(tag);
 				}
+				break;
+			case "raw":
+				await rawCommand(words);
 				break;
 			case "slop":
 				slopCommand(words);

@@ -9,6 +9,47 @@ Exposing 300 models from 11 providers the research project Fountain 1.4.2 ⛲ ap
 
 > maximum prompt length exceeded - every model ever
 
+
+## Recent Personal Usage
+
+Processing the logs with experimental /raw command. 
+
+We began the month changing to hex 16ths of a second timestamping, because...
+
+````
+890aa20 [roha] [STRIP] /raw/forge-macos-6e20e81-86e50d3.log 12297 Mon Aug 04 2025 Fri Aug 22 2025
+890aa20 [roha] [STRIP] /raw/forge-windows-6d97ea5-878fcbd.log 68682 Sun Aug 03 2025 Sat Aug 23 2025
+````
+
+The first two line counts are lines typed or pasted by myself, fountain user 0, from PC and MacBook.
+
+* nitro@ryzen5 2857
+* simon@midnightblue 268
+
+The next is a line count of the models under test, most popular first.
+
+* deepseek-chat 15024
+* gpt-5-mini 6853
+* claude-sonnet-4 6637
+* grok-4-0709 1969
+* kimi-k2-0711 890
+* llama-4-maverick 392
+* gpt-5-2025 255
+* claude-opus-4-1 224
+* gpt-5-nano 175
+* claude-3-haiku 166
+* gemini-2.5-flash-preview 139
+* kimi-k2-turbo 135
+* gemini-2.5-flash 131
+* grok-3 75
+* gemini-2.5-pro-preview 63
+* gpt-4.1-2025 62
+* moonshot-v1-128k 41
+* claude-opus-4 31
+* deepseek-reasoner 19
+* llama-4-scout 13
+* gemini-2.5-pro 2
+
 ## Latest Commits
 
 The raw prompt mode is a low level keyboard driver designed to add new features to Fountain input
@@ -41,19 +82,19 @@ Install [Deno 2.4](https://deno.com/)
 
 > /account
 ```
-┌────┬────────────┬─────┬──────────┬──────────────────────────────────────────────┐
-│ id │ name       │ llm │ credit   │ topup                                        │
-├────┼────────────┼─────┼──────────┼──────────────────────────────────────────────┤
-│ 0  │ deepseek   │ 2   │ $-1.3482 │ https://platform.deepseek.com/usage          │
-│ 1  │ moonshot   │ 11  │ $-0.9066 │ https://platform.moonshot.ai/console/account │
-│ 2  │ anthropic  │ 9   │ $1.8143  │ https://console.anthropic.com/dashboard      │
-│ 3  │ openai     │ 86  │ $-2.9422 │ https://auth.openai.com/log-in               │
-│ 4  │ xai        │ 8   │ $-9.1530 │ https://console.x.ai                         │
-│ 5  │ gemini     │ 50  │ $-1.7031 │ https://console.cloud.google.com/            │
-│ 6  │ mistral    │ 67  │ $0.0000  │ https://console.mistral.ai/home              │
-│ 7  │ alibaba    │ 4   │ $0.0000  │ https://bailian.console.alibabacloud.com/    │
-│ 8  │ cerebras   │ 10  │ $-0.2826 │ https://huggingface.co/cerebras              │
-│ 9  │ nscale     │ 28  │ $0.0000  │ https://huggingface.co/nscale                │
-│ 10 │ hyperbolic │ 22  │ $0.0000  │ https://huggingface.co/hyperbolic            │
-└────┴────────────┴─────┴──────────┴──────────────────────────────────────────────┘
+╭────┬────────────┬─────┬───────────┬──────────────────────────────────────────────╮
+│ id │ name       │ llm │ credit    │ topup                                        │
+├────┼────────────┼─────┼───────────┼──────────────────────────────────────────────┤
+│ 0  │ deepseek   │ 2   │ $-3.0503  │ https://platform.deepseek.com/usage          │
+│ 1  │ moonshot   │ 11  │ $-1.1705  │ https://platform.moonshot.ai/console/account │
+│ 2  │ anthropic  │ 9   │ $1.8143   │ https://console.anthropic.com/dashboard      │
+│ 3  │ openai     │ 86  │ $-4.1137  │ https://auth.openai.com/log-in               │
+│ 4  │ xai        │ 9   │ $-10.6904 │ https://console.x.ai                         │
+│ 5  │ gemini     │ 50  │ $-1.7261  │ https://console.cloud.google.com/            │
+│ 6  │ mistral    │ 67  │ $0.0000   │ https://console.mistral.ai/home              │
+│ 7  │ alibaba    │ 4   │ $0.0000   │ https://bailian.console.alibabacloud.com/    │
+│ 8  │ cerebras   │ 10  │ $-0.2826  │ https://huggingface.co/cerebras              │
+│ 9  │ nscale     │ 28  │ $0.0000   │ https://huggingface.co/nscale                │
+│ 10 │ hyperbolic │ 24  │ $0.0000   │ https://huggingface.co/hyperbolic            │
+╰────┴────────────┴─────┴───────────┴──────────────────────────────────────────────╯
 ````
