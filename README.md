@@ -26,29 +26,13 @@ The first two line counts are lines typed or pasted by myself, fountain user 0, 
 * nitro@ryzen5 2857
 * simon@midnightblue 268
 
-The next is a line count of the models under test, most popular first.
+The next is a line count of the models under test, my top 5 for August to date.
 
 * deepseek-chat 15024
 * gpt-5-mini 6853
 * claude-sonnet-4 6637
 * grok-4-0709 1969
 * kimi-k2-0711 890
-* llama-4-maverick 392
-* gpt-5-2025 255
-* claude-opus-4-1 224
-* gpt-5-nano 175
-* claude-3-haiku 166
-* gemini-2.5-flash-preview 139
-* kimi-k2-turbo 135
-* gemini-2.5-flash 131
-* grok-3 75
-* gemini-2.5-pro-preview 63
-* gpt-4.1-2025 62
-* moonshot-v1-128k 41
-* claude-opus-4 31
-* deepseek-reasoner 19
-* llama-4-scout 13
-* gemini-2.5-pro 2
 
 ## Latest Commits
 
