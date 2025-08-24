@@ -1,11 +1,9 @@
 {
 	"tasks":{
-		"discord2": "deno run discordbot.ts",
-
-		"discord": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read discordbot.ts",
+		"sloppy": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read sloppy.ts",
 
         "hello":{
-			"dependencies":["discord"]
+			"dependencies":["sloppy"]
 		}
 	}
 }
