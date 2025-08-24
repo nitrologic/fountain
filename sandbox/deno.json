@@ -1,0 +1,11 @@
+{
+	"tasks":{
+		"discord2": "deno run discordbot.ts",
+
+		"discord": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read discordbot.ts",
+
+        "hello":{
+			"dependencies":["discord"]
+		}
+	}
+}
