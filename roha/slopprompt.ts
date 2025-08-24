@@ -13,6 +13,35 @@
 
 // fountain users - enable roha.config.rawprompt to test
 
+function echo(...data: any[]){
+	console.error("[PIPE]",data);
+}
+
+let slopConnection;
+let slopListener;
+let listenerPromise;
+
+async function listenPort(port:number){
+	if(!slopListener){
+		echo("listening from fountain for slop on port",port);
+		slopListener=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
+	}
+	const connection=await slopListener.accept();
+	return  {connection:connection};
+}
+
+export function listenService(){
+	listenerPromise=listenPort(8081);
+}
+
+export async function announceCommand(words:string[]){
+	const text=words.join(" ");
+	if(slopConnection){
+		const bytes=encoder.encode(text);
+		slopConnection?.write(bytes);
+	}
+}
+
 const reader=Deno.stdin.readable.getReader();
 const writer=Deno.stdout.writable.getWriter();
 
@@ -210,6 +239,13 @@ const prompt="]";
 let readPromise;
 let counter=0;
 const decoderStream=new TextDecoder("utf-8",{stream:true});
+
+// [slop] sleep
+
+async function sleep(ms:number) {
+	await new Promise(function(resolve) {setTimeout(resolve, ms);});
+}
+
 export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	Deno.stdin.setRaw(true);
 	let result="";
@@ -224,7 +260,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		let winner=null;
 		while(true){
 			const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
-			winner = await Promise.race([readPromise,timerPromise]);
+			const race=listenerPromise?[readPromise,timerPromise,listenerPromise]:[readPromise,timerPromise];
+			winner = await Promise.race(race);
 			if(winner==null){
 				if(!busy) {
 					const line=grapheme.join("");
@@ -241,10 +278,24 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(!winner) {
 			break;// we break for break breaks
 		}
+
+		const { value, done, connection } = winner;
+		console.log("[RAW]",value,done,connection,busy);
+
+		if (connection) {
+			slopConnection = connection;
+			listenerPromise = listenPort(8081);
+			continue;
+		}
+
 		readPromise=null;
 		busy=true;
-		const { value, done } = winner;
-//		console.log("[RAW] value",value);
+
+//		await sleep(2000);
+		Deno.exit(0);
+
+
+		//		console.log("[RAW] value",value);
 		if (done || !value) break;
 
 		const n=value.length;
@@ -300,7 +351,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					break;
 				}
 				bytes.push(...encoder.encode(char));
-    		    addInput(char);	
+    		    addInput(char);
 //				bytes.push(byte);
 //				const char = decoderStream.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
 //				addInput(char);

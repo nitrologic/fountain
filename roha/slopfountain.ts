@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-import { slopPrompt, rawPrompt } from "./slopprompt.ts";
+import { announceCommand, listenService, slopPrompt, rawPrompt } from "./slopprompt.ts";
 
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
@@ -96,6 +96,7 @@ type ConfigFlags = {
 	slops: boolean;
 	budget: false;
 	syncRelay: boolean;
+	listen: boolean;
 };
 
 // a shared context state
@@ -374,7 +375,8 @@ const flagNames={
 	slow : "experimental output at reading speed",
 	slops : "console worker scripts",
 	budget : "cheap models for the win",
-	syncRelay : "one thing at a time mode"
+	syncRelay : "one thing at a time mode",
+	listen : "listen for remote connections on port 8081"
 };
 
 const emptyConfig:ConfigFlags={
@@ -397,7 +399,8 @@ const emptyConfig:ConfigFlags={
 	slow:false,
 	slops:false,
 	budget:false,
-	syncRelay:true
+	syncRelay:true,
+	listen:false
 };
 
 const emptyRoha={
@@ -438,7 +441,8 @@ async function exitForge(){
 
 let slopPail=[];
 let readingSlop=false;
-let slopConnection;
+
+let slopConnection:Deno.TcpConn;
 
 //
 // let listening=false;
@@ -476,16 +480,6 @@ async function serveConnection(connection){
 	console.error("\t[FOUNTAIN] serveConnection ",JSON.stringify(connection));
 	const text=encoder.encode("greetings from fountain client");
 	await writeSlop(connection,text);
-}
-
-async function listenService(){
-	echo("listening from fountain for slop on port 8081");
-	const listener=Deno.listen({ hostname: "localhost", port: 8081, transport: "tcp" });
-	while (true) {
-		const connection=await listener.accept();
-		slopConnection=connection;
-		await serveConnection(connection);
-	}
 }
 
 function price(credit){
@@ -2799,6 +2793,9 @@ async function callCommand(command:string) {
 			case "spec":
 				parseUnicode();
 				break;
+			case "announce":
+				announceCommand(words);
+				break;
 			case "listen":
 				listenService();
 				break;
@@ -3853,7 +3850,7 @@ echo(birds);
 // test birds on clipboard
 //await clipText("\t"+birds);
 
-if(roha.config.listenonstart){
+if(roha.config.listen){
 	listenService();
 }
 await flush();

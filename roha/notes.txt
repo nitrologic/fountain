@@ -1,3 +1,49 @@
+async function indexedRace<T>(promises: Promise<T>[]): Promise<{ index: number; value: T | Error }> {
+	const indexedPromises = promises.map(
+		(promise, index) =>
+			promise
+			.then(value => [index, value] as const)
+			.catch(error => [index, error] as const)
+	);
+	const [index, result] = await Promise.race(indexedPromises) as [number, T | Error];
+	return { index, value: result };
+}
+
+
+>
+<--- Last few GCs --->
+
+[604:000001A87A0BC000]    35175 ms: Scavenge (during sweeping) 4077.9 (4090.8) -> 4074.9 (4093.6) MB, pooled: 0.0 MB, 10.14 / 0.00 ms (average mu = 0.267, current mu = 0.227) allocation failure;
+[604:000001A87A0BC000]    36394 ms: Mark-Compact (reduce) 4080.9 (4093.8) -> 4077.3 (4082.3) MB, pooled: 0.0 MB, 541.83 / 0.00 ms (+ 478.3 ms in 96 steps since start of marking, biggest step 5.0 ms, walltime since start of marking 1088 ms) (average mu = 0
+
+
+#
+# Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
+#
+==== C stack trace ===============================
+
+        CrashForExceptionInNonABICompliantCodeRange [0x0x7ff6d791ae2b+1625755]
+        node_api_get_module_file_name [0x0x7ff6d757ee97+22176951]
+        node_api_get_module_file_name [0x0x7ff6d75af9da+22376442]
+        node_api_get_module_file_name [0x0x7ff6d755ad3a+22029146]
+        node_api_get_module_file_name [0x0x7ff6d7611b27+22778183]
+        node_api_get_module_file_name [0x0x7ff6d761596a+22794122]
+        node_api_get_module_file_name [0x0x7ff6d76252c7+22857959]
+        node_api_get_module_file_name [0x0x7ff6d7624a6b+22855819]
+        aws_lc_0_26_0_BIO_hexdump [0x0x7ff6d8f00e5d+1218797]
+        node_api_get_module_file_name [0x0x7ff6d760f3eb+22768139]
+        CrashForExceptionInNonABICompliantCodeRange [0x0x7ff6d78da510+1361280]
+        CrashForExceptionInNonABICompliantCodeRange [0x0x7ff6d80fd47c+9893100]
+        (No symbol) [0x0x1a81fe7783a]
+Task fountain (no command)
+
+
+	"Just a heads up: We're gonna have a superconductor turned up full blast and pointed at you for the duration of this next test.",
+	"The Enrichment Center is required to remind you that you will be baked, and then there will be cake.",
+	"Are you still there?",
+	"Science isn't about why it's about why not."
+
+
 //		const list=await listChannels(message);
 //		console.log("[SLOPPY]",list);
 
