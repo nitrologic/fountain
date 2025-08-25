@@ -4,6 +4,12 @@
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
+const quotes=[
+	"🐷 I am sloppy the slop fountain janitor",
+	"did thing thing call for a plunge? 🪠",
+	"frump system prompt you say?"
+];
+
 // borrowed from slophole
 
 function echo(...data: any[]){
@@ -84,10 +90,6 @@ console.log("[SLOPPY] slopchat discord bot by simon 0.02");
 
 let quoteCount=0;
 let openChannel=null;
-
-const quotes=[
-	"[TS] fountain sandbox says @skid is not here"
-];
 
 const client = new Client({
 	intents: [

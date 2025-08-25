@@ -2,6 +2,8 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
+import { encode } from "node:punycode";
+
 // todo: setRaw options
 
 // todo: backspace may cause critical failure
@@ -22,8 +24,15 @@ let slopListener;
 let listenerPromise;
 
 const readPromises=[];
-
-async function readConnection(connection){
+const decoderConnection = new TextDecoder("utf-8");
+const rxBufferSize=1e6;
+const rxBuffer = new Uint8Array(rxBufferSize);
+async function readConnection(connection:Deno.TcpConn){
+	const n=await connection.read(rxBuffer);
+	if(n>0){
+		const text=decoderConnection.decode(rxBuffer.subarray(0,n));
+		echo("read",text);
+	}
 }
 
 async function listenPort(port:number){
@@ -32,6 +41,7 @@ async function listenPort(port:number){
 		slopListener=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
 	}
 	const connection=await slopListener.accept();
+	echo("reading new connection");
 	const reader=readConnection(connection);
 	return  {connection,reader};
 }
