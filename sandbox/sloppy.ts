@@ -58,12 +58,13 @@ async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
 }
 
+// fountain connection goes PEEP
+
 function echo(...data: any[]){
 	console.error("[PEEP]",data);
 }
 
 const encoder = new TextEncoder();
-
 async function writeFountain(message:string){
 	if(!slopPipe) return;
 	const data=encoder.encode(message);	
