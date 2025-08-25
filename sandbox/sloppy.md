@@ -1,49 +1,29 @@
+it's discord week
+
+In a newly created sandbox sloppy is this morning 180 lines of deno.
+
+
+
+
+# models under test
+
+# code under observation
+
+
+## sloppy.ts code review of a deno utility 
+
+August 2025 was going to be private repos with venture capital pitch decks flowing with enthusiasm.
+
+Huh.
+
+Instead the path of least resistanse lays down for the keep it simple stupids and preamble MIT license and move on.
+
+```
 // sloppy.ts - a research tool connecting large language models and tiny humans
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
-
-const systemDecoder = new TextDecoder();
-
-function onSystem(rx:Uint8Array){
-	const message:string=systemDecoder.decode(rx);
-	const lines=message.split("\r\n");
-	for(const line of lines){
-		console.log("[STDIO]",line);
-		if(line=="exit") Deno.exit(0);
-	}
-}
-
-// system stdin support for sloppies
-
-const systemBufferSize=1e6;
-let readingSystem:boolean=false;
-const systemBuffer = new Uint8Array(systemBufferSize);
-async function readSystem(){
-	if(!slopPipe) return;
-	readingSystem=true;
-	let n=null;
-	try{
-		n = await Deno.stdin.read(systemBuffer);
-	}catch(e){
-		echo("readFountain",e);
-	}
-	readingSystem=false;
-	if (n == null) {
-		// TODO: share exit hatch with below
-		const disconnected=disconnectFountain();
-		return null;
-	}else{
-		const received = systemBuffer.subarray(0, n);
-		return {system:received};
-	}
-}
-
-// sender can be 
-function onResult(message){
-	echo(message);
-}
 
 const quotes=[
 	"🤖 I am sloppy the janitor",
@@ -51,6 +31,39 @@ const quotes=[
 	"frump system prompt you say?"
 ];
 
+async function readLocal(){
+}
+
+// stdio support for sloppies
+
+const systemDecoder = new TextDecoder();
+async function readSystem(){
+	if(!slopPipe) return;
+	readingSlop=true;
+	let n=null;
+	try{
+		n = await slopPipe.read(rxBuffer);
+	}catch(e){
+		echo("readFountain",e);
+	}
+	readingSlop=false;
+	if (n == null) {
+		const disconnected=disconnectFountain();
+		return null;
+	}else{
+		const received = rxBuffer.subarray(0, n);
+		const message = fountainDecoder.decode(received);
+		return {message};
+	}
+}
+
+// sender can be 
+function onResult(message){
+	echo(message);
+}
+```
+
+```
 // borrowed from slophole
 
 async function sleep(ms:number) {
@@ -126,6 +139,10 @@ async function readFountain(){
 	}
 }
 
+```
+
+```
+
 // main app starts here
 
 console.log("[SLOPPY] slopchat discord bot by simon 0.02");
@@ -174,20 +191,12 @@ await client.login(token)
 
 await connectFountain();
 writeFountain("hi");
-let portPromise=readFountain();
-let systemPromise=readSystem();
 while(true){
-	const race=[portPromise,systemPromise];
-	const result=await Promise.race(race);
+	const portPromise=readFountain();
+	const stdinPromise=readLocal();
+	const result=await promise;
 	if (result==null) break;
-	if(result.system) {
-		onSystem(result.system);
-		systemPromise=readSystem();
-	}
-	if(result.message) {
-		onResult(result.message);
-		portPromise=readFountain();		
-	}
+	if(result.message) onResult(result.message);
 //	echo("result",result);
 	await(sleep(500));
 }
@@ -195,3 +204,4 @@ while(true){
 echo("bye");
 disconnectFountain();
 Deno.exit(0);
+```

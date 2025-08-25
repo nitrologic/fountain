@@ -5,18 +5,15 @@
 import { encode } from "node:punycode";
 
 // todo: setRaw options
-
-// todo: backspace may cause critical failure
+// todo: backspace can cause critical failure
 
 // rawPrompt(message:string)
 // intervalPrompt(message:string,refreshInterval:number,handler)
-
 // history, shortcode input, async cursor keys
-
 // fountain users - enable roha.config.rawprompt to test
 
-function echo(...data: any[]){
-	console.error("[PIPE]",data);
+function echo(...data:any[]){
+	console.error("[PORT]",data);
 }
 
 let slopConnection;
