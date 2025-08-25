@@ -2793,6 +2793,7 @@ async function callCommand(command:string) {
 			case "spec":
 				parseUnicode();
 				break;
+			case "sys":
 			case "announce":
 				announceCommand(words);
 				break;

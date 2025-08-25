@@ -4,6 +4,11 @@
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
+// sender can be 
+function onResult(message){
+	echo(message);
+}
+
 const quotes=[
 	"🤖 I am sloppy the janitor",
 	"did thing thing call for a plunge? 🪠",
@@ -11,6 +16,10 @@ const quotes=[
 ];
 
 // borrowed from slophole
+
+async function sleep(ms:number) {
+	await new Promise(function(resolve) {setTimeout(resolve, ms);});
+}
 
 function echo(...data: any[]){
 	console.error("[PIPE]",data);
@@ -38,7 +47,7 @@ let slopPipe:Deno.Conn;
 async function connectFountain():Promise<boolean>{
 	try{
 		slopPipe = await Deno.connect({hostname:"localhost",port:8081});
-		echo("slopPipe connected","localhost:8081");
+		echo("connected","localhost:8081");
 		return true;
 	}catch(error){
 		if (error instanceof Deno.errors.ConnectionRefused) {
@@ -54,34 +63,31 @@ async function connectFountain():Promise<boolean>{
 function disconnectFountain(){
 	if(!slopPipe) return false;
 	slopPipe.close();
-	echo("slopPipe disconnected");
+	echo("Disconnected");
 	slopPipe=null;
 	return true;
 }
 
 let readingSlop:bool=false;
-const decoder = new TextDecoder();
-
+const fountainDecoder = new TextDecoder();
 async function readFountain(){
 	if(!slopPipe) return;
 	readingSlop=true;
-	echo(readingSlop);
 	let n=null;
 	try{
 		n = await slopPipe.read(rxBuffer);
 	}catch(e){
 		echo("readFountain",e);
 	}
+	readingSlop=false;
 	if (n == null) {
 		const disconnected=disconnectFountain();
-		self.postMessage({disconnected});
+		return null;
 	}else{
 		const received = rxBuffer.subarray(0, n);
-		const message = decoder.decode(received);
-		echo("slopPipe received:", message);		
-		self.postMessage({received:message});
+		const message = fountainDecoder.decode(received);
+		return {message};
 	}
-	readingSlop=false;
 }
 
 // main app starts here
@@ -131,4 +137,15 @@ const token=Deno.env.get("DISCORD_BOT");
 await client.login(token)
 
 await connectFountain();
-writeFountain("sloppy says what?");
+writeFountain("hi");
+while(true){
+	const promise=readFountain();
+	const result=await promise;
+	if (result==null) break;
+
+	if(result.message) onResult(result.message);
+//	echo("result",result);
+	await(sleep(500));
+}
+echo("bye");
+Deno.exit(0);
