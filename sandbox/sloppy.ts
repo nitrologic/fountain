@@ -5,7 +5,7 @@
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
 const quotes=[
-	"🐷 I am sloppy the slop fountain janitor",
+	"🤖 I am sloppy the janitor",
 	"did thing thing call for a plunge? 🪠",
 	"frump system prompt you say?"
 ];
