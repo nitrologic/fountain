@@ -21,13 +21,19 @@ let slopConnection;
 let slopListener;
 let listenerPromise;
 
+const readPromises=[];
+
+async function readConnection(connection){
+}
+
 async function listenPort(port:number){
 	if(!slopListener){
 		echo("listening from fountain for slop on port",port);
 		slopListener=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
 	}
 	const connection=await slopListener.accept();
-	return  {connection:connection};
+	const reader=readConnection(connection);
+	return  {connection,reader};
 }
 
 export function listenService(){
@@ -278,26 +284,16 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(!winner) {
 			break;// we break for break breaks
 		}
-
 		const { value, done, connection } = winner;
-		console.log("[RAW]",value,done,connection,busy);
-
+//		console.log("[RAW]",value,done,connection,busy);
 		if (connection) {
 			slopConnection = connection;
 			listenerPromise = listenPort(8081);
 			continue;
 		}
-
 		readPromise=null;
 		busy=true;
-
-//		await sleep(2000);
-		Deno.exit(0);
-
-
-		//		console.log("[RAW] value",value);
 		if (done || !value) break;
-
 		const n=value.length;
 		for(let i=0;i<n;i++){
 			const byte=value[i];
