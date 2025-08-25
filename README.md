@@ -7,7 +7,7 @@ Home of nitrologic slop fountain — the 4th generation roha foundry forge LLM t
 
 Exposing 300 models from 11 providers the research project Fountain 1.4.2 ⛲ approaches captivating.
 
-> Plant earth is blue and there is nothing I can do - David Bowie
+> Planet earth is blue and there is nothing I can do - David Bowie
 
 > maximum prompt length exceeded - every model ever
 
