@@ -11,7 +11,8 @@ export const SixShades2="██▓▒░ ";
 
 export const HalfBlocks=" ▀▄█";
 
-
+export const ScanLineChars=["‾","⎺","⎻","─","⎼","⎽","_"];
+export const MixedLineChars="▀▄█-=≡≣ 𓐄𓐅𓐆𓐇𓐈𓐉𓐊𓐋𓐌";
 
 export const AnsiRGB="\x1B[38;2;" //+"⟨r⟩;⟨g⟩;⟨b⟩m"
 
