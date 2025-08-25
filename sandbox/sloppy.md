@@ -1,13 +1,10 @@
+# code under observation
+
 it's discord week
 
 In a newly created sandbox sloppy is this morning 180 lines of deno.
 
-
-# models under test
-
-# code under observation
-
-## sloppy.ts code review of a deno utility 
+## sloppy.ts code review of a rapidly growing deno utility 
 
 August 2025 was going to be private repos with venture capital pitch decks flowing with enthusiasm.
 

@@ -52,6 +52,7 @@ The raw prompt mode is a low level keyboard driver designed to add new features 
 
 # blog commentary
 
+* [blog-sloppy](sandbox/sloppy.md) a discord bot calls home 
 * [blog-lab](lab/README.md) on the bench and in the sandbox - a bare metal MIPS R3000 tool chain side project
 * [blog-nitrologic](nitro/nitrologic.md) the sprawl - a stream of notions in recreational programming
 * [blog-slops](slop/blog2/blogust.md) 𐃅 recent test slop for fountain dwellers
