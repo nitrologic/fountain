@@ -4,18 +4,25 @@
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
-const systemDecoder = new TextDecoder();
+const quotes=[
+	"🤖 I am sloppy the janitor",
+	"did thing thing call for a plunge? 🪠",
+	"frump system prompt you say?"
+];
 
+// system stdin support for sloppies
+
+const systemDecoder = new TextDecoder();
 function onSystem(rx:Uint8Array){
 	const message:string=systemDecoder.decode(rx);
 	const lines=message.split("\r\n");
+	lines.pop();//ignore the incomplete
 	for(const line of lines){
 		console.log("[STDIO]",line);
 		if(line=="exit") Deno.exit(0);
+		// TODO: add command line api here
 	}
 }
-
-// system stdin support for sloppies
 
 const systemBufferSize=1e6;
 let readingSystem:boolean=false;
@@ -40,16 +47,10 @@ async function readSystem(){
 	}
 }
 
-// sender can be 
+// TODO: add sender argument
 function onResult(message){
 	echo(message);
 }
-
-const quotes=[
-	"🤖 I am sloppy the janitor",
-	"did thing thing call for a plunge? 🪠",
-	"frump system prompt you say?"
-];
 
 // borrowed from slophole
 
