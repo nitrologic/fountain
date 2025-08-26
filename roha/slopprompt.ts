@@ -2,18 +2,6 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-import { encode } from "node:punycode";
-
-// todo: setRaw options
-// todo: backspace can cause critical failure
-
-
-// slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>)
-// slopBroadcast(message,from)
-
-// history, shortcode input, async cursor keys
-// fountain users - enable roha.config.rawprompt to test
-
 function echo(...data:any[]){
 	console.error("[PORT]",data);
 }
