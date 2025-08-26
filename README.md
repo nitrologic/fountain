@@ -5,7 +5,7 @@
 
 Home of nitrologic slop fountain — the 4th generation roha foundry forge LLM tool.
 
-Exposing 300 models from 11 providers the research project Fountain 1.4.2 ⛲ approaches captivating.
+Exposing 302 models from 11 providers the research project Fountain 1.4.3 ⛲ approaches captivating.
 
 > Planet earth is blue and there is nothing I can do - David Bowie
 

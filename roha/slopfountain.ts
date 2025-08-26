@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-import { broadcast, announceCommand, listenService, slopPrompt, rawPrompt } from "./slopprompt.ts";
+import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
@@ -16,7 +16,7 @@ import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 
 // Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.4.2";
+const fountainVersion="1.4.3";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
 
@@ -2232,6 +2232,16 @@ function onRefresh(frame:number,message:string){
 
 async function promptForge(message:string) {
 	if(!roha.config.rawprompt) return prompt(message);
+	const response=await slopPrompt(message,20,onRefresh);
+	if(response==null){
+		await exitForge();
+		Deno.exit(0);
+	}
+	return response.line;
+}
+
+async function promptForge2(message:string) {
+	if(!roha.config.rawprompt) return prompt(message);
 	const refresh=roha.config.slopprompt;
 	const reply=await (refresh?slopPrompt(message,20,onRefresh):rawPrompt(message));
 	if(reply==null){
@@ -3538,7 +3548,7 @@ async function relay(depth:number) {
 		if(replies.length){
 			let content=replies.join("\n<eom>\n");
 			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
-			broadcast(content,mut);
+			slopBroadcast(content,mut);
 		}
 	} catch (error) {
 		const line=error.message || String(error);
@@ -3682,7 +3692,7 @@ async function chat() {
 				if(query.length){
 					const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 					rohaHistory.push({ role: "user", name:rohaNic, content: query });
-					broadcast(query,rohaNic);
+					slopBroadcast(query,rohaNic);
 					await relay(0);
 				}
 			}
@@ -3693,7 +3703,7 @@ async function chat() {
 					const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 					rohaHistory.push({ role: "user", name:rohaNic, content: query });
 					beginRelay(0);
-					// TODO: broadcast with syncRelay false
+					// TODO: slopBroadcast with syncRelay false
 				}
 			}
 		}

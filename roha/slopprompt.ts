@@ -7,14 +7,20 @@ import { encode } from "node:punycode";
 // todo: setRaw options
 // todo: backspace can cause critical failure
 
-// broadcast(message,from)
-// rawPrompt(message:string)
-// intervalPrompt(message:string,refreshInterval:number,handler)
+
+// slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>)
+// slopBroadcast(message,from)
+
 // history, shortcode input, async cursor keys
 // fountain users - enable roha.config.rawprompt to test
 
 function echo(...data:any[]){
 	console.error("[PORT]",data);
+}
+
+const messages=[];
+function pushMessage(message,from){
+	messages.push({message,from});
 }
 
 let slopConnection;
@@ -65,8 +71,7 @@ export async function announceCommand(words:string[]){
 	}
 }
 
-
-export async function broadcast(message:string,from:string){
+export async function slopBroadcast(message:string,from:string){
 	if(slopConnection && message && from){
 		const json=JSON.stringify({messages:[{message,from}]});
 		echo("json",json);
@@ -283,7 +288,7 @@ async function sleep(ms:number) {
 
 export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	Deno.stdin.setRaw(true);
-	let result="";
+	let response={};
 	if(message){
 		await writer.write(encoder.encode(harden(message,1e6)));
 		await writer.ready;
@@ -300,9 +305,10 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			winner = await Promise.race(race);
 			if(winner==null){
 				if(!busy) {
-					const line=grapheme.join("");
+					const line=grapheme.join("").trimEnd();
 					grapheme=[];
-					result=line.trimEnd();
+					response={line};
+					history.push(line);
 					break;
 				}
 				const line=grapheme.join("");
@@ -312,7 +318,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			break;
 		}
 		if(!winner) {
-			break;// we break for break breaks
+			break;// we break for break breaks, result has been loaded due to above timeout
 		}
 		const { value, done, connection, receive, source } = winner;
 		if (connection) {
@@ -322,17 +328,24 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			continue;
 		}
 		if(receive){
+			const messages=[];
 			const n=receive.length;
 			const text=rxDecoder.decode(receive);
 			try{
 				const blob=JSON.parse(text);
-				for(const message of blob.messages){
-					// todo: safeguard reckless behavior
-					pushMessage(message.message,message.from);					
-					// echo("message",message.from,message.message);
+				if(blob.messages){
+					for(const message of blob.messages){
+						// todo: safeguard reckless behavior
+						messages.push({message:message.message,from:message.from});					
+					}
 				}
 			}catch(error){
-				echo("JSON error",text);
+				echo("JSON error",text,error);
+			}
+			if(messages){
+				// we break for messages from discord
+				response={messages};
+				break;
 			}
 //			const source=receive.source;
 			receivePromise=readConnection(source)
@@ -347,19 +360,17 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			const marker=byte&0xf8;
 			if(marker==0xe0){// 3 byte unicode
 				const v3=value.subarray(i,i+3);
-				result=decoder.decode(v3);
-				bytes.push(...encoder.encode(result));
-//				console.log("[RAW]",result);
-				addInput(result);
+				const utf=decoder.decode(v3);
+				bytes.push(...encoder.encode(utf));
+				addInput(utf);
 				i+=2;
 				continue;
 			}
 			if(marker==0xf0){// 4 byte unicode
 				const v4=value.subarray(i,i+4);
-				result=decoder.decode(v4);
-//				console.log("[RAW]",result);
-				bytes.push(...encoder.encode(result));
-				addInput(result);
+				const utf=decoder.decode(v4);
+				bytes.push(...encoder.encode(utf));
+				addInput(utf);
 				i+=3;
 				continue;
 			}
@@ -425,83 +436,6 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			await writer.ready;
 		}
 	}
-	history.push(result);
 	inCode=false;
-	return result;
-}
-
-export async function rawPrompt(message:string){
-	// refreshInterval:boolean,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
-	let result="";
-	if(message){
-		await writer.write(encoder.encode(message));
-		await writer.ready;
-	}
-	let busy=true;
-	Deno.stdin.setRaw(true);
-	while (true) {
-		try {
-			if(!busy) {
-				const line=grapheme.join("");
-				grapheme=[];
-				result=line.trimEnd();
-				break;
-			}
-			const {value,done}=await reader.read();
-			if (done || !value) break;
-			let bytes=[];
-			for (const byte of value||[]) {
-				if (byte === 0x7F || byte === 0x08) { // Backspace
-					backspace(bytes);
-				} else if (byte === 0x1b) { // Escape sequence
-					if (value.length === 1) {
-						return null;
-					}
-					if (value.length >= 3) {
-						if (value[1] === 0xf4 && value[2] === 0x50) {
-							console.log("[RAW] F1");
-						}
-						 if (value[1] === 0x5b) { // cursor and past handlers
-							onCSI(bytes,value);
-						 }
-					}
-					break;
-				} else if (byte === 0x0A || byte === 0x0D) { // Enter key
-					bytes.push(0x0D, 0x0A);
-//					await logForge(result, "stdin");
-					busy=false;
-				} else {
-					bytes.push(byte);
-					const char = decoderStream.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
-					addInput(char);
-					if (byte === 0x3A) { // Colon ':'
-						const n=grapheme.length;
-						if(inCode){
-							if(n>codePos){
-								const words=grapheme.slice(codePos, n - 1).join("");
-								const lower=words.toLowerCase();
-								if(lower in shortcode){
-									const count=stringWidth(words)+2;
-									replaceText(bytes,count,shortcode[lower]+"\ufe0f");	//200c FE0F
-								}
-							}
-							inCode=false;
-						}else{
-							inCode=true;
-							codePos=n;
-						}
-					}
-				}
-			}
-			if (bytes.length) await writer.write(new Uint8Array(bytes));
-		}catch(error){
-			console.error("Prompt error:", error);
-			console.error("Please consider disabling rawprompt in config");
-			busy=false;
-		}
-	}
-	Deno.stdin.setRaw(false);
-	history.push(result);
-	inCode=false;
-	return result;
+	return response;
 }
