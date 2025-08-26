@@ -2,6 +2,8 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
+// receive message from fountain /announce and echo to discord bot
+
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
 const quotes=[
@@ -10,17 +12,48 @@ const quotes=[
 	"frump system prompt you say?"
 ];
 
+// discord channel send
+
+let quoteCount=0;
+let openChannel="398589365846278144";
+
+async function writeSloppy(message){
+	if(openChannel){
+		const channel = await client.channels.fetch(openChannel);
+		if (channel?.isTextBased()) {
+			channel.send(message);
+		}
+	}
+}
+
+// TODO: add sender argument
+
+async function onFountain(message:string){
+	const line=message;
+	if(line.startsWith("/announce ")){
+		const message=line.substring(10);
+		await writeSloppy(message);
+	}
+}
+
+
 // system stdin support for sloppies
 
 const systemDecoder = new TextDecoder();
-function onSystem(rx:Uint8Array){
+async function onSystem(rx:Uint8Array){
 	const message:string=systemDecoder.decode(rx);
 	const lines=message.split("\r\n");
 	lines.pop();//ignore the incomplete
 	for(const line of lines){
 		console.log("[STDIO]",line);
 		if(line=="exit") Deno.exit(0);
-		// TODO: add command line api here
+		if(line.startsWith("/announce ")){
+			const message=line.substring(10);
+			await writeSloppy(message);
+		}
+		if(!line.startsWith("/")){
+			await writeFountain(line);
+		}
 	}
 }
 
@@ -45,11 +78,6 @@ async function readSystem(){
 		const received = systemBuffer.subarray(0, n);
 		return {system:received};
 	}
-}
-
-// TODO: add sender argument
-function onResult(message){
-	echo(message);
 }
 
 // borrowed from slophole
@@ -132,9 +160,6 @@ async function readFountain(){
 
 console.log("[SLOPPY] slopchat discord bot by simon 0.02");
 
-let quoteCount=0;
-let openChannel=null;
-
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
@@ -160,7 +185,8 @@ client.on('messageCreate', async (message) => {
 		const name=message.author.displayName;
 		const quote=quotes[quoteCount++%quotes.length];
         message.reply("@"+name+" "+quote);
-    }
+		openChannel=message.channelId;
+	}
 });
 
 Deno.addSignalListener("SIGINT", () => {
@@ -183,11 +209,11 @@ while(true){
 	const result=await Promise.race(race);
 	if (result==null) break;
 	if(result.system) {
-		onSystem(result.system);
+		await onSystem(result.system);
 		systemPromise=readSystem();
 	}
 	if(result.message) {
-		onResult(result.message);
+		await onFountain(result.message);
 		portPromise=readFountain();		
 	}
 //	echo("result",result);

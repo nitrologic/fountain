@@ -49,8 +49,8 @@ export function listenService(){
 
 export async function announceCommand(words:string[]){
 	const text=words.join(" ");
-	if(slopConnection){
-		const bytes=encoder.encode(text);
+	if(slopConnection && text){
+		const bytes=encoder.encode("/"+text);
 		slopConnection?.write(bytes);
 	}
 }

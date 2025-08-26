@@ -2,7 +2,7 @@
 
 it's discord week
 
-In a newly created sandbox sloppy is this morning 180 lines of deno.
+In a newly created root of fountain sloppy is this morning 200 lines of deno.
 
 ## sloppy.ts code review of a rapidly growing deno utility 
 
