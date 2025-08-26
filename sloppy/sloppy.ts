@@ -17,22 +17,32 @@ const quotes=[
 let quoteCount=0;
 let openChannel="398589365846278144";
 
-async function writeSloppy(message){
+async function writeSloppy(message:string,from:string){
 	if(openChannel){
 		const channel = await client.channels.fetch(openChannel);
 		if (channel?.isTextBased()) {
-			channel.send(message);
+			channel.send("["+from+"] "+message);
 		}
 	}
 }
 
-// TODO: add sender argument
+// TODO: add {messages:[{message,from}]} support
 
 async function onFountain(message:string){
 	const line=message;
 	if(line.startsWith("/announce ")){
 		const message=line.substring(10);
-		await writeSloppy(message);
+		await writeSloppy(message,"fountain");
+	}
+	if(line.startsWith("{")||line.startsWith("[")){
+		try{
+			const payload=JSON.parse(line);
+			for(const {message,from} of payload.messages){
+				await writeSloppy(message,from);
+			}
+		}catch(error){
+			echo("JSON parse error",error);
+		}
 	}
 }
 
@@ -49,7 +59,7 @@ async function onSystem(rx:Uint8Array){
 		if(line=="exit") Deno.exit(0);
 		if(line.startsWith("/announce ")){
 			const message=line.substring(10);
-			await writeSloppy(message);
+			await writeSloppy(message,"system");
 		}
 		if(!line.startsWith("/")){
 			await writeFountain(line);
@@ -181,8 +191,10 @@ client.on('messageCreate', async (message) => {
 		console.log("[SLOPPY]","pong!")
 	}
     if (message.mentions.has(client.user) && !message.author.bot) {
-		const from=message.author.username;	//skudmarks
+		const from=message.author.username+"@discord";	//skudmarks@discord
 		const name=message.author.displayName;
+		const blob={messages:[{message:message.content,from}]};
+		await writeFountain(JSON.stringify(blob));
 		const quote=quotes[quoteCount++%quotes.length];
         message.reply("@"+name+" "+quote);
 		openChannel=message.channelId;

@@ -7,6 +7,7 @@ import { encode } from "node:punycode";
 // todo: setRaw options
 // todo: backspace can cause critical failure
 
+// broadcast(message,from)
 // rawPrompt(message:string)
 // intervalPrompt(message:string,refreshInterval:number,handler)
 // history, shortcode input, async cursor keys
@@ -19,6 +20,7 @@ function echo(...data:any[]){
 let slopConnection;
 let slopListener;
 let listenerPromise;
+let receivePromise;
 
 const readPromises=[];
 const decoderConnection = new TextDecoder("utf-8");
@@ -29,6 +31,7 @@ async function readConnection(connection:Deno.TcpConn){
 	if(n>0){
 		const text=decoderConnection.decode(rxBuffer.subarray(0,n));
 		echo("read",text);
+		return {receive:text};
 	}
 }
 
@@ -52,6 +55,18 @@ export async function announceCommand(words:string[]){
 	if(slopConnection && text){
 		const bytes=encoder.encode("/"+text);
 		slopConnection?.write(bytes);
+	}
+}
+
+
+export async function broadcast(message:string,from:string){
+	if(slopConnection && message && from){
+		const json=JSON.stringify({messages:[{message,from}]});
+		echo("json",json);
+		const bytes=encoder.encode(json);		
+		slopConnection?.write(bytes);
+	}else{
+		echo("help me");
 	}
 }
 
@@ -274,6 +289,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		while(true){
 			const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
 			const race=listenerPromise?[readPromise,timerPromise,listenerPromise]:[readPromise,timerPromise];
+			if(receivePromise) race.push(receivePromise);
 			winner = await Promise.race(race);
 			if(winner==null){
 				if(!busy) {
@@ -291,12 +307,21 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(!winner) {
 			break;// we break for break breaks
 		}
-		const { value, done, connection } = winner;
+		const { value, done, connection, receive } = winner;
 //		console.log("[RAW]",value,done,connection,busy);
 		if (connection) {
 			slopConnection = connection;
 			listenerPromise = listenPort(8081);
+			receivePromise=readConnection(connection);
 			continue;
+		}
+		if(receive){
+			const n=receive.length;
+			echo("receive",n);
+//			for(const message of messages){
+//				echo("message",message.from,message.message);
+//			}
+			receivePromise=readConnection(connection)
 		}
 		readPromise=null;
 		busy=true;

@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-import { announceCommand, listenService, slopPrompt, rawPrompt } from "./slopprompt.ts";
+import { broadcast, announceCommand, listenService, slopPrompt, rawPrompt } from "./slopprompt.ts";
 
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
@@ -3520,11 +3520,7 @@ async function relay(depth:number) {
 			if(reasoning && roha.config.reasonoutloud){
 				print("=== reasoning ===");
 				// print chain of thought
-				if (roha.config.ansi) {
-					print(mdToAnsi(reasoning));
-				} else {
-					print(wordWrap(reasoning));
-				}
+				println(reasoning);
 				print("=================");
 			}
 
@@ -3542,6 +3538,7 @@ async function relay(depth:number) {
 		if(replies.length){
 			let content=replies.join("\n<eom>\n");
 			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
+			broadcast(content,mut);
 		}
 	} catch (error) {
 		const line=error.message || String(error);
@@ -3685,6 +3682,7 @@ async function chat() {
 				if(query.length){
 					const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 					rohaHistory.push({ role: "user", name:rohaNic, content: query });
+					broadcast(query,rohaNic);
 					await relay(0);
 				}
 			}
@@ -3695,6 +3693,7 @@ async function chat() {
 					const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 					rohaHistory.push({ role: "user", name:rohaNic, content: query });
 					beginRelay(0);
+					// TODO: broadcast with syncRelay false
 				}
 			}
 		}
