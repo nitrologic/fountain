@@ -213,7 +213,7 @@ const token=Deno.env.get("DISCORD_BOT");
 await client.login(token)
 
 await connectFountain();
-writeFountain("hi");
+writeFountain("{\"action\":\"connect\"}");
 let portPromise=readFountain();
 let systemPromise=readSystem();
 while(true){

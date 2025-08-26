@@ -26,12 +26,20 @@ const readPromises=[];
 const decoderConnection = new TextDecoder("utf-8");
 const rxBufferSize=1e6;
 const rxBuffer = new Uint8Array(rxBufferSize);
+const rxDecoder=new TextDecoder("utf-8",{stream:true});
+
+
 async function readConnection(connection:Deno.TcpConn){
-	const n=await connection.read(rxBuffer);
-	if(n>0){
-		const text=decoderConnection.decode(rxBuffer.subarray(0,n));
-		echo("read",text);
-		return {receive:text};
+	try{
+		const n=await connection.read(rxBuffer);
+		if(n>0){
+			const bytes=rxBuffer.subarray(0,n);
+			return {receive:bytes,source:connection};
+		}
+	}catch(error){
+		echo("connection reset");
+		// spawn a new listener
+		return {};
 	}
 }
 
@@ -42,8 +50,7 @@ async function listenPort(port:number){
 	}
 	const connection=await slopListener.accept();
 	echo("reading new connection");
-	const reader=readConnection(connection);
-	return  {connection,reader};
+	return  {connection};
 }
 
 export function listenService(){
@@ -307,8 +314,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(!winner) {
 			break;// we break for break breaks
 		}
-		const { value, done, connection, receive } = winner;
-//		console.log("[RAW]",value,done,connection,busy);
+		const { value, done, connection, receive, source } = winner;
 		if (connection) {
 			slopConnection = connection;
 			listenerPromise = listenPort(8081);
@@ -317,11 +323,20 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		}
 		if(receive){
 			const n=receive.length;
-			echo("receive",n);
-//			for(const message of messages){
-//				echo("message",message.from,message.message);
-//			}
-			receivePromise=readConnection(connection)
+			const text=rxDecoder.decode(receive);
+			try{
+				const blob=JSON.parse(text);
+				for(const message of blob.messages){
+					// todo: safeguard reckless behavior
+					pushMessage(message.message,message.from);					
+					// echo("message",message.from,message.message);
+				}
+			}catch(error){
+				echo("JSON error",text);
+			}
+//			const source=receive.source;
+			receivePromise=readConnection(source)
+			continue;
 		}
 		readPromise=null;
 		busy=true;
