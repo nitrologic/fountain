@@ -1,3 +1,4 @@
+chcp 65001
 echo off
 echo Testing Slop Fountain 
 echo see roha/deno.json for task options

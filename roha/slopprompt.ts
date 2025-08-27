@@ -59,7 +59,7 @@ export async function announceCommand(words:string[]){
 export async function slopBroadcast(message:string,from:string){
 	if(slopConnection && message && from){
 		const json=JSON.stringify({messages:[{message,from}]});
-		const bytes=encoder.encode(json);		
+		const bytes=encoder.encode(json);
 		slopConnection?.write(bytes);
 	}else{
 		echo("help me help you");
@@ -85,9 +85,9 @@ const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
 let grapheme:string[]=[];
 
 function addInput(input:string) {
-	grapheme.push(...(input.match(/(\p{Emoji}\uFE0F?|\p{Emoji_Presentation}|\p{Extended_Pictographic}\u200D?[\p{Emoji_Modifier}\uFE0F]*)+|./gu) || []));
+//	grapheme.push(...(input.match(/(\p{Emoji}\uFE0F?|\p{Emoji_Presentation}|\p{Extended_Pictographic}\u200D?[\p{Emoji_Modifier}\uFE0F]*)+|./gu) || []));
 //	grapheme.push(...(input.match(/(\p{Emoji_Presentation}|\p{Extended_Pictographic}\u200D?)+|./gu) || []));
-//	grapheme.push(...[...segmenter.segment(input)].map(segment => segment.segment));
+	grapheme.push(...[...segmenter.segment(input)].map(segment => segment.segment));
 }
 
 function forwardCursor(bytes) {
@@ -322,7 +322,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					if(blob.messages){
 						for(const message of blob.messages){
 							// todo: safeguard reckless behavior
-							messages.push({message:message.message,from:message.from});					
+							messages.push({message:message.message,from:message.from});
 						}
 					}
 				}catch(error){
@@ -340,8 +340,30 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		busy=true;
 		if (done || !value) break;
 		const n=value.length;
+
 		for(let i=0;i<n;i++){
-			const byte=value[i];
+		    const byte=value[i];
+			// Handle UTF-8 multi-byte sequences more robustly
+			if (byte >= 0xC0) { // UTF-8 start byte (2+ byte sequence)
+				let bytesNeeded = 0;
+				if ((byte & 0xE0) === 0xC0) bytesNeeded = 2;    // 2-byte sequence
+				else if ((byte & 0xF0) === 0xE0) bytesNeeded = 3; // 3-byte sequence
+				else if ((byte & 0xF8) === 0xF0) bytesNeeded = 4; // 4-byte sequence
+
+				if (i + bytesNeeded <= n) {
+					const sequence = value.subarray(i, i + bytesNeeded);
+					try {
+						const char = decoder.decode(sequence);
+						bytes.push(...encoder.encode(char));
+						addInput(char);
+						i += bytesNeeded - 1; // Skip the extra bytes
+						continue;
+					} catch (e) {
+						// Fall through to single byte handling
+					}
+				}
+			}
+/*
 			const marker=byte&0xf8;
 			if(marker==0xe0){// 3 byte unicode
 				const v3=value.subarray(i,i+3);
@@ -359,6 +381,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				i+=3;
 				continue;
 			}
+*/
+
 			if (byte === 0x7F || byte === 0x08) { // Backspace
 				backspace(bytes);
 			} else if (byte === 0x1b) { // Escape sequence
@@ -382,8 +406,6 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					console.log("[RAW] bad byte",byte);
 					break;
 				}
-//				if(byte>122){⛲
-//				}
 				const char = decoderStream.decode(new Uint8Array([byte]));
 				if(!char){
 					console.log("[RAW] not char from byte",byte);

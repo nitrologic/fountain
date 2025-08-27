@@ -1,3 +1,11 @@
+grapheme.push(...[...segmenter.segment(input)].map(segment => segment.segment));
+
+chcp 65001
+
+pasting unicode in dos, part 1...
+
+ 🪇 🪈 🎹 🎸 🥁 🎤 🎧 🎼 🎷 🎺 🎻
+
 error: Uncaught (in promise) DiscordAPIError[50035]: Invalid Form Body
 content[BASE_TYPE_MAX_LENGTH]: Must be 2000 or fewer in length.
     at handleErrors (file:///C:/Users/nitro/AppData/Local/deno/npm/registry.npmjs.org/@discordjs/rest/2.6.0/dist/index.js:762:13)
