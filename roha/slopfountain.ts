@@ -60,10 +60,11 @@ const diagonalLines=["╲","╱","╳"];
 const diagonalChars=["◹↗⇗⤤➶➹","◸↖⇖⤣","◿↘⇘⤥➴➷","◺↙⇙⤦"];
 const lineChars=["─═━┄┅┈┉","│║┃┆┇┊┋"];
 const arrowChars = ["▸→↠↦↝⥽⇒⤇⟿➸➳➵➧➨","◂←↞↤↜⥼⇐⤆⬳","▴↑↟↥⥾⇑⤊","▾↓↡↧⥿⇓⤋"];
-const arrowArcs=["↩↪","⤶⤷","⤾⤿","⤺⤻"];
+const arrowArcs=["↩↪","⤶⤷","⤾⤿","👈👉","⤺⤻"];
 const boxChars=["╭╮╰╯─┬┴│┤├┼","┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
 const pointChars="◯⊙⊚⦾⦿◉◎◍❂○●◦";
 const starChars="✩✪✫✬✭✮✯✰✱✲✳✴✵✶✷✸✹✺✻✼✽✾✿❀❁";
+const colorChars=["⚫⬛🖤","⚪⬜🤍","🟡🟨💛","🔴🟥❤️","🟠🟨🧡","🟢🟩💚","🔵🟦💙","🟣🟪💜","🟤🟫🤎"];
 
 function getEnv(key:string):string{
 	return Deno.env.get(key)||"";
@@ -88,7 +89,6 @@ type ConfigFlags = {
 	logging: boolean;
 	debugging: boolean;
 	pushonshare: boolean;
-	rawprompt: boolean;
 	slopprompt: boolean;
 	resetcounters: boolean;
 	returntopush: boolean;
@@ -368,8 +368,7 @@ const flagNames={
 	logging : "log all output to file",
 	debugging : "emit diagnostics",
 	pushonshare : "emit a /push after any /share",
-	rawprompt : "rawmode stdin with shortcode support",
-	slopprompt : "experimental interactive stdin",
+	slopprompt : "rawmode stdin with shortcode support",
 	resetcounters : "factory reset counters and files on reset",
 	returntopush : "hit return to /push - under test",
 	slow : "experimental output at reading speed",
@@ -392,7 +391,6 @@ const emptyConfig:ConfigFlags={
 	logging:false,
 	debugging:false,
 	pushonshare:false,
-	rawprompt:false,
 	slopprompt:false,
 	resetcounters:false,
 	returntopush:false,
@@ -2231,24 +2229,13 @@ function onRefresh(frame:number,message:string){
 }
 
 async function promptForge(message:string) {
-	if(!roha.config.rawprompt) return prompt(message);
+	if(!roha.config.slopprompt) return prompt(message);
 	const response=await slopPrompt(message,20,onRefresh);
 	if(response==null){
 		await exitForge();
 		Deno.exit(0);
 	}
 	return response.line;
-}
-
-async function promptForge2(message:string) {
-	if(!roha.config.rawprompt) return prompt(message);
-	const refresh=roha.config.slopprompt;
-	const reply=await (refresh?slopPrompt(message,20,onRefresh):rawPrompt(message));
-	if(reply==null){
-		await exitForge();
-		Deno.exit(0);
-	}
-	return reply;
 }
 
 async function addShare(share){

@@ -1,3 +1,22 @@
+- control function macro keys
+- copy paste clipboard code blocks
+- slopnet telnet connections
+- slopstudio web connections
+
+
+async function promptForge2(message:string) {
+	if(!roha.config.rawprompt) return prompt(message);
+	const refresh=roha.config.slopprompt;
+	const reply=await (refresh?slopPrompt(message,20,onRefresh):rawPrompt(message));
+	if(reply==null){
+		await exitForge();
+		Deno.exit(0);
+	}
+	return reply;
+}
+
+
+
 import { encode } from "node:punycode";
 
 // todo: setRaw options

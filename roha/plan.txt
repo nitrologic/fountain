@@ -1,9 +1,3 @@
-- control function macro keys
+- slopPrompt backspace, delete key, mouse control, paste unicode
 - audition markup with meta data
 - drop individual share by index
-- tab backspace test
-- raw mode delete key
-- mouse control
-- copy paste clipboard code blocks
-- slopnet telnet connections
-- slopstudio web connections
