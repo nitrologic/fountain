@@ -378,7 +378,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				bytes.push(0x0D,0x0A);
 				busy=false;
 			} else {
-				if(byte<32){
+				if(byte<32 && byte!=9){
 					console.log("[RAW] bad byte",byte);
 					break;
 				}
