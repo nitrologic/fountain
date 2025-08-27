@@ -23,12 +23,12 @@ async function readConnection(connection:Deno.TcpConn){
 		const n=await connection.read(rxBuffer);
 		if(n>0){
 			const bytes=rxBuffer.subarray(0,n);
-			return {receive:bytes,source:connection};
+			return {source:connection,receive:bytes};
 		}
+		return {source:connection};
 	}catch(error){
 		echo("connection reset");
-		// could spawn a new listener
-		return {receive:null,source:null};//connection};
+		return {source:connection};
 	}
 }
 
@@ -303,36 +303,35 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(!winner) {
 			break;// we break for break breaks, result has been loaded due to above timeout
 		}
-		const { value, done, connection, receive, source } = winner;
+		const { value, done, connection, source, receive } = winner;
 		if (connection) {
 			slopConnection = connection;
 			listenerPromise = listenPort(8081);
 			receivePromise=readConnection(connection);
 			continue;
 		}
-		if(receive){
+		if(source){
 			const messages=[];
-			const n=receive.length;
-			const text=rxDecoder.decode(receive);
-			try{
-				const blob=JSON.parse(text);
-				if(blob.messages){
-					for(const message of blob.messages){
-						// todo: safeguard reckless behavior
-						messages.push({message:message.message,from:message.from});					
+			receivePromise=null;
+			if(receive){
+				const n=receive.length;
+				const text=rxDecoder.decode(receive);
+				try{
+					const blob=JSON.parse(text);
+					if(blob.messages){
+						for(const message of blob.messages){
+							// todo: safeguard reckless behavior
+							messages.push({message:message.message,from:message.from});					
+						}
 					}
+				}catch(error){
+					echo("JSON error",text,error);
 				}
-			}catch(error){
-				echo("JSON error",text,error);
-			}
-			if(source){
 				receivePromise=readConnection(source)
-			}else{
-				receivePromise=null;
-			}
-			if(messages){
-				response={messages};
-				break;
+				if(messages){
+					response={messages};
+					break;
+				}
 			}
 			continue;
 		}
