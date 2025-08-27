@@ -1,3 +1,12 @@
+error: Uncaught (in promise) DiscordAPIError[50035]: Invalid Form Body
+content[BASE_TYPE_MAX_LENGTH]: Must be 2000 or fewer in length.
+    at handleErrors (file:///C:/Users/nitro/AppData/Local/deno/npm/registry.npmjs.org/@discordjs/rest/2.6.0/dist/index.js:762:13)
+    at eventLoopTick (ext:core/01_core.js:179:7)
+    at async SequentialHandler.runRequest (file:///C:/Users/nitro/AppData/Local/deno/npm/registry.npmjs.org/@discordjs/rest/2.6.0/dist/index.js:1163:23)
+    at async SequentialHandler.queueRequest (file:///C:/Users/nitro/AppData/Local/deno/npm/registry.npmjs.org/@discordjs/rest/2.6.0/dist/index.js:994:14)
+    at async _REST.request (file:///C:/Users/nitro/AppData/Local/deno/npm/registry.npmjs.org/@discordjs/rest/2.6.0/dist/index.js:1307:22)
+    at async TextChannel.send (file:///C:/Users/nitro/AppData/Local/deno/npm/registry.npmjs.org/discord.js/14.14.1/src/structures/interfaces/TextBasedChannel.js:155:15) 
+
 - control function macro keys
 - copy paste clipboard code blocks
 - slopnet telnet connections
