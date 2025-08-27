@@ -57,11 +57,11 @@ export async function announceCommand(words:string[]){
 export async function slopBroadcast(message:string,from:string){
 	if(slopConnection && message && from){
 		const json=JSON.stringify({messages:[{message,from}]});
-		echo("json",json);
+		// echo("json",json);
 		const bytes=encoder.encode(json);		
 		slopConnection?.write(bytes);
 	}else{
-		echo("help me");
+		echo("help me help you");
 	}
 }
 
@@ -331,8 +331,6 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				receivePromise=null;
 			}
 			if(messages){
-				echo("slopPrompt has messages",messages.length);
-				// we break for messages from discord
 				response={messages};
 				break;
 			}
