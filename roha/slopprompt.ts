@@ -54,13 +54,31 @@ export async function announceCommand(words:string[]){
 	}
 }
 
+// utility to reduce busting discords guts
+function wrapText(content,wide){
+	const lines=[];
+	let cursor=0;
+	while(cursor<content.length){
+		let line=content.substring(cursor,cursor+wide);
+		let n=line.indexOf("\n");
+		if(n==-1) n=line.lastIndexOf(" ");
+		if(n!=-1) line=line.substring(0,n+1);
+		lines.push(line);
+		cursor+=line.length;
+	}
+	return lines;
+}
+
 // must be 2000 or fewer bytes writtent
 
-export async function slopBroadcast(message:string,from:string){
-	if(slopConnection && message && from){
-		const json=JSON.stringify({messages:[{message,from}]});
-		const bytes=encoder.encode(json);
-		slopConnection?.write(bytes);
+export async function slopBroadcast(text:string,from:string){
+	if(slopConnection && text && from){
+		const messages=wrapText(text,1920);
+		for(const message of messages){
+			const json=JSON.stringify({messages:[{message,from}]});
+			const bytes=encoder.encode(json);
+			slopConnection?.write(bytes);
+		}
 	}else{
 		echo("help me help you");
 	}
