@@ -16,7 +16,7 @@ import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 
 // Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.4.3";
+const fountainVersion="1.4.4";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
 
@@ -2228,8 +2228,27 @@ function onRefresh(frame:number,message:string){
 //	console.log("!~",frame,message);
 }
 
+async function promptFountain(message:string) {
+	if(!roha.config.slopprompt) {
+		const line=prompt(message);
+		return {line};
+	}
+	const response=await slopPrompt(message,20,onRefresh);
+	if(response==null){
+		await exitForge();
+		Deno.exit(0);
+	}
+	return response;
+}
+
+
+
+// returns with {line} or {messages}
 async function promptForge(message:string) {
-	if(!roha.config.slopprompt) return prompt(message);
+	if(!roha.config.slopprompt) {
+		const line=prompt(message);
+		return {line};
+	}
 	const response=await slopPrompt(message,20,onRefresh);
 	if(response==null){
 		await exitForge();
@@ -3643,7 +3662,15 @@ async function chat() {
 				}
 				creditCommand="";
 			}else{
-				line=await promptForge(lines.length?"+":rohaPrompt);
+				const response=await promptFountain(lines.length?"+":rohaPrompt);
+				const messages=response.messages;
+				if(messages){
+					for(const m of messages){
+						const line="["+m.from+"] "+m.message;
+						lines.push(line);
+					}
+				}
+				line=response.line||"";
 			}
 			if (line === "") {
 				if(roha.config.returntopush && !lines.length) {

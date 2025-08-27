@@ -6,11 +6,6 @@ function echo(...data:any[]){
 	console.error("[PORT]",data);
 }
 
-const messages=[];
-function pushMessage(message,from){
-	messages.push({message,from});
-}
-
 let slopConnection;
 let slopListener;
 let listenerPromise;
@@ -32,8 +27,8 @@ async function readConnection(connection:Deno.TcpConn){
 		}
 	}catch(error){
 		echo("connection reset");
-		// spawn a new listener
-		return {};
+		// could spawn a new listener
+		return {receive:null,source:null};//connection};
 	}
 }
 
@@ -330,13 +325,17 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			}catch(error){
 				echo("JSON error",text,error);
 			}
+			if(source){
+				receivePromise=readConnection(source)
+			}else{
+				receivePromise=null;
+			}
 			if(messages){
+				echo("slopPrompt has messages",messages.length);
 				// we break for messages from discord
 				response={messages};
 				break;
 			}
-//			const source=receive.source;
-			receivePromise=readConnection(source)
 			continue;
 		}
 		readPromise=null;
