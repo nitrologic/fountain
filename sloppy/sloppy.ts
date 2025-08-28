@@ -7,7 +7,11 @@
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
-const sloppyBanner="[SLOPPY] slopchat discord bot by Simon 0.03";
+const sloppyBanner="[SLOPPY] sloppy 0.03 liquid discord bot by nitrologic";
+
+async function sleep(ms:number) {
+	await new Promise(function(resolve) {setTimeout(resolve, ms);});
+}
 
 const quotes=[
 	"🤖 I am sloppy the janitor",
@@ -19,12 +23,16 @@ const quotes=[
 
 let quoteCount=0;
 let openChannel="398589365846278144";
+//let openChannel="1410693060672753704";
+
+// rate guard required, a sleep 1500 ms currently in force on all writes
 
 async function writeSloppy(message:string,from:string){
 	if(openChannel){
-		const channel = await client.channels.fetch(openChannel);
+		const channel = await discordClient.channels.fetch(openChannel);
 		if (channel?.isTextBased()) {
 			channel.send("["+from+"] "+message);
+			await(sleep(1500));
 		}
 	}
 }
@@ -97,12 +105,6 @@ async function readSystem(){
 		const received = systemBuffer.subarray(0, n);
 		return {system:received};
 	}
-}
-
-// borrowed from slophole
-
-async function sleep(ms:number) {
-	await new Promise(function(resolve) {setTimeout(resolve, ms);});
 }
 
 // fountain connection goes PEEP
@@ -180,7 +182,7 @@ async function readFountain(){
 
 console.log(sloppyBanner);
 
-const client = new Client({
+const discordClient = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
@@ -188,21 +190,22 @@ const client = new Client({
 	]
 });
 
-client.once('ready', () => {
-	console.log("[SLOPPY] client ready",client.user?.tag||"");
-	client.user?.setPresence({ status: 'online' });
-//	console.log("[SLOPPY] channels",client.channels);
+discordClient.once('ready', () => {
+	console.log("[SLOPPY] discordClient online",discordClient.user?.tag||"");
+	discordClient.user?.setPresence({ status: 'online' });
+//	console.log("[SLOPPY] channels",discordClient.channels);
 });
 
-client.on('messageCreate', async (message) => {
+discordClient.on('messageCreate', async (message) => {
 	if (message.author.bot) return;
 	if (message.content === '!ping') {
 		message.reply('pong!');
 		console.log("[SLOPPY]","pong!")
 	}
-    if (message.mentions.has(client.user) && !message.author.bot) {
+    if (message.mentions.has(discordClient.user) && !message.author.bot) {
 		const from=message.author.username+"@discord";	//skudmarks@discord
 		const name=message.author.displayName;
+		// TODO: rate limit required
 		const blob={messages:[{message:message.content,from}]};
 		await writeFountain(JSON.stringify(blob,null,0));
 		const quote=quotes[quoteCount++%quotes.length];
@@ -212,15 +215,15 @@ client.on('messageCreate', async (message) => {
 });
 
 Deno.addSignalListener("SIGINT", () => {
-	client.user?.setPresence({status:"dnd"});	// online idle dnd
+	discordClient.user?.setPresence({status:"dnd"});	// online idle dnd
 	// todo: validate disconnect?
-	client.destroy();
+	discordClient.destroy();
 	console.log("[SLOPPY] exit");
 	Deno.exit(0);
 });
 
 const token=Deno.env.get("DISCORD_BOT");
-await client.login(token)
+await discordClient.login(token)
 
 await connectFountain();
 writeFountain("{\"action\":\"connect\"}");

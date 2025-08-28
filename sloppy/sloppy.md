@@ -4,6 +4,13 @@ it's discord week
 
 In a newly created root of fountain sloppy is this morning 200 lines of deno.
 
+## Discord notes
+
+To invite a bot to a channel:
+
+
+
+
 ## sloppy.ts code review of a rapidly growing deno utility 
 
 August 2025 was going to be private repos with venture capital pitch decks flowing with enthusiasm.
