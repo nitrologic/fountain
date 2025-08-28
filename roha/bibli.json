@@ -1,6 +1,7 @@
 {
 	"name": "biblispec",
-	"version": "1.2.2",
+	"symbol": "✴",
+	"version": "1.2.4",
 	"description": "Bibliographic index of specifications",
 	"status": "A living document of linguistic latitude",
 	"copyright": "(C) 2025 Simon Armstrong",
@@ -16,22 +17,22 @@
 	"separator": "𓆛𓆜𓆝𓆞𓆟",
 	"spec": {
 		"identifier": {
-			"viaf": { "description": "Virtual International Authority File ID.", "pattern": "^[0-9]+$" },
-			"isni": { "description": "International Standard Name Identifier.", "pattern": "^[0-9]{4} [0-9]{4} [0-9]{4} [0-9]{4}$" },
-			"lcnaf": { "description": "Library of Congress Name Authority File ID.", "pattern": "^n[0-9]+$" },
-			"orcid": { "description": "ORCID identifier, optional for living researchers.", "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$" },
-			"wikidata": { "description": "Wikidata ID for global open-data linking.", "pattern": "^Q[0-9]+$" },
-			"gnd": { "description": "Integrated Authority File ID, used in German-speaking countries.", "pattern": "^[0-9]+[-0-9]*$" },
-			"bnf": { "description": "Bibliothèque nationale de France ID for Francophone authors.", "pattern": "^[0-9]+[a-z]?$" },
-			"scopusid": { "description": "Scopus Author ID for Elsevier's citation database.", "pattern": "^[0-9]{10,11}$" },
-			"researcherid": { "description": "Web of Science ResearcherID for publication tracking.", "pattern": "^[A-Z]-[0-9]{4}-[0-9]{4}$" },
-			"ror": { "description": "Research Organization Registry ID for institutions.", "pattern": "^[0-9a-z]{9}$" },
-			"ark": { "description": "Archival Resource Key for persistent digital objects.", "pattern": "^ark:/[0-9]+/[0-9a-zA-Z]+$" },
-			"plain": { "description": "A plain ascii name.", "pattern": "^[A-Za-z0-9_-]+:[A-Za-z0-9_-]+$" },
-			"msdos": { "description": "Bill and Pauls 8.3 legacy.", "pattern": "^[A-Za-z0-9]{1,8}(:[A-Za-z0-9]{1,8})?$"},
-			"isbn": {"description": "International Standard Book Number for books (ISBN-10 or ISBN-13).", "pattern": "^(97(8|9))?[0-9]{9}[0-9X]$"},
-			"issn": { "description": "International Standard Serial Number for journals and periodicals.", "pattern": "^[0-9]{4}-[0-9]{3}[0-9X]$"},
-			"doi": { "description": "Digital Object Identifier for scholarly works.", "pattern": "^10\\.[0-9]{4,9}/[-._;()/:A-Z0-9]+$"}
+			"viaf": { "name": "Virtual International Authority File ID.", "pattern": "^[0-9]+$" },
+			"isni": { "name": "International Standard Name Identifier.", "pattern": "^[0-9]{4} [0-9]{4} [0-9]{4} [0-9]{4}$" },
+			"lcnaf": { "name": "Library of Congress Name Authority File ID.", "pattern": "^n[0-9]+$" },
+			"orcid": { "name": "ORCID identifier, optional for living researchers.", "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$" },
+			"wikidata": { "name": "Wikidata ID for global open-data linking.", "pattern": "^Q[0-9]+$" },
+			"gnd": { "name": "Integrated Authority File ID, used in German-speaking countries.", "pattern": "^[0-9]+[-0-9]*$" },
+			"bnf": { "name": "Bibliothèque nationale de France ID for Francophone authors.", "pattern": "^[0-9]+[a-z]?$" },
+			"scopusid": { "name": "Scopus Author ID for Elsevier's citation database.", "pattern": "^[0-9]{10,11}$" },
+			"researcherid": { "name": "Web of Science ResearcherID for publication tracking.", "pattern": "^[A-Z]-[0-9]{4}-[0-9]{4}$" },
+			"ror": { "name": "Research Organization Registry ID for institutions.", "pattern": "^[0-9a-z]{9}$" },
+			"ark": { "name": "Archival Resource Key for persistent digital objects.", "pattern": "^ark:/[0-9]+/[0-9a-zA-Z]+$" },
+			"plain": { "name": "A plain ascii name.", "pattern": "^[A-Za-z0-9_-]+:[A-Za-z0-9_-]+$" },
+			"msdos": { "name": "Bill and Pauls 8.3 legacy.", "pattern": "^[A-Za-z0-9]{1,8}(:[A-Za-z0-9]{1,8})?$"},
+			"isbn": {"name": "International Standard Book Number for books (ISBN-10 or ISBN-13).", "pattern": "^(97(8|9))?[0-9]{9}[0-9X]$"},
+			"issn": { "name": "International Standard Serial Number for journals and periodicals.", "pattern": "^[0-9]{4}-[0-9]{3}[0-9X]$"},
+			"doi": { "name": "Digital Object Identifier for scholarly works.", "pattern": "^10\\.[0-9]{4,9}/[-._;()/:A-Z0-9]+$"}
 		},
 		"citation":{
 			"MLA": ["author", "title", "source", "year"],
@@ -195,8 +196,26 @@
 			"family": "👨‍👩‍👧‍👦"
 		},
 		"fenced":{
-			"name": "code points coming soon",
-			"codes":"↩↪↗↘↖↙◀▶"
+			"name":"code points of visual interest",
+			"code":{
+				"pointChars":"◯⊙⊚⦾⦿◉◎◍❂○●◦◌",
+				"starChars":"✩✪✫✬✭✮✯✰✱✲✳✴✵✶✷✸✹✺✻✼✽✾✿❀❁",
+				"circles":"◐◒◑◓◔◕",
+				"markdown":"↩↪↗↘↖↙◀▶✳✴",
+				"square":"🔳🔲✅❎",
+				"oclock":"🕐🕑🕒🕓🕔🕕🕖🕗🕘🕙🕚🕛",
+				"halfclock":"🕜🕝🕞🕟🕠🕡🕢🕣🕤🕥🕦🕧",
+				"outer":"◜◝◟◞",
+				"rect":"▪▫■□▢▣",
+				"hatched":"▤▥▦▧▨▩",
+				"dir":["◹↗⇗⤤➶➹","◸↖⇖⤣","◿↘⇘⤥➴➷","◺↙⇙⤦"],
+				"lineChars":["─═━┄┅┈┉","│║┃┆┇┊┋"],
+				"arrowChars":["▸→↠↦↝⥽⇒⤇⟿➸➳➵➧➨","◂←↞↤↜⥼⇐⤆⬳","▴↑↟↥⥾⇑⤊","▾↓↡↧⥿⇓⤋"],
+				"arrowArcs":["↩↪","⤶⤷","⤾⤿","👈👉","⤺⤻"],
+				"boxChars":["╭╮╰╯─┬┴│┤├┼","┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"],
+				"hatch":["╲","╱","╳"],
+				"colorChars":["⚫⬛🖤","⚪⬜🤍","🟡🟨💛","🔴🟥❤️","🟠🟨🧡","🟢🟩💚","🔵🟦💙","🟣🟪💜","🟤🟫🤎"]				
+			}
 		},
 		"faces":{
 			"name": "Face on profiles",
