@@ -1,8 +1,9 @@
-// sloppynet.ts - a telnet server for Slop Fountain
+// sloppynet.ts - a sloppy server for Slop Fountain
 // Copyright (c) 2025 Simon Armstrong
 
 // Licensed under the MIT License - See LICENSE file
 
+import { Client, Server } from "npm:ssh2";
 import { onSystem, onFountain, readSystem, readFountain, writeFountain, disconnectFountain, connectFountain } from "./sloppyutils.ts";
 
 // sloppyNet uses slopfeed workers in a responsible manner
@@ -48,7 +49,7 @@ function readSlopHole(){
 
 worker.onmessage = (message) => {
 	const payload=message.data;//ports,origin.lastEventId JSON.stringify(payload)
-	logSlop(payload);	
+	logSlop(payload);
 	if(payload.connected){
 		writeSlopHole(greetings);
 		readSlopHole();
@@ -72,21 +73,103 @@ await sleep(6e3);
 
 worker.postMessage({ command: "open", data: [1, 2, 3, 4] });
 
-// Telnet server
+// sloppy server
 
-async function startTelnetServer(port: number = 8081) {
+const sshClient=new Client();
+
+async function startSloppyServer(port: number = 22) {
+	const server = new Server({
+		hostKeys: [/* Load your private host key here, e.g., from Deno.readFile() */],
+	});
+
+	server.on('connection', (sshClient) => {
+		++connectionCount;
+		logSlop({ status: "New SSH connection opened", connectionCount });
+		handleSloppySSHConnection(sshClient).catch((err) => {
+			logSlop({ error: `Connection error: ${err.message}`, connectionCount });
+		});
+	});
+
+	await new Promise((resolve) => server.listen(port, "localhost", () => resolve()));
+	logSlop({ status: "SSH server listening", port });
+}
+
+async function handleSloppySSHConnection(client: any) {
+	client.on('authentication', (ctx: any) => {
+		// Accept any auth for simplicity (add real checks later)
+		ctx.accept();
+	});
+
+	client.on('ready', () => {
+		client.on('session', (accept: any, reject: any) => {
+			const session = accept();
+			session.on('pty', (accept: any, reject: any, info: any) => {
+				accept();
+			});
+			session.on('shell', (accept: any, reject: any) => {
+				const stream = accept();
+				const encoder = new TextEncoder();
+				let input = '';
+
+				stream.write(encoder.encode(`${greetings}\r\n> `));
+				logSlop({ greetings, connectionCount });
+
+				stream.on('data', (data: Buffer) => {
+					const chunk = data.toString();
+					input += chunk;
+
+					// Process complete lines
+					const lines = input.split('\r\n');
+					input = lines.pop() || '';
+
+					for (const line of lines) {
+						const trimmed = line.trim();
+						if (!trimmed) continue;
+						let response: string;
+						if (trimmed === "shutdown") {
+							Deno.exit(0);
+						}
+						if (trimmed === "exit") {
+							response = "Goodbye";
+							stream.end(encoder.encode(`${response}\r\n`));
+							--connectionCount;
+							logSlop({ status: "Connection closed", connectionCount });
+							client.end();
+							return;
+						} else if (trimmed.startsWith("/")) {
+							response = handleCommand(trimmed);
+						} else {
+							response = `Echo: ${trimmed}`;
+						}
+
+						logSlop({ input: trimmed, output: response, connectionCount });
+						stream.write(encoder.encode(`${response}\r\n> `));
+					}
+				});
+
+				stream.on('close', () => {
+					--connectionCount;
+					logSlop({ status: "Connection closed", connectionCount });
+					client.end();
+				});
+			});
+		});
+	});
+}
+
+async function startSloppyTelnetServer(port: number = 8082) {
 	const listener = Deno.listen({ hostname: "localhost", port, transport: "tcp" });
-	logSlop({status:"Listening for Telnet",port});
+	logSlop({status:"Listening for Slop",port});
 	for await (const conn of listener) {
 		++connectionCount;
 		logSlop({ status: "New connection opened", connectionCount });
-		handleTelnetConnection(conn).catch((err) => {
+		handleSloppyConnection(conn).catch((err) => {
 			logSlop({ error: "Connection error: ${err.message}", connectionCount });
 		});
 	}
 }
 
-async function handleTelnetConnection(conn: Deno.Conn) {
+async function handleSloppyConnection(conn: Deno.Conn) {
 	const decoder = new TextDecoder();
 	const encoder = new TextEncoder();
 	const buffer = new Uint8Array(1024);
@@ -157,7 +240,7 @@ function handleCommand(line: string): string {
 	}
 }
 
-startTelnetServer();
+startSloppyServer();
 
 await connectFountain();
 writeFountain("{\"action\":\"connect\"}");
@@ -173,12 +256,12 @@ while(true){
 	}
 	if(result.message) {
 		await onFountain(result.message);
-		portPromise=readFountain();		
+		portPromise=readFountain();
 	}
 //	echo("result",result);
 	await(sleep(500));
 }
 
-echo("bye");
+console.log("[SLOPPYNET] bye");
 disconnectFountain();
 Deno.exit(0);
