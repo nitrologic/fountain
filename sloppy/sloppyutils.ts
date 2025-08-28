@@ -28,7 +28,7 @@ async function writeSloppy(message:string,from:string){
 }
 
 // TODO: add {messages:[{message,from}]} support
-
+/*
 export async function onFountain(message:string){
 	const line=message;
 	if(line.startsWith("/announce ")){
@@ -53,7 +53,7 @@ export async function onFountain(message:string){
 		}
 	}
 }
-
+*/
 // system stdin support for sloppies
 
 const systemDecoder = new TextDecoder();

@@ -3,265 +3,246 @@
 
 // Licensed under the MIT License - See LICENSE file
 
+// ssh-keygen -t rsa -f hostkey_rsa -N ''.
+
 import { Client, Server } from "npm:ssh2";
-import { onSystem, onFountain, readSystem, readFountain, writeFountain, disconnectFountain, connectFountain } from "./sloppyutils.ts";
+import { readFileSync } from "node:fs";
+
+import {onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
+
+const sloppyLogo="✴ slopspace";
+const sloppyNetVersion=0.4;
+
+// TODO: make multi planetary
+
+const rsaPath="C:/Users/nitro/.ssh/id_rsa";
 
 // sloppyNet uses slopfeed workers in a responsible manner
 
-const sloppyNetVersion=0.2;
+const sshClient=new Client();
+const sshStreams=[]; // {stream,from}
 
-let slopPail: unknown[] = [];
+let slopPail:unknown[]=[];
 
-let sessionCount = 0;
-let connectionCount = 0;
-let connectionClosed = 0;
+let sessionCount=0;
+let connectionCount=0;
+let connectionClosed=0;
 
-const sloppyLogo="🐟🐟 🐟sloppy net"
+const greetings=["Welcome to",sloppyLogo,sloppyNetVersion,"shutdown to quit"].join();
 
-const greetings = "welcome to "+sloppyLogo+" "+sloppyNetVersion+" shutdown to quit";
-
-function logSlop(_result: any) {
-	const message = JSON.stringify(_result);
-	console.error("\t[SLOPPYNET]", message);
+function logSlop(_result:any) {
+	const message=JSON.stringify(_result);
+	console.error("\t[SLOPPYNET]",message);
 	slopPail.push(message);
 }
 
-async function sleep(ms: number) {
-	await new Promise(function(resolve) { setTimeout(resolve, ms); });
+async function sleep(ms:number) {
+	await new Promise(function(resolve) {setTimeout(resolve,ms);});
+}
+
+async function writeSloppy(message:string,from:string){
+	const text="["+from+"] "+message+"\r\n";
+	console.log("[SLOP]",text);
+	for(const {stream,name} of sshStreams){
+		await stream.write(text);
+	}
+}
+
+let lineBuffer="";
+
+async function onShell(data: Buffer, stream: any, name:string) {
+	for (const byte of data) {
+		const char = String.fromCharCode(byte);
+		if (char === "\n" || char === "\r") {
+			if (lineBuffer === "exit") {
+				stream.end("Goodbye!\r\n");
+				sshClient.end();
+				return;
+			}
+			if (lineBuffer) {
+				const line=lineBuffer;
+				lineBuffer = "";
+				stream.write("\r\n");
+				if(!line.startsWith("/")){
+					const packet="messages:"
+					await writeFountain(line);
+					const blob={messages:[{message:line,from:name}]};
+					await writeFountain(JSON.stringify(blob,null,0));
+				}
+			}
+		} else {
+			// Accumulate non-newline characters
+			lineBuffer += char;
+			stream.write(char);
+		}
+	}
+}
+
+export async function onFountain(message:string){
+	const line=message;
+	if(line.startsWith("/announce ")){
+		const message=line.substring(10);
+		await writeSloppy(message,"fountain");
+	}
+	if(line.startsWith("{")||line.startsWith("[")){
+		try{
+			let cursor=0;
+			while(cursor<line.length){
+				const delim=line.indexOf("}\t{",cursor);// less than healthy
+				const json=(delim==-1)?line.substring(cursor):line.substring(cursor,delim+1);
+				cursor+=json.length;
+				const payload=JSON.parse(json);
+				for(const {message,from} of payload.messages){
+					await writeSloppy(message,from);
+				}
+			}
+		}catch(error){
+			console.log("JSON parse error",error);
+			console.log("JSON parse error",line);
+		}
+	}else{
+		console.log("non json line",line);
+	}
 }
 
 // slopfountain connection
 
 // Creating a basic worker (main.ts)
-let worker:Worker = new Worker(new URL("./slopfeed.ts", import.meta.url).href, {type: "module"});
+let worker:Worker | null=new Worker(new URL("./slopfeed.ts",import.meta.url).href,{type:"module"});
 
 function closeSlopHole(){
-	worker.postMessage({ command: "close" });
+	if (worker) {
+		worker.postMessage({command:"close"});
+	}
 }
 
 function writeSlopHole(content:string){
-	worker.postMessage({ command: "write", data:{slop:[content]} });
+	if (worker) {
+		worker.postMessage({command:"write",data:{slop:[content]}});
+	}
 }
 
 function readSlopHole(){
-	worker.postMessage({ command: "read", data:{} });
+	if (worker) {
+		worker.postMessage({command:"read",data:{}});
+	}
 }
 
-worker.onmessage = (message) => {
-	const payload=message.data;//ports,origin.lastEventId JSON.stringify(payload)
-	logSlop(payload);
-	if(payload.connected){
-		writeSlopHole(greetings);
-		readSlopHole();
-//		worker.postMessage({ command: "write", data:greet });
-	}
-	if(payload.disconnected){
-		worker.terminate(); // Stop the worker when done
-		worker=null;
-	}
-	if(payload.received){
-		const rx=payload.received;
-		logSlop(rx);
-	}
-};
+if (worker) {
+	worker.onmessage=(message) => {
+		const payload=message.data;
+		logSlop(payload);
+		if(payload.connected){
+			writeSlopHole(greetings);
+			readSlopHole();
+		}
+		if(payload.disconnected){
+			if (worker) {
+				worker.terminate();
+				worker=null;
+			}
+		}
+		if(payload.received){
+			const rx=payload.received;
+			logSlop(rx);
+ 			onReceive(rx);
+		}
+	};
 
-worker.onerror = (e) => {
-	console.error("Worker error:", e.message);
-};
+	worker.onerror=(e) => {
+		console.error("Worker error:",e.message);
+	};
+}
 
 await sleep(6e3);
 
-worker.postMessage({ command: "open", data: [1, 2, 3, 4] });
+if (worker) {
+	worker.postMessage({command:"open",data:[5,6,7,8]});
+}
 
 // sloppy server
 
-const sshClient=new Client();
+async function onSSHConnection(sshClient: any, name:string) {
 
-async function startSloppyServer(port: number = 22) {
-	const server = new Server({
-		hostKeys: [/* Load your private host key here, e.g., from Deno.readFile() */],
-	});
-
-	server.on('connection', (sshClient) => {
-		++connectionCount;
-		logSlop({ status: "New SSH connection opened", connectionCount });
-		handleSloppySSHConnection(sshClient).catch((err) => {
-			logSlop({ error: `Connection error: ${err.message}`, connectionCount });
-		});
-	});
-
-	await new Promise((resolve) => server.listen(port, "localhost", () => resolve()));
-	logSlop({ status: "SSH server listening", port });
-}
-
-async function handleSloppySSHConnection(client: any) {
-	client.on('authentication', (ctx: any) => {
-		// Accept any auth for simplicity (add real checks later)
-		ctx.accept();
-	});
-
-	client.on('ready', () => {
-		client.on('session', (accept: any, reject: any) => {
-			const session = accept();
-			session.on('pty', (accept: any, reject: any, info: any) => {
-				accept();
-			});
-			session.on('shell', (accept: any, reject: any) => {
-				const stream = accept();
-				const encoder = new TextEncoder();
-				let input = '';
-
-				stream.write(encoder.encode(`${greetings}\r\n> `));
-				logSlop({ greetings, connectionCount });
-
-				stream.on('data', (data: Buffer) => {
-					const chunk = data.toString();
-					input += chunk;
-
-					// Process complete lines
-					const lines = input.split('\r\n');
-					input = lines.pop() || '';
-
-					for (const line of lines) {
-						const trimmed = line.trim();
-						if (!trimmed) continue;
-						let response: string;
-						if (trimmed === "shutdown") {
-							Deno.exit(0);
-						}
-						if (trimmed === "exit") {
-							response = "Goodbye";
-							stream.end(encoder.encode(`${response}\r\n`));
-							--connectionCount;
-							logSlop({ status: "Connection closed", connectionCount });
-							client.end();
-							return;
-						} else if (trimmed.startsWith("/")) {
-							response = handleCommand(trimmed);
-						} else {
-							response = `Echo: ${trimmed}`;
-						}
-
-						logSlop({ input: trimmed, output: response, connectionCount });
-						stream.write(encoder.encode(`${response}\r\n> `));
-					}
-				});
-
-				stream.on('close', () => {
-					--connectionCount;
-					logSlop({ status: "Connection closed", connectionCount });
-					client.end();
-				});
-			});
-		});
-	});
-}
-
-async function startSloppyTelnetServer(port: number = 8082) {
-	const listener = Deno.listen({ hostname: "localhost", port, transport: "tcp" });
-	logSlop({status:"Listening for Slop",port});
-	for await (const conn of listener) {
-		++connectionCount;
-		logSlop({ status: "New connection opened", connectionCount });
-		handleSloppyConnection(conn).catch((err) => {
-			logSlop({ error: "Connection error: ${err.message}", connectionCount });
-		});
-	}
-}
-
-async function handleSloppyConnection(conn: Deno.Conn) {
-	const decoder = new TextDecoder();
-	const encoder = new TextEncoder();
-	const buffer = new Uint8Array(1024);
-	let input = "";
-	await conn.write(encoder.encode(greetings));
-	logSlop({ greetings, connectionCount });
-	while (true) {
-		const n = await conn.read(buffer);
-		if (n === null) break; // Connection closed
-
-		const data = decoder.decode(buffer.subarray(0, n));
-		input += data;
-
-		// Process complete lines (Telnet uses \r\n)
-		const lines = input.split("\r\n");
-		input = lines.pop() || ""; // Keep incomplete line
-
-		for (const line of lines) {
-			const trimmed = line.trim();
-			if (!trimmed) continue;
-			let response: string;
-			if (trimmed == "shutdown"){
-				Deno.exit(0);
-			}
-			if (trimmed === "exit") {
-				response = "Goodbye";
-				logSlop({ input: trimmed, output: response, connectionCount });
-				await conn.write(encoder.encode("${response}\r\n"));
-				conn.close();
-				--connectionCount;
-				logSlop({ status: "Connection closed", connectionCount });
-				return;
-			} else if (trimmed.startsWith("/")) {
-				response = handleCommand(trimmed);
-			} else {
-				response = "Echo: ${trimmed}";
-			}
-
-			logSlop({ input: trimmed, output: response, connectionCount });
-			await conn.write(encoder.encode("${response}\r\n> "));
+	sshClient.on("authentication", (ctx: any) => {
+		if (ctx.method === "password") {
+			// if (ctx.username!="nitro") ctx.reject();
+			ctx.accept();
+		} else {
+			ctx.reject(); // Reject other authentication methods
 		}
-	}
+	});
 
-	conn.close();
-	--connectionCount;
-	logSlop({ status: "Connection closed", connectionCount });
+	sshClient.on("ready", () => {
+		logSlop({ status: "SSH client authenticated" });
+		sshClient.on("session", (accept: any, reject: any) => {
+			const session = accept();
+			session.on("pty", (accept: any) => accept && accept());
+			session.on("shell", (accept: any) => {
+				const stream = accept();
+				sshStreams.push({stream,name});
+				stream.write(greetings+"\r\n");
+				stream.on("data", (data: Buffer) => {
+					onShell(data,stream,name);
+				});
+			});
+		});
+	});
+
+	sshClient.on("error", (err: any) => {
+		logSlop({ error: "SSH client error", message: err.message });
+	});
+
+	sshClient.on("end", () => {
+		logSlop({ status: "SSH connection closed" });
+	});
 }
 
-function handleCommand(line: string): string {
-	const command = line.substring(1).trim().toLowerCase();
-	switch (command) {
-		case "help":
-			return "Available commands: /help, /info, /push /exit /shutdown";
-		case "info":{
-				const info = {
-					hostName: Deno.hostname(),
-					userName: Deno.env.get("USERNAME") || "root",
-					platform: (Deno.uid() || "Windows") + " " + Deno.osRelease(),
-					session: "slop${Deno.pid}.${++sessionCount}",
-					connectionCount
-				};
-				return JSON.stringify(info);
-			}
-		case "push":
-			return "Pushed to slopPail";
-		default:
-			return "Unknown command: ${command}";
+async function startSSHServer(port: number = 22) {
+	try {
+		const hostKey = readFileSync(rsaPath, "utf8");
+		const server = new Server({ hostKeys: [hostKey] });
+		server.on("connection", (sshClient) => {
+			const name="com"+(++connectionCount);
+			logSlop({ status: "New SSH connection opened", connectionCount });
+			onSSHConnection(sshClient,name).catch((err) => {
+				logSlop({ error: "Connection error", message: err.message, connectionCount });
+			});
+		});
+		await new Promise((resolve) => server.listen(port, "localhost", () => resolve(undefined)));
+		logSlop({ status: "SSH server listening", port });
+	} catch (error) {
+		console.error("Failed to start SSH server:", error);
 	}
 }
 
-startSloppyServer();
+startSSHServer();
 
-await connectFountain();
-writeFountain("{\"action\":\"connect\"}");
-let portPromise=readFountain();
-let systemPromise=readSystem();
-while(true){
-	const race=[portPromise,systemPromise];
-	const result=await Promise.race(race);
-	if (result==null) break;
-	if(result.system) {
-		await onSystem(result.system);
-		systemPromise=readSystem();
+try {
+	await connectFountain();
+	writeFountain('{"action":"connect"}');
+	let portPromise=readFountain();
+	let systemPromise=readSystem();
+
+	while(true){
+		const race=[portPromise,systemPromise];
+		const result=await Promise.race(race);
+		if (result == null) break;
+
+		if(result.system) {
+			await onSystem(result.system);
+			systemPromise=readSystem();
+		}
+		if(result.message) {
+			await onFountain(result.message);
+			portPromise=readFountain();
+		}
+		await sleep(500);
 	}
-	if(result.message) {
-		await onFountain(result.message);
-		portPromise=readFountain();
-	}
-//	echo("result",result);
-	await(sleep(500));
+} catch (error) {
+	console.error("Error in main loop:",error);
+} finally {
+	console.log("bye");
+	disconnectFountain();
+	Deno.exit(0);
 }
-
-console.log("[SLOPPYNET] bye");
-disconnectFountain();
-Deno.exit(0);

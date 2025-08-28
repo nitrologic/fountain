@@ -1,3 +1,103 @@
+function handleCommand(line:string):string {
+	const command=line.substring(1).trim().toLowerCase();
+	switch (command) {
+		case "help":
+			return "Available commands:/help,/info,/push /exit /shutdown";
+		case "info":{
+			const info={
+				hostName:Deno.hostname(),
+				userName:Deno.env.get("USERNAME") || "root",
+				platform:`${Deno.build.os} ${Deno.osRelease()}`,
+				session:`slop${Deno.pid}.${++sessionCount}`,
+				connectionCount
+			};
+			return JSON.stringify(info);
+		}
+		case "push":
+			return "Pushed to slopPail";
+		default:
+			return `Unknown command:${command}`;
+	}
+}
+
+
+evicted telnet
+
+async function startSloppyTelnetServer(port:number=8082) {
+	const listener=Deno.listen({hostname:"localhost",port,transport:"tcp"});
+	logSlop({status:"Listening for Slop",port});
+	for await (const conn of listener) {
+		++connectionCount;
+		logSlop({status:"New connection opened",connectionCount});
+		handleSloppyConnection(conn).catch((err) => {
+			logSlop({error:"Connection error",message:err.message,connectionCount});
+		});
+	}
+}
+
+async function handleSloppyConnection(conn:Deno.Conn) {
+	const decoder=new TextDecoder();
+	const encoder=new TextEncoder();
+	const buffer=new Uint8Array(1024);
+	let input="";
+
+	if(!conn.writable){
+		logSlop("conn error");
+		return;		
+	}
+
+	await conn.write(encoder.encode(greetings + "\r\n> "));
+	logSlop({greetings,connectionCount});
+	
+	try {
+		while (true) {
+			const n=await conn.read(buffer);
+			if (n === null) break; // Connection closed
+
+			const data=decoder.decode(buffer.subarray(0,n));
+			input += data;
+
+			// Process complete lines (Telnet uses \r\n)
+			const lines=input.split("\r\n");
+			input=lines.pop() || ""; // Keep incomplete line
+
+			for (const line of lines) {
+				const trimmed=line.trim();
+				if (!trimmed) continue;
+				let response:string;
+				
+				if (trimmed == "shutdown"){
+					Deno.exit(0);
+				}
+				
+				if (trimmed === "exit") {
+					response="Goodbye";
+					logSlop({input:trimmed,output:response,connectionCount});
+					await conn.write(encoder.encode(`${response}\r\n`));
+					conn.close();
+					--connectionCount;
+					logSlop({status:"Connection closed",connectionCount});
+					return;
+				} else if (trimmed.startsWith("/")) {
+					response=handleCommand(trimmed);
+				} else {
+					response=`Echo:${trimmed}`;
+				}
+
+				logSlop({input:trimmed,output:response,connectionCount});
+				await conn.write(encoder.encode(`${response}\r\n> `));
+			}
+		}
+	} catch (error) {
+		logSlop({error:"Connection error",message:error.message});
+	} finally {
+		conn.close();
+		--connectionCount;
+		logSlop({status:"Connection closed",connectionCount});
+	}
+}
+
+
 C:\nitrologic\fountain>echo off
 Running Sloppy the Janitor
 see sloppy/sloppy.md for more information
