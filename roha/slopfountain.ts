@@ -719,7 +719,7 @@ async function sleep(ms) {
 	await new Promise(function(awake) {setTimeout(awake, ms);});
 }
 
-function unitString(value,precision=2,type){
+function unitString(value,precision=2,type=""){
 	if (typeof value !== 'number' || isNaN(value)) return "NaN";
 	const units=["","K","M","G","T"];
 	const abs=Math.abs(value);
@@ -1868,7 +1868,7 @@ async function shareCommand(words:string[]){
 	await writeForge();
 }
 
-function listShare(){
+async function listShare(){
 	const list=[];
 	let count=0;
 	const sorted=roha.sharedFiles.slice();
@@ -1877,7 +1877,15 @@ function listShare(){
 		const shared=(rohaShares.includes(share.path))?"🔗":"";
 		const tags="[ "+rohaUser+" "+share.tag+"]";	//+rohaTitle
 		const detail=(share.description)?share.description:"";
-		echo((count++),share.path,share.size,shared,tags,detail);
+		let size=share.size;
+		try{
+			const stat=await Deno.stat(share.path);
+			size=stat.size||0;
+		}catch(error){
+			// share is gone
+		}
+//		echo((count++),share.path,share.size,shared,tags,detail);
+		echo((count++),share.path,unitString(size),shared,tags,detail);
 		list.push(share.id);
 	}
 	shareList=list;
@@ -2989,7 +2997,7 @@ async function callCommand(command:string) {
 			case "attach":
 			case "share":
 				if (words.length==1){
-					listShare();
+					await listShare();
 				}else{
 					await shareCommand(words);
 					await writeForge();
