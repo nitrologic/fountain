@@ -16,7 +16,7 @@ import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 
 // Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.4.5";
+const fountainVersion="1.4.6";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
 
@@ -996,17 +996,10 @@ async function geminiSay(content:string,voiceName="Kore"){
 	const apiKey=endpoint.apiKey;
 	const genAI=new GoogleGenerativeAI(apiKey);
 	const model = genAI.getGenerativeModel({ model: previewTTS });
-    const packet = {
-      contents: [{parts: [{ text: content }],},],
-      generationConfig: {
-        responseModalities: ["AUDIO"],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: {voiceName},
-          },
-        },
-      },
-    };
+	const packet = {
+		contents: [{parts: [{ text: content }],},],
+		generationConfig:{responseModalities:["AUDIO"],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName},},},},
+	};
 	const reply = await model.generateContent(packet);
 	if(reply.response.candidates){
 		for(const candidate of reply.response.candidates){
@@ -1790,6 +1783,44 @@ async function shareSlop(path:string,depth:number){
 		echo("hash:",hash);
 		await addShare({path,size,modified,hash,tag});
 	}
+}
+
+// days,sessions
+async function parseLog(){
+	let path=resolve(forgePath,"forge.log");
+	let log=await Deno.readTextFile(path);
+	let count=0;
+	let min=0;
+	let max=0;
+	const lines=log.split("\n");
+	let prev=0;
+	let lineNumber=0;
+	let sessions=[];
+	let tags={};
+	for(const line of lines){
+		const hex=line.substring(0,8);	// ignore 16ths
+		const tagline=line.substring(8);
+		if(tagline=="[roha] 𓅷 𓅸 𓅹 𓅺 𓅻 𓅼 𓅽"){
+			sessions.push({line:lineNumber,tags});
+			tags={};
+		}
+		const b0=line.indexOf("[");
+		const b1=line.indexOf("]");
+		if(b1>b0){
+			const key=line.substring(b0+1,b1);
+			if(key in tags){tags[key].count++;}else tags[key]={key,count:0};
+		}
+		const secs=parseInt(hex,16);
+		if(Number.isNaN(secs)) continue;
+		if(!min || secs<min) min=secs;
+		if(secs>max) max=secs;
+		lineNumber++;
+	}
+	sessions.push({line:lineNumber,tags});
+	const minDate=slopDate(min);
+	const maxDate=slopDate(max);
+	echo("[LOG]",path,count,minDate,maxDate,sessions.length);
+	echo("[LOG]",sessions);
 }
 
 async function stripLog(path:string,counts){
@@ -3878,6 +3909,8 @@ echo("use /help for latest and exit to quit");
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
 
+await parseLog();
+
 //echo("\t"+birds+" ",navigator.userAgent,navigator.languages);
 // test birds on clipboard
 //await clipText("\t"+birds);
@@ -3889,7 +3922,7 @@ await flush();
 
 if (roha.config.verbose) console.dir(roha.config);
 
-// application root chat 
+// application root chat
 
 try {
 	await chat();

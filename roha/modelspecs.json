@@ -215,6 +215,11 @@
 		"purpose": "Advanced reasoning and code generation",
 		"press": "High-performance model for complex research tasks and multi-step workflows."
 	},
+	"codestral-2411-rc5@mistral":{
+		"pricing":[0.5,1.50],
+		"strict":true,
+		"purpose":"262,144 token low latency coding"
+	},
 	"mistral-small-2506@mistral":{
 		"pricing":[0.50,1.50],
 		"strict":true,
