@@ -42,10 +42,10 @@ async function onFountain(message:string){
 			}
 		}catch(error){
 			echo("JSON parse error",error);
+			echo("JSON parse error",line);
 		}
 	}
 }
-
 
 // system stdin support for sloppies
 
@@ -160,6 +160,7 @@ async function readFountain(){
 		const disconnected=disconnectFountain();
 		return null;
 	}else{
+		// TODO: consider moving decode stage
 		const received = rxBuffer.subarray(0, n);
 		const message = fountainDecoder.decode(received);
 		return {message};

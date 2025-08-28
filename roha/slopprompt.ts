@@ -18,6 +18,10 @@ const rxBuffer = new Uint8Array(rxBufferSize);
 const rxDecoder=new TextDecoder("utf-8",{stream:true});
 
 
+function closeConnection(){
+	slopConnection=null;
+}
+
 async function readConnection(connection:Deno.TcpConn){
 	try{
 		const n=await connection.read(rxBuffer);
@@ -75,9 +79,15 @@ export async function slopBroadcast(text:string,from:string){
 	if(slopConnection && text && from){
 		const messages=wrapText(text,1920);
 		for(const message of messages){
-			const json=JSON.stringify({messages:[{message,from}]});
+			const json=JSON.stringify({messages:[{message,from}]},null,0);
 			const bytes=encoder.encode(json);
-			slopConnection?.write(bytes);
+			try{
+				slopConnection?.write(bytes);
+			}catch(error){
+				// connection reset
+				closeConnection();
+				echo("closed",error.message);
+			}
 		}
 	}else{
 		echo("help me help you");
