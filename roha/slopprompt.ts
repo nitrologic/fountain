@@ -17,7 +17,6 @@ const rxBufferSize=1e6;
 const rxBuffer = new Uint8Array(rxBufferSize);
 const rxDecoder=new TextDecoder("utf-8",{stream:true});
 
-
 function closeConnection(){
 	slopConnection=null;
 }
@@ -74,15 +73,16 @@ function wrapText(content,wide){
 }
 
 // must be 2000 or fewer bytes writtent
-
+// this should be json rpc
 export async function slopBroadcast(text:string,from:string){
 	if(slopConnection && text && from){
 		const messages=wrapText(text,1920);
 		for(const message of messages){
 			const json=JSON.stringify({messages:[{message,from}]},null,0);
-			const bytes=encoder.encode(json);
+			const bytes=encoder.encode(json); // magic return goes here
 			try{
-				slopConnection?.write(bytes);
+				await slopConnection?.write(bytes);
+				await slopConnection.flush();
 			}catch(error){
 				// connection reset
 				closeConnection();
@@ -391,26 +391,6 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					}
 				}
 			}
-/*
-			const marker=byte&0xf8;
-			if(marker==0xe0){// 3 byte unicode
-				const v3=value.subarray(i,i+3);
-				const utf=decoder.decode(v3);
-				bytes.push(...encoder.encode(utf));
-				addInput(utf);
-				i+=2;
-				continue;
-			}
-			if(marker==0xf0){// 4 byte unicode
-				const v4=value.subarray(i,i+4);
-				const utf=decoder.decode(v4);
-				bytes.push(...encoder.encode(utf));
-				addInput(utf);
-				i+=3;
-				continue;
-			}
-*/
-
 			if (byte === 0x7F || byte === 0x08) { // Backspace
 				backspace(bytes);
 			} else if (byte === 0x1b) { // Escape sequence

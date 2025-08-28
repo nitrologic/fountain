@@ -3,8 +3,11 @@
 // Licensed under the MIT License
 
 // receive message from fountain /announce and echo to discord bot
+// keep json flat single line
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
+
+const sloppyBanner="[SLOPPY] slopchat discord bot by Simon 0.03";
 
 const quotes=[
 	"🤖 I am sloppy the janitor",
@@ -129,7 +132,7 @@ async function connectFountain():Promise<boolean>{
 		if (error instanceof Deno.errors.ConnectionRefused) {
 			echo("Connection Refused",error.message);
 		}else{
-			const message=JSON.stringify(error);
+			const message=JSON.stringify(error,null,0);
 			echo("Connection Error",message);
 		}
 	}
@@ -169,7 +172,7 @@ async function readFountain(){
 
 // main app starts here
 
-console.log("[SLOPPY] slopchat discord bot by simon 0.02");
+console.log(sloppyBanner);
 
 const client = new Client({
 	intents: [
@@ -195,7 +198,7 @@ client.on('messageCreate', async (message) => {
 		const from=message.author.username+"@discord";	//skudmarks@discord
 		const name=message.author.displayName;
 		const blob={messages:[{message:message.content,from}]};
-		await writeFountain(JSON.stringify(blob));
+		await writeFountain(JSON.stringify(blob,null,0));
 		const quote=quotes[quoteCount++%quotes.length];
         message.reply("@"+name+" "+quote);
 		openChannel=message.channelId;
