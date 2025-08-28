@@ -39,9 +39,15 @@ async function onFountain(message:string){
 	}
 	if(line.startsWith("{")||line.startsWith("[")){
 		try{
-			const payload=JSON.parse(line);
-			for(const {message,from} of payload.messages){
-				await writeSloppy(message,from);
+			let cursor=0;
+			while(cursor<line.length){
+				const delim=line.indexOf("}\t{",cursor);// less than healthy
+				const json=(delim==-1)?line.substring(cursor):line.substring(cursor,delim+1);
+				cursor+=json.length;
+				const payload=JSON.parse(json);
+				for(const {message,from} of payload.messages){
+					await writeSloppy(message,from);
+				}
 			}
 		}catch(error){
 			echo("JSON parse error",error);

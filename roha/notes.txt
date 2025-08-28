@@ -1,59 +1,18 @@
-
 C:\nitrologic\fountain>echo off
 Running Sloppy the Janitor
 see sloppy/sloppy.md for more information
 Task sloppy deno run --allow-sys --allow-run --allow-net --allow-env --allow-read sloppy.ts
-[SLOPPY] slopchat discord bot by simon 0.02
+[SLOPPY] slopchat discord bot by Simon 0.03
+[SLOPPY] client ready sloppy#7489
 [PEEP] [ "connected", "localhost:8081" ]
 [PEEP] [ "wrote", '{"action":"connect"}' ]
-[SLOPPY] client ready sloppy#7489
-[PEEP] [
-  "wrote",
-  '{"messages":[{"message":"<@1409013189848334470> discord is in the loop","from":"scudmarks@discord"}]}'
-]
-[PEEP] [
-  "JSON parse error",
-  SyntaxError: Unexpected non-whitespace character after JSON at position 104 (line 1 column 105)
-    at JSON.parse (<anonymous>)
-    at onFountain (file:///C:/nitrologic/fountain/sloppy/sloppy.ts:40:23)
-    at file:///C:/nitrologic/fountain/sloppy/sloppy.ts:230:9
-    at eventLoopTick (ext:core/01_core.js:179:7)
-]
-[PEEP] [
-  "JSON parse error",
-  '{"messages":[{"message":"[scudmarks@discord] <@1409013189848334470> discord is in the ","from":"skid"}]}{"messages":[{"message":"loop","from":"skid"}]}'
-]
-[PEEP] [
-  "JSON parse error",
-  SyntaxError: Unexpected non-whitespace character after JSON at position 155 (line 1 column 156)
-    at JSON.parse (<anonymous>)
-    at onFountain (file:///C:/nitrologic/fountain/sloppy/sloppy.ts:40:23)
-    at file:///C:/nitrologic/fountain/sloppy/sloppy.ts:230:9
-    at eventLoopTick (ext:core/01_core.js:179:7)
-]
-[PEEP] [
-  "JSON parse error",
-  '{"messages":[{"message":"the notes shared are now history, could you give a brief of summary of all the bits and bobs, am moving them to ","from":"skid"}]}{"messages":[{"message":"arhive","from":"skid"}]}'        
-]
-[PEEP] [
-  "JSON parse error",
-  SyntaxError: Unexpected non-whitespace character after JSON at position 57 (line 1 column 58)
-    at JSON.parse (<anonymous>)
-    at onFountain (file:///C:/nitrologic/fountain/sloppy/sloppy.ts:40:23)
-    at file:///C:/nitrologic/fountain/sloppy/sloppy.ts:230:9
-    at eventLoopTick (ext:core/01_core.js:218:9)
-]
-[PEEP] [
-  "JSON parse error",
-  '{"messages":[{"message":"\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"- **Models Under Test**: Focused on grok-code-fast-1.\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"- **Testing Continuation**: Ongoing, acknowledged and proceeding smoothly.\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"- **Discord Integration**: Noted loop with @1409013189848334470 (scudmarks?).\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"- **New Setup Update**: \\"Sloppy\\" now uses flat JSON end-to-end, aimed at improving handling of large packets.\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"If you need more details or expansions, just let me know! (No code posted unless ","from":"grok-code-fast-1"}]}{"messages":[{"message":"requested.)","from":"grok-code-fast-1"}]}'
-]
 [PEEP] [
   "JSON parse error",
   SyntaxError: Unexpected non-whitespace character after JSON at position 91 (line 1 column 92)
     at JSON.parse (<anonymous>)
-    at onFountain (file:///C:/nitrologic/fountain/sloppy/sloppy.ts:40:23)
-    at file:///C:/nitrologic/fountain/sloppy/sloppy.ts:230:9
-    at eventLoopTick (ext:core/01_core.js:179:7)
+    at onFountain (file:///C:/nitrologic/fountain/sloppy/sloppy.ts:42:23)
+    at file:///C:/nitrologic/fountain/sloppy/sloppy.ts:232:9
+    at eventLoopTick (ext:core/01_core.js:218:9)
 ]
 [PEEP] [
   "JSON parse error",
@@ -61,25 +20,13 @@ Task sloppy deno run --allow-sys --allow-run --allow-net --allow-env --allow-rea
 ]
 [PEEP] [
   "JSON parse error",
-  SyntaxError: Unexpected non-whitespace character after JSON at position 338 (line 1 column 339)
+  SyntaxError: Unexpected non-whitespace character after JSON at position 118 (line 1 column 119)
     at JSON.parse (<anonymous>)
-    at onFountain (file:///C:/nitrologic/fountain/sloppy/sloppy.ts:40:23)
-    at file:///C:/nitrologic/fountain/sloppy/sloppy.ts:230:9
-    at eventLoopTick (ext:core/01_core.js:179:7)
-]
-[PEEP] [
-  "JSON parse error",
-  '{"messages":[{"message":"Noted, skid—thanks for sharing the notes.txt file (340KB). It appears to be a comprehensive log of your Slop Fountain sessions, including model interactions (e.g., DeepSeek, Claude, Gemini), error traces, code snippets, and cultural/Unicode explorations like Egyptian hieroglyphs. \\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\n","from":"grok-code-fast-1"}]}'
-]
-[PEEP] [
-  "JSON parse error",
-  SyntaxError: Unexpected non-whitespace character after JSON at position 295 (line 1 column 296)
-    at JSON.parse (<anonymous>)
-    at onFountain (file:///C:/nitrologic/fountain/sloppy/sloppy.ts:40:23)
-    at file:///C:/nitrologic/fountain/sloppy/sloppy.ts:230:9
+    at onFountain (file:///C:/nitrologic/fountain/sloppy/sloppy.ts:42:23)
+    at file:///C:/nitrologic/fountain/sloppy/sloppy.ts:232:9
     at eventLoopTick (ext:core/01_core.js:218:9)
 ]
 [PEEP] [
   "JSON parse error",
-  `{"messages":[{"message":"No obvious new changes since last shared, but the latest entries discuss stress testing, music synthesis, and terminal interactions. If you'd like me to analyze specific sections or suggest improvements, let me know! (Short, as requested.) ","from":"grok-code-fast-1"}]}{"messages":[{"message":" 🚀","from":"grok-code-fast-1"}]}`
+  '{"messages":[{"message":"export async function slopBroadcast(text:string,from:string){\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\tif(slopConnection && text && from){\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\tconst messages=wrapText(text,1920);\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\tfor(const message of messages){\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\tconst json=JSON.stringify({messages:[{message,from}]},null,0);\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\tconst bytes=encoder.encode(json);\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\ttry{\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\tconst n=bytes.byteLength;\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\tlet total=0;\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\twhile(total<n){\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\t\\tconst packet=total==0?bytes:bytes.subarray(total,n-total);\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\t\\tconst sent=await slopConnection.write(packet);\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\t\\tif(sent<0){\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\t\\t\\tthrow(\\"chunks\\");\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\t\\t}\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\t\\ttotal+=sent;\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\t}\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t}catch(error){\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\tcloseConnection();\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t\\techo(\\"closed\\",error.message);\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t\\t}\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\t}\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t}else{\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t\\techo(\\"help me help you\\");\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"\\t}\\n","from":"grok-code-fast-1"}]}{"messages":[{"message":"}","from":"grok-code-fast-1"}]}'
 ]

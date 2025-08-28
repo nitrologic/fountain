@@ -79,10 +79,18 @@ export async function slopBroadcast(text:string,from:string){
 		const messages=wrapText(text,1920);
 		for(const message of messages){
 			const json=JSON.stringify({messages:[{message,from}]},null,0);
-			const bytes=encoder.encode(json); // magic return goes here
+			const bytes=encoder.encode(json+"\t");
 			try{
-				await slopConnection?.write(bytes);
-				await slopConnection.flush();
+				const n=bytes.byteLength;
+				let total=0;
+				while(total<n){
+					const packet=total==0?bytes:bytes.subarray(total,n-total);
+					const sent=await slopConnection.write(packet);
+					if(sent<0){
+						throw("chunks");
+					}
+					total+=sent;
+				}
 			}catch(error){
 				// connection reset
 				closeConnection();
