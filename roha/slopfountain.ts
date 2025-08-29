@@ -2,6 +2,8 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
+// packed tab code style - unsafe typescript formatted with tabs and minimal white space
+
 import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
 import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";

@@ -2,6 +2,10 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
+// packed tab code style - unsafe typescript formatted with tabs and minimal white space
+
+// no abort controllers if you don't mind
+
 function echo(...data:any[]){
 	console.error("[PORT]",data);
 }
@@ -9,7 +13,8 @@ function echo(...data:any[]){
 let slopConnection;
 let slopListener;
 let listenerPromise;
-let receivePromise;
+
+let receivePromise: Promise<{source:Deno.TcpConn, receive:Uint8Array}>;
 
 const readPromises=[];
 const decoderConnection = new TextDecoder("utf-8");
@@ -38,7 +43,13 @@ async function readConnection(connection:Deno.TcpConn){
 async function listenPort(port:number){
 	if(!slopListener){
 		echo("listening from fountain for slop on port",port);
-		slopListener=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
+		try{
+			slopListener=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
+		}catch(error){
+			echo("listenPort failure",port);
+			// TODO: short circuit - Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
+			return {error:error};
+		}
 	}
 	const connection=await slopListener.accept();
 	echo("reading new connection");
@@ -340,7 +351,14 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(!winner) {
 			break;// we break for break breaks, result has been loaded due to above timeout
 		}
-		const { value, done, connection, source, receive } = winner;
+		const { value, done, connection, source, receive, error } = winner;
+		if(error){
+			// TODO: failure to listen - port not available
+			echo("slopPrompt error",error.message);
+			slopConnection=null;
+			listenerPromise=null;
+			continue;
+		}
 		if (connection) {
 			slopConnection = connection;
 			listenerPromise = listenPort(8081);
@@ -349,6 +367,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		}
 		if(source){
 			const messages=[];
+			// reject old one?
 			receivePromise=null;
 			if(receive){
 				const n=receive.length;
@@ -362,9 +381,11 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 						}
 					}
 				}catch(error){
-					echo("JSON error",text,error);
+					echo("slopPrompt JSON error",text,error);
 				}
-				receivePromise=readConnection(source)
+				if(n>0){
+					receivePromise=readConnection(source)
+				}
 				if(messages){
 					response={messages};
 					break;
