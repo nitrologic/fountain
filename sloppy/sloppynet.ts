@@ -177,7 +177,16 @@ async function onSSHConnection(sshClient: any, name:string) {
 		logSlop({ status: "SSH client authenticated" });
 		sshClient.on("session", (accept: any, reject: any) => {
 			const session = accept();
-			session.on("pty", (accept: any) => accept && accept());
+			session.on("pty", (accept: any, reject: any, info: any) => {
+				const {cols,rows,term}=info;
+				logSlop({ status: "SSH accept pty session", name, terminal:{term,cols,rows},info});
+				accept && accept();
+            });
+			session.on('window-change', (accept, reject, info) => {
+				const { cols, rows } = info;
+				logSlop({ status: "SSH window resized", name, cols, rows, info });
+				accept && accept();
+			});
 			session.on("shell", (accept: any) => {
 				const stream = accept();
 				sshStreams.push({stream,name});

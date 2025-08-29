@@ -2732,13 +2732,13 @@ async function gptSay(text:string,voice=DefaultGPTVoice){
 // work in progress voice audition tests
 
 async function auditionCommand(words){
-	echo("[AUDITION] no voice groups in line, please modify and rebuild - async function auditionCommand" );
-	return;
 	for(const voice of GPTVoices){
 		const text="Hi, I am "+voice+" a ChatGPT voice."
 //		await gptSay(text,{name:voice,format:"mp3",model:"gpt-4o-mini-tts@openai"});
-		await gptSay(text,{name:voice,format:"mp3",model:"tts-1@openai"});
+		await gptSay(text,{name:voice,format:"mp3",model:"gpt-audio@openai"});
 	}
+	return;
+	echo("[AUDITION] no voice groups in line, please modify and rebuild - async function auditionCommand" );
 	return;
 	for(const voice of GeminiVoices){
 		const text="Hi, I am "+voice+" a Gemini voice."
