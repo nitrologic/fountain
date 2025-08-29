@@ -1,3 +1,36 @@
+>[PORT] [
+  "JSON error",
+  "i should type something?",
+  SyntaxError: Unexpected token 'i', "i should t"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at slopPrompt (file:///C:/nitrologic/fountain/roha/slopprompt.ts:357:22)
+    at eventLoopTick (ext:core/01_core.js:179:7)
+    at async promptFountain (file:///C:/nitrologic/fountain/roha/slopfountain.ts:2275:17)
+    at async chat (file:///C:/nitrologic/fountain/roha/slopfountain.ts:3704:20)
+    at async file:///C:/nitrologic/fountain/roha/slopfountain.ts:3928:2
+]
+>Yes, you can type anything you'd like! I'm here to assist you.
+
+{account:deepseek,spent:0.0000,balance:-3.4611}
+ Fountain 1.4.6 ⛲  deepseek-chat 🐋 deepseek-chat@deepseek 1.0° 🪠 $0.000 403B 4.27s 
+>[PORT] [
+  "JSON error",
+  "trh\x7f\x7fhen that is a pass!",
+  SyntaxError: Unexpected token 'h', "trhhen tha"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at slopPrompt (file:///C:/nitrologic/fountain/roha/slopprompt.ts:357:22)
+    at eventLoopTick (ext:core/01_core.js:179:7)
+    at async promptFountain (file:///C:/nitrologic/fountain/roha/slopfountain.ts:2275:17)
+    at async chat (file:///C:/nitrologic/fountain/roha/slopfountain.ts:3704:20)
+    at async file:///C:/nitrologic/fountain/roha/slopfountain.ts:3928:2
+]
+>Great! I'm glad to hear it's a pass. Let me know if you have any other questions or tasks.
+
+{account:deepseek,spent:0.0001,balance:-3.4611}
+ Fountain 1.4.6 ⛲  deepseek-chat 🐋 deepseek-chat@deepseek 1.0° 🪠 $0.000 678B 4.55s 
+
+ 
+
 [PEEP] [ "connected", "localhost:8081" ]
 [PEEP] [ "wrote", '{"action":"connect"}' ]
         [SLOPPYNET] {"connected":true}

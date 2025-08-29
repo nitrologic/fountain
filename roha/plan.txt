@@ -1,3 +1,4 @@
+- ssh backspace, delete key
 - slopPrompt backspace, delete key, mouse control, paste unicode
 - audition markup with meta data
 - drop individual share by index

@@ -3,18 +3,18 @@
 
 // Licensed under the MIT License - See LICENSE file
 
-// ssh-keygen -t rsa -f hostkey_rsa -N ''.
-
 import { Client, Server } from "npm:ssh2";
 import { readFileSync } from "node:fs";
 
 import {onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
 
 const sloppyLogo="✴ slopspace";
-const sloppyNetVersion=0.4;
+const sloppyNetVersion=0.5;
+
+// raw key handling work in progress
+// ssh-keygen -t rsa -f hostkey_rsa -N ''.
 
 // TODO: make multi planetary
-
 const rsaPath="C:/Users/nitro/.ssh/id_rsa";
 
 // sloppyNet uses slopfeed workers in a responsible manner
@@ -48,36 +48,6 @@ async function writeSloppy(message:string,from:string){
 		const stream=session.stream;
 		// todo multiple calls here?
 		await stream?.write(text);
-	}
-}
-
-let lineBuffer="";
-
-async function onShell(data: Buffer, stream: any, name:string) {
-	for (const byte of data) {
-		const char = String.fromCharCode(byte);
-		if (char === "\n" || char === "\r") {
-			if (lineBuffer === "exit") {
-				stream.end("Goodbye!\r\n");
-				sshClient.end();
-				return;
-			}
-			if (lineBuffer) {
-				const line=lineBuffer;
-				lineBuffer = "";
-				stream.write("\r\n");
-				if(!line.startsWith("/")){
-					const packet="messages:"
-					await writeFountain(line);
-					const blob={messages:[{message:line,from:name}]};
-					await writeFountain(JSON.stringify(blob,null,0));
-				}
-			}
-		} else {
-			// Accumulate non-newline characters
-			lineBuffer += char;
-			stream.write(char);
-		}
 	}
 }
 
@@ -148,7 +118,7 @@ if (worker) {
 		if(payload.received){
 			const rx=payload.received;
 			logSlop(rx);
- 			onReceive(rx);
+// 			onReceive(rx);
 		}
 	};
 
@@ -191,38 +161,49 @@ class SSHSession {
 		logSlop({ status: "Terminal size updated", name: this.name, terminalSize: this.terminalSize });
 	}
 
-	async onShell(data: Buffer): Promise<void> {
-		for (const byte of data) {
-			const char = String.fromCharCode(byte);
-			if (char === "\n" || char === "\r") {
-				if (this.lineBuffer === "exit") {
-					await this.write("Goodbye!\r\n");
-					this.stream?.end();
-					return;
-				}
-				if (this.lineBuffer === "/termsize") {
-					if (this.terminalSize) {
-						await this.write(`Terminal size: ${this.terminalSize.cols} columns x ${this.terminalSize.rows} rows\r\n`);
-					} else {
-						await this.write("Terminal size not available\r\n");
-					}
-					this.lineBuffer = "";
-					await this.write("\r\n");
-					continue;
-				}
-				if (this.lineBuffer) {
-					const line = this.lineBuffer;
-					this.lineBuffer = "";
-					await this.write("\r\n");
-					if (!line.startsWith("/")) {
-						await writeFountain(line);
-						const blob = { messages: [{ message: line, from: this.name }] };
-						await writeFountain(JSON.stringify(blob, null, 0));
-					}
-				}
+	async onEnter(){
+		if (this.lineBuffer === "exit") {
+			await this.write("Goodbye!\r\n");
+			this.stream?.end();
+		}
+		if (this.lineBuffer === "/termsize") {
+			if (this.terminalSize) {
+				await this.write(`Terminal size: ${this.terminalSize.cols} columns x ${this.terminalSize.rows} rows\r\n`);
 			} else {
-				this.lineBuffer += char;
-				await this.write(char);
+				await this.write("Terminal size not available\r\n");
+			}
+			this.lineBuffer = "";
+			await this.write("\r\n");
+		}
+		if (this.lineBuffer) {
+			const line = this.lineBuffer;
+			this.lineBuffer = "";
+			await this.write("\r\n");
+			if (!line.startsWith("/")) {
+				await writeFountain(line);
+				const blob = { messages: [{ message: line, from: this.name }] };
+				await writeFountain(JSON.stringify(blob, null, 0));
+			}
+		}
+	}
+
+	async onShell(data: Buffer): Promise<void> {
+		console.log("onShell data:", Array.from(data).join(","));
+		for (const byte of data) {
+			const char=String.fromCharCode(byte);
+			switch(byte){
+				case 8:
+				case 127:
+					this.lineBuffer=this.lineBuffer.substring(0,-1);
+					await this.write("\b \b");
+					break;
+				case 13:
+				case 10:
+					await this.onEnter();
+					break;
+				default:
+					this.lineBuffer += char;
+					await this.write(char);
 			}
 		}
 	}
