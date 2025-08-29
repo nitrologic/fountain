@@ -20,7 +20,7 @@ const rsaPath="C:/Users/nitro/.ssh/id_rsa";
 // sloppyNet uses slopfeed workers in a responsible manner
 
 const sshClient=new Client();
-const sshStreams=[]; // {stream,from}
+const connections={};
 
 let slopPail:unknown[]=[];
 
@@ -43,8 +43,11 @@ async function sleep(ms:number) {
 async function writeSloppy(message:string,from:string){
 	const text="["+from+"] "+message+"\r\n";
 	console.log("[SLOP]",text);
-	for(const {stream,name} of sshStreams){
-		await stream.write(text);
+	for(const key of Object.keys(connections)){
+		const session=connections[key];
+		const stream=session.stream;
+		// todo multiple calls here?
+		await stream?.write(text);
 	}
 }
 
@@ -160,40 +163,109 @@ if (worker) {
 	worker.postMessage({command:"open",data:[5,6,7,8]});
 }
 
-// sloppy server
 
-async function onSSHConnection(sshClient: any, name:string) {
+class SSHSession {
+	name: string;
+	stream: any;
+	private lineBuffer: string;
+	private terminalSize: { cols: number; rows: number } | null;
 
+	constructor(name: string) {
+		this.name = name;
+		this.lineBuffer = "";
+		this.terminalSize = null;
+	}
+
+	async write(data: string): Promise<void> {
+		if (this.stream&&this.stream.writable) {
+			await this.stream.write(data);
+		}
+	}
+
+	getTerminalSize(): { cols: number; rows: number } | null {
+		return this.terminalSize;
+	}
+
+	setTerminalSize(cols: number, rows: number): void {
+		this.terminalSize = { cols, rows };
+		logSlop({ status: "Terminal size updated", name: this.name, terminalSize: this.terminalSize });
+	}
+
+	async onShell(data: Buffer): Promise<void> {
+		for (const byte of data) {
+			const char = String.fromCharCode(byte);
+			if (char === "\n" || char === "\r") {
+				if (this.lineBuffer === "exit") {
+					await this.write("Goodbye!\r\n");
+					this.stream?.end();
+					return;
+				}
+				if (this.lineBuffer === "/termsize") {
+					if (this.terminalSize) {
+						await this.write(`Terminal size: ${this.terminalSize.cols} columns x ${this.terminalSize.rows} rows\r\n`);
+					} else {
+						await this.write("Terminal size not available\r\n");
+					}
+					this.lineBuffer = "";
+					await this.write("\r\n");
+					continue;
+				}
+				if (this.lineBuffer) {
+					const line = this.lineBuffer;
+					this.lineBuffer = "";
+					await this.write("\r\n");
+					if (!line.startsWith("/")) {
+						await writeFountain(line);
+						const blob = { messages: [{ message: line, from: this.name }] };
+						await writeFountain(JSON.stringify(blob, null, 0));
+					}
+				}
+			} else {
+				this.lineBuffer += char;
+				await this.write(char);
+			}
+		}
+	}
+
+	end(): void {
+		delete connections[this.name];
+		logSlop({ status: "Session closed", name: this.name });
+	}
+}
+
+async function onSSHConnection(sshClient: any, name: string) {
 	sshClient.on("authentication", (ctx: any) => {
 		if (ctx.method === "password") {
-			// if (ctx.username!="nitro") ctx.reject();
 			ctx.accept();
 		} else {
-			ctx.reject(); // Reject other authentication methods
+			ctx.reject();
 		}
 	});
 
 	sshClient.on("ready", () => {
-		logSlop({ status: "SSH client authenticated" });
+		const connection = new SSHSession(name);
+		logSlop({ status: "SSH client authenticated", name });
+		connections[name]=connection;
+
 		sshClient.on("session", (accept: any, reject: any) => {
 			const session = accept();
-			session.on("pty", (accept: any, reject: any, info: any) => {
-				const {cols,rows,term}=info;
-				logSlop({ status: "SSH accept pty session", name, terminal:{term,cols,rows},info});
-				accept && accept();
-            });
-			session.on('window-change', (accept, reject, info) => {
-				const { cols, rows } = info;
-				logSlop({ status: "SSH window resized", name, cols, rows, info });
-				accept && accept();
-			});
 			session.on("shell", (accept: any) => {
-				const stream = accept();
-				sshStreams.push({stream,name});
-				stream.write(greetings+"\r\n");
-				stream.on("data", (data: Buffer) => {
-					onShell(data,stream,name);
-				});
+				const stream = accept && accept();
+				stream.write(greetings + "\r\n");
+				stream.on("data", (data: Buffer) => {connection.onShell(data);});
+				stream.on("end", () => {connection.end();});
+				connection.stream=stream;
+			});
+			session.on("pty", (accept: any, reject: any, info: any) => {
+				accept && accept();
+				const { cols, rows } = info;
+				connection.setTerminalSize(cols, rows);
+			});
+
+			session.on("window-change", (accept: any, reject: any, info: any) => {
+				accept && accept();
+				const { cols, rows } = info;
+				connection.setTerminalSize(cols, rows);
 			});
 		});
 	});
@@ -203,7 +275,9 @@ async function onSSHConnection(sshClient: any, name:string) {
 	});
 
 	sshClient.on("end", () => {
-		logSlop({ status: "SSH connection closed" });
+		logSlop({status:"SSH ending connection",name});
+		const connection=connections[name];
+		connection.end();
 	});
 }
 
