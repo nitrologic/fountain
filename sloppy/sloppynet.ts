@@ -8,9 +8,25 @@ import { readFileSync } from "node:fs";
 
 import {onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
 
-// white on teal
+export const ANSI={
+	Reset:"\x1BC",
+	Defaults:"\x1B[0m",//"\x1B[39;49m",//\x1B[0m",
+	Clear:"\x1B[2J",
+	Home:"\x1B[H",
+	White:"\x1B[37m",
+	NavyBackground:"\x1b[48;5;24m",
+	Aqua:"\x1B[38;5;122m",
+	Pink:"\x1B[38;5;206m",
+	HideCursor:"\x1b[?25l",
+	ShowCursor:"\x1b[?25h",
+	Cursor:"\x1B["//+ row + ";1H"
+}
 
-const sloppyStyle="\x1b[H\x1b[48;5;23m\x1b[37m\x1b[2J";
+// white on teal
+//\x1b[H
+//const sloppyStyle="\x1b[48;5;24m\x1b[37m\x1b[2J";
+
+const sloppyStyle=ANSI.NavyBackground+ANSI.White+ANSI.Clear;
 
 const sloppyLogo="✴ slopspace";
 const sloppyNetVersion=0.5;
@@ -141,11 +157,11 @@ class SSHSession {
 			this.lineBuffer = "";
 			await this.write("\r\n");
 			if (!line.startsWith("/")) {
-//				await writeFountain(line);
 				const from=this.name;
-				const message=JSON.stringify(line);
+				const message=line;//JSON.stringify(line);
 				const blob={messages:[{message,from}]};
-				await writeFountain(JSON.stringify(blob, null, 0));
+				const json=JSON.stringify(blob, null, 0);
+				await writeFountain(json);
 			}
 		}
 	}
@@ -249,7 +265,7 @@ async function onSSHConnection(sshClient: any, name: string) {
 	sshClient.on("end", () => {
 		logSlop({status:"SSH ending connection",name});
 		const connection=connections[name];
-		connection.end();
+		connection?.end();
 	});
 }
 
@@ -275,7 +291,7 @@ startSSHServer();
 
 try {
 	await connectFountain();
-	writeFountain('{"action":"connect"}');
+	await writeFountain('{"action":"connect"}');
 	let portPromise=readFountain();
 	let systemPromise=readSystem();
 

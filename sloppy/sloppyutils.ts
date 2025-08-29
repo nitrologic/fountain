@@ -22,7 +22,7 @@ async function writeSloppy(message:string,from:string){
 	if(openChannel){
 		const channel = await client.channels.fetch(openChannel);
 		if (channel?.isTextBased()) {
-			channel.send("["+from+"] "+message);
+			await channel.send("["+from+"] "+message);
 		}
 	}
 }
