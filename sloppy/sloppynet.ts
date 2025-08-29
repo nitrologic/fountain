@@ -85,7 +85,7 @@ class SSHSession {
 	env:Record<string,string>;
 	private lineBuffer: string;
 	private terminalSize: { cols: number; rows: number } | null;
-
+	private decoder=new TextDecoder();
 
 	constructor(name: string) {
 		this.env={};
@@ -137,17 +137,20 @@ class SSHSession {
 			this.lineBuffer = "";
 			await this.write("\r\n");
 			if (!line.startsWith("/")) {
-				await writeFountain(line);
-				const blob = { messages: [{ message: line, from: this.name }] };
+//				await writeFountain(line);
+				const from=this.name;
+				const message=JSON.stringify(line);
+				const blob={messages:[{message,from}]};
 				await writeFountain(JSON.stringify(blob, null, 0));
 			}
 		}
 	}
 
+//		console.log("onShell data:", Array.from(data).join(","));
 	async onShell(data: Buffer): Promise<void> {
-		console.log("onShell data:", Array.from(data).join(","));
-		for (const byte of data) {
-			const char=String.fromCharCode(byte);
+		const text=this.decoder.decode(data);
+		for (const char of text) {
+			const byte=char.charCodeAt(0);
 			switch(byte){
 				case 3:
 					this.lineBuffer="";
