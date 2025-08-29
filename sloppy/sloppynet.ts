@@ -8,6 +8,10 @@ import { readFileSync } from "node:fs";
 
 import {onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
 
+// white on teal
+
+const sloppyStyle="\x1b[H\x1b[48;5;23m\x1b[37m\x1b[2J";
+
 const sloppyLogo="✴ slopspace";
 const sloppyNetVersion=0.5;
 
@@ -28,7 +32,8 @@ let sessionCount=0;
 let connectionCount=0;
 let connectionClosed=0;
 
-const greetings=["Welcome to",sloppyLogo,sloppyNetVersion,"shutdown to quit"].join();
+const greetings=[sloppyStyle,"Welcome to ",sloppyLogo,sloppyNetVersion].join("");
+const notice="type shutdown to quit";
 
 function logSlop(_result:any) {
 	const message=JSON.stringify(_result);
@@ -42,7 +47,7 @@ async function sleep(ms:number) {
 
 async function writeSloppy(message:string,from:string){
 	const text="["+from+"] "+message+"\r\n";
-	console.log("[SLOP]",text);
+//	console.log("[SLOP]",text.trim());
 	for(const key of Object.keys(connections)){
 		const session=connections[key];
 		const stream=session.stream;
@@ -66,8 +71,7 @@ export async function onFountain(message:string){
 				cursor+=json.length;
 				const payload=JSON.parse(json);
 				for(const {message,from} of payload.messages){
-					const safeMessage=JSON.stringify(message);
-					await writeSloppy(safeMessage,from);
+					await writeSloppy(message,from);
 				}
 			}
 		}catch(error){
@@ -166,8 +170,11 @@ class SSHSession {
 					await this.onEnter();
 					break;
 				default:
-					this.lineBuffer += char;
-					await this.write(char);
+					const printable=(byte==9)||(byte>=32);
+					if(printable){
+						this.lineBuffer += char;
+						await this.write(char);
+					}
 			}
 		}
 	}
@@ -198,6 +205,7 @@ async function onSSHConnection(sshClient: any, name: string) {
 			session.on("shell", (accept: any) => {
 				const stream = accept && accept();
 				stream.write(greetings + "\r\n");
+				stream.write(notice + "\r\n");
 				stream.on("data", (data: Buffer) => {connection.onShell(data);});
 				stream.on("end", () => {connection.end();});
 				connection.stream=stream;
