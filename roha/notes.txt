@@ -1,3 +1,61 @@
+// slopfountain connection
+
+// Creating a basic worker (main.ts)
+/*
+let worker:Worker | null=new Worker(new URL("./slopfeed.ts",import.meta.url).href,{type:"module"});
+
+function closeSlopHole(){
+	if (worker) {
+		worker.postMessage({command:"close"});
+	}
+}
+
+function writeSlopHole(content:string){
+	if (worker) {
+		worker.postMessage({command:"write",data:{slop:[content]}});
+	}
+}
+
+function readSlopHole(){
+	if (worker) {
+		worker.postMessage({command:"read",data:{}});
+	}
+}
+
+if (worker) {
+	worker.onmessage=(message) => {
+		const payload=message.data;
+		logSlop(payload);
+		if(payload.connected){
+			writeSlopHole(greetings);
+			readSlopHole();
+		}
+		if(payload.disconnected){
+			if (worker) {
+				worker.terminate();
+				worker=null;
+			}
+		}
+		if(payload.received){
+			const rx=payload.received;
+			logSlop(rx);
+// 			onReceive(rx);
+		}
+	};
+
+	worker.onerror=(e) => {
+		console.error("Worker error:",e.message);
+	};
+}
+
+await sleep(6e3);
+
+if (worker) {
+	worker.postMessage({command:"open",data:[5,6,7,8]});
+}
+*/
+
+
 >[PORT] [
   "JSON error",
   "i should type something?",

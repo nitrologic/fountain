@@ -66,7 +66,8 @@ export async function onFountain(message:string){
 				cursor+=json.length;
 				const payload=JSON.parse(json);
 				for(const {message,from} of payload.messages){
-					await writeSloppy(message,from);
+					const safeMessage=JSON.stringify(message);
+					await writeSloppy(safeMessage,from);
 				}
 			}
 		}catch(error){
@@ -78,77 +79,33 @@ export async function onFountain(message:string){
 	}
 }
 
-// slopfountain connection
-
-// Creating a basic worker (main.ts)
-let worker:Worker | null=new Worker(new URL("./slopfeed.ts",import.meta.url).href,{type:"module"});
-
-function closeSlopHole(){
-	if (worker) {
-		worker.postMessage({command:"close"});
-	}
-}
-
-function writeSlopHole(content:string){
-	if (worker) {
-		worker.postMessage({command:"write",data:{slop:[content]}});
-	}
-}
-
-function readSlopHole(){
-	if (worker) {
-		worker.postMessage({command:"read",data:{}});
-	}
-}
-
-if (worker) {
-	worker.onmessage=(message) => {
-		const payload=message.data;
-		logSlop(payload);
-		if(payload.connected){
-			writeSlopHole(greetings);
-			readSlopHole();
-		}
-		if(payload.disconnected){
-			if (worker) {
-				worker.terminate();
-				worker=null;
-			}
-		}
-		if(payload.received){
-			const rx=payload.received;
-			logSlop(rx);
-// 			onReceive(rx);
-		}
-	};
-
-	worker.onerror=(e) => {
-		console.error("Worker error:",e.message);
-	};
-}
-
-await sleep(6e3);
-
-if (worker) {
-	worker.postMessage({command:"open",data:[5,6,7,8]});
-}
-
-
 class SSHSession {
 	name: string;
 	stream: any;
+	env:Record<string,string>;
 	private lineBuffer: string;
 	private terminalSize: { cols: number; rows: number } | null;
 
+
 	constructor(name: string) {
+		this.env={};
 		this.name = name;
 		this.lineBuffer = "";
 		this.terminalSize = null;
 	}
 
+	setEnv(key:string,value:string){
+		this.env[key]=value;
+	}
+
 	async write(data: string): Promise<void> {
 		if (this.stream&&this.stream.writable) {
 			await this.stream.write(data);
+		}
+	}
+	async onEnd(): Promise<void> {
+		if (this.stream) {
+			await this.stream.end();
 		}
 	}
 
@@ -192,6 +149,10 @@ class SSHSession {
 		for (const byte of data) {
 			const char=String.fromCharCode(byte);
 			switch(byte){
+				case 3:
+					this.lineBuffer="";
+					this.stream?.end();
+					break;
 				case 8:
 				case 127:
 					this.lineBuffer=this.lineBuffer.substring(0,-1);
@@ -227,6 +188,7 @@ async function onSSHConnection(sshClient: any, name: string) {
 		const connection = new SSHSession(name);
 		logSlop({ status: "SSH client authenticated", name });
 		connections[name]=connection;
+		// TODO: env signal exec sftp x11 subsystem
 
 		sshClient.on("session", (accept: any, reject: any) => {
 			const session = accept();
@@ -243,6 +205,24 @@ async function onSSHConnection(sshClient: any, name: string) {
 				connection.setTerminalSize(cols, rows);
 			});
 
+			session.on("signal", (accept: any, reject: any, info: any) => {
+				accept && accept();
+				const { name } = info;
+				logSlop({ status: "Signal received", name: connection.name, signal: name });
+				if (name === "INT") {
+					connection.lineBuffer = "";
+					connection.write("\r\nInterrupted\r\n");
+				} else if (name === "TERM") {
+					connection.write("\r\nTerminated\r\n");
+					connection.stream?.end();
+				}
+			});
+
+			session.on("env", (accept: any, reject: any, info: any) => {
+				accept && accept();
+				const {key,value}=info;
+				connection.setEnv(key,value);
+			});
 			session.on("window-change", (accept: any, reject: any, info: any) => {
 				accept && accept();
 				const { cols, rows } = info;
@@ -267,7 +247,7 @@ async function startSSHServer(port: number = 22) {
 		const hostKey = readFileSync(rsaPath, "utf8");
 		const server = new Server({ hostKeys: [hostKey] });
 		server.on("connection", (sshClient) => {
-			const name="com"+(++connectionCount);
+			const name="guest"+(++connectionCount);
 			logSlop({ status: "New SSH connection opened", connectionCount });
 			onSSHConnection(sshClient,name).catch((err) => {
 				logSlop({ error: "Connection error", message: err.message, connectionCount });
