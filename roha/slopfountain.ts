@@ -1778,7 +1778,7 @@ async function shareSlop(path:string,depth:number){
 }
 
 // days,sessions
-async function parseLog(){
+async function historyCommand(words){
 	let path=resolve(forgePath,"forge.log");
 	let log=await Deno.readTextFile(path);
 	let count=0;
@@ -1789,8 +1789,7 @@ async function parseLog(){
 	let lineNumber=0;
 	let sessions=[];
 	let tags={};
-	let days={};
-	
+	let days={};	
 	for(const line of lines){
 		const hex=line.substring(0,8);	// ignore 16ths
 		const secs=parseInt(hex,16);
@@ -1799,13 +1798,14 @@ async function parseLog(){
 		if(date in days){
 			days[date].count++;
 		}else{
-			days[date]={bytes:0,count:0,tags:{}}
+			days[date]={sessions:0,bytes:0,count:0,tags:{}}
 		}
 		const day=days[date];
 		const tagline=line.substring(8);
 		if(tagline=="[roha] 𓅷 𓅸 𓅹 𓅺 𓅻 𓅼 𓅽"){
 			sessions.push({line:lineNumber,tags});
 			tags={};
+			day.sessions++;
 		}
 		const b0=line.indexOf("[");
 		const b1=line.indexOf("]");
@@ -1816,8 +1816,6 @@ async function parseLog(){
 			if(key in tags){tags[key].count++;tags[key].bytes+=n}else tags[key]={key,count:1,bytes:n};
 			if(key in day.tags){day.tags[key].count++;day.tags[key].bytes+=n;}else day.tags[key]={key,count:1,bytes:n}
 		}
-
-	
 		if(!min || secs<min) min=secs;
 		if(secs>max) max=secs;
 		lineNumber++;
@@ -1827,16 +1825,18 @@ async function parseLog(){
 	const maxDate=slopDate(max);
 	echo("[LOG]",path,count,minDate,maxDate,sessions.length,Object.keys(days).length);
 	const keys=Object.keys(days);
-
+	let index=1;
 	for(const day of keys){
 		const tags=[];
 		for(const tag in days[day].tags){
 			const mut=days[day].tags[tag];
+			if(mut.key=="roha") continue;
 			tags.push(mut.key+"["+mut.count+"]");
 		}
-		echo("[LOG]",day,tags.join());
+		const sessions=days[day].sessions;
+		echo("#"+index,day,sessions,tags.join());
+		index++;
 	}
-//	echo("[LOG]",sessions);
 }
 
 async function stripLog(path:string,counts){
@@ -2949,8 +2949,10 @@ async function callCommand(command:string) {
 			case "log":
 				logHistory();
 				break;
-			case "list":
 			case "history":
+				await historyCommand(words);
+				break;
+			case "list":
 				listHistory();
 				break;
 			case "load":{
@@ -3924,8 +3926,6 @@ echo("use /help for latest and exit to quit");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
-
-await parseLog();
 
 //echo("\t"+birds+" ",navigator.userAgent,navigator.languages);
 // test birds on clipboard
