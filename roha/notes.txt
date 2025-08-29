@@ -3,6 +3,29 @@
 ╲╲╲
 ╲╲╲╲
 ╳╲╲╲╲
+╳╱╱╱╱ model counts
+╱╱╱╱
+╱╱╱
+╱╱
+╱
+
+[FORGE] Connected to deepseek 2 0.28s
+[FORGE] Connected to moonshot 11 0.23s
+[FORGE] Connected to anthropic 9 0.75s
+[FORGE] Connected to openai 90 0.73s
+[FORGE] Connected to xai 10 0.30s
+[FORGE] Connected to gemini 50 0.47s
+[FORGE] Connected to mistral 67 0.44s
+[FORGE] Connected to alibaba 4 0.80s
+[FORGE] Connected to cerebras 10 0.64s
+[FORGE] Connected to nscale 29 0.37s
+[FORGE] Connected to hyperbolic 24 0.35s
+
+╲
+╲╲
+╲╲╲
+╲╲╲╲
+╳╲╲╲╲
 ╳╱╱╱╱ connection
 ╱╱╱╱
 ╱╱╱

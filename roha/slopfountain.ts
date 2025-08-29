@@ -3938,7 +3938,7 @@ if(roha.config.listen){
 }
 await flush();
 
-if (roha.config.verbose) console.dir(roha.config);
+if (roha.config.debugging) console.dir(roha.config);
 
 // application root chat
 
