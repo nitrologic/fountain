@@ -155,7 +155,7 @@ function disconnectFountain(){
 	return true;
 }
 
-let readingSlop:bool=false;
+let readingSlop:boolean=false;
 const fountainDecoder = new TextDecoder();
 async function readFountain(){
 	if(!slopPipe) return;

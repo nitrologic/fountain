@@ -49,7 +49,7 @@ let connectionCount=0;
 let connectionClosed=0;
 
 const greetings=[sloppyStyle,"Welcome to ",sloppyLogo,sloppyNetVersion].join("");
-const notice="type shutdown to quit";
+const notice="type exit to quit";
 
 function logSlop(_result:any) {
 	const message=JSON.stringify(_result);
