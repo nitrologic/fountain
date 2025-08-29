@@ -1797,8 +1797,19 @@ async function parseLog(){
 	let lineNumber=0;
 	let sessions=[];
 	let tags={};
+	let days={};
+	
 	for(const line of lines){
 		const hex=line.substring(0,8);	// ignore 16ths
+		const secs=parseInt(hex,16);
+		if(Number.isNaN(secs)) continue;
+		const date=slopDate(secs);
+		if(date in days){
+			days[date].count++;
+		}else{
+			days[date]={bytes:0,count:0,tags:{}}
+		}
+		const day=days[date];
 		const tagline=line.substring(8);
 		if(tagline=="[roha] 𓅷 𓅸 𓅹 𓅺 𓅻 𓅼 𓅽"){
 			sessions.push({line:lineNumber,tags});
@@ -1807,11 +1818,14 @@ async function parseLog(){
 		const b0=line.indexOf("[");
 		const b1=line.indexOf("]");
 		if(b1>b0){
+			const n=line.length-b1;
+			day.bytes+=n;
 			const key=line.substring(b0+1,b1);
-			if(key in tags){tags[key].count++;}else tags[key]={key,count:0};
+			if(key in tags){tags[key].count++;tags[key].bytes+=n}else tags[key]={key,count:1,bytes:n};
+			if(key in day.tags){day.tags[key].count++;day.tags[key].bytes+=n;}else day.tags[key]={key,count:1,bytes:n}
 		}
-		const secs=parseInt(hex,16);
-		if(Number.isNaN(secs)) continue;
+
+	
 		if(!min || secs<min) min=secs;
 		if(secs>max) max=secs;
 		lineNumber++;
@@ -1819,8 +1833,18 @@ async function parseLog(){
 	sessions.push({line:lineNumber,tags});
 	const minDate=slopDate(min);
 	const maxDate=slopDate(max);
-	echo("[LOG]",path,count,minDate,maxDate,sessions.length);
-	echo("[LOG]",sessions);
+	echo("[LOG]",path,count,minDate,maxDate,sessions.length,Object.keys(days).length);
+	const keys=Object.keys(days);
+
+	for(const day of keys){
+		const tags=[];
+		for(const tag in days[day].tags){
+			const mut=days[day].tags[tag];
+			tags.push(mut.key+"["+mut.count+"]");
+		}
+		echo("[LOG]",day,tags.join());
+	}
+//	echo("[LOG]",sessions);
 }
 
 async function stripLog(path:string,counts){
