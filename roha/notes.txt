@@ -1,3 +1,56 @@
+
+
+ Fountain 1.4.6 ⛲  qwen-max 🐉 qwen-max@alibaba 1.0° 🪠 $0.057 131.7KB 30.90s
+[RELAY] unhandled error 400 <400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 30720]
+[RELAY] Error: 400 <400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 30720]
+    at APIError.generate (https://deno.land/x/openai@v4.69.0/error.ts:77:14)
+
+function ansiPrompt():string{
+	const size=Deno.consoleSize();
+	const row=size.rows;
+	return ANSI.ESC + row + ";1H" + ANSI.BLANKLINE;
+}
+
+const ZeroWidthSpace="\u200B";
+const ZeroWidthNonJoiner="\u200C";
+const ZeroJoiner="\u200D";
+const NoSpace="​‌‍";//- U+200B ZERO WIDTH SPACE (​) U+200C ZERO WIDTH NON-JOINER (‌) U+200D ZERO WIDTH JOINER (‍)
+
+
+//const AnsiColorNames=["Black","Red","Green","Yellow","Blue","Magenta","Cyan","White"];
+/*
+const CodeTitle=AnsiTealBG+AnsiVividOrange;
+const CodeBlock=AnsiGreenBG+AnsiWhite;
+const ReplyBlock=AnsiGreyBG;
+const StatusBlock=AnsiGreyBG;
+const saveCursor=new Uint8Array([27,91,115]);
+const restoreCursor=new Uint8Array([27,91,117]);
+const homeCursor=new Uint8Array([27, 91, 72]);
+const disableScroll=new Uint8Array([27, 91, 55, 59, 49, 59, 114]);
+const restoreScroll=new Uint8Array([27, 91, 114]);
+// Ansi codes
+const AnsiTabs4="\x1b[4g";
+const AnsiTabs8="\x1b[8g";
+const AnsiReset="\x1b[0m";
+const AnsiHome="\x1B[H";
+const AnsiCursor="\x1B[";
+const AnsiWhite="\x1b[38;5;255m";
+const AnsiGreenBG="\x1b[48;5;23m";
+const AnsiTealBG="\x1b[48;5;24m";
+const AnsiGreyBG="\x1b[48;5;232m";
+const AnsiVividOrange="\x1b[38;5;208m";
+const AnsiLineBlank="\x1B[0K";
+const _AnsiClear="\x1B[2J";
+const _AnsiMoveToEnd="\x1b[999B";
+const _AnsiNeonPink="\x1b[38;5;201m";
+const _AnsiPop="\x1b[1;36m";
+const _AnsiSaveCursorA = "\x1B[s";
+const _AnsiRestoreCursorA = "\x1B[u";
+*/
+// Array of 8 ANSI colors (codes 30-37)
+// selected for contrast and visibility in both light and dark modes.
+
+
 ╲
 ╲╲
 ╲╲╲

@@ -18,20 +18,14 @@ import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 
 // Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.4.6";
+const fountainVersion="1.4.7";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
 
 const ThinSpace="\u2009";
 const HairSpace="\u200A";
 
-const ZeroWidthSpace="\u200B";
-const ZeroWidthNonJoiner="\u200C";
-const ZeroJoiner="\u200D";
-const NoSpace="​‌‍";//- U+200B ZERO WIDTH SPACE (​) U+200C ZERO WIDTH NON-JOINER (‌) U+200D ZERO WIDTH JOINER (‍)
-
 const terminalColumns=100;	// default value for wordWrap()
-const slopColumns=64;		// speculative
 const statsColumn=50;
 const clipLog=1800;
 
@@ -128,53 +122,50 @@ let grokUsage=0;
 let grokTemperature=1.0;
 let grokThink=0.0;
 
-// Ansi codes
-
 const ANSI={
+	ESC:"\x1B[",
+	RESET: "\x1b[0m",
+	BLANKLINE: "\x1B[0K",
 	DEVICE_STATUS:"\x1b[5n",
-	DSR:"\x1b[6n"
+	DSR:"\x1b[6n",
+	FG:{
+		WHITE:"\x1b[38;5;255m"		
+	},
+	BG:{
+		GREY:"\x1b[48;5;232m",
+		GREEN:"\x1b[48;5;23m",
+		TEAL:"\x1b[48;5;24m"
+	},
+	COLOR:[
+		"\x1b[30m", // Black: Deep black (#333333), subtle on light, visible on dark
+		"\x1b[31m", // Red: Muted red (#CC3333), clear on white and black
+		"\x1b[32m", // Green: Forest green (#2D6A4F), good contrast on both
+		"\x1b[33m", // Yellow: Golden yellow (#DAA520), readable on dark and light
+		"\x1b[34m", // Blue: Medium blue (#3366CC), balanced visibility
+		"\x1b[35m", // Magenta: Soft magenta (#AA3377), distinct on any background
+		"\x1b[36m", // Cyan: Teal cyan (#008080), contrasts well without glare
+		"\x1b[37m"	// White: Light gray (#CCCCCC), subtle on light, clear on dark
+	]
 };
 
-const AnsiTabs4="\x1b[4g";
-const AnsiTabs8="\x1b[8g";
-const AnsiReset="\x1b[0m";
-const AnsiHome="\x1B[H";
-const AnsiCursor="\x1B[";
-const AnsiWhite="\x1b[38;5;255m";
-const AnsiGreenBG="\x1b[48;5;23m";
-const AnsiTealBG="\x1b[48;5;24m";
-const AnsiGreyBG="\x1b[48;5;232m";
-const AnsiVividOrange="\x1b[38;5;208m";
-const AnsiLineBlank="\x1B[0K";
-
-const _AnsiClear="\x1B[2J";
-const _AnsiMoveToEnd="\x1b[999B";
-
-const _AnsiNeonPink="\x1b[38;5;201m";
-const _AnsiPop="\x1b[1;36m";
-const _AnsiSaveCursorA = "\x1B[s";
-const _AnsiRestoreCursorA = "\x1B[u";
-
-// Array of 8 ANSI colors (codes 30-37)
-// selected for contrast and visibility in both light and dark modes.
-
-const AnsiColorNames=["Black","Red","Green","Yellow","Blue","Magenta","Cyan","White"];
-
-const AnsiColors=[
-	"\x1b[30m", // Black: Deep black (#333333), subtle on light, visible on dark
-	"\x1b[31m", // Red: Muted red (#CC3333), clear on white and black
-	"\x1b[32m", // Green: Forest green (#2D6A4F), good contrast on both
-	"\x1b[33m", // Yellow: Golden yellow (#DAA520), readable on dark and light
-	"\x1b[34m", // Blue: Medium blue (#3366CC), balanced visibility
-	"\x1b[35m", // Magenta: Soft magenta (#AA3377), distinct on any background
-	"\x1b[36m", // Cyan: Teal cyan (#008080), contrasts well without glare
-	"\x1b[37m"	// White: Light gray (#CCCCCC), subtle on light, clear on dark
-];
-
-function ansiPrompt():string{
-	const size=Deno.consoleSize();
-	const row=size.rows;
-	return AnsiCursor + row + ";1H" + AnsiLineBlank;
+function ansiStyle(text:string, style:string="bold", colorIndex:number=-1) {
+	if (!roha.config.ansi) return text;
+	let formatted=text;
+	switch (style.toLowerCase()) {
+		case "bold": formatted="\x1b[1m" + formatted + "\x1b[0m"; break;
+		case "dim": formatted="\x1b[2m" + formatted + "\x1b[0m"; break;
+		case "italic": formatted="\x1b[3m" + formatted + "\x1b[0m"; break;
+		case "underline": formatted="\x1b[4m" + formatted + "\x1b[0m"; break;
+		case "blink1": formatted="\x1b[5m" + formatted + "\x1b[0m"; break;
+		case "blink2": formatted="\x1b[6m" + formatted + "\x1b[0m"; break;
+		case "reverse": formatted="\x1b[7m" + formatted + "\x1b[0m"; break;
+		case "hidden": formatted="\x1b[8m" + formatted + "\x1b[0m"; break;
+		case "strikethrough": formatted="\x1b[9m"+formatted + "\x1b[0m"; break;
+	}
+	if (!Deno.noColor && colorIndex !== null && colorIndex >= 0 && colorIndex < ANSI.COLOR.length) {
+		formatted=ANSI.COLOR[colorIndex] + formatted + "\x1b[0m";
+	}
+	return formatted;
 }
 
 function quoteString(line:string):string{
@@ -1997,43 +1988,9 @@ async function loadHistory(filename){
 	return history;
 }
 
-
 function stripAnsi(text:string) {
 	return text.replace(/\x1B\[\d+(;\d+)*[mK]/g, "");
 }
-
-function ansiStyle(text:string, style:string="bold", colorIndex:number=-1) {
-	if (!roha.config.ansi) return text;
-	let formatted=text;
-	switch (style.toLowerCase()) {
-		case "bold": formatted="\x1b[1m" + formatted + "\x1b[0m"; break;
-		case "dim": formatted="\x1b[2m" + formatted + "\x1b[0m"; break;
-		case "italic": formatted="\x1b[3m" + formatted + "\x1b[0m"; break;
-		case "underline": formatted="\x1b[4m" + formatted + "\x1b[0m"; break;
-		case "blink1": formatted="\x1b[5m" + formatted + "\x1b[0m"; break;
-		case "blink2": formatted="\x1b[6m" + formatted + "\x1b[0m"; break;
-		case "reverse": formatted="\x1b[7m" + formatted + "\x1b[0m"; break;
-		case "hidden": formatted="\x1b[8m" + formatted + "\x1b[0m"; break;
-		case "strikethrough": formatted="\x1b[9m"+formatted + "\x1b[0m"; break;
-	}
-	if (!Deno.noColor && colorIndex !== null && colorIndex >= 0 && colorIndex < AnsiColors.length) {
-		formatted=AnsiColors[colorIndex] + formatted + "\x1b[0m";
-	}
-	return formatted;
-}
-
-const CodeTitle=AnsiTealBG+AnsiVividOrange;
-const CodeBlock=AnsiGreenBG+AnsiWhite;
-const ReplyBlock=AnsiGreyBG;
-
-const StatusBlock=AnsiGreyBG;
-
-const saveCursor=new Uint8Array([27,91,115]);
-const restoreCursor=new Uint8Array([27,91,117]);
-
-const homeCursor=new Uint8Array([27, 91, 72]);
-const disableScroll=new Uint8Array([27, 91, 55, 59, 49, 59, 114]);
-const restoreScroll=new Uint8Array([27, 91, 114]);
 
 // table box drawing code
 
@@ -2140,7 +2097,7 @@ function mdToAnsi(md) {
 	const lines=md.split("\n");
 	let inCode=false;
 	let table=[];
-	const result=broken?[ReplyBlock]:[];
+	const result=broken?[ANSI.BG.GREY]:[];
 	let poplast=false;
 	for (let line of lines) {
 		line=line.trimEnd();
@@ -2150,11 +2107,11 @@ function mdToAnsi(md) {
 			inCode=!inCode;
 			if(inCode){
 				const codeType=trim.substring(3).trim();
-				result.push(CodeBlock);
+				result.push(ANSI.BG.GREEN+ANSI.FG.WHITE);
 				if(roha.config.debugging&&codeType) print("inCode codetype:",codeType,"line:",line);
 			}else{
-				result.push(AnsiReset);
-				if (broken) result.push(ReplyBlock);
+				result.push(ANSI.RESET);
+				if (broken) result.push(ANSI.BG.GREY);
 			}
 		}else{
 			if (!inCode) {
@@ -2183,8 +2140,8 @@ function mdToAnsi(md) {
 				if (header) {
 					const level=header[0].length;
 					line=line.substring(level).trim();
-					const ink=Deno.noColor?"":AnsiColors[(colorCycle++)&7];
-					line=ink + line + AnsiReset;	//ansiPop
+					const ink=Deno.noColor?"":ANSI.COLOR[(colorCycle++)&7];
+					line=ink + line + ANSI.RESET;	//ansiPop
 				}
 				// quotes
 				if (line.startsWith("> ")) {
@@ -2216,7 +2173,7 @@ function mdToAnsi(md) {
 		if(roha.config.debugging) echo("[TABLE] inserted",table.length)
 		table.length=0;
 	}
-	result.push(AnsiReset);
+	result.push(ANSI.RESET);
 	return result.join("\n");
 }
 
@@ -3543,7 +3500,6 @@ async function relay(depth:number) {
 			cost="$"+spend.toFixed(3);
 		}
 
-		// StatusBlock status bar
 		const echostatus=(depth==0);
 		if(echostatus){
 			const temp=grokTemperature.toFixed(1)+"°";
@@ -3551,7 +3507,7 @@ async function relay(depth:number) {
 			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,forge,cost,size,elapsed.toFixed(2)+"s"];
 			const status=" "+modelSpec.join(" ")+" ";
 			if (roha.config.ansi)
-				echo(StatusBlock+status+AnsiReset);
+				echo(ANSI.BG.GREY+status+ANSI.RESET);
 			else
 				echo(status);
 		}
