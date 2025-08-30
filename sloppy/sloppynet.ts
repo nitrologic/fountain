@@ -7,7 +7,7 @@ import { Client, Server } from "npm:ssh2";
 import { readFileSync } from "node:fs";
 
 import {onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
-
+                                                                                                                                                                                                                                                  
 export const ANSI={
 	Reset:"\x1BC",
 	Defaults:"\x1B[0m",//"\x1B[39;49m",//\x1B[0m",
@@ -165,33 +165,44 @@ class SSHSession {
 			}
 		}
 	}
-
+/*
+    '\u001b[A': 'up',
+    '\u001b[B': 'down',
+    '\u001b[C': 'right',
+    '\u001b[D': 'left'
+*/
 //		console.log("onShell data:", Array.from(data).join(","));
 	async onShell(data: Buffer): Promise<void> {
 		const text=this.decoder.decode(data);
+		const chars=[];
 		for (const char of text) {
 			const byte=char.charCodeAt(0);
 			switch(byte){
-				case 3:
+				case 3: // CTRL-C handler
 					this.lineBuffer="";
 					this.stream?.end();
 					break;
-				case 8:
+				case 8: // DEL handler
 				case 127:
 					this.lineBuffer=this.lineBuffer.substring(0,-1);
 					await this.write("\b \b");
 					break;
-				case 13:
+				case 13: // ENTER handler
 				case 10:
 					await this.onEnter();
 					break;
-				default:
-					const printable=(byte==9)||(byte>=32);
+				default:{
+					const printable=(byte==9)||(byte==27)||(byte>=32);
 					if(printable){
 						this.lineBuffer += char;
-						await this.write(char);
+						chars.push(char);
 					}
+				}
 			}
+		}
+		if(chars.length){
+			const test=String.fromCharCode(...chars);
+			await this.write(text);
 		}
 	}
 
@@ -202,11 +213,11 @@ class SSHSession {
 }
 
 async function onSSHConnection(sshClient: any, name: string) {
-	sshClient.on("authentication", (ctx: any) => {
-		if (ctx.method === "password") {
-			ctx.accept();
+	sshClient.on("authentication", (context: any) => {
+		if (context.method === "password") {
+			context.accept();
 		} else {
-			ctx.reject();
+			context.reject();
 		}
 	});
 
@@ -231,7 +242,11 @@ async function onSSHConnection(sshClient: any, name: string) {
 				const { cols, rows } = info;
 				connection.setTerminalSize(cols, rows);
 			});
-
+			session.on("window-change", (accept: any, reject: any, info: any) => {
+				accept && accept();
+				const { cols, rows } = info;
+				connection.setTerminalSize(cols, rows);
+			});
 			session.on("signal", (accept: any, reject: any, info: any) => {
 				accept && accept();
 				const { name } = info;
@@ -244,16 +259,10 @@ async function onSSHConnection(sshClient: any, name: string) {
 					connection.stream?.end();
 				}
 			});
-
 			session.on("env", (accept: any, reject: any, info: any) => {
 				accept && accept();
 				const {key,value}=info;
 				connection.setEnv(key,value);
-			});
-			session.on("window-change", (accept: any, reject: any, info: any) => {
-				accept && accept();
-				const { cols, rows } = info;
-				connection.setTerminalSize(cols, rows);
 			});
 		});
 	});
