@@ -11,14 +11,13 @@ import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
 import { TextToSpeechClient } from "npm:@google-cloud/text-to-speech";
 
-import { encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
-import { resolve } from "https://deno.land/std/path/mod.ts";
-import { decodeBase64 } from "https://deno.land/std@0.224.0/encoding/base64.ts";
+import { decodeBase64, encodeBase64 } from "https://deno.land/std/encoding/base64.ts";
 import { expandGlob } from "https://deno.land/std/fs/mod.ts";
+import { resolve } from "https://deno.land/std/path/mod.ts";
 
 // Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.4.7";
+const fountainVersion="1.4.8";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
 
@@ -888,15 +887,15 @@ async function flush() {
 		const mut=mutline.model;
 		const line=mutline.line;
 		console.log(line);
-		await logForge(line,mut);
+		await logForge("#"+line,mut);
 		await sleep(delay)
 	}
 	printBuffer=[];
-	const md=markdownBuffer.join("\n");
+	const md=markdownBuffer.join("\r\n");
 	if(md.length){
 		if (roha.config.ansi) {
 			const ansi=mdToAnsi(md);
-			console.log(ansi);		//+"🌟");
+			console.log(ansi);
 		}else{
 			if(md.length) console.log(md);
 		}
@@ -931,7 +930,7 @@ function wordWrap(text:string,cols:number=terminalColumns):string{
 		result.push(line);
 		pos+=n;
 	}
-	return result.join("\n");
+	return result.join("\r\n");
 }
 
 async function listModels(config){
@@ -2174,7 +2173,7 @@ function mdToAnsi(md) {
 		table.length=0;
 	}
 	result.push(ANSI.RESET);
-	return result.join("\n");
+	return result.join("\r\n");
 }
 
 async function hashFile(filePath) {
@@ -2643,7 +2642,7 @@ async function showHelp(words:string[]) {
 			}
 			listCommand="";
 		}else{
-			echo("[HELP]",intro);//mdToAnsi(intro));
+			echo("[HELP]",intro); //mdToAnsi(intro));
 			for(let i=1;i<cmds.length;i++){
 				const line=cmds[i];
 				const eol:number=line.indexOf("\n");
@@ -3567,8 +3566,10 @@ async function relay(depth:number) {
 		}
 //		const name=rohaModel||"mut1";
 		if(replies.length){
-			let content=replies.join("\n<eom>\n");
+			let content=replies.join("\n");
 			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
+			// fix replies with only \n
+			content=content.replaceAll("\r\n","\n").replaceAll("\n","\r\n");
 			slopBroadcast(content,mut);
 		}
 	} catch (error) {
@@ -3678,12 +3679,13 @@ async function chat() {
 				creditCommand="";
 			}else{
 				const response=await promptFountain(lines.length?"+":rohaPrompt);
-				const messages=response.messages;
-				if(messages){
+				if(response.messages){
+					const messages=response.messages;
 					for(const m of messages){
 						const line="["+m.from+"] "+m.message;
 						lines.push(line);
 					}
+					break;
 				}
 				line=response.line||"";
 			}
@@ -3717,7 +3719,7 @@ async function chat() {
 		const syncRelay=roha.config.syncRelay;
 		if(syncRelay){
 			if (lines.length){
-				const query=lines.join("\n");
+				const query=lines.join("\r\n");
 				if(query.length){
 					const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 					rohaHistory.push({ role: "user", name:rohaNic, content: query });
@@ -3727,7 +3729,7 @@ async function chat() {
 			}
 		}else{
 			if (lines.length){
-				const query=lines.join("\n");
+				const query=lines.join("\r\n");
 				if(query.length){
 					const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 					rohaHistory.push({ role: "user", name:rohaNic, content: query });

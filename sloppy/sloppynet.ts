@@ -3,7 +3,7 @@
 
 // Licensed under the MIT License - See LICENSE file
 
-import { Client, Server } from "npm:ssh2";
+import { Buffer, Client, Server } from "npm:ssh2";
 import { readFileSync } from "node:fs";
 
 import {onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
@@ -22,10 +22,6 @@ export const ANSI={
 	Cursor:"\x1B["//+ row + ";1H"
 }
 
-// white on teal
-//\x1b[H
-//const sloppyStyle="\x1b[48;5;24m\x1b[37m\x1b[2J";
-
 const sloppyStyle=ANSI.NavyBackground+ANSI.White+ANSI.Clear;
 
 const sloppyLogo="✴ slopspace";
@@ -43,9 +39,8 @@ const sshClient=new Client();
 const connections={};
 
 let slopPail:unknown[]=[];
-
-let sessionCount=0;
 let connectionCount=0;
+let sessionCount=0;
 let connectionClosed=0;
 
 const greetings=[sloppyStyle,"Welcome to ",sloppyLogo,sloppyNetVersion].join("");
@@ -61,13 +56,12 @@ async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve,ms);});
 }
 
+const encoder=new TextEncoder();
 async function writeSloppy(message:string,from:string){
 	const text="["+from+"] "+message+"\r\n";
-//	console.log("[SLOP]",text.trim());
 	for(const key of Object.keys(connections)){
 		const session=connections[key];
 		const stream=session.stream;
-		// todo multiple calls here?
 		await stream?.write(text);
 	}
 }
@@ -105,7 +99,7 @@ class SSHSession {
 	env:Record<string,string>;
 	private lineBuffer: string;
 	private terminalSize: { cols: number; rows: number } | null;
-	private decoder=new TextDecoder();
+	private decoder=new TextDecoder("utf-8");
 
 	constructor(name: string) {
 		this.env={};
@@ -123,6 +117,7 @@ class SSHSession {
 			await this.stream.write(data);
 		}
 	}
+
 	async onEnd(): Promise<void> {
 		if (this.stream) {
 			await this.stream.end();
@@ -139,39 +134,30 @@ class SSHSession {
 	}
 
 	async onEnter(){
-		if (this.lineBuffer === "exit") {
+		const line = this.lineBuffer;
+		this.lineBuffer = "";
+		await this.write("\r\n");
+		if (line=="exit") {
 			await this.write("Goodbye!\r\n");
 			this.stream?.end();
+			return;
 		}
-		if (this.lineBuffer === "/termsize") {
+		if (line=="/termsize") {
 			if (this.terminalSize) {
 				await this.write(`Terminal size: ${this.terminalSize.cols} columns x ${this.terminalSize.rows} rows\r\n`);
 			} else {
 				await this.write("Terminal size not available\r\n");
 			}
-			this.lineBuffer = "";
-			await this.write("\r\n");
+			return;
 		}
-		if (this.lineBuffer) {
-			const line = this.lineBuffer;
-			this.lineBuffer = "";
-			await this.write("\r\n");
-			if (!line.startsWith("/")) {
-				const from=this.name;
-				const message=line;//JSON.stringify(line);
-				const blob={messages:[{message,from}]};
-				const json=JSON.stringify(blob, null, 0);
-				await writeFountain(json);
-			}
+		if (line.length&&!line.startsWith("/")) {
+			const from=this.name;
+			const blob={messages:[{message:line,from}]};
+			const json=JSON.stringify(blob,null,0);
+			await writeFountain(json);
 		}
 	}
-/*
-    '\u001b[A': 'up',
-    '\u001b[B': 'down',
-    '\u001b[C': 'right',
-    '\u001b[D': 'left'
-*/
-//		console.log("onShell data:", Array.from(data).join(","));
+
 	async onShell(data: Buffer): Promise<void> {
 		const text=this.decoder.decode(data);
 		const chars=[];
@@ -182,13 +168,11 @@ class SSHSession {
 					this.lineBuffer="";
 					this.stream?.end();
 					break;
-				case 8: // DEL handler
-				case 127:
-					this.lineBuffer=this.lineBuffer.substring(0,-1);
+				case 127: // BACKSPACE handler
+					this.lineBuffer=this.lineBuffer.slice(0,-1);
 					await this.write("\b \b");
 					break;
 				case 13: // ENTER handler
-				case 10:
 					await this.onEnter();
 					break;
 				default:{
@@ -233,7 +217,7 @@ async function onSSHConnection(sshClient: any, name: string) {
 				const stream = accept && accept();
 				stream.write(greetings + "\r\n");
 				stream.write(notice + "\r\n");
-				stream.on("data", (data: Buffer) => {connection.onShell(data);});
+				stream.on("data", (data:Buffer) => {connection.onShell(data);});
 				stream.on("end", () => {connection.end();});
 				connection.stream=stream;
 			});

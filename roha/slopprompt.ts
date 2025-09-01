@@ -29,13 +29,11 @@ function closeConnection(){
 async function readConnection(connection:Deno.TcpConn){
 	try{
 		const n=await connection.read(rxBuffer);
-		if(n>0){
-			const bytes=rxBuffer.subarray(0,n);
-			return {source:connection,receive:bytes};
-		}
-		return {source:connection};
+		if(n==null) return {source:connection};
+		const bytes=rxBuffer.subarray(0,n);
+		return {source:connection,receive:bytes};
 	}catch(error){
-		echo("connection reset");
+		echo("readConnection error",error);
 		return {source:connection};
 	}
 }
@@ -74,9 +72,11 @@ function wrapText(content,wide){
 	let cursor=0;
 	while(cursor<content.length){
 		let line=content.substring(cursor,cursor+wide);
-		let n=line.indexOf("\n");
-		if(n==-1) n=line.lastIndexOf(" ");
-		if(n!=-1) line=line.substring(0,n+1);
+		if(line.length>wide){
+			let n=line.indexOf("\n");
+			if(n==-1) n=line.lastIndexOf(" ");
+			if(n!=-1) line=line.substring(0,n+1);
+		}
 		lines.push(line);
 		cursor+=line.length;
 	}
@@ -95,9 +95,9 @@ export async function slopBroadcast(text:string,from:string){
 				const n=bytes.byteLength;
 				let total=0;
 				while(total<n){
-					const packet=total==0?bytes:bytes.subarray(total,n-total);
+					const packet=bytes.subarray(total);
 					const sent=await slopConnection.write(packet);
-					if(sent<0){
+					if(sent==null || sent==-1){
 						throw("chunks");
 					}
 					total+=sent;
@@ -372,20 +372,20 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			if(receive){
 				const n=receive.length;
 				const text=rxDecoder.decode(receive);
+//				echo("receivePromise",receive,text);
 				try{
 					const blob=JSON.parse(text);
 					if(blob.messages){
 						for(const message of blob.messages){
 							// todo: safeguard reckless behavior
+							// echo("receivePromise",message);
 							messages.push({message:message.message,from:message.from});
 						}
 					}
 				}catch(error){
 					echo("slopPrompt JSON error",text,error);
 				}
-				if(n>0){
-					receivePromise=readConnection(source)
-				}
+				receivePromise=readConnection(source)
 				if(messages){
 					response={messages};
 					break;

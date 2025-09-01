@@ -27,7 +27,7 @@ let openChannel="398589365846278144";
 
 // rate guard required, a sleep 1500 ms currently in force on all writes
 
-async function writeSloppy(message:string,from:string){
+async function messageSloppy(message:string,from:string){
 	if(openChannel){
 		const channel = await discordClient.channels.fetch(openChannel);
 		if (channel?.isTextBased()) {
@@ -43,7 +43,7 @@ async function onFountain(message:string){
 	const line=message;
 	if(line.startsWith("/announce ")){
 		const message=line.substring(10);
-		await writeSloppy(message,"fountain");
+		await messageSloppy(message,"fountain");
 	}
 	if(line.startsWith("{")||line.startsWith("[")){
 		try{
@@ -54,7 +54,7 @@ async function onFountain(message:string){
 				cursor+=json.length;
 				const payload=JSON.parse(json);
 				for(const {message,from} of payload.messages){
-					await writeSloppy(message,from);
+					await messageSloppy(message,from);
 				}
 			}
 		}catch(error){
@@ -76,7 +76,7 @@ async function onSystem(rx:Uint8Array){
 		if(line=="exit") Deno.exit(0);
 		if(line.startsWith("/announce ")){
 			const message=line.substring(10);
-			await writeSloppy(message,"system");
+			await messageSloppy(message,"system");
 		}
 		if(!line.startsWith("/")){
 			await writeFountain(line);

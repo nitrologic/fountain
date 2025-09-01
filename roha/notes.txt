@@ -1,4 +1,71 @@
+/*
+    '\u001b[A': 'up',
+    '\u001b[B': 'down',
+    '\u001b[C': 'right',
+    '\u001b[D': 'left'
+*/
+//		console.log("onShell data:", Array.from(data).join(","));
 
+// white on teal
+//\x1b[H
+//const sloppyStyle="\x1b[48;5;24m\x1b[37m\x1b[2J";
+
+// TODO: add {messages:[{message,from}]} support
+/*
+export async function onFountain(message:string){
+	const line=message;
+	if(line.startsWith("/announce ")){
+		const message=line.substring(10);
+		await postSloppy(message,"fountain");
+	}
+	if(line.startsWith("{")||line.startsWith("[")){
+		try{
+			let cursor=0;
+			while(cursor<line.length){
+				const delim=line.indexOf("}\t{",cursor);// less than healthy
+				const json=(delim==-1)?line.substring(cursor):line.substring(cursor,delim+1);
+				cursor+=json.length;
+				const payload=JSON.parse(json);
+				for(const {message,from} of payload.messages){
+					await postSloppy(message,from);
+				}
+			}
+		}catch(error){
+			echo("JSON parse error",error);
+			echo("JSON parse error",line);
+		}
+	}
+}
+*/
+/*
+
+await connectFountain();
+writeFountain("{\"action\":\"connect\"}");
+let portPromise=readFountain();
+let systemPromise=readSystem();
+while(true){
+	const race=[portPromise,systemPromise];
+	const result=await Promise.race(race);
+	if (result==null) break;
+	if(result.system) {
+		await onSystem(result.system);
+		systemPromise=readSystem();
+	}
+	if(result.message) {
+		await onFountain(result.message);
+		portPromise=readFountain();		
+	}
+//	echo("result",result);
+	await(sleep(500));
+}
+
+echo("bye");
+disconnectFountain();
+Deno.exit(0);
+*/
+
+
+In VSCode settings (Ctrl + ,), search for deno.suggest.imports.autoDiscover and set it to false in settings.json:
 
  Fountain 1.4.6 ⛲  qwen-max 🐉 qwen-max@alibaba 1.0° 🪠 $0.057 131.7KB 30.90s
 [RELAY] unhandled error 400 <400> InternalError.Algo.InvalidParameter: Range of input length should be [1, 30720]
