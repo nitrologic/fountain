@@ -6,7 +6,7 @@
 import { Buffer, Client, Server } from "npm:ssh2";
 import { readFileSync } from "node:fs";
 
-import {onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
+import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
                                                                                                                                                                                                                                                   
 export const ANSI={
 	Reset:"\x1BC",
@@ -61,8 +61,7 @@ async function writeSloppy(message:string,from:string){
 	const text="["+from+"] "+message+"\r\n";
 	for(const key of Object.keys(connections)){
 		const session=connections[key];
-		const stream=session.stream;
-		await stream?.write(text);
+		await session.print(text);
 	}
 }
 
@@ -112,9 +111,15 @@ class SSHSession {
 		this.env[key]=value;
 	}
 
-	async write(data: string): Promise<void> {
+	async print(data: string): Promise<void> {
+		const cols=(this.terminalSize?.cols||40)-4;
 		if (this.stream&&this.stream.writable) {
-			await this.stream.write(data);
+			const lines=wrapText(data,cols);
+			const text=lines.join("\r\n");
+//			console.log("print",text,cols);
+			await this.stream.write(text);
+		}else{
+			logSlop({ error: "SSHSession print error" });		
 		}
 	}
 
@@ -122,10 +127,6 @@ class SSHSession {
 		if (this.stream) {
 			await this.stream.end();
 		}
-	}
-
-	getTerminalSize(): { cols: number; rows: number } | null {
-		return this.terminalSize;
 	}
 
 	setTerminalSize(cols: number, rows: number): void {
@@ -136,17 +137,17 @@ class SSHSession {
 	async onEnter(){
 		const line = this.lineBuffer;
 		this.lineBuffer = "";
-		await this.write("\r\n");
+		await this.print("\r\n");
 		if (line=="exit") {
-			await this.write("Goodbye!\r\n");
+			await this.print("Goodbye!\r\n");
 			this.stream?.end();
 			return;
 		}
 		if (line=="/termsize") {
 			if (this.terminalSize) {
-				await this.write(`Terminal size: ${this.terminalSize.cols} columns x ${this.terminalSize.rows} rows\r\n`);
+				await this.print(`Terminal size: ${this.terminalSize.cols} columns x ${this.terminalSize.rows} rows\r\n`);
 			} else {
-				await this.write("Terminal size not available\r\n");
+				await this.print("Terminal size not available\r\n");
 			}
 			return;
 		}
@@ -170,7 +171,7 @@ class SSHSession {
 					break;
 				case 127: // BACKSPACE handler
 					this.lineBuffer=this.lineBuffer.slice(0,-1);
-					await this.write("\b \b");
+					await this.print("\b \b");
 					break;
 				case 13: // ENTER handler
 					await this.onEnter();
@@ -186,7 +187,7 @@ class SSHSession {
 		}
 		if(chars.length){
 			const test=String.fromCharCode(...chars);
-			await this.write(text);
+			await this.print(text);
 		}
 	}
 

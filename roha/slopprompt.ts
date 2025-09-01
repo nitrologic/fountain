@@ -17,9 +17,9 @@ let listenerPromise;
 let receivePromise: Promise<{source:Deno.TcpConn, receive:Uint8Array}>;
 
 const readPromises=[];
-const decoderConnection = new TextDecoder("utf-8");
+const decoderConnection=new TextDecoder("utf-8");
 const rxBufferSize=1e6;
-const rxBuffer = new Uint8Array(rxBufferSize);
+const rxBuffer=new Uint8Array(rxBufferSize);
 const rxDecoder=new TextDecoder("utf-8",{stream:true});
 
 function closeConnection(){
@@ -83,30 +83,27 @@ function wrapText(content,wide){
 	return lines;
 }
 
-// must be 2000 or fewer bytes writtent
-// this should be json rpc
 export async function slopBroadcast(text:string,from:string){
+	// fix content with only \n
 	if(slopConnection && text && from){
-		const messages=wrapText(text,1920);
-		for(const message of messages){
-			const json=JSON.stringify({messages:[{message,from}]},null,0);
-			const bytes=encoder.encode(json+"\t");
-			try{
-				const n=bytes.byteLength;
-				let total=0;
-				while(total<n){
-					const packet=bytes.subarray(total);
-					const sent=await slopConnection.write(packet);
-					if(sent==null || sent==-1){
-						throw("chunks");
-					}
-					total+=sent;
+		const message=text.replaceAll("\r\n","\n").replaceAll("\n","\r\n");
+		const json=JSON.stringify({messages:[{message,from}]},null,0);
+		const bytes=encoder.encode(json+"\t");
+		try{
+			const n=bytes.byteLength;
+			let total=0;
+			while(total<n){
+				const packet=bytes.subarray(total);
+				const sent=await slopConnection.write(packet);
+				if(sent==null || sent==-1){
+					throw("chunks");
 				}
-			}catch(error){
-				// connection reset
-				closeConnection();
-				echo("closed",error.message);
+				total+=sent;
 			}
+		}catch(error){
+			// connection reset
+			closeConnection();
+			echo("slopBroadcast closed",error.message);
 		}
 	}else{
 		echo("help me help you");
@@ -127,7 +124,7 @@ const shortcode=bibli.spec.shortcode;
 
 const encoder=new TextEncoder();
 const decoder=new TextDecoder("utf-8");
-const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
+const segmenter=new Intl.Segmenter("en", { granularity: "grapheme" });
 
 let grapheme:string[]=[];
 
@@ -144,20 +141,20 @@ function forwardCursor(bytes) {
 const TabWidth=8;
 function backspace(bytes:number[]) {
 	if (grapheme.length){
-		const lastChar = grapheme.pop()!;
+		const lastChar=grapheme.pop()!;
 		const isTab=(lastChar=="\t");
 		if(isTab){
 			// instead of tracking cursor pos
 			// pos is position at end of prompt
 			const pos=stringWidth(grapheme.join(""));
 			const tabStop=(pos/TabWidth)|0;
-			const spaces = TabWidth - (pos % TabWidth);
-			for (let i = 0; i < spaces; i++) {
+			const spaces=TabWidth - (pos % TabWidth);
+			for (let i=0; i < spaces; i++) {
 				bytes.push(0x08);
 			}
 		}else{
-			const width = stringWidth(lastChar) || 1;
-			for (let i = 0; i <	 width; i++) {
+			const width=stringWidth(lastChar) || 1;
+			for (let i=0; i <	 width; i++) {
 				bytes.push(0x08, 0x20, 0x08);
 			}
 		}
@@ -182,16 +179,16 @@ function replaceText(bytes:[],count:number,text:string){
 // emoji wide char groups may need cludge for abnormal plungers
 // unicode ranges currently featuring wide chars
 
-const WideRanges = [
+const WideRanges=[
 	[0x1100, 0x115F],[0x2329, 0x232A],[0x2600, 0x26FF],
 	[0x2E80, 0x303E],[0x3040, 0xA4CF],[0xAC00, 0xD7A3],
 	[0xF900, 0xFAFF],[0xFE10, 0xFE19],[0xFE30, 0xFE6F],[0xFF00, 0xFF60],[0xFFE0, 0xFFE6],
 	[0x1F000, 0x1F02F],[0x1F0A0, 0x1F0FF],[0x1F100, 0x1F1FF],[0x1F300, 0x1F9FF],
 	[0x20000, 0x2FFFD],[0x30000, 0x3FFFD]
 ];
-const isWide = (cp: number) => WideRanges.some(([start, end]) => cp >= start && cp <= end);
+const isWide=(cp: number) => WideRanges.some(([start, end]) => cp >= start && cp <= end);
 export function stringWidth(text:string):number{
-	let w = 0;
+	let w=0;
 	for (const ch of text) {
 		const codePoint=ch.codePointAt(0) ?? 0;
 		w += isWide(codePoint) ? 2 : 1;
@@ -202,7 +199,7 @@ export function stringWidth(text:string):number{
 // terminal history
 
 let currentInput="";
-let historyIndex = -1;
+let historyIndex=-1;
 const history:string[]=[];
 
 async function navigateHistory(direction: 'up'|'down') {
@@ -210,18 +207,18 @@ async function navigateHistory(direction: 'up'|'down') {
 		currentInput=grapheme.join("");
 	}
 	// Calculate new index
-	const newIndex = Math.max(-1,
+	const newIndex=Math.max(-1,
 	Math.min(historyIndex + (direction === 'up' ? 1 : -1), history.length - 1));
 	if (newIndex === historyIndex) return;
-	historyIndex = newIndex;
+	historyIndex=newIndex;
 	// Get the history item or current input
-	const displayText = historyIndex >= 0 ? history[historyIndex] : currentInput;
+	const displayText=historyIndex >= 0 ? history[historyIndex] : currentInput;
 	// ANSI sequence to:
 	// 1. Move to start of line
 	// 2. Clear line
 	// 3. Write new content
 	await writer.write(encoder.encode('\r' + ANSI.CLEAR_LINE + displayText));
-	grapheme = [...segmenter.segment(displayText)].map(segment => segment.segment);
+	grapheme=[...segmenter.segment(displayText)].map(segment => segment.segment);
 }
 
 const CURSOR_UP=65;
@@ -291,8 +288,8 @@ const ANSI={
 };
 
 function harden(text:string,maxLength:number){
-	let s = text.normalize("NFC");
-	if (s.length > maxLength) s = s.slice(0, maxLength) + "\u2026";
+	let s=text.normalize("NFC");
+	if (s.length > maxLength) s=s.slice(0, maxLength) + "\u2026";
 	return s;
 }
 
@@ -333,7 +330,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
 			const race=listenerPromise?[readPromise,timerPromise,listenerPromise]:[readPromise,timerPromise];
 			if(receivePromise) race.push(receivePromise);
-			winner = await Promise.race(race);
+			winner=await Promise.race(race);
 			if(winner==null){
 				if(!busy) {
 					const line=grapheme.join("").trimEnd();
@@ -351,7 +348,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(!winner) {
 			break;// we break for break breaks, result has been loaded due to above timeout
 		}
-		const { value, done, connection, source, receive, error } = winner;
+		const { value, done, connection, source, receive, error }=winner;
 		if(error){
 			// TODO: failure to listen - port not available
 			echo("slopPrompt error",error.message);
@@ -360,8 +357,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			continue;
 		}
 		if (connection) {
-			slopConnection = connection;
-			listenerPromise = listenPort(8081);
+			slopConnection=connection;
+			listenerPromise=listenPort(8081);
 			receivePromise=readConnection(connection);
 			continue;
 		}
@@ -402,15 +399,15 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		    const byte=value[i];
 			// Handle UTF-8 multi-byte sequences more robustly
 			if (byte >= 0xC0) { // UTF-8 start byte (2+ byte sequence)
-				let bytesNeeded = 0;
-				if ((byte & 0xE0) === 0xC0) bytesNeeded = 2;    // 2-byte sequence
-				else if ((byte & 0xF0) === 0xE0) bytesNeeded = 3; // 3-byte sequence
-				else if ((byte & 0xF8) === 0xF0) bytesNeeded = 4; // 4-byte sequence
+				let bytesNeeded=0;
+				if ((byte & 0xE0) === 0xC0) bytesNeeded=2;    // 2-byte sequence
+				else if ((byte & 0xF0) === 0xE0) bytesNeeded=3; // 3-byte sequence
+				else if ((byte & 0xF8) === 0xF0) bytesNeeded=4; // 4-byte sequence
 
 				if (i + bytesNeeded <= n) {
-					const sequence = value.subarray(i, i + bytesNeeded);
+					const sequence=value.subarray(i, i + bytesNeeded);
 					try {
-						const char = decoder.decode(sequence);
+						const char=decoder.decode(sequence);
 						bytes.push(...encoder.encode(char));
 						addInput(char);
 						i += bytesNeeded - 1; // Skip the extra bytes
@@ -443,7 +440,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					console.log("[RAW] bad byte",byte);
 					break;
 				}
-				const char = decoderStream.decode(new Uint8Array([byte]));
+				const char=decoderStream.decode(new Uint8Array([byte]));
 				if(!char){
 					console.log("[RAW] not char from byte",byte);
 					break;
@@ -451,7 +448,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				bytes.push(...encoder.encode(char));
     		    addInput(char);
 //				bytes.push(byte);
-//				const char = decoderStream.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
+//				const char=decoderStream.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
 //				addInput(char);
 				if (byte === 0x3A) { // Colon ':'
 					const n=grapheme.length;

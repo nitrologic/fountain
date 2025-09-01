@@ -3568,8 +3568,6 @@ async function relay(depth:number) {
 		if(replies.length){
 			let content=replies.join("\n");
 			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
-			// fix replies with only \n
-			content=content.replaceAll("\r\n","\n").replaceAll("\n","\r\n");
 			slopBroadcast(content,mut);
 		}
 	} catch (error) {

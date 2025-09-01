@@ -77,6 +77,22 @@ async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
 }
 
+export function wrapText(content:string,wide:number):string[]{
+	const lines=[];
+	let cursor=0;
+	while(cursor<content.length){
+		let line=content.slice(cursor,cursor+wide);
+		if(line.length>=wide){
+			let n=line.lastIndexOf("\n");
+			if(n==-1) n=line.lastIndexOf(" ");
+			if(n!=-1) line=line.substring(0,n+1);
+		}
+		cursor+=line.length;
+		lines.push(line);
+	}
+	return lines;
+}
+
 // fountain connection goes PEEP
 
 function echo(...data: any[]){
