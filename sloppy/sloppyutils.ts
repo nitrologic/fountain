@@ -93,6 +93,140 @@ export function wrapText(content:string,wide:number):string[]{
 	return lines;
 }
 
+const ANSI={
+	ESC:"\x1B[",
+	RESET: "\x1b[0m",
+	BLANKLINE: "\x1B[0K",
+	DEVICE_STATUS:"\x1b[5n",
+	DSR:"\x1b[6n",
+	FG:{
+		WHITE:"\x1b[38;5;255m"		
+	},
+	BG:{
+		GREY:"\x1b[48;5;232m",
+		GREEN:"\x1b[48;5;23m",
+		TEAL:"\x1b[48;5;24m"
+	},
+	COLOR:[
+		"\x1b[30m", // Black: Deep black (#333333), subtle on light, visible on dark
+		"\x1b[31m", // Red: Muted red (#CC3333), clear on white and black
+		"\x1b[32m", // Green: Forest green (#2D6A4F), good contrast on both
+		"\x1b[33m", // Yellow: Golden yellow (#DAA520), readable on dark and light
+		"\x1b[34m", // Blue: Medium blue (#3366CC), balanced visibility
+		"\x1b[35m", // Magenta: Soft magenta (#AA3377), distinct on any background
+		"\x1b[36m", // Cyan: Teal cyan (#008080), contrasts well without glare
+		"\x1b[37m"	// White: Light gray (#CCCCCC), subtle on light, clear on dark
+	]
+};
+
+
+function insertTable(result:string[],table:string[][]){
+	const widths=[];
+	for(const row of table){
+		for(let i=0;i<row.length;i++){
+			const w=2+row[i].length|0;
+			if(w>(widths[i]|0)) widths[i]=w;
+		}
+	}
+	let header=true;
+	for(const row of table){
+		if(header){
+			result.push(boxTop(widths));
+			result.push(boxCells(widths,row));
+			result.push(boxSplit(widths));
+			header=false
+		}else{
+			// ignore spacers
+			const content=row.join("").replaceAll("-","").replaceAll(" ","");
+			if(content.length) result.push(boxCells(widths,row));
+		}
+	}
+	result.push(boxBottom(widths));
+}
+
+const pageBreak="━".repeat(500);
+
+function wrapMarkdown(md:string,cols:number) {
+	const lines=md.split("\n");
+	let inCode=false;
+	let table=[];
+	const result=[];
+	let poplast=false;
+	for (let line of lines) {
+		line=line.trimEnd();
+		const trim=line.trim();
+		poplast=line.length==0;
+		if (trim.startsWith("```")) {
+			inCode=!inCode;
+			if(inCode){
+				const codeType=trim.substring(3).trim();
+				result.push(ANSI.BG.GREEN+ANSI.FG.WHITE);
+			}else{
+				result.push(ANSI.RESET);
+			}
+		}else{
+			if (!inCode) {
+				// rules
+				if(line.startsWith("---")||line.startsWith("***")||line.startsWith("___")){
+					line=pageBreak.substring(0,cols-10);
+				}
+				if(line.startsWith("|")){
+					const split=line.split("|");
+					const splits=split.length;
+					if(splits>2){
+						const trim=split.slice(1,splits-1);
+						table.push(trim);
+//						echo("[TABLE]",trim)
+					}
+					continue;
+				}else{
+					if(table.length) {
+						insertTable(result,table);
+//						echo("[TABLE] inserted",table.length)
+						table.length=0;
+					}
+				}
+				// headershow
+				const header=line.match(/^#+/);
+				if (header) {
+					const level=header[0].length;
+					line=line.substring(level).trim();
+					const ink=Deno.noColor?"":ANSI.COLOR[(colorCycle++)&7];
+					line=ink + line + ANSI.RESET;	//ansiPop
+				}
+				// quotes
+				if (line.startsWith("> ")) {
+					line=quoteString(line.substring(2));
+				}
+				// bullets
+				if (line.startsWith("*") || line.startsWith("+")) {
+					line="• " + line.substring(1).trim();
+				}
+				// bold
+				if (line.includes("**")) {
+					line=line.replace(/\*\*(.*?)\*\*/g, "\x1b[1m$1\x1b[0m");
+				}
+				// italic
+				line=line.replace(/\*(.*?)\*/g, "\x1b[3m$1\x1b[0m");
+				line=line.replace(/_(.*?)_/g, "\x1b[3m$1\x1b[0m");
+				// wordwrap
+				line=wordWrap(line,cols);
+			}
+			result.push(line.trimEnd());
+		}
+	}
+	if(poplast){
+		result.pop();
+	}
+	// yuck - duplicate path way from above
+	if(table.length) {
+		insertTable(result,table);
+		table.length=0;
+	}
+	result.push(ANSI.RESET);
+	return result.join("\r\n");
+}
+
 // fountain connection goes PEEP
 
 function echo(...data: any[]){
