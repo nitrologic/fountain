@@ -75,6 +75,10 @@
 		"purpose": "happyface cerebras hosted qwen 3",
 		"released": "2025-05-15"
 	},
+	"qwen3-max-preview@alibaba":{
+		"pricing": [1.20,6.00],
+		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
+	},
 	"qwen-max@alibaba":{
 		"pricing": [1.60,6.40],
 		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
