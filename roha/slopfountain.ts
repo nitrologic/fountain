@@ -727,6 +727,7 @@ function measure(o){
 let outputBuffer:string[]=[];
 let printBuffer=[];
 let markdownBuffer=[];
+let statusBuffer=[];
 
 // override console.error
 // TODO:redirect all existing console.errors
@@ -769,7 +770,7 @@ async function echoStatus(...args:any){
 	}
 	const output=lines.join(" ").trimEnd();
 	if(output.length){
-		markdownBuffer.push(output);
+		statusBuffer.push(output);
 	}
 }
 
@@ -935,7 +936,7 @@ async function flush() {
 		}else{
 			if(md.length) console.log(md);
 		}
-//		send.push(md);
+		send.push(md);
 	}
 	markdownBuffer=[];
 
@@ -953,8 +954,21 @@ async function flush() {
 	outputBuffer=[];
 
 	if(send.length) {
-		slopBroadcast(send.join(" "),"slop");
+		const packet=send.join("\r\n");
+		slopBroadcast(packet,"slop");
 	}
+
+	for (const output of statusBuffer) {
+		console.log(output);
+		const lines=output.split("\n");
+		for(const line of lines){
+			if(line.length){
+				await logForge(line,"roha");
+			}
+		}
+	}
+	statusBuffer=[];
+
 }
 
 function wordWrap(text:string,cols:number=terminalColumns):string{
@@ -1947,6 +1961,7 @@ async function shareCommand(words:string[]){
 			await shareSlop(entry.path,depth);
 		}
 		if(entry.isDirectory){
+			console.log("### sharing",entry.path);
 			await shareDir(entry.path,tag,1,depth);
 		}
 	}
@@ -2337,7 +2352,8 @@ async function shareDir(dir:string, tag:string, depth=1, maxDepth=5) {
 				}
 			}else{
 				if (file.isFile && !file.name.startsWith(".")) {
-					paths.push(file);
+					const path=resolvePath(dir,file.name);
+					paths.push(path);
 				}
 			}
 		}
@@ -3950,6 +3966,7 @@ try {
 	await chat();
 } catch (error) {
 	console.error("Slop Fountain has crashed, darn, this release will be stable soon:", error);
+	console.error(error.stack);
 	await exitForge();
 	Deno.exit(1);
 }

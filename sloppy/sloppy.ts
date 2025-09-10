@@ -7,7 +7,7 @@
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
-const sloppyBanner="[SLOPPY] sloppy 0.03 liquid discord bot by nitrologic";
+const sloppyBanner="[SLOPPY] sloppy 0.04 liquid discord bot by nitrologic";
 
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
@@ -196,6 +196,8 @@ discordClient.once('ready', () => {
 //	console.log("[SLOPPY] channels",discordClient.channels);
 });
 
+
+// content has BASE_TYPE_MAX_LENGTH = 4000
 discordClient.on('messageCreate', async (message) => {
 	if (message.author.bot) return;
 	if (message.content === '!ping') {
@@ -207,8 +209,10 @@ discordClient.on('messageCreate', async (message) => {
 //    if (message.mentions.has(discordClient.user) && !message.author.bot) {
 		const from=message.author.username+"@discord";	//skudmarks@discord
 		const name=message.author.displayName;
-		// TODO: rate limit required
-		const blob={messages:[{message:message.content,from}]};
+// TODO: rate limit required
+		let content=message.content;
+		content=content.substring(0,4000-400);
+		const blob={messages:[{message:content,from}]};
 		await writeFountain(JSON.stringify(blob,null,0));
 		const quote=quotes[quoteCount++%quotes.length];
 		message.reply("@"+name+" "+quote);
