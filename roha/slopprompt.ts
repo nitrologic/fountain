@@ -66,6 +66,7 @@ export async function announceCommand(words:string[]){
 		const bytes=encoder.encode("/"+text);
 		slopConnection?.write(bytes);
 	}
+//	console.log("announceCommand",text,slopConnection);
 }
 
 // utility to reduce busting discords guts

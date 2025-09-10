@@ -761,6 +761,18 @@ function toString(arg:unknown):string{
 // ignores markdown
 // flattens args to single space separated line in outputBuffer
 
+async function echoStatus(...args:any){
+	const lines=[];
+	for(const arg of args){
+		const line=toString(arg);
+		lines.push(line);
+	}
+	const output=lines.join(" ").trimEnd();
+	if(output.length){
+		markdownBuffer.push(output);
+	}
+}
+
 function echo(...args:any):void{
 	const lines=[];
 	for(const arg of args){
@@ -780,6 +792,7 @@ async function echoFail(...args:any){
 		lines.push(line);
 	}
 	const text=lines.join(" ");
+	errorBuffer.push(text);
 	const styledText=ansiStyle(text,"bold",2);
 	outputBuffer.push(styledText);
 	outputBuffer.push(cleanupRequired);
@@ -898,9 +911,12 @@ async function readFileNames(path:string,suffix:string){
 }
 
 async function flush() {
+	const send=[];
 	const delay=roha.config.slow ? slowMillis : 0;
-	for (const line of errorBuffer) {
-		await logForge("!"+line,"PORT");
+	for (const error of errorBuffer) {
+		const line="!"+error;
+		send.push(line);
+		await logForge(line,"PORT");
 	}
 	errorBuffer=[];
 	for (const mutline of printBuffer) {
@@ -919,8 +935,10 @@ async function flush() {
 		}else{
 			if(md.length) console.log(md);
 		}
+//		send.push(md);
 	}
 	markdownBuffer=[];
+
 	for (const output of outputBuffer) {
 		console.log(output);
 		const lines=output.split("\n");
@@ -928,11 +946,15 @@ async function flush() {
 			if(line.length){
 				await logForge(line,"roha");
 			}
+			send.push(line);
 		}
-		announceCommand(lines);
 		await sleep(delay);
 	}
 	outputBuffer=[];
+
+	if(send.length) {
+		slopBroadcast(send.join(" "),"slop");
+	}
 }
 
 function wordWrap(text:string,cols:number=terminalColumns):string{
@@ -3530,9 +3552,9 @@ async function relay(depth:number) {
 			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,forge,cost,size,elapsed.toFixed(2)+"s"];
 			const status=" "+modelSpec.join(" ")+" ";
 			if (roha.config.ansi)
-				echo(ANSI.BG.GREY+status+ANSI.RESET);
+				echoStatus(ANSI.BG.GREY+status+ANSI.RESET);
 			else
-				echo(status);
+				echoStatus(status);
 		}
 
 		const replies=[];
@@ -3906,7 +3928,7 @@ echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
 
-console.error("test");
+echoFail("test12");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);

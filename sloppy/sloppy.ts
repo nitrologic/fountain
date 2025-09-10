@@ -200,9 +200,10 @@ discordClient.on('messageCreate', async (message) => {
 	if (message.author.bot) return;
 	if (message.content === '!ping') {
 		message.reply('pong!');
+		openChannel=message.channelId;
 		console.log("[SLOPPY]","pong!")
 	}
-	if (!message.author.bot) {
+	if (!message.author.bot && message.channelId==openChannel) {
 //    if (message.mentions.has(discordClient.user) && !message.author.bot) {
 		const from=message.author.username+"@discord";	//skudmarks@discord
 		const name=message.author.displayName;
@@ -211,7 +212,6 @@ discordClient.on('messageCreate', async (message) => {
 		await writeFountain(JSON.stringify(blob,null,0));
 		const quote=quotes[quoteCount++%quotes.length];
 		message.reply("@"+name+" "+quote);
-		openChannel=message.channelId;
 	}
 });
 
