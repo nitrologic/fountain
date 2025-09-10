@@ -3718,15 +3718,14 @@ async function chat() {
 			let line="";
 			if(listCommand){
 				line=await promptForge(listCommand+" #");
-				if(line.startsWith("//")||!line.startsWith("/")){
+				listCommand="";
+				if(line && (line.startsWith("//")||!line.startsWith("/"))){
 					if(line.length&&isFinite(line)){
 						let index=line|0;
 						await callCommand(listCommand+" "+index);
 					}
-					listCommand="";
 					continue;
 				}
-				listCommand="";
 			}else if(creditCommand){
 				line=await promptForge("$");
 				if(line.startsWith("//")||!line.startsWith("/")){

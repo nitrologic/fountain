@@ -27,11 +27,17 @@ let openChannel="398589365846278144";
 
 // rate guard required, a sleep 1500 ms currently in force on all writes
 
+const codeFence="```\n";
 async function messageSloppy(message:string,from:string){
 	if(openChannel){
 		const channel = await discordClient.channels.fetch(openChannel);
 		if (channel?.isTextBased()) {
-			channel.send("["+from+"] "+message);
+//			channel.send("["+from+"] "+message);
+			const chunks=chunkContent(message,2000-400);
+			for(const chunk of chunks){
+				const post=codeFence+"["+from+"] "+chunk+codeFence;
+				channel.send(post);
+			}
 			await(sleep(1500));
 		}
 	}
@@ -197,6 +203,21 @@ discordClient.once('ready', () => {
 });
 
 
+function chunkContent(content:string,chunk:number):string[]{
+	const chunks:string[]=[];
+	let line="";
+	for(let cursor=0;cursor<content.length;cursor+=line.length){
+		const n=content.length-cursor;
+		if(n<=chunk){
+			line=content.substring(cursor);
+		}else{
+			line=content.substring(cursor,cursor+chunk);
+		}
+		chunks.push(line);
+	}	
+	return chunks;
+}
+
 // content has BASE_TYPE_MAX_LENGTH = 4000
 discordClient.on('messageCreate', async (message) => {
 	if (message.author.bot) return;
@@ -209,13 +230,15 @@ discordClient.on('messageCreate', async (message) => {
 //    if (message.mentions.has(discordClient.user) && !message.author.bot) {
 		const from=message.author.username+"@discord";	//skudmarks@discord
 		const name=message.author.displayName;
-// TODO: rate limit required
-		let content=message.content;
-		content=content.substring(0,4000-400);
-		const blob={messages:[{message:content,from}]};
-		await writeFountain(JSON.stringify(blob,null,0));
-		const quote=quotes[quoteCount++%quotes.length];
-		message.reply("@"+name+" "+quote);
+		const contents=chunkContent(message.content,4000-400);
+		for(const content in contents){
+			const blob={messages:[{message:content,from}]};
+			await writeFountain(JSON.stringify(blob,null,0));
+		}
+		if(contents.length==0){
+			const quote=quotes[quoteCount++%quotes.length];
+			message.reply("@"+name+" "+quote);
+		}
 	}
 });
 
