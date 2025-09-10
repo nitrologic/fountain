@@ -202,14 +202,15 @@ discordClient.on('messageCreate', async (message) => {
 		message.reply('pong!');
 		console.log("[SLOPPY]","pong!")
 	}
-    if (message.mentions.has(discordClient.user) && !message.author.bot) {
+	if (!message.author.bot) {
+//    if (message.mentions.has(discordClient.user) && !message.author.bot) {
 		const from=message.author.username+"@discord";	//skudmarks@discord
 		const name=message.author.displayName;
 		// TODO: rate limit required
 		const blob={messages:[{message:message.content,from}]};
 		await writeFountain(JSON.stringify(blob,null,0));
 		const quote=quotes[quoteCount++%quotes.length];
-        message.reply("@"+name+" "+quote);
+		message.reply("@"+name+" "+quote);
 		openChannel=message.channelId;
 	}
 });

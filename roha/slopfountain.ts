@@ -458,13 +458,13 @@ async function readSlop(slopPipe){
 	}
 	readingSlop=false;
 }
-
+/*
 async function serveConnection(connection){
 	console.error("\t[FOUNTAIN] serveConnection ",JSON.stringify(connection));
 	const text=encoder.encode("greetings from fountain client");
 	await writeSlop(connection,text);
 }
-
+*/
 function price(credit){
 	if (credit === null || isNaN(credit)) return "$0";
 	return "$"+credit.toFixed(4);
@@ -929,6 +929,7 @@ async function flush() {
 				await logForge(line,"roha");
 			}
 		}
+		announceCommand(lines);
 		await sleep(delay);
 	}
 	outputBuffer=[];
