@@ -2,8 +2,8 @@
 	"tasks":{
 		"sloppy": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read sloppy.ts",
 		"sloppynet": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppynet.ts",
-        "hello":{
-			"dependencies":["sloppynet"]
+        "bot":{
+			"dependencies":["sloppy"]
 		}
 	}
 }

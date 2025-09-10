@@ -31,7 +31,7 @@ const sloppyNetVersion=0.5;
 // ssh-keygen -t rsa -f hostkey_rsa -N ''.
 
 // TODO: make multi planetary
-const HomeDir=Deno.env.get("HOME");
+const HomeDir=Deno.env.get("HOME")||Deno.env.get("HOMEPATH");
 const rsaPath=HomeDir+"/.ssh/id_rsa";
 
 // sloppyNet uses slopfeed workers in a responsible manner

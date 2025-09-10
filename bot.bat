@@ -3,5 +3,5 @@ echo off
 echo Running Sloppy the Janitor  
 echo see sloppy/sloppy.md for more information
 pushd sloppy
-deno task hello
+deno task bot
 popd

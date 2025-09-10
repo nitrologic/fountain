@@ -6,6 +6,8 @@
 
 // no abort controllers if you don't mind
 
+// log sloppy to host
+
 function echo(...data:any[]){
 	console.error("[PORT]",data);
 }

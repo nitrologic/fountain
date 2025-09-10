@@ -37,7 +37,8 @@ const rohaMihi="Welcome to the fountain - we've got fun and games. A many:many u
 const rohaGuide=[
 	"As a guest assistant language model please be mindful of others, courteous and professional.",
 	"Keep response short and only post code on request.",
-	"Use tabs for indenting js and json files."
+	"Use tabs for indenting js and json files.",
+	"Prefer declaring reusable functions over arrow and map functions."
 ]
 
 // startup config
@@ -727,6 +728,19 @@ let outputBuffer:string[]=[];
 let printBuffer=[];
 let markdownBuffer=[];
 
+// override console.error
+// TODO:redirect all existing console.errors
+
+let errorBuffer=[];
+async function errorHandler(...args:any[]) {
+	const line=args.join(",");
+	errorBuffer.push(line);
+	originalError.apply(console, [line]);//args);
+};
+const originalError = console.error;
+console.error = errorHandler; 
+
+
 function print():void{
 	const args=arguments.length?Array.from(arguments):[];
 	const lines=args.join(" ").split("\n");
@@ -853,7 +867,7 @@ function debugValue(title:string,value:unknown){
 }
 
 async function logForge(lines:string,id:string){
-	if(roha.config.logging){
+	if(true){//roha.config.logging){
 		const time=slopmark();	//new Date().toISOString();
 		const list=[];
 		for(let line of lines.split("\n")){
@@ -866,15 +880,17 @@ async function logForge(lines:string,id:string){
 	}
 }
 
-async function readFileNames(path,suffix){
+// used for roha.config.slops
+
+async function readFileNames(path:string,suffix:string){
 	const result=[];
 	try {
-	for await (const entry of Deno.readDir(path)) {
-		if (entry.isFile && entry.name.endsWith(suffix)) {
-			if(roha.config.verbose) echo("readDir",path,entry);
-			result.push(entry.name);
+		for await (const entry of Deno.readDir(path)) {
+			if (entry.isFile && entry.name.endsWith(suffix)) {
+				if(roha.config.verbose) echo("readDir",path,entry);
+				result.push(entry.name);
+			}
 		}
-	}
 	} catch (error) {
 		echo("Error reading directory:", error);
 	}
@@ -883,6 +899,10 @@ async function readFileNames(path,suffix){
 
 async function flush() {
 	const delay=roha.config.slow ? slowMillis : 0;
+	for (const line of errorBuffer) {
+		await logForge("!"+line,"PORT");
+	}
+	errorBuffer=[];
 	for (const mutline of printBuffer) {
 		const mut=mutline.model;
 		const line=mutline.line;
@@ -1886,7 +1906,10 @@ async function rawCommand(words:string[]){
 	}
 }
 
+
 function slopCommand(words:string[]){
+
+
 }
 
 async function shareCommand(words:string[]){
@@ -3881,6 +3904,8 @@ let termSize = Deno.consoleSize();
 echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
+
+console.error("test");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
