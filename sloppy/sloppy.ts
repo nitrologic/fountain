@@ -1,20 +1,27 @@
 // sloppy.ts - a research tool connecting large language models and tiny humans
 // Copyright (c) 2025 Simon Armstrong
-// Licensed under the MIT License
+// All Rights Reserved
 
-// receive message from fountain /announce and echo to discord bot
-// keep json flat single line
+// discord and ssh egress for slop fountain
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
-const sloppyBanner="[SLOPPY] sloppy 0.05 solvent discord bot by nitrologic";
+import { startSSH, listenSSH } from "./sloppynet.ts";
+
+const sloppyBanner="[SLOPPY] sloppyspot 0.06 nitrate discord bot by nitrologic";
 
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
 }
 
+// fountain connection goes PEEP
+
+function echo(...data: any[]){
+	console.error("[PIP]",data);
+}
+
 const quotes=[
-	"🤖 I am sloppy the janitor",
+	"🤖 I am sloppyspot the janitor",
 	"did thing thing call for a plunge? 🪠",
 	"frump system prompt you say?"
 ];
@@ -70,6 +77,10 @@ async function onFountain(message:string){
 	}
 }
 
+// ssh manager returns a race of promises
+
+type RacePromise = Promise<{ message: string } | { system: Uint8Array } | null>;
+
 // system stdin support for sloppies
 
 const systemDecoder = new TextDecoder();
@@ -111,12 +122,6 @@ async function readSystem(){
 		const received = systemBuffer.subarray(0, n);
 		return {system:received};
 	}
-}
-
-// fountain connection goes PEEP
-
-function echo(...data: any[]){
-	console.error("[PEEP]",data);
 }
 
 const encoder = new TextEncoder();
@@ -250,17 +255,32 @@ Deno.addSignalListener("SIGINT", () => {
 	Deno.exit(0);
 });
 
+echo("discordClient.login");
 const token=Deno.env.get("DISCORD_BOT");
 await discordClient.login(token)
 
+let connectPromise=null;
+
+//echo("startSSH");
+//startSSH();
+//let { connectPromise } = listenSSH();
+
+echo("connectFountain");
 await connectFountain();
+
 writeFountain("{\"action\":\"connect\"}");
 let portPromise=readFountain();
 let systemPromise=readSystem();
 while(true){
 	const race=[portPromise,systemPromise];
+	if(connectPromise) race.push(connectPromise);
+	echo("race",race);
 	const result=await Promise.race(race);
-	if (result==null) break;
+	if (result==null) {
+		echo("null result",race);
+		break;
+	}
+	echo("result",result);
 	if(result.system) {
 		await onSystem(result.system);
 		systemPromise=readSystem();
@@ -269,7 +289,10 @@ while(true){
 		await onFountain(result.message);
 		portPromise=readFountain();		
 	}
-//	echo("result",result);
+	if(result.connection){
+		echo("result connection name",result.name);
+		connectPromise=listenSSH();
+	}
 	await(sleep(500));
 }
 

@@ -7,7 +7,9 @@ import { Buffer, Client, Server } from "npm:ssh2";
 import { readFileSync } from "node:fs";
 
 import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
-                                                                                                                                                                                                                                                  
+
+let connectionCount=0;
+
 export const ANSI={
 	Reset:"\x1BC",
 	Defaults:"\x1B[0m",//"\x1B[39;49m",//\x1B[0m",
@@ -40,7 +42,7 @@ const sshClient=new Client();
 const connections={};
 
 let slopPail:unknown[]=[];
-let connectionCount=0;
+//let connectionCount=0;
 let sessionCount=0;
 let connectionClosed=0;
 
@@ -264,51 +266,93 @@ async function onSSHConnection(sshClient: any, name: string) {
 	});
 }
 
-async function startSSHServer(port: number = 22) {
+let sshServer=null;
+
+export function startSSH() {
+	const hostKey = readFileSync(rsaPath, "utf8");
+	sshServer = new Server({ hostKeys: [hostKey] });
+}
+
+export function listenSSH(port: number = 22) {
+	const server=sshServer;
 	try {
-		const hostKey = readFileSync(rsaPath, "utf8");
-		const server = new Server({ hostKeys: [hostKey] });
-		server.on("connection", (sshClient) => {
-			const name="guest"+(++connectionCount);
-			logSlop({ status: "New SSH connection opened", connectionCount });
-			onSSHConnection(sshClient,name).catch((err) => {
-				logSlop({ error: "Connection error", message: err.message, connectionCount });
+		const connectionPromise = new Promise<{ connection: true; name: string }>((resolve, reject) => {
+			server.on("connection", (sshClient: Client) => {
+				const name = "guest" + (++connectionCount);
+				logSlop({ status: "New SSH connection opened", connectionCount });
+				onSSHConnection(sshClient, name).catch((err) => {
+					logSlop({ error: "Connection error", message: err.message, connectionCount });
+				});
+				resolve({ connection: true, name });
+			});
+			server.on("error", (err) => {
+				logSlop({ error: "SSH server error", message: err.message, port, connectionCount });
+				reject(err);
+			});
+			server.listen(port, "localhost", () => {
+				logSlop({ status: "SSH server listening", port });
 			});
 		});
-		await new Promise((resolve) => server.listen(port, "localhost", () => resolve(undefined)));
-		logSlop({ status: "SSH server listening", port });
+		return {
+			connectPromise: connectionPromise,
+			close: () => server.close()
+		};
 	} catch (error) {
 		console.error("Failed to start SSH server:", error);
+		return Promise.reject(error);
 	}
 }
 
-startSSHServer();
 
-try {
-	await connectFountain();
-	await writeFountain('{"action":"connect"}');
-	let portPromise=readFountain();
-	let systemPromise=readSystem();
 
-	while(true){
-		const race=[portPromise,systemPromise];
-		const result=await Promise.race(race);
-		if (result == null) break;
+let connectionResolve: ((value: { connection: true; name: string }) => void) | null = null;
+//let connectionPromise=null;
 
-		if(result.system) {
-			await onSystem(result.system);
-			systemPromise=readSystem();
-		}
-		if(result.message) {
-			await onFountain(result.message);
-			portPromise=readFountain();
-		}
-		await sleep(500);
-	}
-} catch (error) {
-	console.error("Error in main loop:",error);
-} finally {
-	console.log("bye");
-	disconnectFountain();
-	Deno.exit(0);
+export function listenSSH2(port: number = 22) {
+  const server = sshServer;
+  if (!server) {
+    throw new Error("SSH server not initialized. Call startSSH first.");
+  }
+
+  // Create a promise that resolves for each new connection
+  let connectionPromise = new Promise<{ connection: true; name: string }>((resolve, reject) => {
+    connectionResolve = resolve; // Store resolve function to call for each connection
+
+    server.on("connection", (sshClient: Client) => {
+      const name = "guest" + (++connectionCount);
+      logSlop({ status: "New SSH connection opened", connectionCount });
+      onSSHConnection(sshClient, name).catch((err) => {
+        logSlop({ error: "Connection error", message: err.message, connectionCount });
+      });
+      resolve({ connection: true, name });
+      // Reset for the next connection
+      connectionPromise.then(() => {
+        connectionPromise = new Promise<{ connection: true; name: string }>((newResolve) => {
+          connectionResolve = newResolve;
+        });
+      });
+    });
+
+    server.on("error", (err) => {
+      logSlop({ error: "SSH server error", message: err.message, port, connectionCount });
+      reject(err);
+    });
+
+    // Only call listen if the server isn't already listening
+    if (!server.listening) {
+      server.listen(port, "localhost", () => {
+        logSlop({ status: "SSH server listening", port });
+      });
+    }
+  });
+
+  return {
+    connectPromise: connectionPromise,
+    close: () => {
+      server.close();
+      sshServer = null; // Reset server instance
+      connectionResolve = null; // Clear resolve function
+      logSlop({ status: "SSH server closed", port });
+    },
+  };
 }

@@ -745,10 +745,12 @@
 			"◣": {"char": "◣", "codepoint": "25E3", "name": "BLACK LOWER LEFT TRIANGLE"},
 			"◤": {"char": "◤", "codepoint": "25E4", "name": "BLACK UPPER LEFT TRIANGLE"},
 			"◥": {"char": "◥", "codepoint": "25E5", "name": "BLACK UPPER RIGHT TRIANGLE"},
-			"◧": {"char": "◧", "codepoint": "25E7", "name": "SQUARE WITH LEFT HALF BLACK"},
-			"◨": {"char": "◨", "codepoint": "25E8", "name": ""},
-			"◩": {"char": "◩", "codepoint": "25E9", "name": ""},
-			"◪": {"char": "◪", "codepoint": "25EA", "name": ""},
+
+			"◧": {"char": "◧", "codepoint": "25E7", "name": "SQUARE WITH UPPER LEFT TO LOWER RIGHT FILL"},
+			"◨": {"char": "◨", "codepoint": "25E8", "name": "SQUARE WITH UPPER RIGHT TO LOWER LEFT FILL"},
+			"◩": {"char": "◩", "codepoint": "25E9", "name": "SQUARE WITH UPPER LEFT TO LOWER RIGHT DIAGONAL"},
+			"◪": {"char": "◪", "codepoint": "25EA", "name": "SQUARE WITH LOWER RIGHT TO UPPER LEFT DIAGONAL"},
+
 			"◫": {"char": "◫", "codepoint": "25EB", "name": ""},
 			"⌨": {"char": "⌨", "codepoint": "2328", "name": "KEYBOARD"},
 			"⏚": {"char": "⏚", "codepoint": "23DA", "name": "EARTH GROUND"},

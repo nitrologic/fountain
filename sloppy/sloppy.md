@@ -128,7 +128,7 @@ Glad it works. :whew:.
 // fountain connection goes PEEP
 
 function echo(...data: any[]){
-	console.error("[PEEP]",data);
+	console.error("[PLEEP]",data);
 }
 
 const encoder = new TextEncoder();

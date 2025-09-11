@@ -116,7 +116,7 @@ async function readSystem(){
 // fountain connection goes PEEP
 
 function echo(...data: any[]){
-	console.error("[PEEP]",data);
+	console.error("[SEEP]",data);
 }
 
 const encoder = new TextEncoder();

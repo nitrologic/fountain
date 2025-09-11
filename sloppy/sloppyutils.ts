@@ -230,7 +230,7 @@ function wrapMarkdown(md:string,cols:number) {
 // fountain connection goes PEEP
 
 function echo(...data: any[]){
-	console.error("[PEEP]",data);
+	console.error("[PEEEP]",data);
 }
 
 const encoder = new TextEncoder();
