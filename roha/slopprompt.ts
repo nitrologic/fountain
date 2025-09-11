@@ -40,6 +40,10 @@ async function readConnection(connection:Deno.TcpConn){
 	}
 }
 
+// take care - collides with slopnet.ts
+
+let connectionCount=0;
+
 async function listenPort(port:number){
 	if(!slopListener){
 		echo("listening from fountain for slop on port",port);
@@ -52,8 +56,9 @@ async function listenPort(port:number){
 		}
 	}
 	const connection=await slopListener.accept();
+	const name="connection"+(connectionCount++);
 	echo("reading new connection");
-	return  {connection};
+	return  {connection,name};
 }
 
 export function listenService(){
@@ -64,7 +69,7 @@ export async function announceCommand(words:string[]){
 	const text=words.join(" ");
 	if(text){
 		const bytes=encoder.encode("/"+text);
-		for(const connection in slopConnections){
+		for(const connection of slopConnections){
 			connection?.write(bytes);
 		}
 	}
@@ -336,7 +341,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		while(true){
 			const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
 			const receivers=Object.values(receivePromises);
-			const race=listenerPromise?[readPromise,timerPromise,listenerPromise,...receivers]:[readPromise,timerPromise,...receivers];
+//			const race=listenerPromise?[readPromise,timerPromise,listenerPromise,...receivers]:[readPromise,timerPromise,...receivers];
+			const race=listenerPromise?[readPromise,timerPromise,listenerPromise]:[readPromise,timerPromise];
 			winner=await Promise.race(race);
 			if(winner==null){
 				if(!busy) {
@@ -365,7 +371,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		}
 		if (connection) {
 			slopConnections.push(connection);
-			listenerPromise=listenPort(8081);
+// todo reset listener
+			listenerPromise=null;//listenPort(8081);
 			const receiver=readConnection(connection);
 			receivePromises[name]=receiver;
 			echo("connection",name);

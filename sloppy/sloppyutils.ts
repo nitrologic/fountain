@@ -13,21 +13,6 @@ const quotes=[
 	"frump system prompt you say?"
 ];
 
-// discord channel send
-
-let quoteCount=0;
-let openChannel="398589365846278144";
-
-async function postSloppy(message:string,from:string){
-	if(openChannel){
-		const channel = await client.channels.fetch(openChannel);
-		if (channel?.isTextBased()) {
-			const line="["+from+"] "+message+"\r\n";
-			await channel.send(line);
-		}
-	}
-}
-
 // system stdin support for sloppies
 
 const systemDecoder = new TextDecoder();
@@ -40,7 +25,8 @@ export async function onSystem(rx:Uint8Array){
 		if(line=="exit") Deno.exit(0);
 		if(line.startsWith("/announce ")){
 			const message=line.substring(10);
-			await postSloppy(message,"system");
+// todo hook to extern			
+//			await postSloppyBot(client,message,"system");
 		}
 		if(!line.startsWith("/")){
 			await writeFountain(line);

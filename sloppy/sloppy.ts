@@ -231,7 +231,8 @@ discordClient.on('messageCreate', async (message) => {
 	if (message.content === '!ping') {
 		message.reply('pong!');
 		openChannel=message.channelId;
-		console.log("[SLOPPY]","pong!")
+		const flake=message.channelId.toString();
+		console.log("[SLOPPY]","replied pong to flake",flake);
 	}
 	if (!message.author.bot && message.channelId==openChannel) {
 //    if (message.mentions.has(discordClient.user) && !message.author.bot) {

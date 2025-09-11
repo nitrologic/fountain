@@ -22,7 +22,9 @@ const quotes=[
 // discord channel send
 
 let quoteCount=0;
-let openChannel="398589365846278144";
+
+let openChannel="1415799220203421747";
+//let openChannel="398589365846278144";
 //let openChannel="1410693060672753704";
 
 // rate guard required, a sleep 1500 ms currently in force on all writes
@@ -224,7 +226,8 @@ discordClient.on('messageCreate', async (message) => {
 	if (message.content === '!ping') {
 		message.reply('pong!');
 		openChannel=message.channelId;
-		console.log("[SLOPPY]","pong!")
+		const flake=message.channelId.toString();
+		console.log("[SLOPPY]","pong flake",flake,openChannel);
 	}
 	if (!message.author.bot && message.channelId==openChannel) {
 //    if (message.mentions.has(discordClient.user) && !message.author.bot) {
@@ -235,7 +238,7 @@ discordClient.on('messageCreate', async (message) => {
 			const blob={messages:[{message:content,from}]};
 			await writeFountain(JSON.stringify(blob,null,0));
 		}
-		if(contents.length==0){
+		if(true||contents.length==0){
 			const quote=quotes[quoteCount++%quotes.length];
 			message.reply("@"+name+" "+quote);
 		}

@@ -4,7 +4,7 @@
 		"sloppynet": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppynet.ts",
 		"sloppylisten": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppylisten.ts",
         "bot":{
-			"dependencies":["sloppybot"]
+			"dependencies":["sloppybot","sloppylisten"]
 		}
 	}
 }

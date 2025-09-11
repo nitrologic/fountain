@@ -32,13 +32,13 @@ const clipLog=1800;
 
 const rohaTitle=fountainName+" ⛲ ";
 
-const rohaMihi="Welcome to the fountain - we've got fun and games. A many:many user model research project.";
+const rohaMihi="Welcome to slop fountain a many:many user model research project.";
 
 const rohaGuide=[
 	"As a guest assistant language model please be mindful of others, courteous and professional.",
-	"Keep response short and only post code on request.",
+	"Keep response short, only post code on request and do not patronise.",
 	"Use tabs for indenting js and json files.",
-	"Prefer declaring reusable functions over arrow and map functions."
+	"Prefer named reusable functions over inlining code with arrow and map style suggestions."
 ]
 
 // startup config
