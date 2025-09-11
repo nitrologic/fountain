@@ -7,7 +7,7 @@
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
-const sloppyBanner="[SLOPPY] sloppy 0.04 liquid discord bot by nitrologic";
+const sloppyBanner="[SLOPPY] sloppy 0.05 solvent discord bot by nitrologic";
 
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
@@ -229,9 +229,9 @@ discordClient.on('messageCreate', async (message) => {
 	if (!message.author.bot && message.channelId==openChannel) {
 //    if (message.mentions.has(discordClient.user) && !message.author.bot) {
 		const from=message.author.username+"@discord";	//skudmarks@discord
-		const name=message.author.displayName;
+		const name=message.author.displayName;		
 		const contents=chunkContent(message.content,4000-400);
-		for(const content in contents){
+		for(const content of contents){
 			const blob={messages:[{message:content,from}]};
 			await writeFountain(JSON.stringify(blob,null,0));
 		}
