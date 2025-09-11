@@ -12,7 +12,7 @@ function echo(...data:any[]){
 	console.error("[PORT]",data);
 }
 
-let slopConnection;
+const slopConnections=[];
 let slopListener;
 let listenerPromise;
 
@@ -24,8 +24,8 @@ const rxBufferSize=1e6;
 const rxBuffer=new Uint8Array(rxBufferSize);
 const rxDecoder=new TextDecoder("utf-8",{stream:true});
 
-function closeConnection(){
-	slopConnection=null;
+function closeConnections(){
+	slopConnections.length=0;
 }
 
 async function readConnection(connection:Deno.TcpConn){
@@ -62,11 +62,12 @@ export function listenService(){
 
 export async function announceCommand(words:string[]){
 	const text=words.join(" ");
-	if(slopConnection && text){
+	if(text){
 		const bytes=encoder.encode("/"+text);
-		slopConnection?.write(bytes);
+		for(const connection in slopConnections){
+			connection?.write(bytes);
+		}
 	}
-//	console.log("announceCommand",text,slopConnection);
 }
 
 // utility to reduce busting discords guts
@@ -88,25 +89,28 @@ function wrapText(content,wide){
 
 export async function slopBroadcast(text:string,from:string){
 	// fix content with only \n
-	if(slopConnection && text && from){
+	if(text && from){
 		const message=text.replaceAll("\r\n","\n").replaceAll("\n","\r\n");
 		const json=JSON.stringify({messages:[{message,from}]},null,0);
-		const bytes=encoder.encode(json+"\t");
 		try{
-			const n=bytes.byteLength;
-			let total=0;
-			while(total<n){
-				const packet=bytes.subarray(total);
-				const sent=await slopConnection.write(packet);
-				if(sent==null || sent==-1){
-					throw("chunks");
+			for(const slopConnection of slopConnections){
+				const bytes=encoder.encode(json+"\t");
+				const n=bytes.byteLength;
+				let total=0;
+				while(total<n){
+					const packet=bytes.subarray(total);
+					const sent=await slopConnection.write(packet);
+					if(sent==null || sent==-1){
+						throw("chunks");
+					}
+					total+=sent;
 				}
-				total+=sent;
 			}
-		}catch(error){
+		}
+		catch(error){
 			// connection reset
-			closeConnection();
-			echo("slopBroadcast closed",error.message);
+			closeConnections();
+			echo("slopBroadcast closed all connections",error.message);
 		}
 	}else{
 		echo("help me help you");
@@ -360,7 +364,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			continue;
 		}
 		if (connection) {
-			slopConnection=connection;
+			slopConnections.push(connection);
 			listenerPromise=listenPort(8081);
 			receivePromise=readConnection(connection);
 			continue;
@@ -372,7 +376,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			if(receive){
 				const n=receive.length;
 				const text=rxDecoder.decode(receive);
-//				echo("receivePromise",receive,text);
+				echo("receivePromise",n,text);//,receive
 				try{
 					const blob=JSON.parse(text);
 					if(blob.messages){

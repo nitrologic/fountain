@@ -1,9 +1,10 @@
 {
 	"tasks":{
-		"sloppy": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read sloppy.ts",
+		"sloppybot": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read sloppy.ts",
 		"sloppynet": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppynet.ts",
+		"sloppylisten": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppylisten.ts",
         "bot":{
-			"dependencies":["sloppy"]
+			"dependencies":["sloppybot","sloppylisten"]
 		}
 	}
 }
