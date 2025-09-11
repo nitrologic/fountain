@@ -2,6 +2,8 @@
 // Copyright (c) 2025 Simon Armstrong
 // All Rights Reserved
 
+// sandbox version with ssh on board
+
 // discord and ssh egress for slop fountain
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";

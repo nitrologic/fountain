@@ -16,9 +16,9 @@ const slopConnections=[];
 let slopListener;
 let listenerPromise;
 
-let receivePromise: Promise<{source:Deno.TcpConn, receive:Uint8Array}>;
+const receivePromises={}
+//: Promise<{source:Deno.TcpConn, receive:Uint8Array}>[]=[];
 
-const readPromises=[];
 const decoderConnection=new TextDecoder("utf-8");
 const rxBufferSize=1e6;
 const rxBuffer=new Uint8Array(rxBufferSize);
@@ -335,8 +335,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		let winner=null;
 		while(true){
 			const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
-			const race=listenerPromise?[readPromise,timerPromise,listenerPromise]:[readPromise,timerPromise];
-			if(receivePromise) race.push(receivePromise);
+			const receivers=Object.values(receivePromises);
+			const race=listenerPromise?[readPromise,timerPromise,listenerPromise,...receivers]:[readPromise,timerPromise,...receivers];
 			winner=await Promise.race(race);
 			if(winner==null){
 				if(!busy) {
@@ -355,7 +355,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(!winner) {
 			break;// we break for break breaks, result has been loaded due to above timeout
 		}
-		const { value, done, connection, source, receive, error }=winner;
+		const { value, done, connection, name, source, receive, error }=winner;
 		if(error){
 			// TODO: failure to listen - port not available
 			echo("slopPrompt error",error.message);
@@ -366,13 +366,15 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if (connection) {
 			slopConnections.push(connection);
 			listenerPromise=listenPort(8081);
-			receivePromise=readConnection(connection);
+			const receiver=readConnection(connection);
+			receivePromises[name]=receiver;
+			echo("connection",name);
 			continue;
 		}
 		if(source){
 			const messages=[];
 			// reject old one?
-			receivePromise=null;
+			// receivePromise=null;
 			if(receive){
 				const n=receive.length;
 				const text=rxDecoder.decode(receive);
@@ -389,7 +391,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				}catch(error){
 					echo("slopPrompt JSON error",text,error);
 				}
-				receivePromise=readConnection(source)
+				receivePromises[source]=readConnection(source)
 				if(messages){
 					response={messages};
 					break;
