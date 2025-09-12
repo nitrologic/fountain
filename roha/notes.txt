@@ -1,16 +1,14 @@
 I fell asleep amid the flowers
 For a couple of hours
 
-sloppy 1409013189848334470
-
+sloppy 140901318984833447z
 Send Messages
 Manage Messages
 Read Message History
 Add Reactions
 75840
-
-https://discord.com/oauth2/authorize?clientid=1409013189848334470&permissions=75840&scope=bot
-
+https://discord.com/oauth2/authorize?client_id=140901318984833447z&permissions=75840&scope=bot
+Invalid form body 
 
 1. Get the bot's OAuth2 URL with appropriate permissions:
    - Use the Discord Developer Portal for your application
