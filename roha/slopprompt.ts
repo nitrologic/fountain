@@ -13,7 +13,6 @@ function echo(...data:any[]){
 }
 
 const slopConnections=[];
-let slopListener;
 let listenerPromise;
 
 const receivePromises={}
@@ -45,6 +44,8 @@ async function readConnection(name:string,connection:Deno.TcpConn){
 
 let connectionCount=0;
 
+let slopListener;
+
 async function listenPort(port:number){
 	if(!slopListener){
 		echo("listening from fountain for slop on port",port);
@@ -59,7 +60,7 @@ async function listenPort(port:number){
 	const connection=await slopListener.accept();
 	const name="connection"+(connectionCount++);
 	echo("reading new connection");
-	return  {connection,name};
+	return {connection,name};
 }
 
 export function listenService(){
@@ -98,10 +99,10 @@ export async function slopBroadcast(text:string,from:string){
 	if(text && from){
 		const message=text.replaceAll("\r\n","\n").replaceAll("\n","\r\n");
 		const json=JSON.stringify({messages:[{message,from}]},null,0);
+		const bytes=encoder.encode(json+"\t");
+		const n=bytes.byteLength;
 		try{
 			for(const slopConnection of slopConnections){
-				const bytes=encoder.encode(json+"\t");
-				const n=bytes.byteLength;
 				let total=0;
 				while(total<n){
 					const packet=bytes.subarray(total);
@@ -366,14 +367,14 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(error){
 			// TODO: failure to listen - port not available
 			echo("slopPrompt error",error.message);
-			slopConnections.length=0;
+			closeConnections();
 			listenerPromise=null;
 			continue;
 		}
 		if (connection) {
 			slopConnections.push(connection);
 // todo reset listener
-			listenerPromise=null;//listenPort(8081);
+			listenerPromise=listenPort(8081);
 			const receiver=readConnection(name,connection);
 			receivePromises[name]=receiver;
 			echo("connection",name);
@@ -386,7 +387,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			if(receive){
 				const n=receive.length;
 				const text=rxDecoder.decode(receive);
-				echo("receivePromise",n,text);//,receive
+//				echo("receivePromise",n,text);//,receive
 				try{
 					const blob=JSON.parse(text);
 					if(blob.messages){
