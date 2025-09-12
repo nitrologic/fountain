@@ -30,7 +30,7 @@ function closeConnections(){
 async function readConnection(name:string,connection:Deno.TcpConn){
 	try{
 		const n=await connection.read(rxBuffer);
-		echo("readConnection",n,name);
+		//echo("readConnection",n,name);
 		if(n==null) return {source:connection};
 		const bytes=rxBuffer.subarray(0,n);
 		return {source:connection,receive:bytes,name};
@@ -47,7 +47,7 @@ let slopListener=null;
 
 async function listenPort(port:number){
 	if(!slopListener){
-		echo("listening from fountain for slop on port",port);
+		//echo("listening from fountain for slop on port",port);
 		try{
 			slopListener=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
 		}catch(error){
@@ -370,7 +370,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			echo("slopPrompt error",error.message);
 			slopConnections.length=0;
 			listenerPromise=null;
-			continue;
+			break;//continue;
 		}
 		if (connection) {
 			if(name in receivePromises){
@@ -380,22 +380,22 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			listenerPromise=listenPort(8081);
 			const receiver=readConnection(name,connection);
 			receivePromises[name]=receiver;
-			echo("reading connection 1",name);
+			//echo("reading connection 1",name);
 			continue;
 		}
 		if(source){
-			echo("receivePromise name,source",name,source);//,receive
+			//echo("receivePromise name,source",name,source);//,receive
 			delete receivePromises.name;
 			const receiver=readConnection(name,source);
 			receivePromises[name]=receiver;
-			echo("reading connection 2",name);
+			//echo("reading connection 2",name);
 			const messages=[];
 			// reject old one?
 			// receivePromise=null;
 			if(receive){
 				const n=receive.length;
 				const text=rxDecoder.decode(receive);
-				echo("receivePromise",n,text);//,receive
+				//echo("receivePromise",n,text);//,receive
 				try{
 					const blob=JSON.parse(text);
 					if(blob.messages){
@@ -409,7 +409,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					echo("slopPrompt JSON error",text,error);
 				}
 				if(messages){
-					echo("response messages",messages);
+					// echo("response messages",JSON.stringify(messages));
 					response={messages};
 					break;
 				}
