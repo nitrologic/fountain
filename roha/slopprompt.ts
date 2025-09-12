@@ -103,6 +103,8 @@ export async function slopBroadcast(text:string,from:string){
 		const n=bytes.byteLength;
 		try{
 			for(const slopConnection of slopConnections){
+				const bytes=encoder.encode(json+"\t");
+				const n=bytes.byteLength;
 				let total=0;
 				while(total<n){
 					const packet=bytes.subarray(total);
@@ -367,13 +369,12 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(error){
 			// TODO: failure to listen - port not available
 			echo("slopPrompt error",error.message);
-			closeConnections();
+			slopConnections.length=0;
 			listenerPromise=null;
 			continue;
 		}
 		if (connection) {
 			slopConnections.push(connection);
-// todo reset listener
 			listenerPromise=listenPort(8081);
 			const receiver=readConnection(name,connection);
 			receivePromises[name]=receiver;
@@ -381,13 +382,14 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			continue;
 		}
 		if(source){
+			echo("receivePromise source",source);//,receive
 			const messages=[];
 			// reject old one?
 			// receivePromise=null;
 			if(receive){
 				const n=receive.length;
 				const text=rxDecoder.decode(receive);
-//				echo("receivePromise",n,text);//,receive
+				echo("receivePromise",n,text);//,receive
 				try{
 					const blob=JSON.parse(text);
 					if(blob.messages){
@@ -400,12 +402,12 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				}catch(error){
 					echo("slopPrompt JSON error",text,error);
 				}
+				if(messages){
+					response={messages};
+					break;
+				}
 			}
 			receivePromises[name]=readConnection(name,source)
-			if(messages){
-				response={messages};
-				break;
-			}
 			continue;
 		}
 		readPromise=null;

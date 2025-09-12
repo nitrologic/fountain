@@ -264,7 +264,7 @@ async function onSSHConnection(sshClient: any, name: string) {
     });
 }
 
-async function startSSHServer(port: number = 22) {
+async function startSSHServer(port: number = 2222) {
     try {
         const hostKey = readFileSync(rsaPath, "utf8");
         const server = new Server({ hostKeys: [hostKey] });
