@@ -1,3 +1,30 @@
+I fell asleep amid the flowers
+For a couple of hours
+
+sloppy 1409013189848334470
+
+Send Messages
+Manage Messages
+Read Message History
+Add Reactions
+75840
+
+https://discord.com/oauth2/authorize?clientid=1409013189848334470&permissions=75840&scope=bot
+
+
+1. Get the bot's OAuth2 URL with appropriate permissions:
+   - Use the Discord Developer Portal for your application
+   - Required permissions typically include: Send Messages, Read Message History, View Channels
+
+2. Invite the bot:
+   - Use this format:
+`https://discord.com/oauth2/authorize?clientid=YOURBOT_ID&permissions=PERMISSIONS&scope=bot`
+   - Replace `YOURBOTID` with your actual bot ID
+   - Set appropriate permissions (usually 3072 for basic text permissions)
+
+3. Update the channel tracking in `sloppy.ts`:
+   - The current code uses `openChannel` variable
+
 	"cerebras":{
 		"emoji": "🤗𝐂",
 		"env": "HUGGINGFACE_API_KEY",

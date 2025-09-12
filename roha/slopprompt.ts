@@ -9,13 +9,13 @@
 // log sloppy to host
 
 function echo(...data:any[]){
-	console.error("[PORT]",data);
+	console.error("[PORT]",...data);
 }
 
-const slopConnections=[];
 let listenerPromise;
+const slopConnections=[];
+const receivePromises={}; 
 
-const receivePromises={}
 //: Promise<{source:Deno.TcpConn, receive:Uint8Array}>[]=[];
 
 const decoderConnection=new TextDecoder("utf-8");
@@ -30,7 +30,7 @@ function closeConnections(){
 async function readConnection(name:string,connection:Deno.TcpConn){
 	try{
 		const n=await connection.read(rxBuffer);
-		console.log("readConnection",n,name);
+		echo("readConnection",n,name);
 		if(n==null) return {source:connection};
 		const bytes=rxBuffer.subarray(0,n);
 		return {source:connection,receive:bytes,name};
@@ -43,8 +43,7 @@ async function readConnection(name:string,connection:Deno.TcpConn){
 // take care - collides with slopnet.ts
 
 let connectionCount=0;
-
-let slopListener;
+let slopListener=null;
 
 async function listenPort(port:number){
 	if(!slopListener){
@@ -59,7 +58,7 @@ async function listenPort(port:number){
 	}
 	const connection=await slopListener.accept();
 	const name="connection"+(connectionCount++);
-	echo("reading new connection");
+	echo("connection accepted",name);
 	return {connection,name};
 }
 
@@ -365,24 +364,31 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(!winner) {
 			break;// we break for break breaks, result has been loaded due to above timeout
 		}
+		// helter skelter race result
 		const { value, done, connection, name, source, receive, error }=winner;
 		if(error){
-			// TODO: failure to listen - port not available
 			echo("slopPrompt error",error.message);
 			slopConnections.length=0;
 			listenerPromise=null;
 			continue;
 		}
 		if (connection) {
+			if(name in receivePromises){
+				echo("connection already exists for",name);	
+			}
 			slopConnections.push(connection);
 			listenerPromise=listenPort(8081);
 			const receiver=readConnection(name,connection);
 			receivePromises[name]=receiver;
-			echo("connection",name);
+			echo("reading connection 1",name);
 			continue;
 		}
 		if(source){
-			echo("receivePromise source",source);//,receive
+			echo("receivePromise name,source",name,source);//,receive
+			delete receivePromises.name;
+			const receiver=readConnection(name,source);
+			receivePromises[name]=receiver;
+			echo("reading connection 2",name);
 			const messages=[];
 			// reject old one?
 			// receivePromise=null;
@@ -403,13 +409,14 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					echo("slopPrompt JSON error",text,error);
 				}
 				if(messages){
+					echo("response messages",messages);
 					response={messages};
 					break;
 				}
 			}
-			receivePromises[name]=readConnection(name,source)
 			continue;
 		}
+
 		readPromise=null;
 		busy=true;
 		if (done || !value) break;
