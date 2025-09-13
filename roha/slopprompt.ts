@@ -8,14 +8,14 @@
 
 // log sloppy to host
 
-function echo(...args:any){
+function echo(...args:any[]){
 	const lines=[];
 	for(const arg of args){
-		const line=toString(arg);
+		const line=arg.toString();
 		lines.push(line);
 	}
 	const text=lines.join(" ");
-	console.error("[PORT]",text);
+	console.error(text);
 }
 
 let listenerPromise;
@@ -396,10 +396,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			delete receivePromises.name;
 			const receiver=readConnection(name,source);
 			receivePromises[name]=receiver;
-			//echo("reading connection 2",name);
 			const messages=[];
-			// reject old one?
-			// receivePromise=null;
+			// TODO: test with discontinuous stream of messages
 			if(receive){
 				const n=receive.length;
 				const text=rxDecoder.decode(receive);
@@ -417,7 +415,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					echo("slopPrompt JSON error",text,error);
 				}
 				if(messages){
-					// echo("response messages",JSON.stringify(messages));
+					echo("response messages",JSON.stringify({messages}));
 					response={messages};
 					break;
 				}
