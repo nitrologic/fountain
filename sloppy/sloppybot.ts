@@ -23,9 +23,7 @@ const quotes=[
 
 let quoteCount=0;
 
-let openChannel="1415799220203421747";
-//let openChannel="398589365846278144";
-//let openChannel="1410693060672753704";
+let openChannel="1410693060672753704";
 
 // rate guard required, a sleep 1500 ms currently in force on all writes
 
@@ -115,10 +113,10 @@ async function readSystem(){
 	}
 }
 
-// fountain connection goes PEEP
+// log noise signed [BOT]
 
 function echo(...data: any[]){
-	console.error("[SEEP]",data);
+	console.error("[BOT]",data);
 }
 
 const encoder = new TextEncoder();
