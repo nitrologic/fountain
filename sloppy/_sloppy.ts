@@ -1,4 +1,4 @@
-// sloppy.ts - a research tool connecting large language models and tiny humans
+// _sloppy.ts - a research tool connecting large language models and tiny humans
 // Copyright (c) 2025 Simon Armstrong
 // All Rights Reserved
 

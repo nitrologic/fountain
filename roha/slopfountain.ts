@@ -17,7 +17,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 
 // Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.4.8";
+const fountainVersion="1.5.0";
 const fountainName="Fountain "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
 

@@ -5,12 +5,16 @@
 
 Home of nitrologic slop fountain — the 4th generation roha foundry forge LLM tool.
 
-Exposing 306 models from 11 providers the research project Fountain 1.4.8 ⛲ approaches connected.
+Exposing 249 models from 8 providers the research project Fountain 1.5.0 ⛲ approaches connected.
 
 > Planet earth is blue and there is nothing I can do - David Bowie
 
 > maximum prompt length exceeded - every model ever
 
+
+## SSH and Discord 
+
+The new sloppy bot Deno worker joins Discord and SSH endpoints to conversation. 
 
 ## Recent Personal Usage
 
