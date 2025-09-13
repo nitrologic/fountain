@@ -8,8 +8,14 @@
 
 // log sloppy to host
 
-function echo(...data:any[]){
-	console.error("[PORT]",...data);
+function echo(...args:any){
+	const lines=[];
+	for(const arg of args){
+		const line=toString(arg);
+		lines.push(line);
+	}
+	const text=lines.join(" ");
+	console.error("[PORT]",text);
 }
 
 let listenerPromise;

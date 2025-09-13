@@ -738,8 +738,8 @@ async function errorHandler(...args:any[]) {
 	errorBuffer.push(line);
 	originalError.apply(console, [line]);//args);
 };
-const originalError = console.error;
-console.error = errorHandler; 
+const originalError=console.error;
+console.error=errorHandler; 
 
 
 function print():void{
@@ -917,6 +917,7 @@ async function flush() {
 	for (const error of errorBuffer) {
 		const line="!"+error;
 		send.push(line);
+		rohaPush(line,"PORT");
 		await logForge(line,"PORT");
 	}
 	errorBuffer=[];
