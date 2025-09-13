@@ -213,6 +213,10 @@ function chunkContent(content:string,chunk:number):string[]{
 			line=content.substring(cursor);
 		}else{
 			line=content.substring(cursor,cursor+chunk);
+			const eol=line.lastIndexOf("\n");
+			if(eol!=-1){
+				line=line.substring(0,eol+1);
+			}
 		}
 		chunks.push(line);
 	}	
