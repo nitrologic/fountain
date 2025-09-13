@@ -40,6 +40,7 @@ const rsaPath=HomeDir+"/.ssh/id_rsa";
 
 const sshClient=new Client();
 const connections={};
+const users={};
 
 let slopPail:unknown[]=[];
 let connectionCount=0;
@@ -202,17 +203,19 @@ class SSHSession {
 
 async function onSSHConnection(sshClient: any, name: string) {
 	sshClient.on("authentication", (context: any) => {
+		sshClient.username=context.username;
+		console.log("authenticating "+context.username);
 		if (context.method === "password") {
 			context.accept();
 		} else {
 			context.reject();
 		}
 	});
-
 	sshClient.on("ready", () => {
 		const connection = new SSHSession(name);
 		logSlop({ status: "SSH client authenticated", name });
 		connections[name]=connection;
+		users[name]=sshClient.username;
 		// TODO: env signal exec sftp x11 subsystem
 
 		sshClient.on("session", (accept: any, reject: any) => {
@@ -271,16 +274,16 @@ async function startSSHServer(port: number = 2222) {
 		const hostKey = readFileSync(rsaPath, "utf8");
 		const server = new Server({ hostKeys: [hostKey] });
 		server.on("connection", (sshClient) => {
-			const name="guest"+(++connectionCount);
-			logSlop({ status: "New SSH connection opened", connectionCount });
+			const name="ssh_session:"+(++connectionCount);
+			logSlop({status:"SSH connected",name});
 			onSSHConnection(sshClient,name).catch((err) => {
-				logSlop({ error: "Connection error", message: err.message, connectionCount });
+				logSlop({error:"Connection error",message:err.message,connectionCount});
 			});
 		});
 		await new Promise((resolve) => server.listen(port, "localhost", () => resolve(undefined)));
-		logSlop({ status: "SSH server listening", port });
+		logSlop({ status: "SSH Server listening", port });
 	} catch (error) {
-		console.error("Failed to start SSH server:", error);
+		console.error("Failed to start SSH Server:", error);
 	}
 }
 

@@ -404,6 +404,9 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				//echo("receivePromise",n,text);//,receive
 				try{
 					const blob=JSON.parse(text);
+					if(blob.command){
+						echo("COMMAND detected",text);
+					}
 					if(blob.messages){
 						for(const message of blob.messages){
 							// todo: safeguard reckless behavior

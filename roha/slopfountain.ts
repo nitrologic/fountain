@@ -215,7 +215,6 @@ function slopDate(sixteenths:number){
 
 }
 
-
 // unixTime() - timestamp - seconds since 1970
 
 function unixTime(date:string):number{
@@ -261,10 +260,6 @@ function stringRight(text:string,width:number):string{
 	const n=stringWidth(text);
 	const pad=(width>n)?" ".repeat(width-n):"";
 	return pad+text;
-}
-
-function echoComment(){
-
 }
 
 function echoKey(key:object,wide:number){

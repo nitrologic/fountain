@@ -1,3 +1,58 @@
+[BOT] [
+  "[MESSAGE]",
+  <ref *1> Message {
+    channelId: "1410693060672753704",
+    guildId: "1235838347717378118",
+    id: "1416486391696588923",
+    createdTimestamp: 1757787072825,
+    type: 0,
+    system: false,
+    content: "how to post from api message with attachment",
+    author: User {
+      id: "322866555639562240",
+      bot: false,
+      system: false,
+      flags: UserFlagsBitField { bitfield: 0 },
+      username: "scudmarks",
+      globalName: "skid 𓅷𓅸",
+      discriminator: "0",
+      avatar: "e3888c0676dc36ae0fa57c217b2526f2",
+      banner: undefined,
+      accentColor: undefined,
+      avatarDecoration: null
+    },
+    pinned: false,
+    tts: false,
+    nonce: "1416486391352655872",
+    embeds: [],
+    components: [],
+    attachments: Collection(0) [Map] {},
+    stickers: Collection(0) [Map] {},
+    position: null,
+    roleSubscriptionData: null,
+    resolved: null,
+    editedTimestamp: null,
+    reactions: ReactionManager { message: [Circular *1] },
+    mentions: MessageMentions {
+      everyone: false,
+      users: Collection(0) [Map] {},
+      roles: Collection(0) [Map] {},
+      _members: null,
+      _channels: null,
+      _parsedUsers: null,
+      crosspostedChannels: Collection(0) [Map] {},
+      repliedUser: null
+    },
+    webhookId: null,
+    groupActivityApplication: null,
+    applicationId: null,
+    activity: null,
+    flags: MessageFlagsBitField { bitfield: 0 },
+    reference: null,
+    interaction: null
+  }
+]
+
 I fell asleep amid the flowers
 For a couple of hours
 

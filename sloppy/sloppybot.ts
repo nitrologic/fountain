@@ -7,7 +7,7 @@
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
-const sloppyBanner="[SLOPPY] sloppy 0.05 solvent discord bot by nitrologic";
+const sloppyBanner="[SLOPPY] sloppy 0.06 sentient discord bot by nitrologic";
 
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
@@ -223,19 +223,32 @@ function chunkContent(content:string,chunk:number):string[]{
 	return chunks;
 }
 
+const UserCommands=["/model"];
+
 // content has BASE_TYPE_MAX_LENGTH = 4000
 discordClient.on('messageCreate', async (message) => {
 	if (message.author.bot) return;
 	if (message.content === '!ping') {
-		message.reply('pong!');
+		await message.react("❤️");
+		await message.reply('pong!');
 		openChannel=message.channelId;
 		const flake=message.channelId.toString();
 		console.log("[SLOPPY]","pong flake",flake,openChannel);
+		return;
 	}
-	if (!message.author.bot && message.channelId==openChannel) {
+	if (message.channelId==openChannel) {
 //    if (message.mentions.has(discordClient.user) && !message.author.bot) {
 		const from=message.author.username+"@discord";	//skudmarks@discord
-		const name=message.author.displayName;		
+		const name=message.author.displayName;	
+		// check for commands
+		const words=message.content.split(" ",2);
+		const command=words[0];
+		if(command in UserCommands){
+			const blob={command:{name:command,args:words[1],from}};
+			await writeFountain(JSON.stringify(blob,null,0));
+			return;
+		}
+		// chunk the content under discord limit
 		const contents=chunkContent(message.content,4000-400);
 		for(const content of contents){
 			const blob={messages:[{message:content,from}]};
@@ -244,6 +257,9 @@ discordClient.on('messageCreate', async (message) => {
 		if(true||contents.length==0){
 			const quote=quotes[quoteCount++%quotes.length];
 			message.reply("@"+name+" "+quote);
+		}
+		if(true){
+			echo("[MESSAGE]",message);
 		}
 	}
 });

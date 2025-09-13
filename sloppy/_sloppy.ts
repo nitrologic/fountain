@@ -8,7 +8,7 @@
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
-import { startSSH, listenSSH } from "./sloppynet.ts";
+import { startSSH, listenSSH } from "./_sloppynet.ts";
 
 const sloppyBanner="[SLOPPY] sloppyspot 0.06 nitrate discord bot by nitrologic";
 
@@ -234,11 +234,13 @@ function chunkContent(content:string,chunk:number):string[]{
 discordClient.on('messageCreate', async (message) => {
 	if (message.author.bot) return;
 	if (message.content === '!ping') {
-		message.reply('pong!');
+		await message.react("❤️");
+		await message.reply('pong!');
 		openChannel=message.channelId;
 		const flake=message.channelId.toString();
 		console.log("[SLOPPY]","replied pong to flake",flake);
 	}
+	echo("[MESSAGE]",message);
 	if (!message.author.bot && message.channelId==openChannel) {
 //    if (message.mentions.has(discordClient.user) && !message.author.bot) {
 		const from=message.author.username+"@discord";	//skudmarks@discord

@@ -251,6 +251,7 @@ async function onSSHConnection(sshClient: any, name: string) {
 				accept && accept();
 				const {key,value}=info;
 				connection.setEnv(key,value);
+				logSlop({ status: "SSH session env", key, value });
 			});
 		});
 	});
