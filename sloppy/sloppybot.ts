@@ -223,7 +223,9 @@ function chunkContent(content:string,chunk:number):string[]{
 	return chunks;
 }
 
-const UserCommands=["/model"];
+const UserCommands=["model","bibli","spec","sys","announce","listen","think","temp","forge","counter","tag","account","credit",
+"help","nic","config","time","say","audition","log","history","list","load","save","note","dump",
+"begin","finish","reset","cd","dir","drop","attach","share","push","commit","raw","slop"];
 
 // content has BASE_TYPE_MAX_LENGTH = 4000
 discordClient.on('messageCreate', async (message) => {
@@ -243,8 +245,10 @@ discordClient.on('messageCreate', async (message) => {
 		// check for commands
 		const words=message.content.split(" ",2);
 		const command=words[0];
-		if(command in UserCommands){
-			const blob={command:{name:command,args:words[1],from}};
+		const args=words[1]||"";
+		if(UserCommands.includes(command.substring(1))){
+			echo("Command from discord channel",command,args,from)
+			const blob={command:{name:command,args,from}};
 			await writeFountain(JSON.stringify(blob,null,0));
 			return;
 		}
@@ -258,7 +262,7 @@ discordClient.on('messageCreate', async (message) => {
 			const quote=quotes[quoteCount++%quotes.length];
 			message.reply("@"+name+" "+quote);
 		}
-		if(true){
+		if(false){
 			echo("[MESSAGE]",message);
 		}
 	}

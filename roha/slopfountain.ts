@@ -3739,7 +3739,7 @@ async function chat() {
 				if(response.messages){
 					const messages=response.messages;
 					for(const m of messages){
-						const line="["+m.from+"] "+m.message;
+						const line=m.command?m.command:("["+m.from+"] "+m.message);
 						lines.push(line);
 					}
 					break;
@@ -3758,6 +3758,9 @@ async function chat() {
 			if (line === "exit") {
 				break dance;
 			}
+
+			console.log("[CHAT]",line);
+
 			// simon was here
 			line=replaceShortCodes(line);
 			if (line.startsWith("/")&&!line.startsWith("//")) {
@@ -3940,8 +3943,6 @@ let termSize = Deno.consoleSize();
 echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("use /help for latest and exit to quit");
-
-echoFail("test12");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);

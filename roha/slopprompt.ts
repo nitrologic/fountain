@@ -335,6 +335,8 @@ async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
 }
 
+// main egress for discord ssh stdin users
+
 export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	Deno.stdin.setRaw(true);
 	let response={};
@@ -405,7 +407,11 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				try{
 					const blob=JSON.parse(text);
 					if(blob.command){
-						echo("COMMAND detected",text);
+						const command=blob.command;
+						const line=(command.name+" "+command.args).trim();
+						const from=command.from;
+						echo("COMMAND blob received",line,from);						
+						messages.push({command:line,from});
 					}
 					if(blob.messages){
 						for(const message of blob.messages){
@@ -420,7 +426,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				if(messages){
 //					echo("response messages",JSON.stringify({messages}));
 					for(const message of messages){
-						const line="_["+message.from+"] "+message.message;
+						const line=message.command?message.command:("_["+message.from+"] "+ message.message);
 						console.log(line);
 					}
 					response={messages};
