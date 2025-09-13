@@ -415,7 +415,11 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					echo("slopPrompt JSON error",text,error);
 				}
 				if(messages){
-					echo("response messages",JSON.stringify({messages}));
+//					echo("response messages",JSON.stringify({messages}));
+					for(const message of messages){
+						const line="_["+message.from+"] "+message.message;
+						console.log(line);
+					}
 					response={messages};
 					break;
 				}
