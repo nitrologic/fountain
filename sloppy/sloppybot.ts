@@ -23,6 +23,7 @@ const quotes=[
 
 let quoteCount=0;
 
+//let openChannel="1235838347717378118";
 let openChannel="1410693060672753704";
 
 // rate guard required, a sleep 1500 ms currently in force on all writes

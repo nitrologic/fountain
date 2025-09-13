@@ -14,7 +14,7 @@ function echo(...data:any[]){
 
 let listenerPromise;
 const slopConnections=[];
-const receivePromises={}; 
+let receivePromises={}; 
 
 //: Promise<{source:Deno.TcpConn, receive:Uint8Array}>[]=[];
 
@@ -369,9 +369,10 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(error){
 			echo("slopPrompt error",error.message);
 			slopConnections.length=0;
-			receivePromises.clear();
-			listenerPromise=null;
-			break;//continue;
+			receivePromises={};
+			continue;
+//			listenerPromise=null;
+//			break;//continue;
 		}
 		if (connection) {
 			if(name in receivePromises){
