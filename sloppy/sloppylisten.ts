@@ -1,9 +1,7 @@
-// sloppylisten.ts - a sloppy server for Slop Fountain
+// sloppylisten.ts - a sloppy ssh telnet server for Slop Fountain
 // Copyright (c) 2025 Simon Armstrong
 
 // Licensed under the MIT License - See LICENSE file
-
-// for ssh, plain telnet and beyond
 
 import { Buffer, Client, Server } from "npm:ssh2";
 import { readFileSync } from "node:fs";
@@ -155,11 +153,18 @@ class SSHSession {
 			}
 			return;
 		}
-		if (line.length&&!line.startsWith("/")) {
-			const from=this.name;
-			const blob={messages:[{message:line,from}]};
-			const json=JSON.stringify(blob,null,0);
-			await writeFountain(json);
+		if (line.length){
+			if(line.startsWith("/")) {
+				const from=this.name;
+				const blob={messages:[{command:line,from}]};
+				const json=JSON.stringify(blob,null,0);
+				await writeFountain(json);
+			}else{
+				const from=this.name;
+				const blob={messages:[{message:line,from}]};
+				const json=JSON.stringify(blob,null,0);
+				await writeFountain(json);
+			}
 		}
 	}
 

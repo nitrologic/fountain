@@ -425,9 +425,12 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				}
 				if(messages){
 //					echo("response messages",JSON.stringify({messages}));
-					for(const message of messages){
-						const line=message.command?message.command:("_["+message.from+"] "+ message.message);
-						console.log(line);
+
+					if(false){
+						for(const message of messages){
+							const line=message.command?message.command:("_["+message.from+"] "+ message.message);
+							console.log(line);
+						}
 					}
 					response={messages};
 					break;
