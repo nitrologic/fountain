@@ -17,12 +17,11 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 
 // Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
 
-const fountainVersion="1.5.0";
-const fountainName="Fountain "+fountainVersion;
-const defaultModel="deepseek-chat@deepseek";
+const brandFountain="Fountain";
+const fountainVersion="1.5.1";
+const fountainName=brandFountain+" "+fountainVersion;
 
-const ThinSpace="\u2009";
-const HairSpace="\u200A";
+const defaultModel="deepseek-chat@deepseek";
 
 const terminalColumns=100;	// default value for wordWrap()
 const statsColumn=50;
@@ -53,6 +52,9 @@ const rule500= "━".repeat(500);
 const pageBreak=rule500;
 
 const boxChars=["╭╮╰╯─┬┴│┤├┼","┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
+
+const ThinSpace="\u2009";
+const HairSpace="\u200A";
 
 function getEnv(key:string):string{
 	return Deno.env.get(key)||"";
@@ -727,10 +729,10 @@ let statusBuffer=[];
 // override console.error
 // TODO:redirect all existing console.errors
 
-let errorBuffer=[];
+let remoteBuffer=[];
 async function errorHandler(...args:any[]) {
 	const line=args.join(",");
-	errorBuffer.push(line);
+	remoteBuffer.push(line);
 	originalError.apply(console, [line]);//args);
 };
 const originalError=console.error;
@@ -788,7 +790,8 @@ async function echoFail(...args:any){
 		lines.push(line);
 	}
 	const text=lines.join(" ");
-	errorBuffer.push(text);
+	// TODO: verify text joins errors in remoteBuffer
+	remoteBuffer.push(text);
 	const styledText=ansiStyle(text,"bold",2);
 	outputBuffer.push(styledText);
 	outputBuffer.push(cleanupRequired);
@@ -908,14 +911,14 @@ async function readFileNames(path:string,suffix:string){
 
 async function flush() {
 	const send=[];
-	const delay=roha.config.slow ? slowMillis : 0;
-	for (const error of errorBuffer) {
+	const delay=roha.config.slow ? slowMillis : 0;	
+	for (const error of remoteBuffer) {
 		const line="!"+error;
 		send.push(line);
 		rohaPush(line,"PORT");
 		await logForge(line,"PORT");
 	}
-	errorBuffer=[];
+	remoteBuffer=[];
 	for (const mutline of printBuffer) {
 		const mut=mutline.model;
 		const line=mutline.line;
@@ -3739,8 +3742,22 @@ async function chat() {
 				if(response.messages){
 					const messages=response.messages;
 					for(const m of messages){
-						const line=m.command?m.command:("["+m.from+"] "+m.message);
-						lines.push(line);
+						// TODO: remote command execution needs help
+						// TODO: execution ignores rest of lines, lost
+						if(m.command){
+							const commandline=m.command.substring(1);
+							echo("calling",commandline,m);
+							let dirty=await callCommand(commandline);
+							if(dirty){
+								lines.push(warnDirty);
+								break;
+							}
+							continue;
+						}
+						if(m.message){
+							const line=("["+m.from+"] "+m.message);
+							lines.push(line);
+						}
 					}
 					break;
 				}
@@ -3758,10 +3775,8 @@ async function chat() {
 			if (line === "exit") {
 				break dance;
 			}
-
-			console.log("[CHAT]",line);
-
 			// simon was here
+			//console.log("[CHAT]",line);
 			line=replaceShortCodes(line);
 			if (line.startsWith("/")&&!line.startsWith("//")) {
 				const command=line.substring(1).trim();

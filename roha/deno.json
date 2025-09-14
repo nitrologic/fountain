@@ -1,29 +1,8 @@
 {
 	"tasks":{
-		"hello": "deno run slophello.ts",
-		"slopchat": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read --allow-write=./forge slopchat.ts",
 		"slopfountain": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read --allow-write=./forge slopfountain.ts",
-		"slopresponse": "deno run --allow-net --allow-env --allow-sys --allow-read slopresponse.ts",
-		"slopshop": "deno run --allow-net --allow-env --allow-sys --allow-read slopshop.ts",
-		"slopnet": "deno run --allow-net --allow-env --allow-sys --allow-read slopnet.ts",
-		"slopcity": "deno run --allow-net --allow-env --allow-sys --allow-read slopcity.ts",
-		"chat":{
-			"dependencies":["hello","slopchat"]
-		},
 		"fountain":{
-			"dependencies":["hello","slopfountain"]
-		},
-		"skeleton":{
-			"dependencies":["slopresponse"]
-		},
-		"play":{
-			"dependencies":["slopshop"]
-		},
-		"net":{
-			"dependencies":["slopnet"]
-		},
-		"host":{
-			"dependencies":["slopcity"]
+			"dependencies":["slopfountain"]
 		}
 	}
 }
