@@ -1,3 +1,87 @@
+	"meta-llama/Meta-Llama-3.1-405B-Instruct@hyperbolic":{
+		"pricing": [0.55, 2.19],
+		"purpose": "405B Multimodal",
+		"released": "2024-07-23"
+	},
+	"Qwen/Qwen2.5-VL-72B-Instruct@hyperbolic":{
+		"pricing": [0.55, 0.14, 2.19],
+		"purpose": "72B Multimodal",
+		"released": "2024-09-12"
+	},
+	"llama-3.3-70b@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 3.3",
+		"released": "2024-12-06"
+	},
+	"llama-4-maverick-17b-128e-instruct@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 4 maverick",
+		"released": "2025-03-09"
+	},
+	"llama-4-scout-17b-16e-instruct@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 4 scout",
+		"released": "2025-03-09"
+	},
+	"llama3.1-8b@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 3.1",
+		"released": "2024-07-23"
+	},
+	"qwen-3-32b@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted qwen 3",
+		"released": "2025-05-15"
+	},
+	
+	"meta-llama/Llama-3.1-8B-Instruct@nscale":{
+		"pricing":[0.88,0.15,2.5],
+		"purpose":"zuk llama",
+		"released": "2024-07-23"
+	}
+
+	"meta-llama/Meta-Llama-3.1-405B-Instruct@hyperbolic":{
+		"pricing": [0.55, 2.19],
+		"purpose": "405B Multimodal",
+		"released": "2024-07-23"
+	},
+	"Qwen/Qwen2.5-VL-72B-Instruct@hyperbolic":{
+		"pricing": [0.55, 0.14, 2.19],
+		"purpose": "72B Multimodal",
+		"released": "2024-09-12"
+	},
+	"llama-3.3-70b@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 3.3",
+		"released": "2024-12-06"
+	},
+	"llama-4-maverick-17b-128e-instruct@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 4 maverick",
+		"released": "2025-03-09"
+	},
+	"llama-4-scout-17b-16e-instruct@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 4 scout",
+		"released": "2025-03-09"
+	},
+	"llama3.1-8b@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted llama 3.1",
+		"released": "2024-07-23"
+	},
+	"qwen-3-32b@cerebras":{
+		"pricing": [1.60,6.40],
+		"purpose": "happyface cerebras hosted qwen 3",
+		"released": "2025-05-15"
+	},
+	"meta-llama/Llama-3.1-8B-Instruct@nscale":{
+		"pricing":[0.88,0.15,2.5],
+		"purpose":"zuk llama",
+		"released": "2024-07-23"
+	}
+
+
 [BOT] [
   "[MESSAGE]",
   <ref *1> Message {
