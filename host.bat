@@ -1,6 +1,6 @@
 chcp 65001
 echo off
 echo Hosting SlopCity  
-pushd roha
+pushd sloppy
 deno task host
 popd

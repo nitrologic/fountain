@@ -228,6 +228,7 @@ function onTick(tick){
 					console.log("pollSession unhandled event:"+JSON.stringify(message));
 			}
 		}else{
+/*			
 			const sessionhandler=messageHandlers[message.type];
 			let handled=false;
 			if(sessionhandler){
@@ -240,7 +241,7 @@ function onTick(tick){
 				handler(message);
 				handled=true;
 			}
-			
+*/			
 			if(!handled){
 				log("pollSession unhandled message:"+JSON.stringify(message));
 			}

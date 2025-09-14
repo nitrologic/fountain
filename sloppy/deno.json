@@ -3,12 +3,16 @@
 		"sloppybot": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read sloppybot.ts",
 		"sloppylisten": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppylisten.ts",
 		"sloppynet": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppynet.ts",
-		"bot" : "deno task sloppybot & deno task sloppylisten",
-		"bot2":{
+		"sloppyhost": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppyhost.ts",
+		"host":{
+			"dependencies":["sloppyhost"]
+		},
+		"bot":{
 			"dependencies":["sloppybot"]
 		},
 		"listen":{
 			"dependencies":["sloppylisten"]
-		}
+		},
+		"botlisten" : "deno task sloppybot & deno task sloppylisten"
 	}
 }
