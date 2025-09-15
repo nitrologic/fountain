@@ -6,7 +6,7 @@
 
 "use strict"
 
-const AppVersion="Slop Studio 0.1"
+const AppVersion="Slop Studio 0.2"
 const AppBanner=AppVersion+" ©2025 nitrologic All Rights Reserved";
 const AppAbout="a boot";
 

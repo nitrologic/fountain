@@ -1,0 +1,11 @@
+Slop Studio 0.1 ©2025 nitrologic All Rights Reserved
+Connection courtesy nitro at ryzen5 on Windows 10.0.26100 Session slopfiles15300.3
+onRPCLoad parse exception ReferenceError: messageHandlers is not defined from sys.tick ({"session":"slopfiles15300.3","tick":0,"events":[]})
+{"jsonrpc":"2.0","id":2,
+
+"result":{"messages":["{\"request\":
+
+
+{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles15300.2\",\"tick\":1,\"events\":[]}},
+
+\"result\":[\"{\\\"request\\\":{\\\"jsonrpc\\\":\\\"2.0\\\",\\\"id\\\":2,\\\"method\\\":\\\"sys.tick\\\",\\\"params\\\":
