@@ -104,12 +104,11 @@ export async function slopBroadcast(text:string,from:string){
 	if(text && from){
 		const message=text.replaceAll("\r\n","\n").replaceAll("\n","\r\n");
 		const json=JSON.stringify({messages:[{message,from}]},null,0);
-		const bytes=encoder.encode(json+"\t");
+		// NDJSON is the rule
+		const bytes=encoder.encode(json+"\n");
 		const n=bytes.byteLength;
 		try{
 			for(const slopConnection of slopConnections){
-				const bytes=encoder.encode(json+"\t");
-				const n=bytes.byteLength;
 				let total=0;
 				while(total<n){
 					const packet=bytes.subarray(total);
