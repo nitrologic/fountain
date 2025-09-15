@@ -1,5 +1,10 @@
 # code under observation
 
+## http
+
+Never mind the the ssh and discord, here's the web client.
+
+The sloppyhost.ts (198) and slophole.ts (121) worker deno script
 
 ## SSH
 
@@ -17,8 +22,6 @@ Viewers at home will notice
 ### ssh localhost
 
 ![](../slop/screenshots/ssh-local.png)
-
-
 
 ## Discord 
 

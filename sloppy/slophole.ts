@@ -14,7 +14,7 @@ interface SlopHoleMessage {
 // [hole] fountain slopPipe worker thread
 
 function echo(...data: any[]){
-	console.error("\t\t[hole]",data);
+	console.error("[HOLE]",data);
 }
 
 let slopPipe:Deno.Conn;
@@ -89,7 +89,6 @@ async function readFountain(){
 self.onmessage = async(e) => {
 	const command=e.data.command;
 	const data=e.data.data;
-
 	switch(command){
 		case "open": {
 			const connected=await connectFountain()

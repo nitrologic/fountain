@@ -1,4 +1,4 @@
-// sloppyhost.ts - http file server and jsonrpc for slop fountain clients
+// sloppyhost.ts - http file server and jsonrpc for slop fountain egress ingress
 
 // (c)2025 Simon Armstrong 
 // Licensed under the MIT License - See LICENSE file

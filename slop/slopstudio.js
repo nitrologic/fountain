@@ -288,6 +288,7 @@ function log(...data){
 	console.log(line);
 	const text=document.createTextNode(line+"\n");
 	logText.appendChild(text);
+	logText.appendChild(document.createElement("br"));
 	logText.scrollTop=logText.scrollHeight;
 }
 

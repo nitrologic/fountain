@@ -91,6 +91,8 @@ function addLog(group){
 	const div=document.createElement("div");
 	div.className="log";
 	group.appendChild(div);
+	const br=document.createElement('br');
+	group.appendChild(br);
 	return div;
 }
 
