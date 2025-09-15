@@ -56,7 +56,8 @@ async function onFountain(message:string){
 		try{
 			let cursor=0;
 			while(cursor<line.length){
-				const delim=line.indexOf("}\t{",cursor);// less than healthy
+				// NDJSON is the rule
+				const delim=line.indexOf("}\n{",cursor);// less than healthy
 				const json=(delim==-1)?line.substring(cursor):line.substring(cursor,delim+1);
 				cursor+=json.length;
 				const payload=JSON.parse(json);

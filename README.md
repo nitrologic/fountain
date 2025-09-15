@@ -1,5 +1,6 @@
 [![Deno](https://img.shields.io/badge/deno-2.4.2-black?logo=deno)](https://deno.land/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+[![Discord](https://img.shields.io/discord/GUILD_ID?label=discord&logo=discord)](https://discord.gg/rkFjKvwD)
 
 # ꕶLOP Fountain ⛲
 
