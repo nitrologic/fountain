@@ -15,7 +15,7 @@ let slopPail:unknown[]=[];
 function logSlop(_result:any){
 	const message=JSON.stringify(_result);
 	if(message!=slopMessage){
-		console.error("\t\t\t\t[slopfiles]",message);
+		console.error("[HOST]",message);
 		slopMessage=message;
 	}
 	slopPail.push(message);
@@ -38,7 +38,7 @@ async function sleep(ms:number) {
 // [slop] serve files
 
 async function servePath(request:Request,path:string):Promise<Response>{
-//	console.log("[slop] servePath",path);
+//	console.log("[HOST] servePath",path);
 	return await serveFile(request,path);
 }
 
@@ -175,23 +175,23 @@ Deno.serve(async (request) => {
 			default:
 				return new Response("Not Found", { status: 404 });
 		}
-		console.error("\t\t[slop]",method,JSON.stringify(result));
+		console.error("[HOST]",method,JSON.stringify(result));
 		const headers={"Content-Type":"application/json","Access-Control-Allow-Origin":"*"};
 		return new Response(JSON.stringify(result),{headers});
 	}
 	switch(path){
 		case "/":{
-			const response=await servePath(request,"../slop/slop.html");
+			const response=await servePath(request,"../web/slop.html");
 			return response;
 		}
 		case "/slopstudio.js":
 		case "/slopdom.js":
 		case "/slop.css":
 		case "/favicon.ico":{
-			const response=await servePath(request,"../slop/"+path);
+			const response=await servePath(request,"../web/"+path);
 			return response;
 		}
 	}
-	console.log("[slop] File Not Found path:",path);
+	console.log("[HOST] File Not Found path:",path);
 	return new Response("Not Found",{status:404});
 });
