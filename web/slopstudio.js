@@ -55,7 +55,7 @@ function onLocalEvent(e){
 function flushLocalEvents(){
 	const events=localEventQueue;
 	localEventQueue=[];
-	return events;
+	return [];//events;
 }
 
 function onRemoteEvent(src,handler){

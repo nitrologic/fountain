@@ -1,4 +1,4 @@
-// slophole.ts - slophole is a slopcity slopnet worker
+// slophole.ts - a sloppyhost worker
 
 // (c)2025 Simon Armstrong 
 // Licensed under the MIT License - See LICENSE file
@@ -14,7 +14,7 @@ interface SlopHoleMessage {
 // [hole] fountain slopPipe worker thread
 
 function echo(...data: any[]){
-	console.error("[HOLE]",data);
+	console.error("[HOLE]",...data);
 }
 
 let slopPipe:Deno.Conn;
@@ -22,6 +22,9 @@ let slopPipe:Deno.Conn;
 const rxBufferSize=1e6;
 
 const rxBuffer = new Uint8Array(rxBufferSize);
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
 async function writeFountain(message:string){
 	if(!slopPipe) return;
@@ -34,9 +37,6 @@ async function writeFountain(message:string){
 	}
 	echo("wrote",message);
 }
-
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
 
 async function connectFountain():Promise<boolean>{
 	try{
@@ -79,9 +79,10 @@ async function readFountain(){
 		self.postMessage({disconnected});
 	}else{
 		const received = rxBuffer.subarray(0, n);
-		const message = decoder.decode(received);
-		echo("slopPipe received:", message);		
-		self.postMessage({received:message});
+		const messages = decoder.decode(received);
+		echo("slopPipe received:", messages);		
+		// TODO: NDJSON here?
+		self.postMessage(messages);
 	}
 	readingSlop=false;
 }

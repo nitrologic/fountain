@@ -3,6 +3,8 @@
 // (c)2025 Simon Armstrong 
 // Licensed under the MIT License - See LICENSE file
 
+// see slophole.ts for singleton worker based transport
+
 import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";                                                                                                                                                                             
 
 const slopPid=Deno.pid;

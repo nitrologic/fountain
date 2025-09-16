@@ -1,0 +1,26 @@
+[HOST] "{\"messages\":[{\"message\":\"!readConnection error ConnectionReset: An existing connection was forcibly closed by the remote host. (os error 10054)\\r\\n!connection accepted connection7\",\"from\":\"slop\"}]}\n"
+[HOST] File Not Found path: /.well-known/appspecific/com.chrome.devtools.json
+[HOST] sys.info {"jsonrpc":"2.0","id":1,"result":{"hostName":"ryzen5","userName":"nitro","platform":"Windows 10.0.26100","session":"slopfiles18204.1"}}
+
+[HOST] {
+      "request":{"jsonrpc":"2.0","id":2,"method":"sys.tick","params":{"session":"slopfiles18204.1","tick":0,"events":[]}},
+      "result":["{\"connected\":true}","\"{\\\"messages\\\":[{\\\"message\\\":\\\"!readConnection error ConnectionReset: An existing connection was forcibly closed by the remote host. (os error 10054)\\\\r\\\\n!connection accepted connection7\\\",\\\"from\\\":\\\"slop\\\"}]}\\n\""]}
+
+
+[HOST] sys.tick {"jsonrpc":"2.0","id":2,"result":{"messages":["{\"connected\":true}","\"{\\\"messages\\\":[{\\\"message\\\":\\\"!readConnection error ConnectionReset: An existing connection was forcibly closed by the remote host. (os error 10054)\\\\r\\\\n!connection accepted connection7\\\",\\\"from\\\":\\\"slop\\\"}]}\\n\""]}}
+[HOST] {"request":{"jsonrpc":"2.0","id":3,"method":"sys.tick","params":{"session":"slopfiles18204.1","tick":1,"events":[]}},"result":["{\"request\":{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles18204.1\",\"tick\":0,\"events\":[]}},\"result\":[\"{\\\"connected\\\":true}\",\"\\\"{\\\\\\\"messages\\\\\\\":[{\\\\\\\"message\\\\\\\":\\\\\\\"!readConnection error ConnectionReset: An existing connection was forcibly closed by the remote host. (os error 10054)\\\\\\\\r\\\\\\\\n!connection accepted connection7\\\\\\\",\\\\\\\"from\\\\\\\":\\\\\\\"slop\\\\\\\"}]}\\\\n\\\"\"]}"]}
+[HOST] sys.tick {"jsonrpc":"2.0","id":3,"result":{"messages":["{\"request\":{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles18204.1\",\"tick\":0,\"events\":[]}},\"result\":[\"{\\\"connected\\\":true}\",\"\\\"{\\\\\\\"messages\\\\\\\":[{\\\\\\\"message\\\\\\\":\\\\\\\"!readConnection error ConnectionReset: An existing connection was forcibly closed by the remote host. (os error 10054)\\\\\\\\r\\\\\\\\n!connection accepted connection7\\\\\\\",\\\\\\\"from\\\\\\\":\\\\\\\"slop\\\\\\\"}]}\\\\n\\\"\"]}"]}}
+
+
+[HOST] {"received":"{\"messages\":[{\"message\":\"!connection accepted connection1\",\"from\":\"slop\"}]}\n"}
+[HOST] "{\"messages\":[{\"message\":\"!connection accepted connection1\",\"from\":\"slop\"}]}\n"
+[HOST] sys.info {"jsonrpc":"2.0","id":1,"result":{"hostName":"ryzen5","userName":"nitro","platform":"Windows 10.0.26100","session":"slopfiles25096.1"}}
+[HOST] {
+      "request":
+            {"jsonrpc":"2.0","id":2,"method":"sys.tick","params":{"session":"slopfiles25096.1","tick":0,"events":[]}},      
+      "result":
+            ["{\"connected\":true}",
+            "{\"received\":\"{\\\"messages\\\":[{\\\"message\\\":\\\"!connection accepted connection1\\\",\\\"from\\\":\\\"slop\\\"}]}\\n\"}","\"{\\\"messages\\\":[{\\\"message\\\":\\\"!connection accepted connection1\\\",\\\"from\\\":\\\"slop\\\"}]}\\n\""]}
+[HOST] sys.tick {"jsonrpc":"2.0","id":2,"result":{"messages":["{\"connected\":true}","{\"received\":\"{\\\"messages\\\":[{\\\"message\\\":\\\"!connection accepted connection1\\\",\\\"from\\\":\\\"slop\\\"}]}\\n\"}","\"{\\\"messages\\\":[{\\\"message\\\":\\\"!connection accepted connection1\\\",\\\"from\\\":\\\"slop\\\"}]}\\n\""]}}
+[HOST] {"request":{"jsonrpc":"2.0","id":3,"method":"sys.tick","params":{"session":"slopfiles25096.1","tick":1,"events":[]}},"result":["{\"request\":{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles25096.1\",\"tick\":0,\"events\":[]}},\"result\":[\"{\\\"connected\\\":true}\",\"{\\\"received\\\":\\\"{\\\\\\\"messages\\\\\\\":[{\\\\\\\"message\\\\\\\":\\\\\\\"!connection accepted connection1\\\\\\\",\\\\\\\"from\\\\\\\":\\\\\\\"slop\\\\\\\"}]}\\\\n\\\"}\",\"\\\"{\\\\\\\"messages\\\\\\\":[{\\\\\\\"message\\\\\\\":\\\\\\\"!connection accepted connection1\\\\\\\",\\\\\\\"from\\\\\\\":\\\\\\\"slop\\\\\\\"}]}\\\\n\\\"\"]}"]}
+[HOST] sys.tick {"jsonrpc":"2.0","id":3,"result":{"messages":["{\"request\":{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles25096.1\",\"tick\":0,\"events\":[]}},\"result\":[\"{\\\"connected\\\":true}\",\"{\\\"received\\\":\\\"{\\\\\\\"messages\\\\\\\":[{\\\\\\\"message\\\\\\\":\\\\\\\"!connection accepted connection1\\\\\\\",\\\\\\\"from\\\\\\\":\\\\\\\"slop\\\\\\\"}]}\\\\n\\\"}\",\"\\\"{\\\\\\\"messages\\\\\\\":[{\\\\\\\"message\\\\\\\":\\\\\\\"!connection accepted connection1\\\\\\\",\\\\\\\"from\\\\\\\":\\\\\\\"slop\\\\\\\"}]}\\\\n\\\"\"]}"]}}
