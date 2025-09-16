@@ -282,7 +282,9 @@ export async function readFountain(){
 				const received = rxBuffer.subarray(0, n);
 				const chars = fountainDecoder.decode(received);
 				fountainBuffer=fountainBuffer+chars;
-				const pos=fountainBuffer.indexOf("\t");
+				// NDJSON is the rule
+				// sloppyutil readfountaing work in progress
+				const pos=fountainBuffer.indexOf("\n");
 //				echo("readFountain",fountainBuffer,pos);
 				if(pos!=-1){
 					const line=fountainBuffer.substring(0,pos);

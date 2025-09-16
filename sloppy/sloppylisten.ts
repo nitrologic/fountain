@@ -24,8 +24,8 @@ export const ANSI={
 
 const sloppyStyle=ANSI.NavyBackground+ANSI.White+ANSI.Clear;
 
-const sloppyLogo="✴ slopspace";
-const sloppyNetVersion=0.5;
+const sloppyLogo="✴ slopcity";
+const sloppyNetVersion=0.7;
 
 // raw key handling work in progress
 // ssh-keygen -t rsa -f hostkey_rsa -N ''.
@@ -50,7 +50,7 @@ const notice="type exit to quit";
 
 function logSlop(_result:any) {
 	const message=JSON.stringify(_result);
-	console.error("\t[SLOPPYNET]",message);
+	console.error("[LISTEN]",message);
 	slopPail.push(message);
 }
 
@@ -77,7 +77,7 @@ export async function onFountain(message:string){
 		try{
 			let cursor=0;
 			while(cursor<line.length){
-				const delim=line.indexOf("}\t{",cursor);// less than healthy
+				const delim=line.indexOf("}\n{",cursor);// less than healthy
 				const json=(delim==-1)?line.substring(cursor):line.substring(cursor,delim+1);
 				cursor+=json.length;
 				const payload=JSON.parse(json);

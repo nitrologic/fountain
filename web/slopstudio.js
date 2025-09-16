@@ -210,42 +210,7 @@ function onTick(tick){
 	pollMillis=millis;
 //	var index=tick.index;
 	for(const message of tick.messages){
-		if(message.type=="EventSink.underflow"){
-			continue;
-		}
-		// event and remotevent processing
-		if(message.type=="event"){
-			const event=message.content;
-			event.tick=message.tick;
-			event.source=message.source;
-			const handlers=remoteEventHandlers[event.src];
-			if(handlers){
-				for(const handler of handlers){
-					handler(event);
-				}
-			}else{
-				if(event.src!="pcm")
-					console.log("pollSession unhandled event:"+JSON.stringify(message));
-			}
-		}else{
-/*			
-			const sessionhandler=messageHandlers[message.type];
-			let handled=false;
-			if(sessionhandler){
-				sessionhandler(message)
-				handled=true;
-			}
-
-			const handlers=remoteHandlers[message.type]||[];
-			for(var handler of handlers){
-				handler(message);
-				handled=true;
-			}
-*/			
-			if(!handled){
-				log("pollSession unhandled message:"+JSON.stringify(message));
-			}
-		}
+		// someone was here
 	}
 	if(PollSession){
 		pollSession();
@@ -350,7 +315,7 @@ function onKeydown(e){
 		const text=promptBox.value;
 		promptBox.value="";
 		if(text){
-			log("[studio]",text);
+			log("[STUDIO]",text);
 			queueMessage(text);
 // todo: send prompt to sloppipe connection
 
