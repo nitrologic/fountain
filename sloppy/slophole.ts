@@ -79,7 +79,8 @@ async function readFountain(){
 		self.postMessage({disconnected});
 	}else{
 		const received = rxBuffer.subarray(0, n);
-		const messages = decoder.decode(received);
+		const json = decoder.decode(received);
+		const messages=JSON.parse(json);
 		echo("slopPipe received:", messages);		
 		// TODO: NDJSON here?
 		self.postMessage(messages);
