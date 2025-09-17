@@ -15,7 +15,7 @@ let slopPail:unknown[]=[];
 function logSlop(_result:any){
 	const message=JSON.stringify(_result);
 	if(message!=slopMessage){
-		console.error("\t\t\t\t[slopfiles]",message);
+		console.error("[CITY]",message);
 		slopMessage=message;
 	}
 	slopPail.push(message);
