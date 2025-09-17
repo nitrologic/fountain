@@ -3481,6 +3481,13 @@ async function relay(depth:number) {
 			return spend;
 		}
 
+		// TODO investigate legacy codex interface
+		if(info&&info.endpoints&&info.endpoints.includes("v1/responses")){
+			//responses){//!endpoint.chat.completions){
+			echo("[RELAY] model requires responses not copmletions")
+			return 0;
+		}
+
 		// [RELAY] endpoint chat completions.create
 		// this call can throw from DeepSeek API
 		const completion=await endpoint.chat.completions.create(payload);
