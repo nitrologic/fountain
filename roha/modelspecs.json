@@ -1,4 +1,16 @@
 {
+	"deepseek-chat@deepseek": {
+		"pricing": [0.27, 0.07, 1.10],
+		"released": "2025-03-24",
+		"purpose": "V3-0324 General conversation and text generation",
+		"press": "Cost-effective model for versatile tasks, trained on massive text datasets."
+	},
+	"deepseek-reasoner@deepseek": {
+		"pricing": [0.56, 0.07, 1.68],
+		"released": "2025-05-28",
+		"purpose": "R1-0528 Advanced reasoning and problem-solving",
+		"press": "High-performance model for complex math, coding, and logical tasks."
+	},
 	"codex-mini-latest@openai":{
 		"pricing":[0.60,12.0],
 		"purpose":"coding stuff",
@@ -33,18 +45,6 @@
 		"press":"supporting up to ? million tokens of context",
 		"reality":"hopefully does not suffer from clueless ideation"
 	},
-	"deepseek-chat@deepseek": {
-		"pricing": [0.27, 0.07, 1.10],
-		"released": "2025-03-24",
-		"purpose": "V3-0324 General conversation and text generation",
-		"press": "Cost-effective model for versatile tasks, trained on massive text datasets."
-	},
-	"deepseek-reasoner@deepseek": {
-		"pricing": [0.55, 0.14, 2.19],
-		"released": "2025-05-28",
-		"purpose": "R1-0528 Advanced reasoning and problem-solving",
-		"press": "High-performance model for complex math, coding, and logical tasks."
-	},
 	"qwen3-max-preview@alibaba":{
 		"pricing": [1.20,6.00],
 		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
@@ -52,6 +52,10 @@
 	"qwen-max@alibaba":{
 		"pricing": [1.60,6.40],
 		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
+	},
+	"qwen-plus-2025-09-11@alibaba":{
+		"pricing": [0.4,1.20],
+		"purpose":"Balanced performance, speed and cost."
 	},
 	"qwen-plus@alibaba":{
 		"pricing":[0.40,1.20],
@@ -255,8 +259,8 @@
 	},
 	"kimi-k2-0905-preview@moonshot": {
 		"pricing": [0.60,0.15,2.5],
-		"purpose": "Mixture of Experts model, 128K context window",
-		"press": "Enhanced accuracy through a Mixture of Experts approach."
+		"purpose": "Large scale mixture of Experts model, 128K context window",
+		"press": "Embraces lunacy with a smile, fabricate that date kimi k2."
 	},
 	"kimi-k2-0711-preview@moonshot": {
 		"pricing": [0.60,0.15,2.5],

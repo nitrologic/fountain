@@ -1,4 +1,5 @@
+- audit command to track latest model release dates and versions
 - ssh backspace, delete key
-- slopPrompt backspace, delete key, mouse control, paste unicode
+- slopPrompt cusor left, backspace, delete
 - audition markup with meta data
 - drop individual share by index
