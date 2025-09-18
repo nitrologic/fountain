@@ -3484,7 +3484,7 @@ async function relay(depth:number) {
 		// TODO investigate legacy codex interface
 		if(info&&info.endpoints&&info.endpoints.includes("v1/responses")){
 			//responses){//!endpoint.chat.completions){
-			echo("[RELAY] model requires responses not copmletions")
+			echo("[RELAY] model requires responses not completions")
 			return 0;
 		}
 
