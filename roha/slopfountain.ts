@@ -15,7 +15,7 @@ import { decodeBase64, encodeBase64 } from "https://deno.land/std/encoding/base6
 import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 
-// Testing with Deno 2.4.5, V8 13.7.152.14, TypeScript 5.8.3
+// Testing with Deno 2.5.1, V8 14.0.365.4-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
 const fountainVersion="1.5.1";
