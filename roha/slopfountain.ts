@@ -131,7 +131,7 @@ const ANSI={
 	DEVICE_STATUS:"\x1b[5n",
 	DSR:"\x1b[6n",
 	FG:{
-		WHITE:"\x1b[38;5;255m"		
+		WHITE:"\x1b[38;5;255m"
 	},
 	BG:{
 		GREY:"\x1b[48;5;232m",
@@ -736,7 +736,7 @@ async function errorHandler(...args:any[]) {
 	originalError.apply(console, [line]);//args);
 };
 const originalError=console.error;
-console.error=errorHandler; 
+console.error=errorHandler;
 
 
 function print():void{
@@ -911,7 +911,7 @@ async function readFileNames(path:string,suffix:string){
 
 async function flush() {
 	const send=[];
-	const delay=roha.config.slow ? slowMillis : 0;	
+	const delay=roha.config.slow ? slowMillis : 0;
 	for (const error of remoteBuffer) {
 		const line="!"+error;
 		send.push(line);
@@ -1571,7 +1571,7 @@ async function connectDeepSeek(account,config) {
 		const models=await response.json();
 		const list=[];
 		for (const model of models.data) {
-			echo("[DEEPSEEK]",model);
+//			echo("[DEEPSEEK]",model);
 			const name=model.id+"@"+account;
 			list.push(name);
 // dont do this	if(verbose) echo("model - ",JSON.stringify(model,null,"\t"));
@@ -1837,7 +1837,7 @@ async function historyCommand(words){
 	let lineNumber=0;
 	let sessions=[];
 	let tags={};
-	let days={};	
+	let days={};
 	for(const line of lines){
 		const hex=line.substring(0,8);	// ignore 16ths
 		const secs=parseInt(hex,16);
@@ -2795,6 +2795,30 @@ async function sayCommand(words){
 	await geminiSay(message.content);
 }
 
+
+async function openCommand(words){
+	const messages=rohaHistory;
+	const message=messages.at(-1);
+	// todo use args
+	const path:string=words.slice(1).join(" ").trim()||"fountain.md";
+	const parts:string[]=[];
+	let command="";
+	if (Deno.build.os === "darwin") {
+		command = "open";
+		parts.push(path);
+	} else if (Deno.build.os === "linux") {
+		command = "xdg-open";
+		parts.push(path);
+	} else if (Deno.build.os === "windows") {
+		command = "cmd";
+		parts.push("/c", "start", "", [path]);
+	} else {
+		console.error("Unsupported OS");
+		return;
+	}
+	new Deno.Command(command, { args: parts }).spawn();
+}
+
 // modelCommand - list table of models
 
 const modelKeys="📠📷📘🔉";
@@ -2955,11 +2979,15 @@ async function callCommand(command:string) {
 				}
 				break;
 			case "time":
-				echo("Current time:", new Date().toString());
+				echo("Local time:", new Date().toString());
 				break;
 			case "say":
 				await sayCommand(words);
 				echo(":)");
+				break;
+			case "open":
+				await openCommand(words);
+				echo(":]");
 				break;
 			case "audition":
 				await auditionCommand();

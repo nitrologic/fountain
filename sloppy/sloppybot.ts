@@ -225,7 +225,7 @@ function chunkContent(content:string,chunk:number):string[]{
 }
 
 const UserCommands=["model","bibli","spec","sys","announce","listen","think","temp","forge","counter","tag","account","credit",
-"help","nic","config","time","say","audition","log","history","list","load","save","note","dump",
+"help","nic","config","time","say","open","audition","log","history","list","load","save","note","dump",
 "begin","finish","reset","cd","dir","drop","attach","share","push","commit","raw","slop"];
 
 // content has BASE_TYPE_MAX_LENGTH = 4000
