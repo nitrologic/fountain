@@ -18,7 +18,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.5.1, V8 14.0.365.4-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.5.1";
+const fountainVersion="1.5.2";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -191,7 +191,6 @@ const slopPath=resolve(appDir,"../slop");
 
 const forgePath=resolve(appDir,"forge");
 const rohaPath=resolve(forgePath,"forge.json");
-const rawPath=resolve(appDir,"../../nitrologic.github.io/raw");
 
 const modelAccounts=JSON.parse(await Deno.readTextFile(accountsPath));
 const modelSpecs=JSON.parse(await Deno.readTextFile(specsPath));
@@ -1917,37 +1916,6 @@ async function stripLog(path:string,counts){
 	echo("[STRIP]",path,count,minDate,maxDate);
 }
 
-// TODO: split the screen and display slop in right column
-// stolen from shareDir
-async function rawCommand(words:string[]){
-	const counts={};
-	const dir=rawPath;
-//	console.log("[RAW]",dir);
-	try {
-		for await (const file of Deno.readDir(dir)) {
-			const path=resolvePath(dir, file.name);
-			const stat=await Deno.stat(path);
-			const size=stat.size||0;
-			const modified=dateStamp(stat.mtime.getTime()/1e3);
-			const hash=await hashFile(path);
-//			echo("[RAW]",file,size,modified);
-			await stripLog(path,counts);
-		}
-	} catch (error) {
-		echo("rawCommand error",String(error)); //.message
-		throw error;
-	}
-	for(const from in counts){
-		echo("RAW",from,counts[from]);
-	}
-}
-
-
-function slopCommand(words:string[]){
-
-
-}
-
 async function shareCommand(words:string[]){
 	const tag="";
 	const r=words[1];
@@ -3107,12 +3075,6 @@ async function callCommand(command:string) {
 					}
 					dirty=await commitShares(tag);
 				}
-				break;
-			case "raw":
-				await rawCommand(words);
-				break;
-			case "slop":
-				slopCommand(words);
 				break;
 			default:
 				echo("Command not recognised",words[0]);

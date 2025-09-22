@@ -93,6 +93,10 @@ List the contents of the current working directory.
 
 Helps user view available files and folders to share.
 
+### /open
+
+Open document with specified path.
+
 ## Model Under Test
 
 ### /model (all)
