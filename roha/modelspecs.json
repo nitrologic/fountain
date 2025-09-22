@@ -160,8 +160,18 @@
 		"press":"Balanced performance across tasks with a 1 million token context window, built for the era of Agents.",
 		"reality":"A tendency to regurgitate Mr Creosote style."
 	},
+	"grok-4-fast-non-reasoning@xai":{
+		"pricing": [0.20, 0.05, 0.50],
+		"released": "2025-09-19",
+		"purpose":"2M context window."
+	},
+	"grok-4-fast-reasoning@xai":{
+		"pricing": [0.20, 0.05, 1.50],
+		"released": "2025-09-19",
+		"purpose":"2M context window."
+	},
 	"grok-code-fast-1@xai":{
-		"pricing": [0.20, 1.50],
+		"pricing": [0.20, 0.02, 1.50],
 		"released": "2025-08-20",
 		"purpose":"256K context window."
 	},
