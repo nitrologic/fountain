@@ -1,3 +1,19 @@
+ctrl f1-f4
+
+[RAW] CSI ?  Uint8Array(6) [ 27, 91, 49, 59, 53, 80 ]
+[RAW] CSI ?  Uint8Array(6) [ 27, 91, 49, 59, 53, 81 ]
+[RAW] CSI ?  Uint8Array(6) [ 27, 91, 49, 59, 53, 82 ]
+[RAW] CSI ?  Uint8Array(6) [ 27, 91, 49, 59, 53, 83 ]
+
+const modelTests=[
+	"Tell us your name, version and any specs you are permitted to share.",
+	"You are in conversation with models and users. How many have contributed to date?",
+	"Which neighborhood is Gaia BH3",
+	"Thanks, see you on the other side"
+];
+
+/share slopfountain.ts
+
 // calls StripLog on all files contained in rawPath dir with counts accumulator 
 const rawPath=resolve(appDir,"../../nitrologic.github.io/raw");
 async function rawCommand(words:string[]){

@@ -51,6 +51,16 @@
 		"press":"supporting up to ? million tokens of context",
 		"reality":"hopefully does not suffer from clueless ideation"
 	},
+	"qwen3-next-80b-a3b-instruct@alibaba":{
+		"pricing":[0.10,0.80],
+		"multi":true,
+		"purpose":"Open source Qwen3 model"
+	},
+	"qwen3-next-80b-a3b-thinking@alibaba":{
+		"pricing":[0.10,0.80],
+		"multi":true,
+		"purpose":"Open source Qwen3 model"
+	},
 	"qwen3-max-preview@alibaba":{
 		"pricing": [1.20,6.00],
 		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
