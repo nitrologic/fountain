@@ -1,5 +1,5 @@
-- open command for markdown files and images
-- audit command to track latest model release dates and versions
+- [RELAY] model requires responses not completions
+- audit command aka raw to track latest model release dates and versions
 - ssh backspace, delete key, polish rawmode input
 - slopPrompt cursor left, backspace, delete
 - audition markup with meta data
