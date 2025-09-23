@@ -3495,6 +3495,14 @@ async function relay(depth:number) {
 			const replies=[];
 			for (const chunk of response.output) {
 				switch(chunk.type){
+					case "reasoning":
+						const summary=chunk.summary;
+						if(summary?.length && roha.config.reasonoutloud){
+							for(const sum of summary){
+								echo("[REASON]",sum);
+							}
+						}
+						break;
 					case "message":
 						const contents=chunk.content;//[type,annotations,logprobs,text]
 						for(const block of contents){
@@ -3525,15 +3533,6 @@ async function relay(depth:number) {
 
 			return 0;
 		}
-/*		
-				const reasoning=choice.message.reasoning_content;
-				if(reasoning && roha.config.reasonoutloud){
-					print("=== reasoning ===");
-					// print chain of thought
-					println(reasoning);
-					print("=================");
-				}
-*/
 		// drop through to legacy completions version
 
 		// [RELAY] endpoint chat completions.create
