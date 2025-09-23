@@ -6,7 +6,8 @@
 
 import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
-import { OpenAI } from "https://deno.land/x/openai@v4.69.0/mod.ts";
+import { OpenAI } from "jsr:@openai/openai@5.23.0";
+
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
 import { TextToSpeechClient } from "npm:@google-cloud/text-to-speech";
@@ -3410,21 +3411,23 @@ async function relay(depth:number) {
 	const strictMode=info&&info.strict;
 	const multiMode=info&&info.multi;
 	const speech=info&&info.endpoints&&info.endpoints.includes("v1/audio/speech");
-//	const inlineMode=info&&info.inline;
+	const responses=info&&info.endpoints&&info.endpoints.includes("v1/responses");
+	//	const inlineMode=info&&info.inline;
 	const modelAccount=grokModel.split("@");
 	const model=modelAccount[0];
 	const account=modelAccount[1];
-	const endpoint=rohaEndpoint[account];
+	const endpoint:OpenAI=rohaEndpoint[account];
 	const config=modelAccounts[account];
 	const mut=mutName(model);
 	let payload={model,mut};
 	let spend=0;
 	let elapsed=0;
+
 //	if(verbose)echo("[RELAY] ",depth,mut);
 	try {
 	// prepare payload
 		payload={model};
-		if(strictMode){
+		if(strictMode || responses){
 			payload.messages=strictHistory(rohaHistory);
 		}else if(multiMode){
 			// warning - not compatible with google generative ai api
@@ -3454,10 +3457,8 @@ async function relay(depth:number) {
 			const dump=JSON.stringify(payload,null,"\t");
 			echo("[RELAY] payload",dump);
 		}
-
 		//[RELAY] unhandled error 404 This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?
 		//[RELAY] Error: 404 This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?
-
 		// TODO: OpenAI TTS support incoming
 		if(speech){
 			const message=payload.messages.at(-1);
@@ -3471,16 +3472,181 @@ async function relay(depth:number) {
 			return spend;
 		}
 
-		// TODO investigate legacy codex interface
-		if(info&&info.endpoints&&info.endpoints.includes("v1/responses")){
-			//responses){//!endpoint.chat.completions){
-			echo("[RELAY] model requires responses not completions")
+		// [RELAY] responses endpoint using input
+
+		if(responses){
+			const instructions=rohaGuide.join(" ");
+			const response = await endpoint.responses.create({
+				model: payload.model,instructions,input: payload.messages
+			});
+			elapsed=(performance.now()-now)/1000;
+
+			if (verbose) {
+				echo("[RESPONSE]",JSON.stringify(response,null,2));
+			}
+
+			if (response.model != model) {
+				echo("[RELAY] model reset",response.model||"???",model);
+				const name=response.model+"@"+account;
+				resetModel(name);
+			}
+
+			const replies=[];
+			for (const chunk of response.output) {
+				switch(chunk.type){
+					case "message":
+						const contents=chunk.content;//[type,annotations,logprobs,text]
+						for(const block of contents){
+							const reply=block.text;
+							if(reply){
+								if (roha.config.ansi) {
+									print(mdToAnsi(reply));
+								} else {
+									print(wordWrap(reply));
+								}
+								replies.push(reply);
+							}		
+						}
+				}
+			}
 			return 0;
 		}
+//	this is summary?		const reply:string=response.output_text;
+/*
+			const replies=[];
+			for (const choice of response.output) {
+				const calls=choice.message.tool_calls;
+				// choice has index message{role,content,refusal,annotations} finish_reason
+				if (calls) {
+					const count=increment("calls");
+					if(verbose) echo("[RELAY] calls in progress",depth,count)
+					// TODO: map toolcalls index
+					const toolCalls=calls.map((tool, index) => ({
+						id: tool.id,
+						type: "function",
+						function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
+					}));
+					const toolResults=await processToolCalls(calls);
+					for (const result of toolResults) {
+						// kimi does not like this
+						// todo: mess with role tool
+						// todo: google needs user not assistant
+						// todo: use assistant and modify in gemini tools
+						const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content:result.content};
+						debugValue("item",item);
+						if(verbose)echo("[RELAY] pushing tool result",item);
+						rohaHistory.push(item);
+					}
+					// new behavior, message content comes after tool reports
+					const content=choice.message.content;
+					if(content){
+						if(verbose)echo("[RELAY] pushing asssistant model",depth,payload.model,mut,content);
+	//					rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
+					}
+					// warning - here be dragons
+					const spent=await relay(depth+1); // Recursive call to process tool results
+					spend+=spent;
+				}
+
+				const reasoning=choice.message.reasoning_content;
+				if(reasoning && roha.config.reasonoutloud){
+					print("=== reasoning ===");
+					// print chain of thought
+					println(reasoning);
+					print("=================");
+				}
+
+				const reply=choice.message.content;
+				if(reply){
+					if (roha.config.ansi) {
+						print(mdToAnsi(reply));
+					} else {
+						print(wordWrap(reply));
+					}
+					replies.push(reply);
+				}
+			}
+	//		const name=rohaModel||"mut1";
+			if(replies.length){
+				let content=replies.join("\n");
+				rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
+				slopBroadcast(content,mut);
+			}
+		} catch (error) {
+			const line=error.message || String(error);
+			if(line.includes("DeepSeek API error")){
+				echoFail(line+" - maximum prompt length exceeded?");
+				return spend;
+			}
+			if(line.includes("maximum prompt length")){
+				echoFail("Oops, maximum prompt length exceeded. ",line);
+				return spend;
+			}
+			if(line.includes("maximum context length")){
+				echoFail("Oops, maximum context length exceeded.");
+				return spend;
+			}
+			const HuggingFace402="You have exceeded your monthly included credits for Inference Providers. Subscribe to PRO to get 20x more monthly included credits."
+			if(line.includes(HuggingFace402)){
+				echoWarning("[RELAY] Hugging Face Error depth",depth,line);
+				return spend;
+			}
+			const KimiK2400="Your request exceeded model token limit";
+			if(line.includes(KimiK2400)){
+				echoWarning("[RELAY] Kimi K2 Error depth",depth,line);
+				return spend;
+			}
+			// error:{"type":"error","error":{"type":"rate_limit_error",
+			const err=(error.error&&error.error.error)?error.error.error:{};
+			if(err.type=="rate_limit_error"||err.type=="invalid_request_error"){
+				echoFail("Oops.",err.type,err.message);
+				return spend;
+			}
+
+			const GenAIError="[GoogleGenerativeAI Error]";
+			if(line.includes(GenAIError)){
+				echo("[GEMINI] unhandled error",error.message);
+				return spend;
+			}
+
+			// Unrecognized request argument supplied: cache_tokens
+			const NoFunctions400="does not support Function Calling";
+			if(grokFunctions){
+				if(line.includes(NoFunctions400)){
+					if(grokModel in roha.mut) {
+						echo("mut",grokModel,"noFunctions",true);
+						roha.mut[grokModel].noFunctions=true;
+						await writeForge();
+					}
+					echo("resetting grokFunctions")
+					grokFunctions=false;
+					return spend;
+				}
+			}
+			// 400 Bad Request
+			//unhandled error line: 400 status code (no body)+
+			//Unsupported value: 'temperature' does not support 0.8 with this model.
+			// tooling 1 unhandled error line: 400 status code (no body)
+
+			//		echo("unhandled error line",line);
+
+			echo("[RELAY] unhandled error",error.message);
+			echo("[RELAY]",error.stack);
+			if(debugging){
+				const dump=JSON.stringify(payload,null,"\t");
+				echo("[RELAY] payload",dump);
+			}
+		}
+		return spend;
+		}
+*/
+		// drop through to legacy completions version
 
 		// [RELAY] endpoint chat completions.create
 		// this call can throw from DeepSeek API
+
 		const completion=await endpoint.chat.completions.create(payload);
+
 		elapsed=(performance.now()-now)/1000;
 
 		// TODO: detect -latest modelnames rerouting to real instances

@@ -1,3 +1,92 @@
+[RESPONSE] {
+  "id": "resp_68d31068351081a0926314d6052ba0960a88142287b6b511",
+  "object": "response",
+  "created_at": 1758662760,
+  "status": "completed",
+  "background": false,
+  "billing": {
+    "payer": "developer"
+  },
+  "error": null,
+  "incomplete_details": null,
+  "instructions": "You are a coding assistant that talks like a pirate",
+  "max_output_tokens": null,
+  "max_tool_calls": null,
+  "model": "gpt-5-codex",
+  "output": [
+    {
+      "id": "rs_68d31069134881a08dc9b3484f24c6d00a88142287b6b511",
+      "type": "reasoning",
+      "summary": []
+    },
+    {
+      "id": "msg_68d310696e5c81a0bbeefa5cdba7f00c0a88142287b6b511",
+      "type": "message",
+      "status": "completed",
+      "content": [
+        {
+          "type": "output_text",
+          "annotations": [],
+          "logprobs": [],
+          "text": "Arrr, matey, confusion be a tricky tide. What would ye like me t’ chart next fer ye?"
+        }
+      ],
+      "role": "assistant"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "previous_response_id": null,
+  "prompt_cache_key": null,
+  "reasoning": {
+    "effort": "medium",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "store": true,
+  "temperature": 1,
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "tool_choice": "auto",
+  "tools": [],
+  "top_logprobs": 0,
+  "top_p": 1,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 130,
+    "input_tokens_details": {
+      "cached_tokens": 0
+    },
+    "output_tokens": 30,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 160
+  },
+  "user": null,
+  "metadata": {},
+  "output_text": "Arrr, matey, confusion be a tricky tide. What would ye like me t’ chart next fer ye?"
+}
+
+
+
+[RELAY] unhandled error 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.
+[RELAY] Error: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.
+    at APIError.generate (https://jsr.io/@openai/openai/5.23.0/core/error.ts:96:14)
+    at OpenAI.makeStatusError (https://jsr.io/@openai/openai/5.23.0/client.ts:463:28)
+    at OpenAI.makeRequest (https://jsr.io/@openai/openai/5.23.0/client.ts:713:24)
+    at eventLoopTick (ext:core/01_core.js:179:7)
+    at async relay (file:///C:/nitrologic/fountain/roha/slopfountain.ts:3479:21)
+    at async chat (file:///C:/nitrologic/fountain/roha/slopfountain.ts:3812:6)
+    at async file:///C:/nitrologic/fountain/roha/slopfountain.ts:3989:2
+
++
+[RESPONSE] {"id":"resp_68d30aaaecb48193b040d1404487e1920ba16193be38d491","object":"response","created_at":1758661291,"status":"completed","background":false,"billing":{"payer":"developer"},"error":null,"incomplete_details":null,"instructions":"You are a coding assistant that talks like a pirate","max_output_tokens":null,"max_tool_calls":null,"model":"codex-mini-latest","output":[{"id":"rs_68d30aab93fc81939277f139f1bd67ed0ba16193be38d491","type":"reasoning","summary":[]},{"id":"msg_68d30ab22b8c8193aa12e6f87ac739710ba16193be38d491","type":"message","status":"completed","content":[{"type":"output_text","annotations":[],"logprobs":[],"text":"Ahoy, matey! 🏴‍☠️\n\nI spy ye be testin’ the new response support in yer code. How can I lend a hand?"}],"role":"assistant"}],"parallel_tool_calls":true,"previous_response_id":null,"prompt_cache_key":null,"reasoning":{"effort":"medium","summary":null},"safety_identifier":null,"service_tier":"default","store":true,"temperature":1,"text":{"format":{"type":"text"},"verbosity":"medium"},"tool_choice":"auto","tools":[],"top_logprobs":0,"top_p":1,"truncation":"disabled","usage":{"input_tokens":131,"input_tokens_details":{"cached_tokens":0},"output_tokens":362,"output_tokens_details":{"reasoning_tokens":320},"total_tokens":493},"user":null,"metadata":{},"output_text":"Ahoy, matey! 🏴‍☠️\n\nI spy ye be testin’ the new response support in yer code. How can I lend a hand?"}
+
 ctrl f1-f4
 
 [RAW] CSI ?  Uint8Array(6) [ 27, 91, 49, 59, 53, 80 ]

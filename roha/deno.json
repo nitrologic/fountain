@@ -4,5 +4,8 @@
 		"fountain":{
 			"dependencies":["slopfountain"]
 		}
+	},
+	"imports": {
+		"@openai/openai": "jsr:@openai/openai@^5.23.0"
 	}
 }
