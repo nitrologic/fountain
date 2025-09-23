@@ -1,3 +1,5 @@
+https://github.com/openai/openai-node/blob/HEAD/api.md
+
 [RESPONSE] {
   "id": "resp_68d31068351081a0926314d6052ba0960a88142287b6b511",
   "object": "response",

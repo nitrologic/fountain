@@ -1751,7 +1751,7 @@ async function aboutModel(modelname){
 //DeepSeek-R1-Distill-Llama-70B
 //Meta-Llama-3.1-8B-Instruct
 //-experimental -Instruct
-function mutName(modelname:string){
+function mutName(modelname:string):string{
 	const modelAccount=modelname.split("@");
 	const path=modelAccount[0];
 	const names=path.split("/");
@@ -3418,7 +3418,8 @@ async function relay(depth:number) {
 	const account=modelAccount[1];
 	const endpoint:OpenAI=rohaEndpoint[account];
 	const config=modelAccounts[account];
-	const mut=mutName(model);
+	const emoji=config?(config.emoji||""):"";
+	const mut:string=mutName(model);
 	let payload={model,mut};
 	let spend=0;
 	let elapsed=0;
@@ -3509,45 +3510,22 @@ async function relay(depth:number) {
 						}
 				}
 			}
+
+			const usage=response.usage;
+			const spent=[usage.prompt_tokens | 0,usage.completion_tokens | 0];
+			grokUsage += spent[0]+spent[1];
+
+//			bumpModel()
+
+			if(replies.length){
+				let content=replies.join("\n");
+				rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
+				slopBroadcast(content,mut);
+			}
+
 			return 0;
 		}
-//	this is summary?		const reply:string=response.output_text;
-/*
-			const replies=[];
-			for (const choice of response.output) {
-				const calls=choice.message.tool_calls;
-				// choice has index message{role,content,refusal,annotations} finish_reason
-				if (calls) {
-					const count=increment("calls");
-					if(verbose) echo("[RELAY] calls in progress",depth,count)
-					// TODO: map toolcalls index
-					const toolCalls=calls.map((tool, index) => ({
-						id: tool.id,
-						type: "function",
-						function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
-					}));
-					const toolResults=await processToolCalls(calls);
-					for (const result of toolResults) {
-						// kimi does not like this
-						// todo: mess with role tool
-						// todo: google needs user not assistant
-						// todo: use assistant and modify in gemini tools
-						const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content:result.content};
-						debugValue("item",item);
-						if(verbose)echo("[RELAY] pushing tool result",item);
-						rohaHistory.push(item);
-					}
-					// new behavior, message content comes after tool reports
-					const content=choice.message.content;
-					if(content){
-						if(verbose)echo("[RELAY] pushing asssistant model",depth,payload.model,mut,content);
-	//					rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
-					}
-					// warning - here be dragons
-					const spent=await relay(depth+1); // Recursive call to process tool results
-					spend+=spent;
-				}
-
+/*		
 				const reasoning=choice.message.reasoning_content;
 				if(reasoning && roha.config.reasonoutloud){
 					print("=== reasoning ===");
@@ -3555,90 +3533,6 @@ async function relay(depth:number) {
 					println(reasoning);
 					print("=================");
 				}
-
-				const reply=choice.message.content;
-				if(reply){
-					if (roha.config.ansi) {
-						print(mdToAnsi(reply));
-					} else {
-						print(wordWrap(reply));
-					}
-					replies.push(reply);
-				}
-			}
-	//		const name=rohaModel||"mut1";
-			if(replies.length){
-				let content=replies.join("\n");
-				rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
-				slopBroadcast(content,mut);
-			}
-		} catch (error) {
-			const line=error.message || String(error);
-			if(line.includes("DeepSeek API error")){
-				echoFail(line+" - maximum prompt length exceeded?");
-				return spend;
-			}
-			if(line.includes("maximum prompt length")){
-				echoFail("Oops, maximum prompt length exceeded. ",line);
-				return spend;
-			}
-			if(line.includes("maximum context length")){
-				echoFail("Oops, maximum context length exceeded.");
-				return spend;
-			}
-			const HuggingFace402="You have exceeded your monthly included credits for Inference Providers. Subscribe to PRO to get 20x more monthly included credits."
-			if(line.includes(HuggingFace402)){
-				echoWarning("[RELAY] Hugging Face Error depth",depth,line);
-				return spend;
-			}
-			const KimiK2400="Your request exceeded model token limit";
-			if(line.includes(KimiK2400)){
-				echoWarning("[RELAY] Kimi K2 Error depth",depth,line);
-				return spend;
-			}
-			// error:{"type":"error","error":{"type":"rate_limit_error",
-			const err=(error.error&&error.error.error)?error.error.error:{};
-			if(err.type=="rate_limit_error"||err.type=="invalid_request_error"){
-				echoFail("Oops.",err.type,err.message);
-				return spend;
-			}
-
-			const GenAIError="[GoogleGenerativeAI Error]";
-			if(line.includes(GenAIError)){
-				echo("[GEMINI] unhandled error",error.message);
-				return spend;
-			}
-
-			// Unrecognized request argument supplied: cache_tokens
-			const NoFunctions400="does not support Function Calling";
-			if(grokFunctions){
-				if(line.includes(NoFunctions400)){
-					if(grokModel in roha.mut) {
-						echo("mut",grokModel,"noFunctions",true);
-						roha.mut[grokModel].noFunctions=true;
-						await writeForge();
-					}
-					echo("resetting grokFunctions")
-					grokFunctions=false;
-					return spend;
-				}
-			}
-			// 400 Bad Request
-			//unhandled error line: 400 status code (no body)+
-			//Unsupported value: 'temperature' does not support 0.8 with this model.
-			// tooling 1 unhandled error line: 400 status code (no body)
-
-			//		echo("unhandled error line",line);
-
-			echo("[RELAY] unhandled error",error.message);
-			echo("[RELAY]",error.stack);
-			if(debugging){
-				const dump=JSON.stringify(payload,null,"\t");
-				echo("[RELAY] payload",dump);
-			}
-		}
-		return spend;
-		}
 */
 		// drop through to legacy completions version
 
@@ -3658,14 +3552,16 @@ async function relay(depth:number) {
 		if (verbose) {
 			// echo("relay completion:" + JSON.stringify(completion, null, "\t"));
 		}
-		// const system=completion.system_fingerprint;
-		const usage=completion.usage;
 		const size=measure(rohaHistory);
+		// const system=completion.system_fingerprint;
+
+		const usage=completion.usage;
 		const spent=[usage.prompt_tokens | 0,usage.completion_tokens | 0];
-		const emoji=config?(config.emoji||""):"";
 		grokUsage += spent[0]+spent[1];
+
 		// echo("[relay] debugging spend 0",grokModel,usage);
 		// todo: roha.mut[] -> roha.mutspec[]
+		// move to bumpModel
 		if(grokModel in roha.mut){
 			const mutspec=roha.mut[grokModel];
 			mutspec.relays=(mutspec.relays || 0) + 1;
@@ -3717,12 +3613,10 @@ async function relay(depth:number) {
 
 //		if(usage.prompt_tokens_details) echo(JSON.stringify(usage.prompt_tokens_details));
 //		if(usage.prompt_tokens_details) echo(JSON.stringify(usage));
-
 		let cost="("+usage.prompt_tokens+"+"+usage.completion_tokens+"["+grokUsage+"])";
 		if(spend) {
 			cost="$"+spend.toFixed(3);
 		}
-
 		const echostatus=(depth==0);
 		if(echostatus){
 			const temp=grokTemperature.toFixed(1)+"°";
