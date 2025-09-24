@@ -3402,7 +3402,7 @@ async function beginRelay() {
 
 async function bumpModel(spent3,elapsed,account,useTools){
 	grokUsage += spent3[0]+spent3[2];
-	const spent=spent[0]-spent[1]; // deduct cached input from input count
+	const spent=spent3[0]-spent3[1]; // deduct cached input from input count
 	let verbose=roha.config.verbose;
 	let spend=0;
 	if(grokModel in roha.mut){
@@ -3539,6 +3539,8 @@ async function relay(depth:number) {
 
 		if(responses){
 			const instructions=rohaGuide.join(" ");
+
+			// todo support payload.tools
 			
 			const response:ChatCompletionResponse = await endpoint.responses.create({
 				model: payload.model,instructions,input: payload.messages
@@ -3580,6 +3582,9 @@ async function relay(depth:number) {
 								replies.push(reply);
 							}		
 						}
+						break;
+					default:
+						echo("[RESPONSE] unsupported chunk type",chunk.type);
 				}
 			}
 
