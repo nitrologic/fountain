@@ -1,4 +1,4 @@
-- [RELAY] model requires responses not completions "mut":"gpt-5-codex"
+- test new [RELAY] responses support
 - audit command aka raw to track latest model release dates and versions
 - ssh backspace, delete key, polish rawmode input
 - slopPrompt cursor left, backspace, delete

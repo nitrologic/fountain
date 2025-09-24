@@ -3399,6 +3399,58 @@ async function beginRelay() {
 	setImmediate(send);
 }
 
+async function bumpModel(usage,elapsed,spent,account,useTools){
+	let verbose=roha.config.verbose;
+	let spend=0;
+	if(grokModel in roha.mut){
+		const mutspec=roha.mut[grokModel];
+		mutspec.relays=(mutspec.relays || 0) + 1;
+		mutspec.elapsed=(mutspec.elapsed || 0) + elapsed;
+		// echo("debugging spend 1",grokModel);
+		if(grokModel in modelSpecs){
+			const rate=modelSpecs[grokModel].pricing||[0,0];
+			const tokenRate=rate[0];
+			const outputRate=rate[rate.length>2?2:1];
+			if(rate.length>2){
+				const cacheRate=rate[1];
+				const cached=usage.prompt_tokens_details?(usage.prompt_tokens_details.cached_tokens||0):0;
+				spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6+cached*cacheRate/1e6;
+
+			}else{
+				spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6;
+			}
+			mutspec.cost+=spend;
+			const lode=roha.lode[account];
+			if(lode) {
+				const credit=lode.credit||0;
+				lode.credit=credit-spend;
+				if (verbose) {
+					const summary="{account:"+account+",spent:"+spend.toFixed(4)+",balance:"+(lode.credit).toFixed(4)+"}";
+					echo(summary);
+				}
+			}else{
+				echo("no lode for account",account);
+			}
+			await writeForge();
+		}else{
+			if(verbose){
+				echoWarning("modelSpecs not found for",grokModel);
+			}
+		}
+		mutspec.prompt_tokens=(mutspec.prompt_tokens|0)+spent[0];
+		mutspec.completion_tokens=(mutspec.completion_tokens|0)+spent[1];
+		// TODO: explain hasForge false condition
+		if(useTools && mutspec.hasForge!==true){
+			echo("[RELAY] enabling forge for",mut);
+			mutspec.hasForge=true;
+			await writeForge();
+		}
+	}else{
+		echo("[RELAY] debugging spend 2");
+	}
+	return spend;
+}
+
 // returns spend
 // warning - tool_calls resolved with recursion
 // endpoints may provide alternative implementations of completions - watch for bugs
@@ -3423,6 +3475,9 @@ async function relay(depth:number) {
 	let payload={model,mut};
 	let spend=0;
 	let elapsed=0;
+
+	const size=measure(rohaHistory);
+
 
 //	if(verbose)echo("[RELAY] ",depth,mut);
 	try {
@@ -3520,21 +3575,33 @@ async function relay(depth:number) {
 			}
 
 			const usage=response.usage;
-			const spent=[usage.prompt_tokens | 0,usage.completion_tokens | 0];
+			const spent=[usage.input_tokens | 0,usage.output_tokens | 0];
 			grokUsage += spent[0]+spent[1];
-
-//			bumpModel()
-
+			spend=await bumpModel(usage,elapsed,spent,account,useTools)
+			let cost="("+usage.input_tokens+"+"+usage.output_tokens+"["+grokUsage+"])";
+			if(spend) {
+				cost="$"+spend.toFixed(3);
+			}
+			const echostatus=(depth==0);
+			if(echostatus){
+				const temp=grokTemperature.toFixed(1)+"°";
+				const forge = roha.config.tools? (grokFunctions ? "🪣" : "🐸") : "🪠";
+				const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,forge,cost,size,elapsed.toFixed(2)+"s"];
+				const status=" "+modelSpec.join(" ")+" ";
+				if (roha.config.ansi)
+					echoStatus(ANSI.BG.GREY+status+ANSI.RESET);
+				else
+					echoStatus(status);
+			}
 			if(replies.length){
 				let content=replies.join("\n");
 				rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
 				slopBroadcast(content,mut);
 			}
-
-			return 0;
+			return spend;
 		}
-		// drop through to legacy completions version
 
+		// drop through to legacy completions version
 		// [RELAY] endpoint chat completions.create
 		// this call can throw from DeepSeek API
 
@@ -3551,7 +3618,7 @@ async function relay(depth:number) {
 		if (verbose) {
 			// echo("relay completion:" + JSON.stringify(completion, null, "\t"));
 		}
-		const size=measure(rohaHistory);
+		// const size=measure(rohaHistory);
 		// const system=completion.system_fingerprint;
 
 		const usage=completion.usage;
@@ -3607,9 +3674,7 @@ async function relay(depth:number) {
 		}else{
 			echo("[RELAY] debugging spend 2");
 		}
-
-		const details=(usage.prompt_tokens_details)?JSON.stringify(usage.prompt_tokens_details):"";
-
+//		const details=(usage.prompt_tokens_details)?JSON.stringify(usage.prompt_tokens_details):"";
 //		if(usage.prompt_tokens_details) echo(JSON.stringify(usage.prompt_tokens_details));
 //		if(usage.prompt_tokens_details) echo(JSON.stringify(usage));
 		let cost="("+usage.prompt_tokens+"+"+usage.completion_tokens+"["+grokUsage+"])";
