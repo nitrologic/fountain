@@ -3401,7 +3401,8 @@ async function beginRelay() {
 }
 
 async function bumpModel(spent3,elapsed,account,useTools){
-	grokUsage += spent3[0]+spent3[1]+spent3[2];
+	grokUsage += spent3[0]+spent3[2];
+	const spent=spent[0]-spent[1]; // deduct cached input from input count
 	let verbose=roha.config.verbose;
 	let spend=0;
 	if(grokModel in roha.mut){
@@ -3416,13 +3417,13 @@ async function bumpModel(spent3,elapsed,account,useTools){
 			const cachedRate=(rate.length>2)?rate[1]:0;
 			if(rate.length>2){
 				spend=
-					spent3[0]*tokenRate/1e6+
+					spent*tokenRate/1e6+
 					spent3[2]*outputRate/1e6+
 					spent3[1]*cachedRate/1e6;
 
 			}else{
 				spend=
-					spent3[0]*tokenRate/1e6+
+					spent*tokenRate/1e6+
 					spent3[2]*outputRate/1e6;
 			}
 			mutspec.cost+=spend;
