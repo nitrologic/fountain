@@ -98,8 +98,9 @@ ctrl f1-f4
 
 const modelTests=[
 	"Tell us your name, version and any specs you are permitted to share.",
-	"You are in conversation with models and users. How many have contributed to date?",
+	"You are in conversation with models and users. How many have contributed to current conversation?",
 	"Which neighborhood is Gaia BH3",
+	"Summarise the standard markdown formatting rules",
 	"Thanks, see you on the other side"
 ];
 

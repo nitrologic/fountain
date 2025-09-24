@@ -134,7 +134,7 @@
 	},
 	"o4-mini-2025-04-16@openai":{
 		"pricing":[1.10,0.275,4.40],
-		"endpoint":["v1/responses"],
+		"endpoints":["v1/responses"],
 		"cold":true,
 		"multi":true,
 		"purpose":"optimized for fast, cost-efficient reasoning",

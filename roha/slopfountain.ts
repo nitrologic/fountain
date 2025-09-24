@@ -6,7 +6,7 @@
 
 import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
-import { OpenAI } from "jsr:@openai/openai@5.23.0";
+import { OpenAI, ChatCompletionRequest, ChatCompletionResponse } from "jsr:@openai/openai@5.23.0";
 
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
@@ -19,7 +19,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.5.1, V8 14.0.365.4-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.5.2";
+const fountainVersion="1.5.3";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -204,8 +204,9 @@ const emojiIndex = {};
 
 const epoch:number=Date.UTC(2025,4,12);
 
-// slopmark() - timestamp - hexadecimal encoding of sixteenths of a second since 2025.4.12.
-
+// slopmark() - returns a hex timestamp 
+// - hexadecimal encoding of sixteenths of a second since 2025.4.12
+// - replaces new Date().toISOString() as standard timestampe in slopfountain
 function slopmark():string{
 	return Math.floor((Date.now()-epoch)/62.5).toString(16);
 }
@@ -214,7 +215,6 @@ function slopDate(sixteenths:number){
 	const secs=epoch+sixteenths*62.5;
 	const date=new Date(secs);
 	return date.toDateString();
-
 }
 
 // unixTime() - timestamp - seconds since 1970
@@ -879,8 +879,8 @@ function debugValue(title:string,value:unknown){
 }
 
 async function logForge(lines:string,id:string){
-	if(true){//roha.config.logging){
-		const time=slopmark();	//new Date().toISOString();
+	if(roha.config.logging){
+		const time=slopmark();
 		const list=[];
 		for(let line of lines.split("\n")){
 			line=stripAnsi(line);
@@ -1728,6 +1728,7 @@ async function aboutModel(modelname){
 	const strict=info?info.strict||false:false;
 	const multi=info?info.multi||false:false;
 	const inline=info?info.inline||false:false;
+	const responses=info&&info.endpoints&&info.endpoints.includes("v1/responses");
 	const modelProvider=modelname.split("@");
 	const provider=modelProvider[1];
 	const account=modelAccounts[provider];
@@ -1735,7 +1736,7 @@ async function aboutModel(modelname){
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
 	if(roha.config.verbose){
-		const keys={strict,multi,inline};
+		const keys={strict,multi,inline,responses};
 		echo("model:",{id,mut,emoji,rate,limit,modelname,balance,keys});
 	}else{
 		echo("model:",{mut,emoji,rate,limit,balance,modelname});
@@ -3399,7 +3400,8 @@ async function beginRelay() {
 	setImmediate(send);
 }
 
-async function bumpModel(usage,elapsed,spent,account,useTools){
+async function bumpModel(spent3,elapsed,account,useTools){
+	grokUsage += spent3[0]+spent3[1]+spent3[2];
 	let verbose=roha.config.verbose;
 	let spend=0;
 	if(grokModel in roha.mut){
@@ -3532,12 +3534,14 @@ async function relay(depth:number) {
 
 		if(responses){
 			const instructions=rohaGuide.join(" ");
-			const response = await endpoint.responses.create({
+			
+			const response:ChatCompletionResponse = await endpoint.responses.create({
 				model: payload.model,instructions,input: payload.messages
 			});
+
 			elapsed=(performance.now()-now)/1000;
 
-			if (verbose) {
+			if (debugging) {
 				echo("[RESPONSE]",JSON.stringify(response,null,2));
 			}
 
@@ -3575,9 +3579,9 @@ async function relay(depth:number) {
 			}
 
 			const usage=response.usage;
-			const spent=[usage.input_tokens | 0,usage.output_tokens | 0];
-			grokUsage += spent[0]+spent[1];
-			spend=await bumpModel(usage,elapsed,spent,account,useTools)
+			const spent3=[usage.input_tokens | 0,0, usage.output_tokens | 0];
+			spend=await bumpModel(spent3,elapsed,account,useTools)
+
 			let cost="("+usage.input_tokens+"+"+usage.output_tokens+"["+grokUsage+"])";
 			if(spend) {
 				cost="$"+spend.toFixed(3);
