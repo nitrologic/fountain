@@ -3413,13 +3413,17 @@ async function bumpModel(spent3,elapsed,account,useTools){
 			const rate=modelSpecs[grokModel].pricing||[0,0];
 			const tokenRate=rate[0];
 			const outputRate=rate[rate.length>2?2:1];
+			const cachedRate=(rate.length>2)?rate[1]:0;
 			if(rate.length>2){
-				const cacheRate=rate[1];
-				const cached=usage.prompt_tokens_details?(usage.prompt_tokens_details.cached_tokens||0):0;
-				spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6+cached*cacheRate/1e6;
+				spend=
+					spent3[0]*tokenRate/1e6+
+					spent3[2]*outputRate/1e6+
+					spent3[1]*cachedRate/1e6;
 
 			}else{
-				spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6;
+				spend=
+					spent3[0]*tokenRate/1e6+
+					spent3[2]*outputRate/1e6;
 			}
 			mutspec.cost+=spend;
 			const lode=roha.lode[account];
@@ -3439,8 +3443,8 @@ async function bumpModel(spent3,elapsed,account,useTools){
 				echoWarning("modelSpecs not found for",grokModel);
 			}
 		}
-		mutspec.prompt_tokens=(mutspec.prompt_tokens|0)+spent[0];
-		mutspec.completion_tokens=(mutspec.completion_tokens|0)+spent[1];
+		mutspec.prompt_tokens=(mutspec.prompt_tokens|0)+spent3[0];
+		mutspec.completion_tokens=(mutspec.completion_tokens|0)+spent3[2];
 		// TODO: explain hasForge false condition
 		if(useTools && mutspec.hasForge!==true){
 			echo("[RELAY] enabling forge for",mut);
@@ -3579,7 +3583,8 @@ async function relay(depth:number) {
 			}
 
 			const usage=response.usage;
-			const spent3=[usage.input_tokens | 0,0, usage.output_tokens | 0];
+			const cached=usage.input_tokens_details?.cached_tokens
+			const spent3=[usage.input_tokens | 0,cached, usage.output_tokens | 0];
 			spend=await bumpModel(spent3,elapsed,account,useTools)
 
 			let cost="("+usage.input_tokens+"+"+usage.output_tokens+"["+grokUsage+"])";
