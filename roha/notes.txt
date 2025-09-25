@@ -1,3 +1,5 @@
+Decode and continue 2, 3, 23, 31, 331, 311
+
 https://github.com/openai/openai-node/blob/HEAD/api.md
 
 [RESPONSE] {
@@ -101,6 +103,7 @@ const modelTests=[
 	"You are in conversation with models and users. How many have contributed to current conversation?",
 	"Which neighborhood is Gaia BH3",
 	"Summarise the standard markdown formatting rules",
+	"What comes next? 2, 3, 23, 31, 331, 311",
 	"Thanks, see you on the other side"
 ];
 

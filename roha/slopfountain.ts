@@ -1724,11 +1724,11 @@ async function aboutModel(modelname){
 	const info=(modelname in modelSpecs)?modelSpecs[modelname]:null;
 	const rate=info?info.pricing||[]:[];
 	const limit=info?info.maxprompt||0:0;
-	const id=(info?info.id:0)||0;
+//	const id=(info?info.id:0)||0;
 	const strict=info?info.strict||false:false;
 	const multi=info?info.multi||false:false;
 	const inline=info?info.inline||false:false;
-	const responses=info&&info.endpoints&&info.endpoints.includes("v1/responses");
+	const responses=info&&info.endpoints&&info.endpoints.includes("v1/responses")||false;
 	const modelProvider=modelname.split("@");
 	const provider=modelProvider[1];
 	const account=modelAccounts[provider];
@@ -1737,7 +1737,7 @@ async function aboutModel(modelname){
 	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
 	if(roha.config.verbose){
 		const keys={strict,multi,inline,responses};
-		echo("model:",{id,mut,emoji,rate,limit,modelname,balance,keys});
+		echo("model:",{mut,emoji,rate,limit,modelname,balance,keys});
 	}else{
 		echo("model:",{mut,emoji,rate,limit,balance,modelname});
 	}
