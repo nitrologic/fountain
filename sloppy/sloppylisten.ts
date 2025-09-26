@@ -3,8 +3,10 @@
 
 // Licensed under the MIT License - See LICENSE file
 
-import { Buffer, Client, Server } from "npm:ssh2";
+import { Buffer, Client, Server } from "npm:@types/ssh2";
 import { readFileSync } from "node:fs";
+//import type { Buffer, Client, Server } from "npm:@types/ssh2";  // Types only (lightweight)
+//import { Buffer: NodeBuffer, Client, Server } from "npm:ssh2@^1.15.0";  // Runtime + version pin
 
 import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
 																																																												  
@@ -278,6 +280,7 @@ async function startSSHServer(port: number = 6669) {
 	try {
 		const hostKey = readFileSync(rsaPath, "utf8");
 		const server = new Server({ hostKeys: [hostKey] });
+//		const server = new Server({});
 		server.on("connection", (sshClient) => {
 			const name="ssh_session:"+(++connectionCount);
 			logSlop({status:"SSH connected",name});
