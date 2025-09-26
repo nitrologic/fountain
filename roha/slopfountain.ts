@@ -1668,6 +1668,8 @@ async function connectOpenAI(account,config) {
 async function connectAccount(account) {
 	const config=modelAccounts[account];
 	if (!config) return null;
+	const apiKey=getEnv(config.env);
+	if (!apiKey) return null;
 	const api= config.api;
 	switch(api){
 		case "OpenAI":
