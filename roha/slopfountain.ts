@@ -2284,13 +2284,11 @@ async function promptFountain(message:string) {
 	return response;
 }
 
-
-
 // returns with {line} or {messages}
-async function promptForge(message:string) {
+async function promptForge(message:string):string {
 	if(!roha.config.slopprompt) {
 		const line=prompt(message);
-		return {line};
+		return line;
 	}
 	const response=await slopPrompt(message,20,onRefresh);
 	if(response==null){

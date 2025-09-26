@@ -1,6 +1,5 @@
-- test new [RELAY] responses support
+- add [RELAY] responses tool support
 - audit command aka raw to track latest model release dates and versions
-- ssh backspace, delete key, polish rawmode input
 - slopPrompt cursor left, backspace, delete
 - audition markup with meta data
 - drop individual share by index
