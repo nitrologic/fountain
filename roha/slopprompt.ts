@@ -220,23 +220,19 @@ export function stringWidth(text:string):number{
 
 let currentInput="";
 let historyIndex=-1;
-const history:string[]=[];
+const promptHistory:string[]=[];
 
 async function navigateHistory(direction: 'up'|'down') {
 	if (historyIndex === -1 && direction === 'up') {
 		currentInput=grapheme.join("");
 	}
 	// Calculate new index
-	const newIndex=Math.max(-1,
-	Math.min(historyIndex + (direction === 'up' ? 1 : -1), history.length - 1));
+	const newIndex=Math.max(-1,Math.min(historyIndex + (direction === 'up' ? 1 : -1), promptHistory.length - 1));
 	if (newIndex === historyIndex) return;
 	historyIndex=newIndex;
 	// Get the history item or current input
-	const displayText=historyIndex >= 0 ? history[historyIndex] : currentInput;
-	// ANSI sequence to:
-	// 1. Move to start of line
-	// 2. Clear line
-	// 3. Write new content
+	const displayText=historyIndex >= 0 ? promptHistory[historyIndex] : currentInput;
+	// ANSI sequence to: Move to start of line, Clear line, Write new content
 	await writer.write(encoder.encode('\r' + ANSI.CLEAR_LINE + displayText));
 	grapheme=[...segmenter.segment(displayText)].map(segment => segment.segment);
 }
@@ -359,7 +355,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					const line=grapheme.join("").trimEnd();
 					grapheme=[];
 					response={line};
-					history.push(line);
+					promptHistory.push(line);
+					historyIndex=promptHistory.length;
 					break;
 				}
 				const line=grapheme.join("");

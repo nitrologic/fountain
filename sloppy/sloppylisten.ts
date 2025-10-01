@@ -3,10 +3,8 @@
 
 // Licensed under the MIT License - See LICENSE file
 
-import { Buffer, Client, Server } from "npm:@types/ssh2";
+import { Buffer, Client, Server } from "npm:ssh2@^1.15.2";
 import { readFileSync } from "node:fs";
-//import type { Buffer, Client, Server } from "npm:@types/ssh2";  // Types only (lightweight)
-//import { Buffer: NodeBuffer, Client, Server } from "npm:ssh2@^1.15.0";  // Runtime + version pin
 
 import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
 																																																												  
@@ -34,7 +32,8 @@ const sloppyNetVersion=0.7;
 
 // TODO: make multi planetary
 const HomeDir=Deno.env.get("HOME")||Deno.env.get("HOMEPATH");
-const rsaPath=HomeDir+"/.ssh/id_rsa";
+//const rsaPath=HomeDir+"/.ssh/id_rsa";
+const rsaPath=HomeDir+"/fountain_key_skidnz"
 
 // sloppyNet uses slopfeed workers in a responsible manner
 
@@ -280,7 +279,6 @@ async function startSSHServer(port: number = 6669) {
 	try {
 		const hostKey = readFileSync(rsaPath, "utf8");
 		const server = new Server({ hostKeys: [hostKey] });
-//		const server = new Server({});
 		server.on("connection", (sshClient) => {
 			const name="ssh_session:"+(++connectionCount);
 			logSlop({status:"SSH connected",name});
