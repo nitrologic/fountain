@@ -3,8 +3,9 @@
 
 // Licensed under the MIT License - See LICENSE file
 
-import { Buffer, Client, Server } from "npm:ssh2@^1.15.2";
+//import { Client } from "https://deno.land/x/ssh2@0.9.0/mod.ts";
 import { readFileSync } from "node:fs";
+import { Buffer, Client, Server } from "npm:ssh2";
 
 import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
 																																																												  

@@ -14,5 +14,6 @@
 			"dependencies":["sloppylisten"]
 		},
 		"botlisten" : "deno task sloppybot & deno task sloppylisten"
-	}
+	},
+	"nodeModulesDir": "auto"
 }
