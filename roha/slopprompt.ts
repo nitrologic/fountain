@@ -222,17 +222,16 @@ let currentInput="";
 let historyIndex=-1;
 const promptHistory:string[]=[];
 
-async function navigateHistory(direction: 'up'|'down') {
-	if (historyIndex === -1 && direction === 'up') {
+async function navigateHistory(direction:"back"|"forward") {
+	if (historyIndex === -1 && direction === "back") {
 		currentInput=grapheme.join("");
 	}
-	// Calculate new index
-	const newIndex=Math.max(-1,Math.min(historyIndex + (direction === 'up' ? 1 : -1), promptHistory.length - 1));
+	const newIndex=Math.max(-1,Math.min(historyIndex+(direction=="forward"?1:-1),promptHistory.length));
 	if (newIndex === historyIndex) return;
 	historyIndex=newIndex;
-	// Get the history item or current input
-	const displayText=historyIndex >= 0 ? promptHistory[historyIndex] : currentInput;
-	// ANSI sequence to: Move to start of line, Clear line, Write new content
+	const validIndex=historyIndex >= 0 && historyIndex < promptHistory.length;
+	const displayText= validIndex ? promptHistory[historyIndex] : currentInput;
+	// ANSI sequence to Move to start of line, Clear line, Write new content
 	await writer.write(encoder.encode('\r' + ANSI.CLEAR_LINE + displayText));
 	grapheme=[...segmenter.segment(displayText)].map(segment => segment.segment);
 }
@@ -261,10 +260,10 @@ function onCSI(bytes,codes:number[]) {
 			bytes.push(0x1B, 0x5B, 0x43);
 			break;
 		case CURSOR_UP:
-			navigateHistory('down');
+			navigateHistory("back");
 			break;
 		case CURSOR_DOWN:
-			navigateHistory('up');
+			navigateHistory("forward");
 			break;
 		case CSI_STATUS:
 			console.log("[RAW] CSI status",codes);
