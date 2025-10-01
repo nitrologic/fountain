@@ -261,10 +261,10 @@ function onCSI(bytes,codes:number[]) {
 			bytes.push(0x1B, 0x5B, 0x43);
 			break;
 		case CURSOR_UP:
-			navigateHistory('up');
+			navigateHistory('down');
 			break;
 		case CURSOR_DOWN:
-			navigateHistory('down');
+			navigateHistory('up');
 			break;
 		case CSI_STATUS:
 			console.log("[RAW] CSI status",codes);
