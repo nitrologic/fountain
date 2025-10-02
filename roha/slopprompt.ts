@@ -373,9 +373,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			echo("slopPrompt error",error.message);
 			slopConnections.length=0;
 			receivePromises={};
-			continue;
-//			listenerPromise=null;
-//			break;//continue;
+			break;
 		}
 		if (connection) {
 			if(name in receivePromises){

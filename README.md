@@ -1,6 +1,6 @@
-[![Deno](https://img.shields.io/badge/deno-2.4.2-black?logo=deno)](https://deno.land/)
+[![Discord](https://img.shields.io/discord/GUILD_ID?label=discord&logo=discord)](https://discord.gg/e49ZhmQEjC)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
-[![Discord](https://img.shields.io/discord/GUILD_ID?label=discord&logo=discord)](https://discord.gg/rkFjKvwD)
+[![Deno](https://img.shields.io/badge/deno-2.4.2-black?logo=deno)](https://deno.land/)
 
 # ꕶLOP Fountain ⛲
 
@@ -15,7 +15,7 @@ Exposing 249 models from 8 providers the research project Fountain 1.5.0 ⛲ app
 
 ## SSH and Discord 
 
-The new sloppy bot Deno worker joins Discord to the fountain and routes posts to prompts.
+The new sloppy bot Deno worker joins [Discord Channel](https://discord.gg/e49ZhmQEjC) to Slop Fountain and routes posts to prompts.
 
 Sloppy SSH endpoint in development - not currently available remotely. 
 
