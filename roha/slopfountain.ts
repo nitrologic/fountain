@@ -1349,7 +1349,7 @@ async function anthropicFile(anthropic,blob){
 	const file = await toFile(fileContent,name,{type:fileType});
 	const result = await anthropic.beta.files.upload({file,betas:['files-api-2025-04-14']});
 	anthropicStore[hash]=result.id;
-	console.log("[ANTHROPIC] store",blob,result);
+	// console.log("[ANTHROPIC] store",blob,result);
 	return result.id;
 }
 
@@ -1382,8 +1382,8 @@ async function anthropicMessages(anthropic,payload){
 								];
 								messages.push({role:"user",content});
 								blocks++;
-							}else{
-								echo("[ANTHROPIC] file error for ",blob.path);
+							}else{								
+//								echo("[ANTHROPIC] ignoring unsupported file type",blob.path);
 							}
 						}catch( error){
 							echo("[ANTHROPIC]",error);
@@ -1535,7 +1535,7 @@ async function connectAnthropic(account,config){
 							}
 
 						// Construct usage object
-						echo("reply.usage",reply.usage);
+						// echo("reply.usage",reply.usage);
 						const usage = {
 							prompt_tokens: reply.usage.input_tokens,
 							cache_tokens: reply.usage.cache_read_input_tokens,
