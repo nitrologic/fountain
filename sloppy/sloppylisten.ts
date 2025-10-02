@@ -282,9 +282,9 @@ const algorithms={
 		'aes192-ctr',
 		'aes256-ctr',
 		'aes128-gcm',
-		'aes128-gcm@openssh.com',
-		'aes256-gcm',
-		'aes256-gcm@openssh.com'
+		'aes128-gcm@openssh.com'
+//		'aes256-gcm',
+//		'aes256-gcm@openssh.com'
 	]
 };
 

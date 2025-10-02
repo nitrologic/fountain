@@ -15,7 +15,9 @@ Exposing 249 models from 8 providers the research project Fountain 1.5.0 ⛲ app
 
 ## SSH and Discord 
 
-The new sloppy bot Deno worker joins Discord and SSH endpoints to conversation. 
+The new sloppy bot Deno worker joins Discord to the fountain and routes posts to prompts.
+
+Sloppy SSH endpoint in development - not currently available remotely. 
 
 ## Recent Personal Usage
 
