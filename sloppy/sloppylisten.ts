@@ -33,8 +33,8 @@ const sloppyNetVersion=0.7;
 
 // TODO: make multi planetary
 const HomeDir=Deno.env.get("HOME")||Deno.env.get("HOMEPATH");
-//const rsaPath=HomeDir+"/.ssh/id_rsa";
-const rsaPath=HomeDir+"/fountain_key_skidnz"
+const rsaPath=HomeDir+"/.ssh/id_rsa";
+//const rsaPath=HomeDir+"/fountain_key_skidnz"
 
 // sloppyNet uses slopfeed workers in a responsible manner
 
@@ -276,10 +276,22 @@ async function onSSHConnection(sshClient: any, name: string) {
 	});
 }
 
+const algorithms={
+	cipher: [
+		'aes128-ctr',
+		'aes192-ctr',
+		'aes256-ctr',
+		'aes128-gcm',
+		'aes128-gcm@openssh.com',
+		'aes256-gcm',
+		'aes256-gcm@openssh.com'
+	]
+};
+
 async function startSSHServer(port: number = 6669) {
 	try {
 		const hostKey = readFileSync(rsaPath, "utf8");
-		const server = new Server({ hostKeys: [hostKey] });
+		const server = new Server({ hostKeys: [hostKey], algorithms });
 		server.on("connection", (sshClient) => {
 			const name="ssh_session:"+(++connectionCount);
 			logSlop({status:"SSH connected",name});
