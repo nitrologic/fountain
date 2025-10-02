@@ -1278,6 +1278,7 @@ async function connectGoogle(account,config){
 //								choices.push({tool_calls:call});
 //							}
 						}
+						// TODO: add cached usage to reply
 						const temperature=grokTemperature;
 						return {
 							model:payload.model,
@@ -1335,7 +1336,6 @@ async function anthropicStatus(anthropic,flush=false){
 // returns result.id or none if file type not currently supported
 
 async function anthropicFile(anthropic,blob){
-//	console.log("[ANTHROPIC] file blob",blob);
 	const hash=await hashFile(blob.path);
 	if(hash in anthropicStore) return anthropicStore[hash];
 	const fileContent = await Deno.readFile(blob.path);
@@ -1349,12 +1349,14 @@ async function anthropicFile(anthropic,blob){
 	const file = await toFile(fileContent,name,{type:fileType});
 	const result = await anthropic.beta.files.upload({file,betas:['files-api-2025-04-14']});
 	anthropicStore[hash]=result.id;
+	console.log("[ANTHROPIC] store",blob,result);
 	return result.id;
 }
 
 async function anthropicMessages(anthropic,payload){
 	const messages=[];
 	let blob={};
+	let blocks=0;
 	for(const item of payload.messages){
 //		console.log("[CLAUDE] item ",item);
 		switch(item.role){
@@ -1368,14 +1370,18 @@ async function anthropicMessages(anthropic,payload){
 						try{
 							const id=await anthropicFile(anthropic,blob);
 							if(id){
-//								echo("[ANTHROPIC] file ",blob.path,name,id);
+//								echo("[ANTHROPIC] file ",blob.path,name,id,blocks);
 								const text="File shared path:"+blob.path+" type:"+blob.type;
-								const content=[{type:"text",text},{
+								const content=[
+									{type:"text",text},
+									{
 										type:(name=="image")?"image": "document",
-										source:{type:"file",file_id:id}
+										source:{type:"file",file_id:id},
+										...(blocks<4 && {cache_control:{type:"ephemeral"}})
 									}
 								];
 								messages.push({role:"user",content});
+								blocks++;
 							}else{
 								echo("[ANTHROPIC] file error for ",blob.path);
 							}
@@ -1383,8 +1389,6 @@ async function anthropicMessages(anthropic,payload){
 							echo("[ANTHROPIC]",error);
 						}
 					}else{
-						// item role name type
-//						messages.push({role:"user",name:item.name,content:item.content});
 						const content=item.name?item.name+": "+item.content:item.content;
 						messages.push({role:"user",content:content});
 					}
@@ -1531,8 +1535,10 @@ async function connectAnthropic(account,config){
 							}
 
 						// Construct usage object
+						echo("reply.usage",reply.usage);
 						const usage = {
 							prompt_tokens: reply.usage.input_tokens,
+							cache_tokens: reply.usage.cache_read_input_tokens,
 							completion_tokens: reply.usage.output_tokens,
 							total_tokens: reply.usage.input_tokens + reply.usage.output_tokens
 						};
@@ -1953,11 +1959,14 @@ async function listShare(){
 			const stat=await Deno.stat(share.path);
 			size=stat.size||0;
 		}catch(error){
-			// share is gone
+			size=0;	// the share is gone
 		}
 //		echo((count++),share.path,share.size,shared,tags,detail);
-		echo((count++),share.path,unitString(size),shared,tags,detail);
-		list.push(share.id);
+		if(size){
+			const hash="";//share.hash;
+			echo((count++),share.path,unitString(size),shared,tags,detail,hash);
+			list.push(share.id);
+		}
 	}
 	shareList=list;
 }
@@ -3432,7 +3441,8 @@ async function bumpModel(spent3,elapsed,account,useTools){
 				const credit=lode.credit||0;
 				lode.credit=credit-spend;
 				if (verbose) {
-					const summary="{account:"+account+",spent:"+spend.toFixed(4)+",balance:"+(lode.credit).toFixed(4)+"}";
+					const cached=spent3[1].toFixed(4);
+					const summary="{account:"+account+",spent:"+spend.toFixed(4)+",cached:"+cached+",balance:"+(lode.credit).toFixed(4)+"}";
 					echo(summary);
 				}
 			}else{
@@ -3589,7 +3599,7 @@ async function relay(depth:number) {
 			}
 
 			const usage=response.usage;
-			const cached=usage.input_tokens_details?.cached_tokens
+			const cached=usage.input_tokens_details?.cached_tokens;
 			const spent3=[usage.input_tokens | 0,cached, usage.output_tokens | 0];
 			spend=await bumpModel(spent3,elapsed,account,useTools)
 
@@ -3652,9 +3662,10 @@ async function relay(depth:number) {
 				const rate=modelSpecs[grokModel].pricing||[0,0];
 				const tokenRate=rate[0];
 				const outputRate=rate[rate.length>2?2:1];
+				if (verbose) echo("usage",usage);
+				const cached=usage.cache_tokens||usage.prompt_tokens_details?.cached_tokens||0;
 				if(rate.length>2){
 					const cacheRate=rate[1];
-					const cached=usage.prompt_tokens_details?(usage.prompt_tokens_details.cached_tokens||0):0;
 					spend=spent[0]*tokenRate/1e6+spent[1]*outputRate/1e6+cached*cacheRate/1e6;
 
 				}else{
@@ -3666,7 +3677,7 @@ async function relay(depth:number) {
 					const credit=lode.credit||0;
 					lode.credit=credit-spend;
 					if (verbose) {
-						const summary="{account:"+account+",spent:"+spend.toFixed(4)+",balance:"+(lode.credit).toFixed(4)+"}";
+						const summary="{account:"+account+",spent:"+spend.toFixed(4)+",cached:"+cached+",balance:"+(lode.credit).toFixed(4)+"}";
 						echo(summary);
 					}
 				}else{
@@ -3689,9 +3700,6 @@ async function relay(depth:number) {
 		}else{
 			echo("[RELAY] debugging spend 2");
 		}
-//		const details=(usage.prompt_tokens_details)?JSON.stringify(usage.prompt_tokens_details):"";
-//		if(usage.prompt_tokens_details) echo(JSON.stringify(usage.prompt_tokens_details));
-//		if(usage.prompt_tokens_details) echo(JSON.stringify(usage));
 		let cost="("+usage.prompt_tokens+"+"+usage.completion_tokens+"["+grokUsage+"])";
 		if(spend) {
 			cost="$"+spend.toFixed(3);

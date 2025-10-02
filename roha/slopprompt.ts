@@ -388,7 +388,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		}
 		if(source){
 			//echo("receivePromise name,source",name,source);//,receive
-			delete receivePromises.name;
+			delete receivePromises[name];
 			const receiver=readConnection(name,source);
 			receivePromises[name]=receiver;
 			const messages=[];
