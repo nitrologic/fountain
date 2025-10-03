@@ -36,7 +36,7 @@ async function messageSloppy(message:string,from:string){
 //			channel.send("["+from+"] "+message);
 			const chunks=chunkContent(message,2000-400);
 			for(const chunk of chunks){
-				const post=codeFence+"["+from+"] "+chunk+codeFence;
+				const post=codeFence+"["+from+"]\n"+chunk+codeFence;
 				channel.send(post);
 			}
 			await(sleep(1500));
@@ -248,9 +248,13 @@ discordClient.on('messageCreate', async (message) => {
 		const command=words[0];
 		const args=words[1]||"";
 		if(UserCommands.includes(command.substring(1))){
-			echo("Command from discord channel",command,args,from)
-			const blob={command:{name:command,args,from}};
-			await writeFountain(JSON.stringify(blob,null,0));
+			if(true){
+				echo("Command from discord channel currently disabled",command,args,from)
+			}else{
+				echo("Command from discord channel",command,args,from)
+				const blob={command:{name:command,args,from}};
+				await writeFountain(JSON.stringify(blob,null,0));
+			}
 			return;
 		}
 		// chunk the content under discord limit

@@ -370,10 +370,12 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		// helter skelter race result
 		const { value, done, connection, name, source, receive, error }=winner;
 		if(error){
+			// Address already in use (os error 98)
 			echo("slopPrompt error",error.message);
-			slopConnections.length=0;
-			receivePromises={};
-			break;
+//			slopConnections.length=0;
+//			receivePromises={};
+//			throw(error);
+			continue;
 		}
 		if (connection) {
 			if(name in receivePromises){

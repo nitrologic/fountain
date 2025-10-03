@@ -1,3 +1,31 @@
+credit #
+>connection accepted connection0
+>
+<--- Last few GCs --->
+
+[129812:0x5587fd427000]   249506 ms: Mark-Compact (reduce) 451.8 (454.4) -> 451.1 (453.9) MB, pooled: 0.0 MB, 221.68 / 0.00 ms (+ 112.3 ms in 23 steps since start of marking, biggest step 24.5 ms, walltime since start of marking 345 ms) (average mu = 0.31
+
+
+#
+# Fatal JavaScript out of memory: Reached heap limit
+#
+==== C stack trace ===============================
+
+    /home/ec2-user/.deno/bin/deno(+0x2c61223) [0x5587e1456223]
+    /home/ec2-user/.deno/bin/deno(+0x2c6029b) [0x5587e145529b]
+    /home/ec2-user/.deno/bin/deno(+0x2c62328) [0x5587e1457328]
+    /home/ec2-user/.deno/bin/deno(+0x2cb9b46) [0x5587e14aeb46]
+    /home/ec2-user/.deno/bin/deno(+0x2e903c7) [0x5587e16853c7]
+    /home/ec2-user/.deno/bin/deno(+0x2e8e27d) [0x5587e168327d]
+    /home/ec2-user/.deno/bin/deno(+0x2e83b9e) [0x5587e1678b9e]
+    /home/ec2-user/.deno/bin/deno(+0x2e8177d) [0x5587e167677d]
+    /home/ec2-user/.deno/bin/deno(+0x2e6450b) [0x5587e165950b]
+    /home/ec2-user/.deno/bin/deno(+0x3323d3e) [0x5587e1b18d3e]
+    /home/ec2-user/.deno/bin/deno(+0x435ae76) [0x5587e2b4fe76]
+
+
+    
+
 Decode and continue 2, 3, 23, 31, 331, 311
 
 https://github.com/openai/openai-node/blob/HEAD/api.md

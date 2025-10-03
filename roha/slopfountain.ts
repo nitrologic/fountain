@@ -3613,10 +3613,14 @@ async function relay(depth:number) {
 				const forge = roha.config.tools? (grokFunctions ? "🪣" : "🐸") : "🪠";
 				const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,forge,cost,size,elapsed.toFixed(2)+"s"];
 				const status=" "+modelSpec.join(" ")+" ";
-				if (roha.config.ansi)
-					echoStatus(ANSI.BG.GREY+status+ANSI.RESET);
-				else
-					echoStatus(status);
+				if(true){//config.echostatus
+					echo(status);
+				}else{//config.internalstatus
+					if (roha.config.ansi)
+						echoStatus(ANSI.BG.GREY+status+ANSI.RESET);
+					else
+						echoStatus(status);
+				}
 			}
 			if(replies.length){
 				let content=replies.join("\n");
@@ -3710,10 +3714,14 @@ async function relay(depth:number) {
 			const forge = roha.config.tools? (grokFunctions ? "🪣" : "🐸") : "🪠";
 			const modelSpec=[rohaTitle,rohaModel,emoji,grokModel,temp,forge,cost,size,elapsed.toFixed(2)+"s"];
 			const status=" "+modelSpec.join(" ")+" ";
-			if (roha.config.ansi)
-				echoStatus(ANSI.BG.GREY+status+ANSI.RESET);
-			else
-				echoStatus(status);
+			if(true){//config.echostatus
+				echo(status);
+			}else{				
+				if (roha.config.ansi)
+					echoStatus(ANSI.BG.GREY+status+ANSI.RESET);
+				else
+					echoStatus(status);
+			}
 		}
 
 		const replies=[];
@@ -4111,7 +4119,12 @@ echo(birds);
 //await clipText("\t"+birds);
 
 if(roha.config.listen){
-	listenService();
+	try{
+		listenService();
+	}catch(e){
+		// Address already in use (os error 98)
+		echo("listen failure",e);
+	}
 }
 await flush();
 
