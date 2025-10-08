@@ -4,14 +4,13 @@
 
 # ꕶLOP Fountain ⛲
 
-Home of nitrologic slop fountain — the 4th generation roha foundry forge LLM tool.
+Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
-Exposing 249 models from 8 providers the research project Fountain 1.5.0 ⛲ approaches connected.
+Exposing 249 models from 8 providers the LLM research project Fountain 1.5.0 ⛲ approaches connected.
 
 > Planet earth is blue and there is nothing I can do - David Bowie
 
 > maximum prompt length exceeded - every model ever
-
 
 ## SSH and Discord 
 
@@ -49,7 +48,7 @@ The raw prompt mode is a low level keyboard driver designed to add new features 
 
 * shortcode :eyes: type : eyes :
 * tab support - huh, no wonder the vanilla Deno prompt() is tab free
-* history support - cursor up to step back through command history like a real shell
+* history support - cursor up down to step through command history like a real shell
 * async cursor keys - prepare to fire cursor and extended key presses at slop workers in focus
 
 ## Researcher Links

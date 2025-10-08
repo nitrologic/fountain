@@ -1,3 +1,20 @@
+TODO: increase claude sonnet window?
+>/commit
+Oops. invalid_request_error prompt is too long: 204453 tokens > 200000 maximum
+Switch model, drop shares or reset history to continue.
+
+GPT-5 parameter compatibility
+
+⚠️ Important: The following parameters are not supported when using GPT-5 models (e.g. gpt-5, gpt-5-mini, gpt-5-nano):
+
+temperature top_p logprobs - Requests that include these fields will raise an error.
+
+Instead, use the following GPT-5-specific controls:
+
+Reasoning depth: reasoning: { effort: "minimal" | "low" | "medium" | "high" }
+Output verbosity: text: { verbosity: "low" | "medium" | "high" }
+Output length: max_output_tokens
+
 credit #
 >connection accepted connection0
 >

@@ -47,6 +47,7 @@ async function readConnection(name:string,connection:Deno.TcpConn){
 }
 
 // take care - collides with slopnet.ts
+// TODO: short circuit - Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
 
 let connectionCount=0;
 let slopListener=null;
@@ -57,15 +58,21 @@ async function listenPort(port:number){
 		try{
 			slopListener=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
 		}catch(error){
-			echo("listenPort failure",port);
-			// TODO: short circuit - Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
+			echo("listenPort listen failure",port);
 			return {error:error};
 		}
 	}
-	const connection=await slopListener.accept();
-	const name="connection"+(connectionCount++);
-	echo("connection accepted",name);
-	return {connection,name};
+	try{
+		const connection=await slopListener.accept();
+		const name="connection"+(connectionCount++);
+		echo("connection accepted",name);
+		return {connection,name};
+	}catch(error){
+		echo("listenPort await failure",port);
+		slopListener = null;
+		// TODO: short circuit - Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
+		return {error:error};
+	}
 }
 
 export function listenService(){
@@ -374,8 +381,8 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			echo("slopPrompt error",error.message);
 //			slopConnections.length=0;
 //			receivePromises={};
-//			throw(error);
-			continue;
+			throw(error);
+//			continue;
 		}
 		if (connection) {
 			if(name in receivePromises){
