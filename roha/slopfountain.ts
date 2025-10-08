@@ -2838,6 +2838,7 @@ async function modelCommand(words){
 			const seconds=mutspec.created;
 			const created=dateStamp(seconds);
 			const priced=info.pricing;
+			const deprecated:boolean=info.deprecated;
 			// account from modelProvder
 			const modelProvider=modelname.split("@");
 			const provider=modelProvider[1];
@@ -2846,6 +2847,7 @@ async function modelCommand(words){
 			const mut=mutName(modelname);
 			let cheap = priced && priced[0]<3.01;
 			if(!roha.config.budget) cheap=priced;
+			if(deprecated) cheap=false;
 			if(cheap || all){
 				const pricing=(info&&info.pricing)?stringifyArray(info.pricing):"";
 				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
