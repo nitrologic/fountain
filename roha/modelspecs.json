@@ -98,14 +98,17 @@
 		"purpose":"Open source Qwen3 model"
 	},
 	"qwen3-max-preview@alibaba":{
+		"deprecated":true,
 		"pricing": [1.20,6.00],
 		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
 	},
 	"qwen-max@alibaba":{
+		"deprecated":true,
 		"pricing": [1.60,6.40],
 		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
 	},
 	"qwen-plus-2025-09-11@alibaba":{
+		"deprecated":true,
 		"released": "2025-09-11",
 		"pricing": [0.4,1.20],
 		"purpose":"Polite, balanced performance, speed and cost."
@@ -119,6 +122,7 @@
 		"purpose":"Fast speed and low cost"
 	},
 	"qwen2-7b-instruct@alibaba":{
+		"deprecated":true,
 		"pricing":[0.175,0.70],
 		"multi":true,
 		"purpose":"Open source Qwen2 model, failing multi image test"
@@ -131,11 +135,13 @@
 		"endpoints":["wss://api.openai.com/v1/realtime"]
 	},
 	"gpt-5-codex@openai":{
+		"deprecated":true,
 		"pricing":[1.25,0.125,10.0],
 		"purpose":"coding stuff",
 		"endpoints":["v1/responses"]
 	},
 	"codex-mini-latest@openai":{
+		"deprecated":true,
 		"pricing":[0.60,12.0],
 		"purpose":"coding stuff",
 		"endpoints":["v1/responses"]
@@ -235,11 +241,13 @@
 		"purpose":"burn money"
 	},
 	"models/gemini-2.5-flash-preview-tts@gemini":{
+		"deprecated":true,
 		"endpoints":["v1/audio/speech"],
 		"released":"2025-05-20",
 		"pricing":[0.50,10.0]
 	},
 	"models/gemini-2.5-pro-preview-tts@gemini":{
+		"deprecated":true,
 		"endpoints":["v1/audio/speech"],
 		"released":"2025-05-20",
 		"pricing":[1.00,20.0]
@@ -259,6 +267,7 @@
 		"reality":"testing now, thinking budget say what now?"
 	},
 	"models/gemini-2.0-flash@gemini":{
+		"deprecated":true,
 		"pricing":[0.10,0.40],
 		"released": "2024-12-11",
 		"purpose":"High-performance multimodal model optimized for agent-based applications.",
@@ -332,11 +341,13 @@
 		"purpose":"262,144 token low latency coding"
 	},
 	"mistral-small-2506@mistral":{
+		"deprecated":true,
 		"pricing":[0.50,1.50],
 		"strict":true,
 		"purpose":"lightweight multilingual reasoning"
 	},
 	"mistral-ocr-2505@mistral":{
+		"deprecated":true,
 		"pricing":[0.50,1.50],
 		"strict":true,
 		"ocr":true,
