@@ -1,5 +1,6 @@
 {
 	"deepseek-chat@deepseek": {
+		"mut": true,
 		"pricing": [0.28, 0.028, 0.42],
 		"released": "2025-03-24",
 		"purpose": "V3.2 General conversation and text generation",
@@ -13,6 +14,7 @@
 	}
 	,
 	"kimi-k2-0905-preview@moonshot": {
+		"mut": true,
 		"released": "2025-09-05",
 		"pricing": [0.60,0.15,2.5],
 		"purpose": "Large scale mixture of Experts model, 128K context window",
@@ -77,6 +79,7 @@
 		"reality":"rate limited 20,000 input tokens per minute"
 	},
 	"claude-sonnet-4-20250514@anthropic":{
+		"mut": true,
 		"pricing":[3.0,0.30,15.0],
 		"purpose":"balance performance, cost-effectiveness, and speed for high-volume production"
 	},
@@ -240,6 +243,20 @@
 		"pricing":[75.00,37.50,150.00],
 		"purpose":"burn money"
 	},
+	"models/gemini-2.5-pro-preview-06-05@gemini":{
+		"pricing":[1.25,0.125,10.0],
+		"released":"2025-06-05",
+		"purpose":"Excels at coding and complex reasoning tasks",
+		"press":"A state-of-the-art multipurpose model",
+		"reality":"Not cheap, and often a complete dunce."
+	},
+	"models/gemini-2.5-flash-preview-05-20@gemini":{
+		"pricing":[0.30,0.0375,0.60,2.50],
+		"released":"2025-05-20",
+		"purpose":"Adaptive thinking, cost efficiency.",
+		"press":"The best price-to-performance ratio.",
+		"reality":"testing now, thinking budget say what now?"
+	},
 	"models/gemini-2.5-flash-preview-tts@gemini":{
 		"deprecated":true,
 		"endpoints":["v1/audio/speech"],
@@ -251,20 +268,6 @@
 		"endpoints":["v1/audio/speech"],
 		"released":"2025-05-20",
 		"pricing":[1.00,20.0]
-	},
-	"models/gemini-2.5-pro-preview-06-05@gemini":{
-		"pricing":[1.25,10.0],
-		"released":"2025-06-05",
-		"purpose":"Excels at coding and complex reasoning tasks",
-		"press":"A state-of-the-art multipurpose model",
-		"reality":"Not cheap, and often a complete dunce."
-	},
-	"models/gemini-2.5-flash-preview-05-20@gemini":{
-		"pricing":[0.15,0.15,0.60,3.50],
-		"released":"2025-05-20",
-		"purpose":"Adaptive thinking, cost efficiency.",
-		"press":"The best price-to-performance ratio.",
-		"reality":"testing now, thinking budget say what now?"
 	},
 	"models/gemini-2.0-flash@gemini":{
 		"deprecated":true,

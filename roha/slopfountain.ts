@@ -124,7 +124,10 @@ let grokModel="";
 let grokAccount=null;
 let grokFunctions=true;
 let grokUsage=0;
-let grokTemperature=1.0;
+
+const ResetTemperature=0.7;
+let grokTemperature=ResetTemperature;
+
 let grokThink=0.0;
 
 const ANSI={
@@ -2257,7 +2260,7 @@ async function writeForge(){
 }
 
 async function resetRoha(){
-	grokTemperature=1.0;
+	grokTemperature=ResetTemperature;
 	rohaShares=[];
 	roha.sharedFiles=[];
 //	roha.tags={};
@@ -2402,7 +2405,9 @@ const fileTypes={
 	"jpg": "image/jpeg",
 	"jpeg": "image/jpeg",
 	"png": "image/png",
-	"mp3": "audio/mpeg"
+	"mp3": "audio/mpeg",
+	"ico": "image/x-icon",
+	"lock": "text/plain"
 };
 
 const commonTextFiles=["LICENSE","README","CHANGELOG","COPYING","AUTHORS","INSTALL"];
@@ -2418,6 +2423,8 @@ function fileType(path:string){
 
 async function shareBlob(path,size,tag){
 	const mimeType=fileType(path);
+	// gemini barfs on icons
+	if(mimeType=="image/x-icon") return false;
 	const metadata=JSON.stringify({ path:path,length:size,type:mimeType,tag });
 	rohaPush(metadata,"blob");
 	if(mimeType.startsWith("text/")){
@@ -2831,9 +2838,10 @@ async function modelCommand(words){
 			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
 			// tag model key
-			if(info.cold) notes.push("🧊");
+			if(info.mut) notes.push("🧪");
+			if(info.cold) notes.push("🌡️");
 			if(info.multi) notes.push("📷");
-			if(info.strict) notes.push("📘");
+			if(info.strict) notes.push("🌪️");
 			if(speech) notes.push("🔉");
 //			if(info.inline) notes.push("📘");
 			const seconds=mutspec.created;
@@ -2912,6 +2920,8 @@ async function callCommand(command:string) {
 					const newTemp=parseFloat(words[1]);
 					if (!isNaN(newTemp) && newTemp >= -5 && newTemp <= 50) {
 						grokTemperature=newTemp;
+					}else{
+						grokTemperature=ResetTemperature;
 					}
 				}
 				echo("Current model temperature is", grokTemperature);

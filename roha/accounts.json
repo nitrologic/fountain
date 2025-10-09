@@ -26,7 +26,7 @@
 		"locale": "zh-CN"
 	},
 	"anthropic": {
-		"emoji": "🌐",
+		"emoji": "🏛️",
 		"env": "ANTHROPIC_API_KEY",
 		"url": "https://api.anthropic.com/v1",
 		"docs": "https://docs.anthropic.com/en/home/",
@@ -35,7 +35,7 @@
 		"locale": "en-US"
 	},
 	"openai": {
-		"emoji": "🌐",
+		"emoji": "🌸",
 		"env": "OPENAI_API_KEY",
 		"url": "https://api.openai.com/v1",
 		"platform":"https://auth.openai.com/log-in",
@@ -43,7 +43,7 @@
 		"locale": "en-US"
 	},
 	"xai": {
-		"emoji": "🚀",
+		"emoji": "𝕏",
 		"env": "XAI_API_KEY",
 		"url": "https://api.x.ai/v1",
 		"docs": "https://docs.x.ai/docs/overview",
@@ -62,7 +62,7 @@
 		"locale": "en-US"
 	},
 	"mistral": {
-		"emoji": "⚡️",
+		"emoji": "🌪️",
 		"env": "MISTRAL_API_KEY",
 		"url": "https://api.mistral.ai/v1",
 		"docs": "https://docs.mistral.ai/",

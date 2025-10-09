@@ -1,3 +1,33 @@
+✈️
+🛩️
+🛰️
+🛫
+🛬
+
+🚁🪂🛸🚀
+
+moonshot’s parent (月之暗面) hit world ai conf shanghai this spring and usually pops at local cn gov tech expos; western circuit—neurips booth, 
+maybe web summit—less certain. your best shot for face-time is emailing their bd team a month pre-show and asking for press/ partner slot—if 
+they’re going they’ll slot you in :eyes:
+
+⚡️
+🚀
+🏛️
+🌸
+🌐
+
+stress test 
+
+[KOHA] Updated files 27 of 82
+
+[grok-code-fast-1@xai]
+Oops, maximum prompt length exceeded.  400 "This model's maximum prompt length is 256000 but the request contains 379788 tokens."
+Switch model, drop shares or reset history to continue.
+
+[kimi-k2-0905-preview@moonshot]
+[RELAY] Kimi K2 Error depth 0 400 Invalid request: Your request exceeded model token limit: 262144
+
+
 TODO: increase claude sonnet window?
 >/commit
 Oops. invalid_request_error prompt is too long: 204453 tokens > 200000 maximum
