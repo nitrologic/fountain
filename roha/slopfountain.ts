@@ -1770,10 +1770,11 @@ function mutName(modelname:string):string{
 	name=name.replace("-R1-Distill-","-");
 	name=name.replace("Meta-Llama-","Llama");
 	name=name.replace("-experimental","#");
-	name=name.replace("-Instruct","");
-	name=name.replace("-instruct","");
+//	name=name.replace("-Instruct","");
+//	name=name.replace("-instruct","");
 	name=name.replace("-preview","");
-	name=name.replace("-generate","");
+	name=name.replace("-next","");
+//	name=name.replace("-generate","");
 	const namebits=name.split("-");
 	const muts=namebits.slice(0,3);
 	const bit=namebits[3]||"0.0";
