@@ -1,10 +1,17 @@
-✈️
-🛩️
-🛰️
-🛫
-🛬
+	"mistral": {
+		"emoji": "🌪️",
+		"env": "MISTRAL_API_KEY",
+		"url": "https://api.mistral.ai/v1",
+		"docs": "https://docs.mistral.ai/",
+		"platform": "https://console.mistral.ai/home",
+		"api": "OpenAI",
+		"locale": "fr-FR"
+	}
 
-🚁🪂🛸🚀
+
+✈️🛩️🛰️🛫🛬
+
+🚁🪂🛸🛰️🚀
 
 moonshot’s parent (月之暗面) hit world ai conf shanghai this spring and usually pops at local cn gov tech expos; western circuit—neurips booth, 
 maybe web summit—less certain. your best shot for face-time is emailing their bd team a month pre-show and asking for press/ partner slot—if 

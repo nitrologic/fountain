@@ -60,14 +60,5 @@
 		"platform":"https://console.cloud.google.com/",
 		"api": "Google",
 		"locale": "en-US"
-	},
-	"mistral": {
-		"emoji": "🌪️",
-		"env": "MISTRAL_API_KEY",
-		"url": "https://api.mistral.ai/v1",
-		"docs": "https://docs.mistral.ai/",
-		"platform": "https://console.mistral.ai/home",
-		"api": "OpenAI",
-		"locale": "fr-FR"
 	}
 }
