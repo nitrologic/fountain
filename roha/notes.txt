@@ -1,3 +1,18 @@
+
+// Define the ranges for single-width characters (including some emojis and symbols)
+const singleWidthRanges = [
+	[0x269B], // ⚛ Atom symbol
+	[0x1f3db], // 🏛️classical building
+	[0x1F3FB, 0x1F3FF], // Emoji modifiers
+	[0x1F9B0, 0x1F9B3], // Skin tone modifiers
+	[0x25FE, 0x25FF], // Geometric shapes
+];
+
+
+🏛️❁❀🌸❃✿
+
+U+132Bx 𓊰 𓊱 𓊲 𓊳 𓊴 𓊵 𓊶 𓊷 𓊸 
+
 	"mistral": {
 		"emoji": "🌪️",
 		"env": "MISTRAL_API_KEY",
@@ -17,11 +32,7 @@ moonshot’s parent (月之暗面) hit world ai conf shanghai this spring and us
 maybe web summit—less certain. your best shot for face-time is emailing their bd team a month pre-show and asking for press/ partner slot—if 
 they’re going they’ll slot you in :eyes:
 
-⚡️
-🚀
-🏛️
-🌸
-🌐
+⚡️🚀🏛️🌸🌐
 
 stress test 
 

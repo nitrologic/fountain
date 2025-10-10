@@ -25,6 +25,7 @@ const fountainName=brandFountain+" "+fountainVersion;
 const defaultModel="deepseek-chat@deepseek";
 
 const statusChar=" ꔀ "; //courtesy Vai Syllabary
+const activeChar="❃";
 
 const terminalColumns=100;	// default value for wordWrap()
 const statsColumn=50;
@@ -660,18 +661,9 @@ const rohaTools=[{
 }];
 
 // fountain utility functions
-
-// Define the ranges for single-width characters (including some emojis and symbols)
-const singleWidthRanges = [
-	[0x269B], // ⚛ Atom symbol
-	[0x1F3FB, 0x1F3FF], // Emoji modifiers
-	[0x1F9B0, 0x1F9B3], // Skin tone modifiers
-	[0x25FE, 0x25FF], // Geometric shapes
-];
-
 // here be dragons
 // emoji wide char groups may need cludge for abnormal plungers
-
+// 🏛️ 
 const isDoubleWidth = (() => {
 	const ranges = [
 		[0x1100, 0x115F],
@@ -687,7 +679,12 @@ const isDoubleWidth = (() => {
 		[0x1F000, 0x1F02F],
 		[0x1F0A0, 0x1F0FF],
 		[0x1F100, 0x1F1FF],
-		[0x1F300, 0x1F9FF],
+// TODO: work in progress
+// abacus 🧮 1f9ee is wide historic building is not 🏛️1f3db
+//		[0x1F300, 0x1F9FF],
+		[0x1F300, 0x1f3da],
+		[0x1F3dc, 0x1F9FF],
+//		[0x1F900, 0x1F9FF],	
 		[0x20000, 0x2FFFD],
 		[0x30000, 0x3FFFD]
 	];
@@ -2638,6 +2635,7 @@ async function creditAccount(credit,account){
 }
 
 // TODO: add a topup column
+// TODO: add emoji
 
 async function onAccount(args){
 	if(args.length>1){
@@ -2656,8 +2654,8 @@ async function onAccount(args){
 		for(const key in modelAccounts){
 			list.push(key);
 		}
-		echo_row("id","name","llm","credit","topup");
-//		echo_row("----","-------------","-----","----------","--------------------");
+		echo_row("id","emoji","name","llm","credit","topup");
+//		echo_row("----","--","-------------","-----","----------","--------------------");
 		for(let i=0;i<list.length;i++){
 			const key=list[i];
 			const config=modelAccounts[key];
@@ -2665,11 +2663,13 @@ async function onAccount(args){
 				const endpoint=rohaEndpoint[key];
 				const models=endpoint?.modelList||[];
 				const lode=roha.lode[key];
-				const count=models?.length|0;
+				const count=(models?.length)|0;
+				const emoji=(config.emoji)||"?";
 				const link=config.platform||"";
-				echo_row(i,key,count,price(lode.credit),link);
+				echo_row(i,emoji,key,count,price(lode.credit),link);
 			}else{
-				echo_row(i,key);
+// inactive so hidden				
+//				echo_row(i,key);
 			}
 			lodeList=list;
 			listCommand="credit";
@@ -2810,8 +2810,8 @@ async function openCommand(words){
 
 // modelCommand - list table of models
 
-const modelKeys="📠📷📘🔉";
-const modelKey={"📠":"Tools","📷":"Vision","📘":"Strict","🔉":"Speech"};
+const modelKeys="📠📷🔉❃";
+const modelKey={"📠":"Tools","📷":"Vision","🔉":"Speech","❃":"Active"};
 
 async function modelCommand(words){
 	let name=words[1];
@@ -2838,11 +2838,11 @@ async function modelCommand(words){
 			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
 			// tag model key
-			if(info.mut) notes.push("🧪");
+			if(info.mut) notes.push(activeChar);
 			if(info.cold) notes.push("🌡️");
 			if(info.multi) notes.push("📷");
-			if(info.strict) notes.push("🌪️");
 			if(speech) notes.push("🔉");
+//			if(info.strict) notes.push("🌪️");
 //			if(info.inline) notes.push("📘");
 			const seconds=mutspec.created;
 			const created=dateStamp(seconds);
@@ -2916,6 +2916,7 @@ async function callCommand(command:string) {
 				echo("Current model thinking budget is", grokThink);
 				break;
 			case "temp":
+				let temp=grokTemperature;
 				if (words.length > 1) {
 					const newTemp=parseFloat(words[1]);
 					if (!isNaN(newTemp) && newTemp >= -5 && newTemp <= 50) {
@@ -2924,7 +2925,7 @@ async function callCommand(command:string) {
 						grokTemperature=ResetTemperature;
 					}
 				}
-				echo("Current model temperature is", grokTemperature);
+				echo("Current model temperature was",temp,"is", grokTemperature);
 				break;
 			case "forge":
 				onForge(words);
