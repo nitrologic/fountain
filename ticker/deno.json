@@ -1,0 +1,5 @@
+{
+	"tasks":{
+		"ticker": "deno run --allow-net tick.ts",
+	}
+}

@@ -255,7 +255,11 @@ function stringifyArray(array:[]):string{
 function stringWidth(text:string):number{
 	let w = 0;
 	for (const ch of text) {
-		w += isDoubleWidth(ch.codePointAt(0)) ? 2 : 1;
+		const codepoint=ch.codePointAt(0) ?? 0;
+        if (codepoint===0xFE0F) continue; // Skip variation selectors
+//		console.log(codepoint.toString(16));
+		const thin=codepoint==0x1F3dB;//🏛️
+		w+=thin?1:(isDoubleWidth(codepoint)?2:1);
 	}
 	return w;
 }
@@ -679,12 +683,7 @@ const isDoubleWidth = (() => {
 		[0x1F000, 0x1F02F],
 		[0x1F0A0, 0x1F0FF],
 		[0x1F100, 0x1F1FF],
-// TODO: work in progress
-// abacus 🧮 1f9ee is wide historic building is not 🏛️1f3db
-//		[0x1F300, 0x1F9FF],
-		[0x1F300, 0x1f3da],
-		[0x1F3dc, 0x1F9FF],
-//		[0x1F900, 0x1F9FF],	
+		[0x1F300, 0x1F9FF],
 		[0x20000, 0x2FFFD],
 		[0x30000, 0x3FFFD]
 	];
@@ -4129,6 +4128,7 @@ echo("use /help for latest and exit to quit");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
+echo(stringWidth("🏛️"));
 
 //echo("\t"+birds+" ",navigator.userAgent,navigator.languages);
 // test birds on clipboard
