@@ -7,6 +7,11 @@ Bizarro World: There is duality in almost every component. Turn those parts upsi
 Side Effects: Usually you're sad when a part's spec varies with temperature. Can you turn it into a thermometer?
 Out of Spec: Push that MOSFET until the magic smoke wants to come out, but doesn't quite. Dance on a volcano.
 Junk Box Substitutions: You needed an igniter coil, but got an eighth-watt resistor going hot enough to do the job. Show us your parts-swapping exploits.
+rem fountain skeleton play net host 
+rem deno task play
+rem deno task net
+rem deno task host
+rem deno task hello
 
 // Define the ranges for single-width characters (including some emojis and symbols)
 const singleWidthRanges = [
