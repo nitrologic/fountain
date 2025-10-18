@@ -6,7 +6,7 @@
 
 Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
-Exposing 249 models from 8 providers the LLM research project Fountain 1.5.0 ⛲ approaches connected.
+Addressing 267 models from 7 providers <del>249 models from 8 providers</del> the LLM research project Fountain 1.5.3 ⛲ approaches connected.
 
 > Planet earth is blue and there is nothing I can do - David Bowie
 
@@ -19,6 +19,11 @@ The new sloppy bot Deno worker joins [Discord Channel](https://discord.gg/e49Zhm
 Sloppy SSH endpoint in development - not currently available remotely. 
 
 ## Recent Personal Usage
+
+Default Temperature in Slop Fountain reduced to 0.7.
+
+![92 kilogram hot head at 1.0](slop/media/orchestrator1.0.png)
+![92 kilogram in the shade at 0.7](slop/media/orchestrator0.7.png)
 
 Processing the logs with experimental /raw command. 
 

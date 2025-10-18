@@ -210,7 +210,7 @@ const emojiIndex = {};
 
 const epoch:number=Date.UTC(2025,4,12);
 
-// slopmark() - returns a hex timestamp 
+// slopmark() - returns a hex timestamp
 // - hexadecimal encoding of sixteenths of a second since 2025.4.12
 // - replaces new Date().toISOString() as standard timestampe in slopfountain
 function slopmark():string{
@@ -256,7 +256,7 @@ function stringWidth(text:string):number{
 	let w = 0;
 	for (const ch of text) {
 		const codepoint=ch.codePointAt(0) ?? 0;
-        if (codepoint===0xFE0F) continue; // Skip variation selectors
+		if (codepoint===0xFE0F) continue; // Skip variation selectors
 //		console.log(codepoint.toString(16));
 		const thin=codepoint==0x1F3dB;//🏛️
 		w+=thin?1:(isDoubleWidth(codepoint)?2:1);
@@ -667,7 +667,7 @@ const rohaTools=[{
 // fountain utility functions
 // here be dragons
 // emoji wide char groups may need cludge for abnormal plungers
-// 🏛️ 
+// 🏛️
 const isDoubleWidth = (() => {
 	const ranges = [
 		[0x1100, 0x115F],
@@ -1383,7 +1383,7 @@ async function anthropicMessages(anthropic,payload){
 								];
 								messages.push({role:"user",content});
 								blocks++;
-							}else{								
+							}else{
 //								echo("[ANTHROPIC] ignoring unsupported file type",blob.path);
 							}
 						}catch( error){
@@ -1731,6 +1731,8 @@ function specModel(model,account){
 async function aboutModel(modelname){
 	const mut=mutName(modelname);
 	const info=(modelname in modelSpecs)?modelSpecs[modelname]:null;
+	const active=info?info.active:false;
+	const name=mut+active?"*":"";
 	const rate=info?info.pricing||[]:[];
 	const limit=info?info.maxprompt||0:0;
 //	const id=(info?info.id:0)||0;
@@ -1746,9 +1748,9 @@ async function aboutModel(modelname){
 	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
 	if(roha.config.verbose){
 		const keys={strict,multi,inline,responses};
-		echo("model:",{mut,emoji,rate,limit,modelname,balance,keys});
+		echo("model:",{name,emoji,rate,limit,modelname,balance,keys});
 	}else{
-		echo("model:",{mut,emoji,rate,limit,balance,modelname});
+		echo("model:",{name,emoji,rate,limit,balance,modelname});
 	}
 	if(roha.config.verbose && info){
 		if(info.purpose)echo("purpose:",info.purpose);
@@ -1830,7 +1832,7 @@ async function shareSlop(path:string,depth:number){
 		const size=stat.size;
 		const modified=stat.mtime.getTime();
 		echo("Share file path:",path," size:",size," ");
-		const hash=await hashFile(path,size);
+		const hash=await hashFile(path);
 		echo("hash:",hash);
 		await addShare({path,size,modified,hash,tag});
 	}
@@ -2219,13 +2221,17 @@ function mdToAnsi(md) {
 	return result.join("\r\n");
 }
 
-async function hashFile(filePath) {
-	const buffer=await Deno.readFile(filePath);
-	const hash=await crypto.subtle.digest("SHA-256", buffer);
-	const bytes=new Uint8Array(hash);
+function hexBytes(bytes:Uint8Array):string{
 	return Array.from(bytes, (byte) =>
 		byte.toString(16).padStart(2, "0")
 	).join("");
+}
+
+async function hashFile(filePath):string{
+	const buffer=await Deno.readFile(filePath);
+	const hash=await crypto.subtle.digest("SHA-256", buffer);
+	const bytes=new Uint8Array(hash);
+	return hexBytes(bytes);
 }
 
 async function readForge(){
@@ -2311,9 +2317,17 @@ async function promptForge(message:string):string {
 	return response.line;
 }
 
+// share is {path size modified hash tag}
+// duplicates get removed
 async function addShare(share){
 	share.id="share"+increment("shares");
-	roha.sharedFiles.push(share);
+	if(share.path){
+		const index=roha.sharedFiles.findIndex(item => item.path===share.path);
+		if (index!==-1) {
+			roha.sharedFiles.splice(index,1);
+		}
+		roha.sharedFiles.push(share);
+	}
 	if(share.tag) {
 		await setTag(share.tag,share.id);
 	}
@@ -2667,7 +2681,7 @@ async function onAccount(args){
 				const link=config.platform||"";
 				echo_row(i,emoji,key,count,price(lode.credit),link);
 			}else{
-// inactive so hidden				
+// inactive so hidden
 //				echo_row(i,key);
 			}
 			lodeList=list;
@@ -2808,6 +2822,7 @@ async function openCommand(words){
 }
 
 // modelCommand - list table of models
+// depends on activeChar
 
 const modelKeys="📠📷🔉❃";
 const modelKey={"📠":"Tools","📷":"Vision","🔉":"Speech","❃":"Active"};
@@ -2837,7 +2852,7 @@ async function modelCommand(words){
 			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
 			// tag model key
-			if(info.mut) notes.push(activeChar);
+			if(info.active) notes.push(activeChar);
 			if(info.cold) notes.push("🌡️");
 			if(info.multi) notes.push("📷");
 			if(speech) notes.push("🔉");
@@ -3566,7 +3581,7 @@ async function relay(depth:number) {
 			const instructions=rohaGuide.join(" ");
 
 			// todo support payload.tools
-			
+
 			const response:ChatCompletionResponse = await endpoint.responses.create({
 				model: payload.model,instructions,input: payload.messages
 			});
@@ -3605,7 +3620,7 @@ async function relay(depth:number) {
 									print(wordWrap(reply));
 								}
 								replies.push(reply);
-							}		
+							}
 						}
 						break;
 					default:
@@ -3731,7 +3746,7 @@ async function relay(depth:number) {
 			const status=statusChar+modelSpec.join(" ")+" ";
 			if(true){//config.echostatus
 				echo(status);
-			}else{				
+			}else{
 				if (roha.config.ansi)
 					echoStatus(ANSI.BG.GREY+status+ANSI.RESET);
 				else
