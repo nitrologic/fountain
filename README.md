@@ -8,13 +8,15 @@ Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM too
 
 Exposing 249 models from 8 providers the LLM research project Fountain 1.5.0 ⛲ approaches connected.
 
+Pleased to welcome and assign active model under test status to Qwen3 Max and Claude Haiku 4.5.
+
 > Planet earth is blue and there is nothing I can do - David Bowie
 
 > maximum prompt length exceeded - every model ever
 
 ## SSH and Discord 
 
-The new sloppy bot Deno worker joins [Discord Channel](https://discord.gg/e49ZhmQEjC) to Slop Fountain and routes posts to prompts.
+The sloppy bot Deno worker joins [Discord Channel](https://discord.gg/e49ZhmQEjC) to Slop Fountain and routes posts to prompts.
 
 Sloppy SSH endpoint in development - not currently available remotely. 
 
@@ -44,7 +46,7 @@ The next is a line count of the models under test, my top 5 for August to date.
 
 ## Latest Commits
 
-The raw prompt mode is a low level keyboard driver designed to add new features to Fountain input
+The raw sloppy prompt mode is a low level keyboard driver designed to add new features to Fountain input
 
 * shortcode :eyes: type : eyes :
 * tab support - huh, no wonder the vanilla Deno prompt() is tab free
