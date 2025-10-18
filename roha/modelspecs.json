@@ -96,8 +96,13 @@
 		"reality":"I do not feel comfortable providing or discussing blah blah."
 	}
 	,
+	"qwen3-coder-plus-2025-09-23@alibaba":{
+		"active": true,
+		"released": "2025-09-23",
+		"pricing":[0.40,1.20],
+		"purpose":"Balanced performance, speed and cost."
+	},
 	"qwen3-max-2025-09-23@alibaba":{
-		"mut": true,
 		"released": "2025-09-23",
 		"pricing":[1.20,6.00],
 		"purpose":"Proprietary flagship Qwen3-Max variant"
@@ -129,10 +134,12 @@
 		"purpose":"Polite, balanced performance, speed and cost."
 	},
 	"qwen-plus@alibaba":{
+		"deprecated":true,
 		"pricing":[0.40,1.20],
 		"purpose":"Balanced performance, speed and cost."
 	},
 	"qwen-turbo@alibaba":{
+		"deprecated":true,
 		"pricing":[0.05,0.20],
 		"purpose":"Fast speed and low cost"
 	},
