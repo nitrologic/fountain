@@ -99,11 +99,11 @@ Open document with specified path.
 
 ## Model Under Test
 
-### /model (all)
+### /model (all|next)
 
 Select an AI model.
 
-User can choose a model by name or index from the accounts available.
+User can choose a model by name or index from the accounts available or next active model.
 
 Unless specified only models with tested rates are listed.
 

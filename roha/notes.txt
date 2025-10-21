@@ -1,3 +1,39 @@
+>/commit
+Got them. Quick notes after reading your two shares:
+
+- Temperature: You marked gpt‑5* as cold:true and relay skips payload.temperature when cold. That
+should stop the 400s. Consider also retrying once without temperature on a 400 and persisting a
+cold flag for the model at runtime.
+
+- Tool calls: processToolCalls pushes results back as role:"assistant". For OpenAI/Anthropic it
+should be role:"tool" with toolcallid and name; your Gemini adapter already maps
+tool->functionResponse. Switching this will improve tool use reliability.
+
+- Responses API: You’re using endpoint.responses.create and parsing response.output. Looks fine; do
+ensure you read cached tokens via usage.inputtokensdetails.cached_tokens (you already try
+that).
+
+- Deno 2: Deno.run is removed. You still use it in appleSay and clipText. Replace with
+Deno.Command. Also setImmediate isn’t available in Deno; use setTimeout(() => send(), 0) or
+queueMicrotask.
+
+- Slops: slopFrames is referenced but never declared; will throw if slops are enabled.
+
+- Windows clipboard: manual UTF‑16LE conversion will break surrogate pairs. Prefer powershell
+Set-Clipboard for reliability.
+
+Want a small patch for the tool-call role, the retry-without-temp guard, and the
+Deno.Command/setTimeout swaps?
+
+[KOHA] Shared path C:\nitrologic\fountain\roha\slopfountain.ts
+[KOHA] Shared path C:\nitrologic\fountain\roha\modelspecs.json
+[KOHA] Updated files 2 of 2
+usage {"prompt_tokens":38022,"completion_tokens":2399,"total_tokens":40421,"prompt_tokens_details":{"cached_tokens":0,"audio_tokens":0},"completion_tokens_details":{"reasoning_tokens":2112,"audio_tokens":0,"accepted_prediction_tokens":0,"rejected_prediction_tokens":0}}
+{account:openai,spent:0.0715,cached:0,balance:-8.2112}
+ ꔀ Fountain 1.5.3 ⛲  gpt-5-2025 ✿ 0.7° 🪠 $0.072 158.6KB 48.79s
+
+
+
 🏛️
 1f3db
 pantheon
@@ -39,9 +75,7 @@ U+132Bx 𓊰 𓊱 𓊲 𓊳 𓊴 𓊵 𓊶 𓊷 𓊸
 	}
 
 
-✈️🛩️🛰️🛫🛬
-
-🚁🪂🛸🛰️🚀
+✈️🛩️🛰️🛫🛬🚁🪂🛸🛰️🚀
 
 moonshot’s parent (月之暗面) hit world ai conf shanghai this spring and usually pops at local cn gov tech expos; western circuit—neurips booth, 
 maybe web summit—less certain. your best shot for face-time is emailing their bd team a month pre-show and asking for press/ partner slot—if 
@@ -103,21 +137,10 @@ credit #
     /home/ec2-user/.deno/bin/deno(+0x3323d3e) [0x5587e1b18d3e]
     /home/ec2-user/.deno/bin/deno(+0x435ae76) [0x5587e2b4fe76]
 
-
-    
-
-│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│
-┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼
-│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│
-┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼
-│╲│╱│╲│╱│╲│╱│╲│╱║╲│╱│╲│
-┼─✜─┼─┼─╬─┼─┼─┼─┼─┼─┼─┼
-│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│
-
 │╲║╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│
 +─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+
 │╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│
-+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+
++─+─+─+─+─+─+─+─+─+─+─+─+─+─+simon+─+─+─+─+
 │╲│╱│╲│╱│╲│╱│╲║╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│
 +─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+─+
 │╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱│╲│╱║╲│╱│╲│╱│

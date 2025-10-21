@@ -1783,6 +1783,27 @@ function mutName(modelname:string):string{
 	return muts.join("-");
 }
 
+// returns next active model by name
+async function nextActiveModel(){
+	const current=modelList.indexOf(grokModel);
+	echo("current",current);
+	const n=modelList.length;
+	let index=current;
+	while(true){
+		index=(index+1)%n
+		const modelname=modelList[index];
+		if(modelname===grokModel) break;
+		const mut=mutName(modelname);
+		const info=(modelname in modelSpecs)?modelSpecs[modelname]:null;
+		const active=info?info.active:false;
+		if(active){
+			echo("next active model is",modelname);
+			return resetModel(modelname);
+		}
+	}
+	return "";
+}
+
 async function resetModel(modelname:string){
 	const modelAccount=modelname.split("@");
 	const path=modelAccount[0];
@@ -2829,6 +2850,9 @@ const modelKey={"📠":"Tools","📷":"Vision","🔉":"Speech","❃":"Active"};
 
 async function modelCommand(words){
 	let name=words[1];
+	if(name && name==="next"){
+		name=nextActiveModel();
+	}
 	if(name && name!="all"){
 		if(name.length&&!isNaN(name)) name=modelList[name|0];
 		if(modelList.includes(name)){
@@ -2853,7 +2877,7 @@ async function modelCommand(words){
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
 			// tag model key
 			if(info.active) notes.push(activeChar);
-			if(info.cold) notes.push("🌡️");
+			if(info.cold) notes.push("🧊");
 			if(info.multi) notes.push("📷");
 			if(speech) notes.push("🔉");
 //			if(info.strict) notes.push("🌪️");

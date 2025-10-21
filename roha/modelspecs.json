@@ -187,14 +187,17 @@
 		"endpoints":["v1/audio/speech"]
 	},
 	"gpt-5-2025-08-07@openai":{
+		"cold":true,
 		"pricing":[1.25,0.125,10.0],
 		"purpose":"gpt-5"
 	},
 	"gpt-5-mini-2025-08-07@openai":{
+		"cold":true,
 		"pricing":[0.25,0.025,2.0],
 		"purpose":"gpt-5 mini"
 	},
 	"gpt-5-nano-2025-08-07@openai":{
+		"cold":true,
 		"pricing":[0.05,0.025,0.20],
 		"purpose":"nano nano 5 - faster than a fast thing",
 		"press":"supporting up to ? million tokens of context",

@@ -22,7 +22,7 @@ Sloppy SSH endpoint in development - not currently available remotely.
 
 ## Recent Personal Usage
 
-Default Temperature in Slop Fountain reduced to 0.7.
+Default Temperature in Slop Fountain reduced to 0.7. Breaks gpt-5-mini-2025-08-07.
 
 ![92 kilogram hot head at 1.0](slop/media/orchestrator1.0.png)
 ![92 kilogram in the shade at 0.7](slop/media/orchestrator0.7.png)
