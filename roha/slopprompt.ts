@@ -455,23 +455,28 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				if ((byte & 0xE0) === 0xC0) bytesNeeded=2;    // 2-byte sequence
 				else if ((byte & 0xF0) === 0xE0) bytesNeeded=3; // 3-byte sequence
 				else if ((byte & 0xF8) === 0xF0) bytesNeeded=4; // 4-byte sequence
-
+// TODO: fix this for pasting unicode in windows
 				if (i + bytesNeeded <= n) {
 					const sequence=value.subarray(i, i + bytesNeeded);
 					try {
 						const chartext=decoder.decode(sequence);
 						for (const ch of [...segmenter.segment(chartext)]) {
 							const segment=ch.segment;
-							addInput(segment);
+//							addInput(segment);
 							const raw=encoder.encode(segment)
-							bytes.push(...raw);							
+//							bytes.push(...raw);							
 						}
-//						bytes.push(...sequence);
+						addInput(chartext);
+						bytes.push(...sequence);
+						console.log("[RAW] skipping ",bytesNeeded,sequence,chartext);
 						i += bytesNeeded - 1; // Skip the extra bytes
 						continue;
 					} catch (e) {
+						console.log("[RAW] exception",e);
 						// Fall through to single byte handling
 					}
+				}else{
+					console.log("[RAW] underflow");
 				}
 			}
 			if (byte === 0x7F || byte === 0x08) { // Backspace
@@ -504,7 +509,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					break;
 				}
 				bytes.push(...encoder.encode(char));
-    		    addInput(char);
+				addInput(char);
 //				bytes.push(byte);
 //				const char=decoderStream.decode(new Uint8Array([byte])); // Fix: Decode single byte to char
 //				addInput(char);
