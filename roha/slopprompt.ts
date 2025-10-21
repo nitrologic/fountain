@@ -2,6 +2,7 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
+// wtf puny import { encode } from "node:punycode";
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space
 
 // no abort controllers if you don't mind
@@ -447,7 +448,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		const n=value.length;
 
 		for(let i=0;i<n;i++){
-		    const byte=value[i];
+			const byte=value[i];
 			// Handle UTF-8 multi-byte sequences more robustly
 			if (byte >= 0xC0) { // UTF-8 start byte (2+ byte sequence)
 				let bytesNeeded=0;
@@ -458,9 +459,14 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				if (i + bytesNeeded <= n) {
 					const sequence=value.subarray(i, i + bytesNeeded);
 					try {
-						const char=decoder.decode(sequence);
-						bytes.push(...encoder.encode(char));
-						addInput(char);
+						const chartext=decoder.decode(sequence);
+						for (const ch of [...segmenter.segment(chartext)]) {
+							const segment=ch.segment;
+							addInput(segment);
+							const raw=encoder.encode(segment)
+							bytes.push(...raw);							
+						}
+//						bytes.push(...sequence);
 						i += bytesNeeded - 1; // Skip the extra bytes
 						continue;
 					} catch (e) {
@@ -487,9 +493,10 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				bytes.push(0x0D,0x0A);
 				busy=false;
 			} else {
+				if(byte==3) return null;	// ctrl c triggers a Deno exit
 				if(byte<32 && byte!=9){
 					console.log("[RAW] bad byte",byte);
-					break;
+					busy=false;
 				}
 				const char=decoderStream.decode(new Uint8Array([byte]));
 				if(!char){

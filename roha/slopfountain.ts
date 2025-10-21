@@ -4166,11 +4166,6 @@ echo("use /help for latest and exit to quit");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
-echo(stringWidth("🏛️"));
-
-//echo("\t"+birds+" ",navigator.userAgent,navigator.languages);
-// test birds on clipboard
-//await clipText("\t"+birds);
 
 if(roha.config.listen){
 	listenService();

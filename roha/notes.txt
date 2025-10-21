@@ -3,6 +3,33 @@ deprecated:
 Verbosity is an output control, low, medium, high.
 Seed provides random reset. 
 
+ ꔀ Fountain 1.5.3 ⛲  kimi-k2-0905 🌙 0.7° 🪠 $0.068 379.8KB 30.66s
+
+ing this at line 429 in the `slopprompt.ts` file where it checks:
+
+if(byte<32 && byte!=9){                                                                                                                                                                                            
+    console.log("[RAW] bad byte",byte);                                                                                                                                                                            
+    break;                                                                                                                                                                                                         
+}                                                                                                                                                                                                                  
+                                                                                                                                                                                                                   
+
+Since Ctrl+X (24) is less than 32 and not a tab (9), it triggers this "bad byte" log and breaks out
+of the input processing. This explains why you're seeing this message when pressing Ctrl+X.
+
+To fix this, you would need to add Ctrl+X (and other control characters you want to handle) to the
+whitelist in that condition, or add a specific handler for it before the general control character
+check.
+
+ ꔀ Fountain 1.5.3 ⛲  qwen3-coder-plus 🐉 0.7° 🪠 $0.045 388.7KB 5.36s
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+echo(stringWidth("🏛️"));
+
+//echo("\t"+birds+" ",navigator.userAgent,navigator.languages);
+// test birds on clipboard
+//await clipText("\t"+birds);
+
+
 resetRoha All shares and history reset. Resetting model.
 model: {"name":"*","emoji":"🌙","rate":[0.6,0.15,2.5],"limit":0,"balance":"$2.3469","modelname":"kimi-k2-0905-preview@moonshot"}
 >[RELAY] unhandled error 400 Invalid request: total message size 16113387 exceeds limit 4194304
