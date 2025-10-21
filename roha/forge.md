@@ -27,15 +27,11 @@ Default values are typically:
 * 14 slow : experimental output at reading speed : false
 * 15 slops : console worker scripts : false
 
-### /temp /verbose /seed 
+### /temp
 
-Set or show the persona settings temperature, verbosity and seed.
+Set or show the persona settings temperature.
 
 Temp is an entropy control, use lower values for focus, higher for creativity.
-
-Verbosity is an output control, low, medium, high.
-
-Seed provides random reset. 
 
 ### /share /attach
 

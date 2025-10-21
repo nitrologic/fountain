@@ -102,6 +102,15 @@ Those looking for llamas etc see:
 
 \
 ```
+"mistral": {
+	"emoji": "🌪️",
+	"env": "MISTRAL_API_KEY",
+	"url": "https://api.mistral.ai/v1",
+	"docs": "https://docs.mistral.ai/",
+	"platform": "https://console.mistral.ai/home",
+	"api": "OpenAI",
+	"locale": "fr-FR"
+},
 , "cerebras": {
 	"emoji": "🤗𝐂",
 	"env": "HUGGINGFACE_API_KEY",

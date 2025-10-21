@@ -2845,7 +2845,7 @@ async function openCommand(words){
 // depends on activeChar
 
 const modelKeys="📠📷🔉❃";
-const modelKey={"📠":"Tools","📷":"Vision","🔉":"Speech","❃":"Active"};
+const modelKey={"🧊":"Frigid","📷":"Vision","🔉":"Speech","📠":"Tools","❃":"Active"};
 
 async function modelCommand(words){
 	let name=words[1];
