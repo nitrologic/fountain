@@ -1,3 +1,8 @@
+resetRoha All shares and history reset. Resetting model.
+model: {"name":"*","emoji":"🌙","rate":[0.6,0.15,2.5],"limit":0,"balance":"$2.3469","modelname":"kimi-k2-0905-preview@moonshot"}
+>[RELAY] unhandled error 400 Invalid request: total message size 16113387 exceeds limit 4194304
+[RELAY] Error: 400 Invalid request: total message size 16113387 exceeds limit 4194304+
+
 >/commit
 Got them. Quick notes after reading your two shares:
 

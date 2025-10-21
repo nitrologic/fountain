@@ -1732,7 +1732,7 @@ async function aboutModel(modelname){
 	const mut=mutName(modelname);
 	const info=(modelname in modelSpecs)?modelSpecs[modelname]:null;
 	const active=info?info.active:false;
-	const name=mut+active?"*":"";
+	const name=mut+(active?"":"*");
 	const rate=info?info.pricing||[]:[];
 	const limit=info?info.maxprompt||0:0;
 //	const id=(info?info.id:0)||0;
@@ -1786,7 +1786,6 @@ function mutName(modelname:string):string{
 // returns next active model by name
 async function nextActiveModel(){
 	const current=modelList.indexOf(grokModel);
-	echo("current",current);
 	const n=modelList.length;
 	let index=current;
 	while(true){
@@ -1797,7 +1796,7 @@ async function nextActiveModel(){
 		const info=(modelname in modelSpecs)?modelSpecs[modelname]:null;
 		const active=info?info.active:false;
 		if(active){
-			echo("next active model is",modelname);
+			if(roha.config.verbose)echo("next active model is",modelname);
 			return resetModel(modelname);
 		}
 	}
