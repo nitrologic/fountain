@@ -455,7 +455,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				if ((byte & 0xE0) === 0xC0) bytesNeeded=2;    // 2-byte sequence
 				else if ((byte & 0xF0) === 0xE0) bytesNeeded=3; // 3-byte sequence
 				else if ((byte & 0xF8) === 0xF0) bytesNeeded=4; // 4-byte sequence
-// TODO: fix this for pasting unicode in windows
+// TODO: fix this for pasting unicode in Windows
 				if (i + bytesNeeded <= n) {
 					const sequence=value.subarray(i, i + bytesNeeded);
 					try {
@@ -468,7 +468,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 						}
 						addInput(chartext);
 						bytes.push(...sequence);
-						console.log("[RAW] skipping ",bytesNeeded,sequence,chartext);
+//						console.log("[RAW] skipping ",bytesNeeded,sequence,chartext);
 						i += bytesNeeded - 1; // Skip the extra bytes
 						continue;
 					} catch (e) {
