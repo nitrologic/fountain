@@ -4,6 +4,8 @@
 
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space
 
+// ⣯ <= 📠 💫<=🧮 🖥️<=account
+
 import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
 import { OpenAI, ChatCompletionRequest, ChatCompletionResponse } from "jsr:@openai/openai@5.23.0";
@@ -19,7 +21,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.5.3, V8 14.0.365.5-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.5.3";
+const fountainVersion="1.5.4";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -258,7 +260,7 @@ function stringWidth(text:string):number{
 		const codepoint=ch.codePointAt(0) ?? 0;
 		if (codepoint===0xFE0F) continue; // Skip variation selectors
 //		console.log(codepoint.toString(16));
-		const thin=codepoint==0x1F3dB;//🏛️
+		const thin=(codepoint==0x1F3dB)||(codepoint==0x1F5A5);//🏛️🖥️
 		w+=thin?1:(isDoubleWidth(codepoint)?2:1);
 	}
 	return w;
@@ -2844,8 +2846,8 @@ async function openCommand(words){
 // modelCommand - list table of models
 // depends on activeChar
 
-const modelKeys="📠📷🔉❃";
-const modelKey={"🧊":"Frigid","📷":"Vision","🔉":"Speech","📠":"Tools","❃":"Active"};
+const modelKeys="📷🔉⣯❃";
+const modelKey={"🧊":"Frigid","📷":"Vision","🔉":"Speech","⣯":"Tools","❃":"Active"};
 
 async function modelCommand(words){
 	let name=words[1];
@@ -2860,7 +2862,7 @@ async function modelCommand(words){
 		}
 	}else{
 		echoKey(modelKey,100);
-		echo_row("id","☐","model","account","🧮","📆","💰",modelKeys);
+		echo_row("id","☐","model","🖥️","💫","📆","💰",modelKeys);
 		const all=(name && name=="all");
 		for(let i=0;i<modelList.length;i++){
 			const modelname=modelList[i];
@@ -2870,7 +2872,7 @@ async function modelCommand(words){
 			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 			mutspec.name=modelname;
 			const notes=[...mutspec.notes];
-			if(mutspec.hasForge) notes.push("📠");
+			if(mutspec.hasForge) notes.push("⣯");
 			// info is model rated stats
 			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
@@ -3301,7 +3303,7 @@ async function processToolCalls(calls) {
 	return results;
 }
 
-// strict mode history for simplified model prompts 📠
+// strict mode history for simplified model prompts
 // returns a list of {role,content}
 
 function strictHistory(history){
