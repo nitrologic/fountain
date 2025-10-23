@@ -156,6 +156,12 @@
 		"purpose":"speech-to-speech voice agents",
 		"endpoints":["wss://api.openai.com/v1/realtime"]
 	},
+	"gpt-5-pro-2025-10-06@openai":{
+		"released": "2025-10-06",
+		"pricing":[15.00,120.0],
+		"endpoints":["v1/responses"],
+		"purpose":"The smartest and most precise model"
+	},
 	"gpt-5-codex@openai":{
 		"deprecated":true,
 		"pricing":[1.25,0.125,10.0],
