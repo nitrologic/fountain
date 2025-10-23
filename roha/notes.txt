@@ -1,5 +1,3 @@
-deprecated:
-
 Verbosity is an output control, low, medium, high.
 Seed provides random reset. 
 
@@ -11,7 +9,6 @@ if(byte<32 && byte!=9){
     console.log("[RAW] bad byte",byte);                                                                                                                                                                            
     break;                                                                                                                                                                                                         
 }                                                                                                                                                                                                                  
-                                                                                                                                                                                                                   
 
 Since Ctrl+X (24) is less than 32 and not a tab (9), it triggers this "bad byte" log and breaks out
 of the input processing. This explains why you're seeing this message when pressing Ctrl+X.

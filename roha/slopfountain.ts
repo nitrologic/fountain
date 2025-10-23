@@ -4,7 +4,7 @@
 
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space
 
-// ⣯ <= 📠 💫<=🧮 🖥️<=account
+// ⣯ <= 📠 💫<=🧮 ⛅🌏 <=account
 
 import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
@@ -2846,15 +2846,17 @@ async function openCommand(words){
 // modelCommand - list table of models
 // depends on activeChar
 
-const modelKeys="📷🔉⣯❃";
-const modelKey={"🧊":"Frigid","📷":"Vision","🔉":"Speech","⣯":"Tools","❃":"Active"};
+// 🎙️🔉📷🖼️🗣️👁👀
+
+const modelKeys="❃👀🗣️⣯🧊";
+const modelKey={"❃":"Active","👀":"Vision","🗣️":"Speech","⣯":"Tools","🧊":"Frigid"};
 
 async function modelCommand(words){
 	let name=words[1];
 	if(name && name==="next"){
 		name=nextActiveModel();
 	}
-	if(name && name!="all"){
+	if(name && name!="all" && name!="voice"){
 		if(name.length&&!isNaN(name)) name=modelList[name|0];
 		if(modelList.includes(name)){
 			await resetModel(name);
@@ -2862,8 +2864,9 @@ async function modelCommand(words){
 		}
 	}else{
 		echoKey(modelKey,100);
-		echo_row("id","☐","model","🖥️","💫","📆","💰",modelKeys);
+		echo_row("id","☐","model","🌏","💫","📆","💰",modelKeys);
 		const all=(name && name=="all");
+		const voice=(name && name=="voice");
 		for(let i=0;i<modelList.length;i++){
 			const modelname=modelList[i];
 // todo: ⭐power
@@ -2879,8 +2882,8 @@ async function modelCommand(words){
 			// tag model key
 			if(info.active) notes.push(activeChar);
 			if(info.cold) notes.push("🧊");
-			if(info.multi) notes.push("📷");
-			if(speech) notes.push("🔉");
+			if(info.multi) notes.push("👀");
+			if(speech) notes.push("🗣️");
 //			if(info.strict) notes.push("🌪️");
 //			if(info.inline) notes.push("📘");
 			const seconds=mutspec.created;
@@ -2896,7 +2899,8 @@ async function modelCommand(words){
 			let cheap = priced && priced[0]<3.01;
 			if(!roha.config.budget) cheap=priced;
 			if(deprecated) cheap=false;
-			if(cheap || all){
+			const audible=speech && voice;
+			if(cheap || all || audible){
 				const pricing=(info&&info.pricing)?stringifyArray(info.pricing):"";
 				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
 			}

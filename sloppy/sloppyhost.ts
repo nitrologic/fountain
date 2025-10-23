@@ -1,11 +1,11 @@
 // sloppyhost.ts - http file server and jsonrpc for slop fountain egress ingress
 
-// (c)2025 Simon Armstrong 
+// (c)2025 Simon Armstrong
 // Licensed under the MIT License - See LICENSE file
 
 // see slophole.ts for singleton worker based transport
 
-import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";                                                                                                                                                                             
+import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";
 
 const slopPid=Deno.pid;
 const sessionName="slopfiles"+slopPid;
@@ -119,7 +119,7 @@ function readSlopHole(){
 
 worker.onmessage = (message) => {
 	const payload=message.data;//ports,origin.lastEventId JSON.stringify(payload)
-	logSlop(payload);	
+	logSlop(payload);
 	if(payload.connected){
 		writeSlopHole(greet);
 		readSlopHole();

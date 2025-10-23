@@ -2,11 +2,8 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-// wtf puny import { encode } from "node:punycode";
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space
-
 // no abort controllers if you don't mind
-
 // log sloppy to host
 
 function echo(...args:any[]){
@@ -21,7 +18,7 @@ function echo(...args:any[]){
 
 let listenerPromise;
 const slopConnections=[];
-let receivePromises={}; 
+let receivePromises={};
 
 //: Promise<{source:Deno.TcpConn, receive:Uint8Array}>[]=[];
 
@@ -337,6 +334,29 @@ async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
 }
 
+function processUtf8(value: Uint8Array, i: number, bytes: number[]): number {
+	const byte = value[i];
+	let bytesNeeded = 1;
+	if ((byte & 0xE0) === 0xC0) bytesNeeded = 2;
+	else if ((byte & 0xF0) === 0xE0) bytesNeeded = 3;
+	else if ((byte & 0xF8) === 0xF0) bytesNeeded = 4;
+	if (i + bytesNeeded <= value.length) {
+		const sequence = value.subarray(i, i + bytesNeeded);
+		try {
+			const charText = decoder.decode(sequence);
+			addInput(charText);
+			bytes.push(...sequence);		
+//			console.log("[RAW] skipping ",bytesNeeded,sequence,charText);
+			return bytesNeeded - 1;
+		} catch (e) {
+			console.log("[RAW] decoder error");
+			// Fall through to single byte handling
+		}
+	}
+	console.log("[RAW] decoder underflow");
+	return 0;
+}
+
 // main egress for discord ssh stdin users
 
 export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
@@ -387,7 +407,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		}
 		if (connection) {
 			if(name in receivePromises){
-				echo("connection already exists for",name);	
+				echo("connection already exists for",name);
 			}
 			slopConnections.push(connection);
 			listenerPromise=listenPort(8081);
@@ -413,7 +433,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 						const command=blob.command;
 						const line=(command.name+" "+command.args).trim();
 						const from=command.from;
-						echo("COMMAND blob received",line,from);						
+						echo("COMMAND blob received",line,from);
 						messages.push({command:line,from});
 					}
 					if(blob.messages){
@@ -446,38 +466,12 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		busy=true;
 		if (done || !value) break;
 		const n=value.length;
-
 		for(let i=0;i<n;i++){
 			const byte=value[i];
-			// Handle UTF-8 multi-byte sequences more robustly
-			if (byte >= 0xC0) { // UTF-8 start byte (2+ byte sequence)
-				let bytesNeeded=0;
-				if ((byte & 0xE0) === 0xC0) bytesNeeded=2;    // 2-byte sequence
-				else if ((byte & 0xF0) === 0xE0) bytesNeeded=3; // 3-byte sequence
-				else if ((byte & 0xF8) === 0xF0) bytesNeeded=4; // 4-byte sequence
-// TODO: fix this for pasting unicode in Windows
-				if (i + bytesNeeded <= n) {
-					const sequence=value.subarray(i, i + bytesNeeded);
-					try {
-						const chartext=decoder.decode(sequence);
-						for (const ch of [...segmenter.segment(chartext)]) {
-							const segment=ch.segment;
-//							addInput(segment);
-							const raw=encoder.encode(segment)
-//							bytes.push(...raw);							
-						}
-						addInput(chartext);
-						bytes.push(...sequence);
-//						console.log("[RAW] skipping ",bytesNeeded,sequence,chartext);
-						i += bytesNeeded - 1; // Skip the extra bytes
-						continue;
-					} catch (e) {
-						console.log("[RAW] exception",e);
-						// Fall through to single byte handling
-					}
-				}else{
-					console.log("[RAW] underflow");
-				}
+			if (byte >= 0x80) { // Multi-byte UTF-8
+				const skip = processUtf8(value, i, bytes);
+				i += skip;
+				continue;
 			}
 			if (byte === 0x7F || byte === 0x08) { // Backspace
 				backspace(bytes);
@@ -498,6 +492,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				bytes.push(0x0D,0x0A);
 				busy=false;
 			} else {
+				if(byte==3) return null;	// ctrl c triggers a Deno exit
 				if(byte==3) return null;	// ctrl c triggers a Deno exit
 				if(byte<32 && byte!=9){
 					console.log("[RAW] bad byte",byte);
