@@ -4,7 +4,7 @@
 
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space
 
-// ⣯ <= 📠 💫<=🧮 ⛅🌏 <=account
+// ⣯📠💫🧮⛅🌏🎙️🔉📷🖼️🗣️👁👀🫦💻
 
 import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
@@ -2844,12 +2844,9 @@ async function openCommand(words){
 }
 
 // modelCommand - list table of models
-// depends on activeChar
 
-// 🎙️🔉📷🖼️🗣️👁👀
-
-const modelKeys="❃👀🗣️⣯🧊";
-const modelKey={"❃":"Active","👀":"Vision","🗣️":"Speech","⣯":"Tools","🧊":"Frigid"};
+const modelKeys="👀🫦💻🧊❃";
+const modelKey={"👀":"Vision","🫦":"Speech","💻":"Tools","🧊":"Frigid","❃":"Active"};
 
 async function modelCommand(words){
 	let name=words[1];
@@ -2875,7 +2872,7 @@ async function modelCommand(words){
 			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 			mutspec.name=modelname;
 			const notes=[...mutspec.notes];
-			if(mutspec.hasForge) notes.push("⣯");
+			if(mutspec.hasForge) notes.push("💻");
 			// info is model rated stats
 			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
@@ -2883,7 +2880,7 @@ async function modelCommand(words){
 			if(info.active) notes.push(activeChar);
 			if(info.cold) notes.push("🧊");
 			if(info.multi) notes.push("👀");
-			if(speech) notes.push("🗣️");
+			if(speech) notes.push("🫦");
 //			if(info.strict) notes.push("🌪️");
 //			if(info.inline) notes.push("📘");
 			const seconds=mutspec.created;

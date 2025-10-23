@@ -1,3 +1,7 @@
+# 👀
+# 👄
+# ✌️🖐️🤏✋🤌🖐️
+
 Verbosity is an output control, low, medium, high.
 Seed provides random reset. 
 
