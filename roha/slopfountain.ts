@@ -2867,7 +2867,8 @@ async function modelCommand(words){
 		for(let i=0;i<modelList.length;i++){
 			const modelname=modelList[i];
 // todo: ⭐power
-			const attr=(modelname==grokModel)?"☑":" ";
+			const isMut=(modelname==grokModel);
+			const attr=isMut?"☑":" ";
 // mutspec from roha.mut
 			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 			mutspec.name=modelname;
@@ -2897,7 +2898,7 @@ async function modelCommand(words){
 			if(!roha.config.budget) cheap=priced;
 			if(deprecated) cheap=false;
 			const audible=speech && voice;
-			if(cheap || all || audible){
+			if(cheap || all || audible || isMut){
 				const pricing=(info&&info.pricing)?stringifyArray(info.pricing):"";
 				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
 			}
