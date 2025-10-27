@@ -6,7 +6,7 @@
 
 Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
-Addressing 267 models from 7 providers <del>249 models from 8 providers</del> the LLM research 
+Addressing 269 models from 7 providers <del>249 models from 8 providers</del> the LLM research 
 project Slop Fountain 1.5.5 ⛲ approaches connected.
 
 Pleased to welcome and assign active model under test status to 🎉 Qwen3 Max and 🎉 Claude Haiku 4.5.
@@ -14,6 +14,20 @@ Pleased to welcome and assign active model under test status to 🎉 Qwen3 Max a
 > Planet earth is blue and there is nothing I can do - David Bowie
 
 > maximum prompt length exceeded - every model ever
+
+## Account Providers
+
+> /account
+
+| id | emoji | name | llm | credit | topup |
+|---:|-------|-----------|----:|----------|-------| 
+| 0 | 🐋 | deepseek | 2 | $11.6685 | https://platform.deepseek.com/usage |
+| 1 | 🌕 | moonshot | 12 | $0.4798 | https://platform.moonshot.ai/console/account |
+| 2 | 🐉 | alibaba | 82 | $-1.2830 | https://bailian.console.alibabacloud.com/ |
+| 3 | 🏛️ | anthropic | 11 | $-1.0176 | https://console.anthropic.com/dashboard |
+| 4 | ✿ | openai | 103 | $-8.2816 | https://auth.openai.com/log-in |
+| 5 | 𝕏 | xai | 9 | $10.9298 | https://console.x.ai |
+| 6 | 🌟 | gemini | 50 | $-2.4094 | https://console.cloud.google.com/ |
 
 ## SSH and Discord 
 
@@ -79,19 +93,7 @@ The raw sloppy prompt mode is a low level keyboard driver designed to add new fe
 
 Install [Deno 2.4](https://deno.com/)
 
-## Account Providers
-
-> /account
-
-| id | emoji | name | llm | credit | topup |
-|---:|-------|-----------|----:|----------|-------| 
-| 0 | 🐋 | deepseek | 2 | $11.6685 | https://platform.deepseek.com/usage |
-| 1 | 🌕 | moonshot | 12 | $0.4798 | https://platform.moonshot.ai/console/account |
-| 2 | 🐉 | alibaba | 82 | $-1.2830 | https://bailian.console.alibabacloud.com/ |
-| 3 | 🏛️ | anthropic | 11 | $-1.0176 | https://console.anthropic.com/dashboard |
-| 4 | ✿ | openai | 103 | $-8.2816 | https://auth.openai.com/log-in |
-| 5 | 𝕏 | xai | 9 | $10.9298 | https://console.x.ai |
-| 6 | 🌟 | gemini | 50 | $-2.4094 | https://console.cloud.google.com/ |
+## Additional Llama support 
 
 Note the hugging face accounts have been dropped from accounts.json
 
