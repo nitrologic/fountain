@@ -6,9 +6,10 @@
 
 Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
-Addressing 267 models from 7 providers <del>249 models from 8 providers</del> the LLM research project Fountain 1.5.3 ⛲ approaches connected.
+Addressing 267 models from 7 providers <del>249 models from 8 providers</del> the LLM research 
+project Slop Fountain 1.5.5 ⛲ approaches connected.
 
-Pleased to welcome and assign active model under test status to Qwen3 Max and Claude Haiku 4.5.
+Pleased to welcome and assign active model under test status to 🎉 Qwen3 Max and 🎉 Claude Haiku 4.5.
 
 > Planet earth is blue and there is nothing I can do - David Bowie
 
@@ -82,23 +83,22 @@ Install [Deno 2.4](https://deno.com/)
 
 > /account
 ```
-╭────┬────────────┬─────┬───────────┬──────────────────────────────────────────────╮
-│ id │ name       │ llm │ credit    │ topup                                        │
-├────┼────────────┼─────┼───────────┼──────────────────────────────────────────────┤
-│ 0  │ deepseek   │ 2   │ $-3.0503  │ https://platform.deepseek.com/usage          │
-│ 1  │ moonshot   │ 11  │ $-1.1705  │ https://platform.moonshot.ai/console/account │
-│ 2  │ anthropic  │ 9   │ $1.8143   │ https://console.anthropic.com/dashboard      │
-│ 3  │ openai     │ 86  │ $-4.1137  │ https://auth.openai.com/log-in               │
-│ 4  │ xai        │ 9   │ $-10.6904 │ https://console.x.ai                         │
-│ 5  │ gemini     │ 50  │ $-1.7261  │ https://console.cloud.google.com/            │
-│ 6  │ mistral    │ 67  │ $0.0000   │ https://console.mistral.ai/home              │
-│ 7  │ alibaba    │ 4   │ $0.0000   │ https://bailian.console.alibabacloud.com/    │
-╰────┴────────────┴─────┴───────────┴──────────────────────────────────────────────╯
+╭────┬───────┬───────────┬─────┬──────────┬──────────────────────────────────────────────╮
+│ id │ emoji │ name      │ llm │ credit   │ topup                                        │
+├────┼───────┼───────────┼─────┼──────────┼──────────────────────────────────────────────┤
+│ 0  │ 🐋    │ deepseek  │ 2   │ $11.6685 │ https://platform.deepseek.com/usage          │
+│ 1  │ 🌕    │ moonshot  │ 12  │ $0.4798  │ https://platform.moonshot.ai/console/account │
+│ 2  │ 🐉    │ alibaba   │ 82  │ $-1.2830 │ https://bailian.console.alibabacloud.com/    │
+│ 3  │ 🏛️     │ anthropic │ 11  │ $-1.0176 │ https://console.anthropic.com/dashboard      │
+│ 4  │ ✿     │ openai    │ 103 │ $-8.2816 │ https://auth.openai.com/log-in               │
+│ 5  │ 𝕏     │ xai       │ 9   │ $10.9298 │ https://console.x.ai                         │
+│ 6  │ 🌟    │ gemini    │ 50  │ $-2.4094 │ https://console.cloud.google.com/            │
+╰────┴───────┴───────────┴─────┴──────────┴──────────────────────────────────────────────╯
 ````
 
 Note the hugging face accounts have been dropped from accounts.json
 
-Those looking for llamas etc see:
+Those looking for llamas etc may append the following providers:
 
 \
 ```
@@ -110,8 +110,7 @@ Those looking for llamas etc see:
 	"platform": "https://console.mistral.ai/home",
 	"api": "OpenAI",
 	"locale": "fr-FR"
-},
-, "cerebras": {
+}, "cerebras": {
 	"emoji": "🤗𝐂",
 	"env": "HUGGINGFACE_API_KEY",
 	"url": "https://router.huggingface.co/cerebras/v1",
