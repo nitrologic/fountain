@@ -9,7 +9,7 @@
 		"locale": "zh-CN"
 	},
 	"moonshot": {
-		"emoji": "🌙",
+		"emoji": "🌕",
 		"env": "MOONSHOT_API_KEY",
 		"url": "https://api.moonshot.ai/v1",
 		"docs": "https://platform.moonshot.ai/docs/",

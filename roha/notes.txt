@@ -1,6 +1,27 @@
-# 👀
-# 👄
-# ✌️🖐️🤏✋🤌🖐️
+skid.nz bot-garden blueprint (copy-paste ready)
+
+useradd -r -s /bin/false -d /var/bot/$name -M $name
+mkdir -p /var/bot/$name; chown $name:nogroup; chmod 700
+drop single-script client, chmod 500
+/etc/security/limits.conf → max 2 procs, 10 cpu, 256 MB vmem
+sshd_config → DenyUsers bot*
+launch via systemd-run --uid=$name --scope --quiet /var/bot/$name/run.sh
+apparmor/selinux profile: only fountain port + own dir + tmpfs
+NoNewPrivileges=true inside the scope unit
+keep /etc/passwd in git; auto-restore on drift
+scope stdout/stderr → journal → your existing skid.nz loki/vector pipeline (24 h retention)
+
+other stuff you’ll probably bump into
+use DynamicUser=yes for throw-away bots if you ever want zero /etc/passwd rows
+set TasksMax=5 in the scope to cap threads too
+rotate bot tokens hourly so a leaked jwt dies fast
+throw a cgroup memory limit (MemoryMax=300M) as extra guardrail
+if you ever need outbound https only, whitelist IPAllow=your.fountain.ip/32 with firewalld
+snapshot the t3.micro ami once the garden is stable; roll back in 2 min if an update goes sideways
+
+deploy, sleep, let the fountain flow
+
+# 🖐️👀👄✌️🤏✋🤌🖐️
 
 Verbosity is an output control, low, medium, high.
 Seed provides random reset. 

@@ -4,7 +4,7 @@
 
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space
 
-// ⣯📠💫🧮⛅🌏🎙️🔉📷🖼️🗣️👁👀🫦💻👄
+// ⛲🪣🐸🪠🐋🌙🐉🏛️✿𝕏🌟💫🌏📆💰👀🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅
 
 import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
@@ -474,7 +474,7 @@ async function serveConnection(connection){
 	await writeSlop(connection,text);
 }
 */
-function price(credit){
+function price(credit:number):string{
 	if (credit === null || isNaN(credit)) return "$0";
 	return "$"+credit.toFixed(4);
 }
@@ -2635,7 +2635,7 @@ async function clipText(text: string): Promise<void> {
 	}
 }
 
-async function openWithDefaultApp(path) {
+async function openWithDefaultApp(path:string) {
 	const cmd=Deno.build.os === "windows" ? ["start", "", path] : Deno.build.os === "darwin" ? ["open", path] : ["xdg-open", path];
 	await Deno.run({ cmd }).status();
 }
@@ -2657,7 +2657,7 @@ function onForge(args){
 	}
 }
 
-async function creditAccount(credit,account){
+async function creditAccount(credit:any,account:string){
 	const amount=Number(credit);
 	const lode=roha.lode[account];
 	const current=lode.credit||0;
@@ -2845,8 +2845,8 @@ async function openCommand(words){
 
 // modelCommand - list table of models
 
-const modelKeys="👀👄📡🧊❃";
-const modelKey={"👀":"Vision","👄":"Speech","📡":"Tools","🧊":"Frigid","❃":"Active"};
+const modelKeys="👀👄🔧🧊❃";
+const modelKey={"👀":"Vision","👄":"Speech","🔧":"Tools","🧊":"Frigid","❃":"Active"};
 
 async function modelCommand(words){
 	let name=words[1];
@@ -2872,7 +2872,7 @@ async function modelCommand(words){
 			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 			mutspec.name=modelname;
 			const notes=[...mutspec.notes];
-			if(mutspec.hasForge) notes.push("📡");
+			if(mutspec.hasForge) notes.push("🔧");
 			// info is model rated stats
 			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
