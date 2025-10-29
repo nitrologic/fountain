@@ -73,8 +73,8 @@ const username=getEnv("USERNAME");
 const userdomain=getEnv("USERDOMAIN").toLowerCase();
 const userregion = Intl.DateTimeFormat().resolvedOptions();
 
-// TODO: detect skinny bucket terminals here
-const userterminal=getEnv("TERM")||getEnv("TERM_PROGRAM")||getEnv("SESSIONNAME")||"VOID";
+const vscode_nonce=getEnv("VSCODE_NONCE");
+const userterminal=vscode_nonce?getEnv("TERM_PROGRAM"):(getEnv("SESSIONNAME")||"VOID");
 
 type ConfigFlags = {
 	showWelcome: boolean;
