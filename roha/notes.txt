@@ -1,3 +1,140 @@
+function stringwidth2(str) {
+	let width = 0;
+	for (const char of str) {
+		width += emojiIndex[char] || 1;
+	}
+	return width;
+}
+
+
+codepoint for 🜁
+
++
+[RELAY] unhandled error 429 Your account org-58ce8af6f832430bad23dccb3e555526 <ak-f3sssupje71111gowp71> is suspended, please check your plan and billing details
+[RELAY] Error: 429 Your account org-58ce8af6f832430bad23dccb3e555526 <ak-f3sssupje71111gowp71> is suspended, please check your plan and billing details
+    at APIError.generate (https://jsr.io/@openai/openai/5.23.0/core/error.ts:96:14)
+    at OpenAI.makeStatusError (https://jsr.io/@openai/openai/5.23.0/client.ts:463:28)
+    at OpenAI.makeRequest (https://jsr.io/@openai/openai/5.23.0/client.ts:713:24)
+    at eventLoopTick (ext:core/01_core.js:179:7)
+    at async relay (file:///home/ec2-user/fountain/roha/slopfountain.ts:3741:20)
+    at async chat (file:///home/ec2-user/fountain/roha/slopfountain.ts:4058:6)
+    at async file:///home/ec2-user/fountain/roha/slopfountain.ts:4231:2
+>[FORGE] Saved session transmission-69027df5.json.
+
+
+
+// kimi does not like this?
+// todo: mess with role tool
+// todo: google needs user not assistant
+// todo: use assistant and modify in gemini tools
+// this works with most models
+// [GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent: [400 Bad Request] * GenerateContentRequest.contents[1].parts[0].function_response.name: Name cannot be empty.
+//					const item={role:"tool",tool_call_id:result.tool_call_id,title:result.name||"ANON",content:result.content};
+
+Gemini fails on tool calling
+
+[GEMINI] toolCalls [{"id":"call_0","type":"function","function":{"name":"read_time","arguments":"{}"}}]
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.0133}
+ ꔀ Fountain 1.5.5 ⛲  gemini-2.5-05 🌟 🪣  0.7° $0.033 318.1KB 2.56s
+[RELAY] calls in progress 0 1833
+[RELAY] processToolCalls call_0 {"id":"call_0","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_0","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:21 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] toolCalls [{"id":"call_1","type":"function","function":{"name":"read_time","arguments":"{}"}}]
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.0468}
+[RELAY] calls in progress 1 1834
+[RELAY] processToolCalls call_1 {"id":"call_1","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_1","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:23 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] toolCalls [{"id":"call_2","type":"function","function":{"name":"read_time","arguments":"{}"}}]    
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.0803}
+[RELAY] calls in progress 2 1835
+[RELAY] processToolCalls call_2 {"id":"call_2","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_2","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:25 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] toolCalls [{"id":"call_3","type":"function","function":{"name":"read_time","arguments":"{}"}}]    
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.1138}
+[RELAY] calls in progress 3 1836
+[RELAY] processToolCalls call_3 {"id":"call_3","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_3","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:27 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] toolCalls [{"id":"call_4","type":"function","function":{"name":"read_time","arguments":"{}"}}]    
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.1472}
+[RELAY] calls in progress 4 1837
+[RELAY] processToolCalls call_4 {"id":"call_4","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_4","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:29 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] toolCalls [{"id":"call_5","type":"function","function":{"name":"read_time","arguments":"{}"}}]    
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.1807}
+[RELAY] calls in progress 5 1838
+[RELAY] processToolCalls call_5 {"id":"call_5","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_5","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:31 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] toolCalls [{"id":"call_6","type":"function","function":{"name":"read_time","arguments":"{}"}}]
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.2142}
+[RELAY] calls in progress 6 1839
+[RELAY] processToolCalls call_6 {"id":"call_6","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_6","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:33 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] toolCalls [{"id":"call_7","type":"function","function":{"name":"read_time","arguments":"{}"}}]    
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.2477}
+[RELAY] calls in progress 7 1840
+[RELAY] processToolCalls call_7 {"id":"call_7","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_7","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:35 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] toolCalls [{"id":"call_8","type":"function","function":{"name":"read_time","arguments":"{}"}}]    
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.2812}
+[RELAY] calls in progress 8 1841
+[RELAY] processToolCalls call_8 {"id":"call_8","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_8","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:36 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent: [429 Too Many Requests] You exceeded [RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_7","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:35 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] toolCalls [{"id":"call_8","type":"function","function":{"name":"read_time","arguments":"{}"}}]    
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.2812}
+[RELAY] calls in progress 8 1841
+[RELAY] processToolCalls call_8 {"id":"call_8","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_8","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:36 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head toime\":\"29/10/2025, 5:00:35 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] toolCalls [{"id":"call_8","type":"function","function":{"name":"read_time","arguments":"{}"}}]    
+usage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.2812}
+[RELAY] calls in progress 8 1841
+[RELAY] processToolCalls call_8 {"id":"call_8","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_8","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:36 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head tousage {"prompt_tokens":111614,"completion_tokens":null,"total_tokens":111624}
+{account:gemini,spent:0.0335,cached:0,balance:-3.2812}
+[RELAY] calls in progress 8 1841
+[RELAY] processToolCalls call_8 {"id":"call_8","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_8","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:36 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to{account:gemini,spent:0.0335,cached:0,balance:-3.2812}
+[RELAY] calls in progress 8 1841
+[RELAY] processToolCalls call_8 {"id":"call_8","type":"function","function":{"name":"read_time","arguments":"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_8","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:36 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to:"{}"}}
+item
+[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_8","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:36 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to[RELAY] pushing tool result {"role":"assistant","tool_call_id":"call_8","title":"read_time","content":"{\"time\":\"29/10/2025, 5:00:36 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head toime\":\"29/10/2025, 5:00:36 pm\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head topis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent: [429 Too Many Requests] You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.devyour current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/usage?tab=rate-limit.
+* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_paid_tier_input_token_count, limit: 1000000
+Please retry in 22.504121522s. [{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Learn more about Gemini API quotas","url":"https://ai.google.dev/gemini-api/docs/rate-limits"}]},{"@type":"type.googleapis.com/google.rpc.QuotaFailure","violations":[{"quotaMetric":"generativelanguage.googleapis.com/generate_content_paid_tier_input_token_count","quotaId":"GenerateContentPaidTierInputTokensPerModelPerMinute","quotaDimensions":{"model":"gemini-2.5-flash","location":"global"},"quotaValue":"1000000"}]},{"@type":"type.googleapis.com/google.rpc.RetryInfo","retryDelay":"22s"}]
+
+
+
 
 function addInput(raw:string) {
 const input:string=raw.normalize("NFC").replace(/\uFE0F/g, "");

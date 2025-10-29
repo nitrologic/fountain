@@ -9,7 +9,7 @@
 		"locale": "zh-CN"
 	},
 	"moonshot": {
-		"emoji": "🌕",
+		"emoji": "🜁",
 		"env": "MOONSHOT_API_KEY",
 		"url": "https://api.moonshot.ai/v1",
 		"docs": "https://platform.moonshot.ai/docs/",
@@ -26,7 +26,7 @@
 		"locale": "zh-CN"
 	},
 	"anthropic": {
-		"emoji": "🏛️",
+		"emoji": "A\\",
 		"env": "ANTHROPIC_API_KEY",
 		"url": "https://api.anthropic.com/v1",
 		"docs": "https://docs.anthropic.com/en/home/",

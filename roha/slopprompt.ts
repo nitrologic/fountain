@@ -2,9 +2,9 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-// packed tab code style - unsafe typescript formatted with tabs and minimal white space
+// uses winner=await Promise.race(race) logic to maintain communications
+// packed tab code style - unsafe typescript formatted with tabs and minimal white space - sorry
 // no abort controllers if you don't mind
-// log sloppy to host
 
 function echo(...args:any[]){
 	const lines=[];
@@ -86,8 +86,8 @@ export async function announceCommand(words:string[]){
 		}
 	}
 }
-
-// utility to reduce busting discords guts
+/*
+// utility to format text for fixed width target
 function wrapText(content,wide){
 	const lines=[];
 	let cursor=0;
@@ -103,6 +103,7 @@ function wrapText(content,wide){
 	}
 	return lines;
 }
+*/
 
 export async function slopBroadcast(text:string,from:string){
 	// fix content with only \n
@@ -203,13 +204,18 @@ function replaceText(bytes:[],count:number,text:string){
 
 // emoji wide char groups may need cludge for abnormal plungers
 // unicode ranges currently featuring wide chars
-
+// codepoint for 🜁 is 1f701
 const WideRanges=[
 	[0x1100, 0x115F],[0x2329, 0x232A],[0x2600, 0x26FF],
 	[0x2E80, 0x303E],[0x3040, 0xA4CF],[0xAC00, 0xD7A3],
 	[0xF900, 0xFAFF],[0xFE10, 0xFE19],[0xFE30, 0xFE6F],[0xFF00, 0xFF60],[0xFFE0, 0xFFE6],
-	[0x1F000, 0x1F02F],[0x1F0A0, 0x1F0FF],[0x1F100, 0x1F1FF],[0x1F300, 0x1F9FF],
-	[0x20000, 0x2FFFD],[0x30000, 0x3FFFD]
+	[0x1F000, 0x1F02F],[0x1F0A0, 0x1F0FF],[0x1F100, 0x1F1FF],
+	[0x1F300, 0x1F6FF],
+	// added gape for 1f701  🜁
+	[0x1F800, 0x1F9FF],
+// slop pail mode [0x1fad1, 0x1fad2],
+	[0x20000, 0x2FFFD],
+	[0x30000, 0x3FFFD]
 ];
 const isWide=(cp: number) => WideRanges.some(([start, end]) => cp >= start && cp <= end);
 export function stringWidth(text:string):number{

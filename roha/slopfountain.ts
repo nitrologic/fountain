@@ -4,7 +4,7 @@
 
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space
 
-// ⛲🪣🐸🪠🐋🌙🐉🏛️✿𝕏🌟💫🌏📆💰👀🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 
+// ⛲🪣🐸🪠🐋🜁🐉🏛️❁𝕏🌟💫🌏📆💰👀🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 🌕🌙✿
 
 import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
@@ -263,7 +263,7 @@ function stringWidth(text:string):number{
 		const codepoint=ch.codePointAt(0) ?? 0;
 		if (codepoint===0xFE0F) continue; // Skip variation selectors
 //		console.log(codepoint.toString(16));
-		const thin=(codepoint==0x1F3dB)||(codepoint==0x1F5A5);//🏛️🖥️
+		const thin=false;//(codepoint==0x1F3dB)||(codepoint==0x1F5A5);//🏛️🖥️
 		w+=thin?1:(isDoubleWidth(codepoint)?2:1);
 	}
 	return w;
@@ -337,14 +337,6 @@ function parseBibli(){
 	echo(tag,hr);
 	echo(tag,bibli.moto);
 	echo(tag,hr);
-}
-
-function stringwidth2(str) {
-	let width = 0;
-	for (const char of str) {
-		width += emojiIndex[char] || 1;
-	}
-	return width;
 }
 
 const decoder=new TextDecoder("utf-8");
@@ -688,7 +680,9 @@ const isDoubleWidth = (() => {
 		[0x1F000, 0x1F02F],
 		[0x1F0A0, 0x1F0FF],
 		[0x1F100, 0x1F1FF],
-		[0x1F300, 0x1F9FF],
+		[0x1F300, 0x1F6FF],
+// added gape for 1f701  🜁
+		[0x1F800, 0x1F9FF],
 		[0x20000, 0x2FFFD],
 		[0x30000, 0x3FFFD]
 	];
@@ -1126,8 +1120,8 @@ function geminiTools(payload){
 	return {functionDeclarations:functions};
 }
 
-function prepareGeminiContent(payload){
-	const debugging=roha.config.debugging;
+function prepareGeminiPrompt(payload){
+	const debugging=true;//roha.config.debugging;
 	if(debugging) echo("[GEMINI] payload",payload);
 	const contents=[];
 	const sysparts=[];	// GenerateContentRequest systemInstruction content
@@ -1142,8 +1136,8 @@ function prepareGeminiContent(payload){
 				break;
 			case "assistant":{
 				if(item.tool_call_id){
-					// todo: - geminifi the tool result
 					if (debugging) echo("[GEMINI] assistant",item.tool_call_id);
+// todo: - geminifi the tool result
 					const ass={role:"user",parts:[{text}]}
 //					contents.push(ass);
 				}else{
@@ -1174,7 +1168,10 @@ function prepareGeminiContent(payload){
 				break;
 			case "tool":{
 					const functionResponse={name:item.name,response:JSON.parse(text)};
-					contents.push({role:"user",parts:[{functionResponse}] });
+
+					if (debugging) echo("[GEMINI] functionResponse",functionResponse);
+
+//					contents.push({role:"user",parts:[{functionResponse}] });
 				}
 				break;
 		}
@@ -1264,7 +1261,7 @@ async function connectGoogle(account,config){
 					create: async (payload) => {
 //						config: { systemInstruction: setup, maxOutputTokens: 500,temperature: 0.1, }
 						const model=genAI.getGenerativeModel({model:payload.model});
-						const request=prepareGeminiContent(payload);
+						const request=prepareGeminiPrompt(payload);
 						// TODO: hook up ,signal SingleRequestOptions parameter
 						// if(roha.config.debugging) echo("[GEMINI] generateContent",request);
 						const result=await model.generateContent(request);
@@ -1276,6 +1273,7 @@ async function connectGoogle(account,config){
 						choices.push({message:{content:text}});
 						const calls = result.response.functionCalls(); // Get Gemini's raw function calls
 						if(calls){
+							echo("[GEMINI] toolCall",calls);
 							const toolCalls = calls.map((call,index)=>({id:"call_"+(geminiCallCount++),type:"function",function:{name:call.name,arguments:JSON.stringify(call.args)}}));
 							choices[0].message.tool_calls=toolCalls;
 							echo("[GEMINI] toolCalls",toolCalls);
@@ -3827,6 +3825,7 @@ async function relay(depth:number) {
 					echoStatus(status);
 			}
 		}
+		// 
 
 		const replies=[];
 		for (const choice of completion.choices) {
@@ -3843,10 +3842,6 @@ async function relay(depth:number) {
 				}));
 				const toolResults=await processToolCalls(calls);
 				for (const result of toolResults) {
-					// kimi does not like this?
-					// todo: mess with role tool
-					// todo: google needs user not assistant
-					// todo: use assistant and modify in gemini tools
 					const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content:result.content};
 					debugValue("item",item);
 					if(verbose)echo("[RELAY] pushing tool result",item);
@@ -3909,6 +3904,11 @@ async function relay(depth:number) {
 		const KimiK2400="Your request exceeded model token limit";
 		if(line.includes(KimiK2400)){
 			echoWarning("[RELAY] Kimi K2 Error depth",depth,line);
+			return spend;
+		}
+		const KimiK2429="Your account"; //Error: 429 .... is suspended, please check your plan and billing details
+		if(line.includes(KimiK2429)){
+			echoWarning("[RELAY] Kimi K2 Account Error depth",depth,line);
 			return spend;
 		}
 		// error:{"type":"error","error":{"type":"rate_limit_error",
@@ -4217,6 +4217,8 @@ echo("use /help for latest and exit to quit");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
+
+echo(stringWidth("🜁"));
 
 if(roha.config.listen){
 	listenService();
