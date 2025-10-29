@@ -4,7 +4,7 @@
 
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space
 
-// ⛲🪣🐸🪠🐋🌙🐉🏛️✿𝕏🌟💫🌏📆💰👀🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅
+// ⛲🪣🐸🪠🐋🌙🐉🏛️✿𝕏🌟💫🌏📆💰👀🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 
 
 import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
@@ -1777,6 +1777,9 @@ function mutName(modelname:string):string{
 //	name=name.replace("-instruct","");
 	name=name.replace("-preview","");
 	name=name.replace("-next","");
+// qwen3 trims
+	name=name.replace("-flash","");
+	name=name.replace("-realtime","");
 //	name=name.replace("-generate","");
 	const namebits=name.split("-");
 	const muts=namebits.slice(0,3);
@@ -2845,8 +2848,8 @@ async function openCommand(words){
 
 // modelCommand - list table of models
 
-const modelKeys="👀👄🔧🧊❃";
-const modelKey={"👀":"Vision","👄":"Speech","🔧":"Tools","🧊":"Frigid","❃":"Active"};
+const modelKeys="👀👄🧰🧊❃";
+const modelKey={"👀":"Vision","👄":"Speech","🧰":"Tools","🧊":"Frigid","❃":"Active"};
 
 async function modelCommand(words){
 	let name=words[1];
@@ -2873,7 +2876,7 @@ async function modelCommand(words){
 			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 			mutspec.name=modelname;
 			const notes=[...mutspec.notes];
-			if(mutspec.hasForge) notes.push("🔧");
+			if(mutspec.hasForge) notes.push("🧰");
 			// info is model rated stats
 			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
