@@ -59,6 +59,9 @@ const pageBreak=rule500;
 
 const boxChars=["╭╮╰╯─┬┴│┤├┼","┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
 
+const TextVariant="\uFE0E";
+const NonBreakingSpace="\u00a0";
+const FatSpace="\u2003";
 const ThinSpace="\u2009";
 const HairSpace="\u200A";
 
@@ -2848,8 +2851,8 @@ async function openCommand(words){
 
 // modelCommand - list table of models
 
-const modelKeys="👀👄🧰🧊❃";
-const modelKey={"👀":"Vision","👄":"Speech","🧰":"Tools","🧊":"Frigid","❃":"Active"};
+const modelKeys="👀👄🪣 🧊❃";
+const modelKey={"👀":"Vision","👄":"Speech","🪣 ":"Tools","🧊":"Frigid","❃":"Active"};
 
 async function modelCommand(words){
 	let name=words[1];
@@ -2876,7 +2879,7 @@ async function modelCommand(words){
 			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 			mutspec.name=modelname;
 			const notes=[...mutspec.notes];
-			if(mutspec.hasForge) notes.push("🧰");
+			if(mutspec.hasForge) notes.push("🪣");
 			// info is model rated stats
 			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
@@ -3308,6 +3311,38 @@ async function processToolCalls(calls) {
 	return results;
 }
 
+// replaced [..rohaHistory] as default behavior
+
+function plainHistory(history){
+	const list=[];
+	for(const _item of history){
+		const item={..._item};
+		const src="["+itemSource(item)+"] ";
+		switch(item.role){
+			case "system":
+				list.push({role:"system",content:src+item.content});
+				break;
+			case "assistant":
+				if(item.tool_calls){
+					list.push({role:item.role,content:src+item.content,tool_calls:item.tool_calls});
+				}else{
+					list.push({role:"assistant",content:src+item.content});
+				}
+				break;
+			case "user":{
+					const content=src+item.content;
+					list.push({role:item.role,content});
+				}
+				break;
+			case "tool":
+				list.push({...item});
+				//({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
+				break;
+		}
+	}
+	return list;
+}
+
 // strict mode history for simplified model prompts
 // returns a list of {role,content}
 
@@ -3566,7 +3601,9 @@ async function relay(depth:number) {
 			// warning - not compatible with google generative ai api
 			payload.messages=multiHistory(rohaHistory)
 		}else{
-			payload.messages=[...rohaHistory];
+			payload.messages=plainHistory(rohaHistory)
+			// warning - not compatible with most models
+			//=[...rohaHistory];
 		}
 
 		// if(config.hasCache) payload.cache_tokens=true;
@@ -3588,7 +3625,7 @@ async function relay(depth:number) {
 		}
 		if(debugging){
 			const dump=JSON.stringify(payload,null,"\t");
-			echo("[RELAY] payload",dump);
+			console.warn("[RELAY] payload",dump);
 		}
 		//[RELAY] unhandled error 404 This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?
 		//[RELAY] Error: 404 This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?
@@ -3667,11 +3704,12 @@ async function relay(depth:number) {
 			if(spend) {
 				cost="$"+spend.toFixed(3);
 			}
+			// TODO: refactor duplicate code below
 			const echostatus=(depth==0);
 			if(echostatus){
 				const temp=grokTemperature.toFixed(1)+"°";
-				const forge = roha.config.tools? (grokFunctions ? "🪣" : "🐸") : "🪠";
-				const modelSpec=[rohaTitle,rohaModel,emoji,temp,forge,cost,size,elapsed.toFixed(2)+"s"];
+				const forge = roha.config.tools? (grokFunctions ? "🪣 " : "🐸") : "🪠";
+				const modelSpec=[rohaTitle,rohaModel,emoji,temp,cost,forge,size,elapsed.toFixed(2)+"s"];
 				const status=statusChar+modelSpec.join(" ")+" ";
 				if(true){//config.echostatus
 					echo(status);
@@ -3693,6 +3731,12 @@ async function relay(depth:number) {
 		// drop through to legacy completions version
 		// [RELAY] endpoint chat completions.create
 		// this call can throw from DeepSeek API
+
+		const chatendpoint=endpoint.chat;
+		if(!chatendpoint?.completions){
+			echo("[RELAY] model chat completions failure",model);
+			return spend;
+		}
 
 		const completion=await endpoint.chat.completions.create(payload);
 
@@ -3771,8 +3815,8 @@ async function relay(depth:number) {
 		const echostatus=(depth==0);
 		if(echostatus){
 			const temp=grokTemperature.toFixed(1)+"°";
-			const forge = roha.config.tools? (grokFunctions ? "🪣" : "🐸") : "🪠";
-			const modelSpec=[rohaTitle,rohaModel,emoji,temp,forge,cost,size,elapsed.toFixed(2)+"s"];
+			const forge = roha.config.tools? (grokFunctions ? "🪣 " : "🐸") : "🪠";
+			const modelSpec=[rohaTitle,rohaModel,emoji,forge,temp,cost,size,elapsed.toFixed(2)+"s"];
 			const status=statusChar+modelSpec.join(" ")+" ";
 			if(true){//config.echostatus
 				echo(status);
@@ -3799,7 +3843,7 @@ async function relay(depth:number) {
 				}));
 				const toolResults=await processToolCalls(calls);
 				for (const result of toolResults) {
-					// kimi does not like this
+					// kimi does not like this?
 					// todo: mess with role tool
 					// todo: google needs user not assistant
 					// todo: use assistant and modify in gemini tools
@@ -3905,7 +3949,7 @@ async function relay(depth:number) {
 		echo("[RELAY]",error.stack);
 		if(debugging){
 			const dump=JSON.stringify(payload,null,"\t");
-			echo("[RELAY] payload",dump);
+			echo("[RELAY] dump payload",dump);
 		}
 	}
 	return spend;

@@ -345,8 +345,8 @@ function processUtf8(value: Uint8Array, i: number, bytes: number[]): number {
 		try {
 			const charText = decoder.decode(sequence);
 			addInput(charText);
-			bytes.push(...sequence);		
-//			console.log("[RAW] skipping ",bytesNeeded,sequence,charText);
+			bytes.push(...sequence);
+			console.log("[RAW] skipping ",bytesNeeded,sequence,charText);
 			return bytesNeeded - 1;
 		} catch (e) {
 			console.log("[RAW] decoder error");

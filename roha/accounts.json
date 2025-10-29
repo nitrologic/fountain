@@ -35,7 +35,7 @@
 		"locale": "en-US"
 	},
 	"openai": {
-		"emoji": "✿",
+		"emoji": "❁",
 		"env": "OPENAI_API_KEY",
 		"url": "https://api.openai.com/v1",
 		"platform":"https://auth.openai.com/log-in",

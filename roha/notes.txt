@@ -1,3 +1,7 @@
+
+function addInput(raw:string) {
+const input:string=raw.normalize("NFC").replace(/\uFE0F/g, "");
+
 skid.nz bot-garden blueprint (copy-paste ready)
 
 useradd -r -s /bin/false -d /var/bot/$name -M $name
