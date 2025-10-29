@@ -74,7 +74,7 @@ const userdomain=getEnv("USERDOMAIN").toLowerCase();
 const userregion = Intl.DateTimeFormat().resolvedOptions();
 
 const vscode_nonce=getEnv("VSCODE_NONCE");
-const userterminal=vscode_nonce?getEnv("TERM_PROGRAM"):(getEnv("SESSIONNAME")||"VOID");
+const userterminal=vscode_nonce?getEnv("TERM_PROGRAM"):(getEnv("SESSIONNAME")||getEnv("TERM")||"VOID");
 
 type ConfigFlags = {
 	showWelcome: boolean;
