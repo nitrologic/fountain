@@ -202,9 +202,17 @@ function replaceText(bytes:[],count:number,text:string){
 // a simple fallback for platforms with special needs
 // > windows terminals :eyes:
 
+export function isCmdExe(): boolean {
+	if (Deno.build.os !== "windows") return false;
+	const comspec = Deno.env.get("COMSPEC") ?? "";
+	if (!comspec.toLowerCase().includes("cmd.exe")) return false;
+	return true;
+}
+
 // emoji wide char groups may need cludge for abnormal plungers
 // unicode ranges currently featuring wide chars
 // codepoint for 🜁 is 1f701
+// see also
 const WideRanges=[
 	[0x1100, 0x115F],[0x2329, 0x232A],[0x2600, 0x26FF],
 	[0x2E80, 0x303E],[0x3040, 0xA4CF],[0xAC00, 0xD7A3],

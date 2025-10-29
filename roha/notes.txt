@@ -1,3 +1,14 @@
+echo(stringWidth("🜁"));
+
+//echo("isCmdExe",isCmdExe());
+
+echo(getEnv("TERM"))
+echo(getEnv("TERM_PROGRAM"))
+echo(getEnv("SESSIONNAME"))
+echo(getEnv("VSCODE_CWD"));
+echo(getEnv("VSCODE_IPC_HOOK_CLI"));
+
+
 function stringwidth2(str) {
 	let width = 0;
 	for (const char of str) {

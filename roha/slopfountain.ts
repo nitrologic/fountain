@@ -73,6 +73,7 @@ const username=getEnv("USERNAME");
 const userdomain=getEnv("USERDOMAIN").toLowerCase();
 const userregion = Intl.DateTimeFormat().resolvedOptions();
 
+// TODO: detect skinny bucket terminals here
 const userterminal=getEnv("TERM")||getEnv("TERM_PROGRAM")||getEnv("SESSIONNAME")||"VOID";
 
 type ConfigFlags = {
@@ -4217,8 +4218,6 @@ echo("use /help for latest and exit to quit");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
-
-echo(stringWidth("🜁"));
 
 if(roha.config.listen){
 	listenService();
