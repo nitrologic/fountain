@@ -22,10 +22,10 @@ Pleased to welcome and assign active model under test status to 🎉 Qwen3 Max a
 | id | emoji | name | llm | credit | topup |
 |---:|-------|-----------|----:|----------|-------| 
 | 0 | 🐋 | deepseek | 2 | $11.6685 | https://platform.deepseek.com/usage |
-| 1 | 🌕 | moonshot | 12 | $0.4798 | https://platform.moonshot.ai/console/account |
+| 1 | 🜁 | moonshot | 12 | $0.4798 | https://platform.moonshot.ai/console/account |
 | 2 | 🐉 | alibaba | 82 | $-1.2830 | https://bailian.console.alibabacloud.com/ |
-| 3 | 🏛️ | anthropic | 11 | $-1.0176 | https://console.anthropic.com/dashboard |
-| 4 | ✿ | openai | 103 | $-8.2816 | https://auth.openai.com/log-in |
+| 3 | A\ | anthropic | 11 | $-1.0176 | https://console.anthropic.com/dashboard |
+| 4 | ❁ | openai | 103 | $-8.2816 | https://auth.openai.com/log-in |
 | 5 | 𝕏 | xai | 9 | $10.9298 | https://console.x.ai |
 | 6 | 🌟 | gemini | 50 | $-2.4094 | https://console.cloud.google.com/ |
 
