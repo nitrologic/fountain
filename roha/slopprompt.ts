@@ -6,6 +6,8 @@
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space - sorry
 // no abort controllers if you don't mind
 
+const vscodeNonce=Deno.env.get("VSCODE_NONCE")||"";
+
 function echo(...args:any[]){
 	const lines=[];
 	for(const arg of args){
@@ -226,11 +228,41 @@ const WideRanges=[
 	[0x30000, 0x3FFFD]
 ];
 const isWide=(cp: number) => WideRanges.some(([start, end]) => cp >= start && cp <= end);
+
+const isDoubleWidth = (() => {
+	const ranges = [
+		[0x1100, 0x115F],
+		[0x2329, 0x232A],
+		[0x2E80, 0x303E],
+		[0x3040, 0xA4CF],
+		[0xAC00, 0xD7A3],
+		[0xF900, 0xFAFF],
+		[0xFE10, 0xFE19],
+		[0xFE30, 0xFE6F],
+		[0xFF00, 0xFF60],
+		[0xFFE0, 0xFFE6],
+		[0x1F000, 0x1F02F],
+		[0x1F0A0, 0x1F0FF],
+		[0x1F100, 0x1F1FF],
+		[0x1F300, 0x1F6FF],
+// added gape for 1f701  🜁
+		[0x1F800, 0x1FAFF],// was 9ff
+		[0x20000, 0x2FFFD],
+		[0x30000, 0x3FFFD]
+	];
+	return cp =>
+		ranges.some(([s, e]) => cp >= s && cp <= e);
+})();
+
 export function stringWidth(text:string):number{
+	const thinPail:boolean=vscodeNonce||false;
 	let w=0;
 	for (const ch of text) {
-		const codePoint=ch.codePointAt(0) ?? 0;
-		w += isWide(codePoint) ? 2 : 1;
+		const codepoint=ch.codePointAt(0) ?? 0;
+		if (codepoint===0xFE0F) continue; // Skip variation selectors
+//		w += isWide(codePoint) ? 2 : 1;
+		const thin=(codepoint==0x1F3dB)||(codepoint==0x1F5A5)||(thinPail && codepoint==0x1FAA3);//🏛️🖥️🪣
+		w+=thin?1:(isDoubleWidth(codepoint)?2:1);
 	}
 	return w;
 }

@@ -6,7 +6,7 @@
 
 // ⛲🪣🐸🪠🐋🜁🐉🏛️❁𝕏🌟💫🌏📆💰👀🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 🌕🌙✿
 
-import { announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
+import { stringWidth, announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
 import { OpenAI, ChatCompletionRequest, ChatCompletionResponse } from "jsr:@openai/openai@5.23.0";
 
@@ -75,6 +75,8 @@ const userregion = Intl.DateTimeFormat().resolvedOptions();
 
 const vscode_nonce=getEnv("VSCODE_NONCE");
 const userterminal=vscode_nonce?getEnv("TERM_PROGRAM"):(getEnv("SESSIONNAME")||getEnv("TERM")||"VOID");
+
+const Pail=vscode_nonce?"🪣 ":"🪣";
 
 type ConfigFlags = {
 	showWelcome: boolean;
@@ -256,18 +258,6 @@ function padChars(text:string,pad:string=ThinSpace):string{
 
 function stringifyArray(array:[]):string{
 	return array.join(",");
-}
-
-function stringWidth(text:string):number{
-	let w = 0;
-	for (const ch of text) {
-		const codepoint=ch.codePointAt(0) ?? 0;
-		if (codepoint===0xFE0F) continue; // Skip variation selectors
-//		console.log(codepoint.toString(16));
-		const thin=false;//(codepoint==0x1F3dB)||(codepoint==0x1F5A5);//🏛️🖥️
-		w+=thin?1:(isDoubleWidth(codepoint)?2:1);
-	}
-	return w;
 }
 
 function stringFit(text:string,width:number):string{
@@ -661,35 +651,6 @@ const rohaTools=[{
 		}
 	}
 }];
-
-// fountain utility functions
-// here be dragons
-// emoji wide char groups may need cludge for abnormal plungers
-// 🏛️
-const isDoubleWidth = (() => {
-	const ranges = [
-		[0x1100, 0x115F],
-		[0x2329, 0x232A],
-		[0x2E80, 0x303E],
-		[0x3040, 0xA4CF],
-		[0xAC00, 0xD7A3],
-		[0xF900, 0xFAFF],
-		[0xFE10, 0xFE19],
-		[0xFE30, 0xFE6F],
-		[0xFF00, 0xFF60],
-		[0xFFE0, 0xFFE6],
-		[0x1F000, 0x1F02F],
-		[0x1F0A0, 0x1F0FF],
-		[0x1F100, 0x1F1FF],
-		[0x1F300, 0x1F6FF],
-// added gape for 1f701  🜁
-		[0x1F800, 0x1F9FF],
-		[0x20000, 0x2FFFD],
-		[0x30000, 0x3FFFD]
-	];
-	return cp =>
-		ranges.some(([s, e]) => cp >= s && cp <= e);
-})();
 
 // here be dragons - emoji widths based on userterminal may be required
 
@@ -2850,8 +2811,8 @@ async function openCommand(words){
 
 // modelCommand - list table of models
 
-const modelKeys="👀👄🪣 🧊❃";
-const modelKey={"👀":"Vision","👄":"Speech","🪣 ":"Tools","🧊":"Frigid","❃":"Active"};
+const modelKeys="👀👄"+Pail+"🧊❃";
+const modelKey={"👀":"Vision","👄":"Speech","🪣":"Tools","🧊":"Frigid","❃":"Active"};
 
 async function modelCommand(words){
 	let name=words[1];
@@ -2878,7 +2839,7 @@ async function modelCommand(words){
 			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 			mutspec.name=modelname;
 			const notes=[...mutspec.notes];
-			if(mutspec.hasForge) notes.push("🪣");
+			if(mutspec.hasForge) notes.push(Pail);
 			// info is model rated stats
 			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
@@ -3707,7 +3668,7 @@ async function relay(depth:number) {
 			const echostatus=(depth==0);
 			if(echostatus){
 				const temp=grokTemperature.toFixed(1)+"°";
-				const forge = roha.config.tools? (grokFunctions ? "🪣 " : "🐸") : "🪠";
+				const forge = roha.config.tools? (grokFunctions ? Pail : "🐸") : "🪠";
 				const modelSpec=[rohaTitle,rohaModel,emoji,temp,cost,forge,size,elapsed.toFixed(2)+"s"];
 				const status=statusChar+modelSpec.join(" ")+" ";
 				if(true){//config.echostatus
@@ -3814,7 +3775,7 @@ async function relay(depth:number) {
 		const echostatus=(depth==0);
 		if(echostatus){
 			const temp=grokTemperature.toFixed(1)+"°";
-			const forge = roha.config.tools? (grokFunctions ? "🪣 " : "🐸") : "🪠";
+			const forge = roha.config.tools? (grokFunctions ? Pail : "🐸") : "🪠";
 			const modelSpec=[rohaTitle,rohaModel,emoji,forge,temp,cost,size,elapsed.toFixed(2)+"s"];
 			const status=statusChar+modelSpec.join(" ")+" ";
 			if(true){//config.echostatus
