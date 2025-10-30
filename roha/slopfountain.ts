@@ -1709,14 +1709,14 @@ async function aboutModel(modelname){
 	const modelProvider=modelname.split("@");
 	const provider=modelProvider[1];
 	const account=modelAccounts[provider];
-	const emoji=account.emoji||"";
+	const brand=account.emoji||"";
 	const lode=roha.lode[provider];
 	const balance=(lode&&lode.credit)?price(lode.credit):"$-";
 	if(roha.config.verbose){
 		const keys={strict,multi,inline,responses};
-		echo("model:",{name,emoji,rate,limit,modelname,balance,keys});
+		echo("model:",{name,brand,rate,limit,modelname,balance,keys});
 	}else{
-		echo("model:",{name,emoji,rate,limit,balance,modelname});
+		echo("model:",{name,brand,rate,limit,balance,modelname});
 	}
 	if(roha.config.verbose && info){
 		if(info.purpose)echo("purpose:",info.purpose);
@@ -4176,7 +4176,7 @@ const sharecount=roha.sharedFiles?.length||0;
 let termSize = Deno.consoleSize();
 echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
-echo("use /help for latest and exit to quit");
+echo("type /help for latest and exit to quit");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);

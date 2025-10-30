@@ -1,3 +1,14 @@
+sloppy reconnect:
+
+>readConnection error ConnectionReset: An existing connection was forcibly closed by the remote host. (os error 10054)
+slopPrompt error An existing connection was forcibly closed by the remote host. (os error 10054)
+Slop Fountain has crashed, darn, this release will be stable soon:,ConnectionReset: An existing connection was forcibly closed by the remote host. (os error 10054)
+ConnectionReset: An existing connection was forcibly closed by the remote host. (os error 10054)
+    at async TcpConn.read (ext:deno_net/01_net.js:148:15)
+    at async readConnection (file:///C:/nitrologic/fountain/roha/slopprompt.ts:40:11)
+slopBroadcast closed all connections An existing connection was forcibly closed by the remote host. (os error 10054)
+exitForge Ending session.
+
 echo("vscode_nonce",vscode_nonce);
 
 echo(getEnv("__vsc_nonce"))

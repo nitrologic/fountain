@@ -1,4 +1,5 @@
-// sloppy.ts - a research tool connecting large language models and tiny humans
+// sloppybot.ts 
+// A research tool connecting large language models and tiny humans
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
@@ -36,7 +37,8 @@ async function messageSloppy(message:string,from:string){
 //			channel.send("["+from+"] "+message);
 			const chunks=chunkContent(message,2000-400);
 			for(const chunk of chunks){
-				const post=codeFence+"["+from+"]\n"+chunk+codeFence;
+				const chunk2=chunk.replaceAll("```","---");
+				const post=codeFence+"["+from+"]\n"+chunk2+codeFence;
 				channel.send(post);
 			}
 			await(sleep(1500));
@@ -224,9 +226,11 @@ function chunkContent(content:string,chunk:number):string[]{
 	return chunks;
 }
 
-const UserCommands=["model","bibli","spec","sys","announce","listen","think","temp","forge","counter","tag","account","credit",
-"help","nic","config","time","say","open","audition","log","history","list","load","save","note","dump",
-"begin","finish","reset","cd","dir","drop","attach","share","push","commit","raw","slop"];
+const UserCommands=[
+	"model","bibli","spec","sys","announce","listen","think","temp","forge","counter","tag","account","credit",
+	"help","nic","config","time","say","open","audition","log","history","list","load","save","note","dump",
+	"begin","finish","reset","cd","dir","drop","attach","share","push","commit","raw","slop"
+];
 
 // content has BASE_TYPE_MAX_LENGTH = 4000
 discordClient.on('messageCreate', async (message) => {
@@ -249,9 +253,9 @@ discordClient.on('messageCreate', async (message) => {
 		const args=words[1]||"";
 		if(UserCommands.includes(command.substring(1))){
 			if(true){
-				echo("Command from discord channel currently disabled",command,args,from)
+				echo("User commands in discord channel currently disabled",command,args,from)
 			}else{
-				echo("Command from discord channel",command,args,from)
+				echo("User command in discord channel",command,args,from)
 				const blob={command:{name:command,args,from}};
 				await writeFountain(JSON.stringify(blob,null,0));
 			}
