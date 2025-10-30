@@ -1,3 +1,9 @@
+echo("vscode_nonce",vscode_nonce);
+
+echo(getEnv("__vsc_nonce"))
+//console.log(Deno.env.toObject());
+s
+
 // fountain utility functions
 // here be dragons
 // emoji wide char groups may need cludge for abnormal plungers

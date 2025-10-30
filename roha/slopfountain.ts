@@ -73,7 +73,8 @@ const username=getEnv("USERNAME");
 const userdomain=getEnv("USERDOMAIN").toLowerCase();
 const userregion = Intl.DateTimeFormat().resolvedOptions();
 
-const vscode_nonce=getEnv("VSCODE_NONCE");
+const vscode_nonce=getEnv("VSCODE_NONCE")||getEnv("VSCODE_INJECTION");
+
 const userterminal=vscode_nonce?getEnv("TERM_PROGRAM"):(getEnv("SESSIONNAME")||getEnv("TERM")||"VOID");
 
 const Pail=vscode_nonce?"🪣 ":"🪣";

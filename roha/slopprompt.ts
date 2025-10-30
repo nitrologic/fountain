@@ -6,7 +6,9 @@
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space - sorry
 // no abort controllers if you don't mind
 
-const vscodeNonce=Deno.env.get("VSCODE_NONCE")||"";
+const vscodeNonce=Deno.env.get("VSCODE_NONCE")||Deno.env.get("VSCODE_INJECTION")||"";
+
+//__vsc_nonce=d21c4091-f036-4908-bdcc-5e653abb076b
 
 function echo(...args:any[]){
 	const lines=[];
