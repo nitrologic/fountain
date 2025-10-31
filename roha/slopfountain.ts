@@ -18,7 +18,7 @@ import { decodeBase64, encodeBase64 } from "https://deno.land/std/encoding/base6
 import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 
-// Testing with Deno 2.5.3, V8 14.0.365.5-rusty, TypeScript 5.9.2
+// Testing with Deno 2.5.6, V8 14.0.365.5-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
 const fountainVersion="1.5.5";
@@ -415,52 +415,10 @@ async function exitForge(){
 	await flush();
 	Deno.stdin.setRaw(false);
 	console.log("exitForge",exitMessage)
-	if(slopConnection) slopConnection.close();
 }
 
 let slopPail=[];
-let readingSlop=false;
 
-let slopConnection:Deno.TcpConn;
-
-//
-// let listening=false;
-// TODO: use deno comms to talk with slop <=> fountain task comms
-
-const rxBufferSize=1e6;
-
-const rxBuffer = new Uint8Array(rxBufferSize);
-
-// todo: encode slopPipe origin parameter
-async function writeSlop(slopPipe,data){
-	return await slopPipe.write(data);
-}
-
-async function readSlop(slopPipe){
-	if(!readingSlop) return;
-	readingSlop=true;
-	let n=null;
-	try{
-		n = await slopPipe.read(rxBuffer);
-	}catch(e){
-		echo("readSlop",e);
-	}
-	if (n !== null) {
-		const received = rxBuffer.subarray(0, n);
-		const message = decoder.decode(received);
-		echo("readSlop", message);
-		// TODO: document me
-		self.postMessage({rx:message});
-	}
-	readingSlop=false;
-}
-/*
-async function serveConnection(connection){
-	console.error("\t[FOUNTAIN] serveConnection ",JSON.stringify(connection));
-	const text=encoder.encode("greetings from fountain client");
-	await writeSlop(connection,text);
-}
-*/
 function price(credit:number):string{
 	if (credit === null || isNaN(credit)) return "$0";
 	return "$"+credit.toFixed(4);
@@ -872,6 +830,28 @@ async function readFileNames(path:string,suffix:string){
 	return result;
 }
 
+function flattenTables(content){
+	const lines=content.split("\n");
+	const table: string[][] = [];
+	const result: string[] = [];
+	for(const line of lines){
+		if (line.startsWith("|")) {
+			const items=line.split("|").slice(1, -1);
+			table.push(items);
+		} else {
+			if (table.length) {
+				insertTable(result, table); 
+				table.length = 0; 
+			}
+			result.push(line);
+		}
+	}		
+	if (table.length) {
+		insertTable(result, table); 
+	}
+	return result.join("\n");
+}
+
 async function flush() {
 	const send=[];
 	const delay=roha.config.slow ? slowMillis : 0;
@@ -916,7 +896,7 @@ async function flush() {
 	outputBuffer=[];
 
 	if(send.length) {
-		const packet=send.join("\r\n");
+		const packet=flattenTables(send.join("\n"));
 		slopBroadcast(packet,"slop");
 	}
 
@@ -3682,9 +3662,9 @@ async function relay(depth:number) {
 				}
 			}
 			if(replies.length){
-				let content=replies.join("\n");
-				rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
+				const content=flattenTables(replies.join("\n"));
 				slopBroadcast(content,mut);
+				rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
 			}
 			return spend;
 		}
@@ -3841,9 +3821,9 @@ async function relay(depth:number) {
 		}
 //		const name=rohaModel||"mut1";
 		if(replies.length){
-			let content=replies.join("\n");
-			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
+			const content=flattenTables(replies.join("\n"));
 			slopBroadcast(content,mut);
+			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
 		}
 	} catch (error) {
 		const line=error.message || String(error);

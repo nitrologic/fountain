@@ -29,8 +29,22 @@ let openChannel="1410693060672753704";
 
 // rate guard required, a sleep 1500 ms currently in force on all writes
 
-const codeFence="```\n";
 async function messageSloppy(message:string,from:string){
+	if(openChannel){
+		const channel = await discordClient.channels.fetch(openChannel);
+		if (channel?.isTextBased()) {
+//			channel.send("["+from+"] "+message);
+			const chunks=chunkContent(message,2000-400);
+			for(const chunk of chunks){
+				const post="["+from+"]\n"+chunk;
+				channel.send(post);
+			}
+			await(sleep(1500));
+		}
+	}
+}
+
+async function messageSloppy2(message:string,from:string){
 	if(openChannel){
 		const channel = await discordClient.channels.fetch(openChannel);
 		if (channel?.isTextBased()) {
@@ -45,6 +59,7 @@ async function messageSloppy(message:string,from:string){
 		}
 	}
 }
+
 
 // TODO: add {messages:[{message,from}]} support
 
@@ -206,6 +221,10 @@ discordClient.once('ready', () => {
 //	console.log("[SLOPPY] channels",discordClient.channels);
 });
 
+
+// TODO: support chunked codeFenced chunks
+
+const codeFence="```\n";
 
 function chunkContent(content:string,chunk:number):string[]{
 	const chunks:string[]=[];
