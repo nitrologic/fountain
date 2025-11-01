@@ -1,3 +1,4 @@
+- [issue] sloppybot ragged tables - need discord string width rules
 - [issue] slopprompt ctrl z >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 - [issue] slopprompt paste 🌟
 - [issue] shared files 🔗 does not indicate shared state inside a begin finish block

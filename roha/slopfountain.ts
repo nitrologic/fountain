@@ -896,7 +896,7 @@ async function flush() {
 				await logForge(line,"roha");
 			}
 // todo toggle tool send off for some levels
-//			send.push(line);
+			send.push("> -"+line);
 		}
 		await sleep(delay);
 	}
@@ -4009,7 +4009,7 @@ async function chat() {
 				if(query.length){
 					const info=(grokModel in modelSpecs)?modelSpecs[grokModel]:null;
 					rohaHistory.push({ role: "user", name:rohaNic, content: query });
-					slopBroadcast(query,rohaNic);
+					slopBroadcast("> > "+query,rohaNic);
 					await relay(0);
 				}
 			}
