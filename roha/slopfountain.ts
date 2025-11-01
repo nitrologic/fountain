@@ -830,7 +830,10 @@ async function readFileNames(path:string,suffix:string){
 	return result;
 }
 
+// observe
+
 function flattenTables(content){
+	let fenced=false;
 	const lines=content.split("\n");
 	const table: string[][] = [];
 	const result: string[] = [];
@@ -840,14 +843,17 @@ function flattenTables(content){
 			table.push(items);
 		} else {
 			if (table.length) {
-				insertTable(result, table); 
+				insertTable(result, table, !fenced); 
 				table.length = 0; 
+			}
+			if (line.startsWith("```")) {
+				fenced=!fenced;
 			}
 			result.push(line);
 		}
 	}		
 	if (table.length) {
-		insertTable(result, table); 
+		insertTable(result, table, !fenced); 
 	}
 	return result.join("\n");
 }
@@ -2076,7 +2082,7 @@ function boxBottom(widths){
 	return bl+bits.join(hu)+br;
 }
 
-function insertTable(result:string[],table:string[][]){
+function insertTable(result:string[],table:string[][],addFence:boolean){
 	const widths=[];
 	for(const row of table){
 		for(let i=0;i<row.length;i++){
@@ -2084,6 +2090,7 @@ function insertTable(result:string[],table:string[][]){
 			if(w>(widths[i]|0)) widths[i]=w;
 		}
 	}
+	if(addFence) result.push("```");
 	let header=true;
 	for(const row of table){
 		if(header){
@@ -2098,6 +2105,7 @@ function insertTable(result:string[],table:string[][]){
 		}
 	}
 	result.push(boxBottom(widths));
+	if(addFence) result.push("```");
 }
 
 const rohaPrompt=">";
@@ -2143,7 +2151,7 @@ function mdToAnsi(md) {
 					continue;
 				}else{
 					if(table.length) {
-						insertTable(result,table);
+						insertTable(result,table,false);
 //						echo("[TABLE] inserted",table.length)
 						table.length=0;
 					}
@@ -2182,7 +2190,7 @@ function mdToAnsi(md) {
 	}
 	// yuck - duplicate path way from above
 	if(table.length) {
-		insertTable(result,table);
+		insertTable(result,table,false);
 		if(roha.config.debugging) echo("[TABLE] inserted",table.length)
 		table.length=0;
 	}

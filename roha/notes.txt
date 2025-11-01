@@ -1,4 +1,23 @@
 
+
+async function messageSloppy2(message:string,from:string){
+	if(openChannel){
+		const channel = await discordClient.channels.fetch(openChannel);
+		if (channel?.isTextBased()) {
+//			channel.send("["+from+"] "+message);
+			const chunks=chunkContent(message,2000-400);
+			for(const chunk of chunks){
+				const chunk2=chunk.replaceAll("```","---");
+				const post=codeFence+"["+from+"]\n"+chunk2+codeFence;
+				channel.send(post);
+			}
+			await(sleep(1500));
+		}
+	}
+}
+
+
+
 //
 // let listening=false;
 // TODO: use deno comms to talk with slop <=> fountain task comms

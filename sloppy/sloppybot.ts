@@ -44,23 +44,6 @@ async function messageSloppy(message:string,from:string){
 	}
 }
 
-async function messageSloppy2(message:string,from:string){
-	if(openChannel){
-		const channel = await discordClient.channels.fetch(openChannel);
-		if (channel?.isTextBased()) {
-//			channel.send("["+from+"] "+message);
-			const chunks=chunkContent(message,2000-400);
-			for(const chunk of chunks){
-				const chunk2=chunk.replaceAll("```","---");
-				const post=codeFence+"["+from+"]\n"+chunk2+codeFence;
-				channel.send(post);
-			}
-			await(sleep(1500));
-		}
-	}
-}
-
-
 // TODO: add {messages:[{message,from}]} support
 
 async function onFountain(message:string){
@@ -228,20 +211,28 @@ const codeFence="```\n";
 
 function chunkContent(content:string,chunk:number):string[]{
 	const chunks:string[]=[];
-	let line="";
-	for(let cursor=0;cursor<content.length;cursor+=line.length){
+	let text="";
+	let fence="";
+	let trail="";
+	let fenced=false;
+	for(let cursor=0;cursor<content.length;cursor+=text.length){
 		const n=content.length-cursor;
 		if(n<=chunk){
-			line=content.substring(cursor);
+			text=content.substring(cursor);
 		}else{
-			line=content.substring(cursor,cursor+chunk);
-			const eol=line.lastIndexOf("\n");
+			text=content.substring(cursor,cursor+chunk);
+			const eol=text.lastIndexOf("\n");
 			if(eol!=-1){
-				line=line.substring(0,eol+1);
+				text=text.substring(0,eol+1);
 			}
 		}
-		chunks.push(line);
-	}	
+		for(const line of text.split("\n")){
+			if(line.startsWith("```")) fenced=!fenced;
+		}
+		trail=fenced?"```\n":"";
+		chunks.push(fence+text+trail);
+		fence=trail;
+	}
 	return chunks;
 }
 
