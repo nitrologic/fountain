@@ -204,11 +204,6 @@ discordClient.once('ready', () => {
 //	console.log("[SLOPPY] channels",discordClient.channels);
 });
 
-
-// TODO: support chunked codeFenced chunks
-
-const codeFence="```\n";
-
 function chunkContent(content:string,chunk:number):string[]{
 	const chunks:string[]=[];
 	let text="";
