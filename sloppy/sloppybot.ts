@@ -232,6 +232,10 @@ function chunkContent(content:string,chunk:number):string[]{
 }
 
 const UserCommands=[
+	"commit"
+]
+
+const AllUserCommands=[
 	"model","bibli","spec","sys","announce","listen","think","temp","forge","counter","tag","account","credit",
 	"help","nic","config","time","say","open","audition","log","history","list","load","save","note","dump",
 	"begin","finish","reset","cd","dir","drop","attach","share","push","commit","raw","slop"
@@ -257,7 +261,7 @@ discordClient.on('messageCreate', async (message) => {
 		const command=words[0];
 		const args=words[1]||"";
 		if(UserCommands.includes(command.substring(1))){
-			if(true){
+			if(false){
 				echo("User commands in discord channel currently disabled",command,args,from)
 			}else{
 				echo("User command in discord channel",command,args,from)

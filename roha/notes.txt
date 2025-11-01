@@ -1,5 +1,25 @@
 
 
+RELAY noise TOOLS ON
+[RELAY] processToolCalls call_92230390 {"id":"call_92230390","function":{"name":"tag_slop","arguments":"{\"name\":\"connection_test\",\"type\":\"session\",\"description\":\"Log entries showing accepted connections and a test message from skid user testing header up replies\"}"},"type":"function"}
+onCall unhandled function name: tag_slop
+>/commit
+Shared files are identical to previous versions. No updates applied.
+
+ ꔀ Fountain 1.5.5 ⛲  grok-code-fast-1 𝕏 🪣 0.7° $0.009 181.3KB 12.85s
+[RELAY] processToolCalls call_52741792 {"id":"call_52741792","function":{"name":"tag_slop","arguments":"{\"name\":\"slopfountain\",\"type\":\"code\",\"description\":\"Core Slop Fountain application for LLM research, handling model interactions, file sharing, and user sessions.\"}"},"type":"function"}
+onCall unhandled function name: tag_slop
+[RELAY] processToolCalls call_55720686 {"id":"call_55720686","function":{"name":"tag_slop","arguments":"{\"name\":\"slophole\",\"type\":\"code\",\"description\":\"Worker thread for connecting to the Slop Fountain server via TCP.\"}"},"type":"function"}
+onCall unhandled function name: tag_slop
+[RELAY] processToolCalls call_21675769 {"id":"call_21675769","function":{"name":"tag_slop","arguments":"{\"name\":\"sloppybot\",\"type\":\"code\",\"description\":\"Discord bot integration for Slop Fountain, relaying messages between Discord and the fountain system.\"}"},"type":"function"}
+onCall unhandled function name: tag_slop
+
+
+
+// todo toggle tool send off for some levels
+			send.push(line);
+
+
 async function messageSloppy2(message:string,from:string){
 	if(openChannel){
 		const channel = await discordClient.channels.fetch(openChannel);

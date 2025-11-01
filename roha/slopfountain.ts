@@ -895,6 +895,7 @@ async function flush() {
 			if(line.length){
 				await logForge(line,"roha");
 			}
+// todo toggle tool send off for some levels
 			send.push(line);
 		}
 		await sleep(delay);
@@ -3830,8 +3831,9 @@ async function relay(depth:number) {
 //		const name=rohaModel||"mut1";
 		if(replies.length){
 			const content=flattenTables(replies.join("\n"));
-			slopBroadcast(content,mut);
 			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
+			const content2="\n### "+content;
+			slopBroadcast(content2,mut);
 		}
 	} catch (error) {
 		const line=error.message || String(error);
