@@ -21,7 +21,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.5.6, V8 14.0.365.5-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.5.5";
+const fountainVersion="1.5.6";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -896,7 +896,7 @@ async function flush() {
 				await logForge(line,"roha");
 			}
 // todo toggle tool send off for some levels
-			send.push(line);
+//			send.push(line);
 		}
 		await sleep(delay);
 	}
@@ -3268,20 +3268,21 @@ function plainHistory(history){
 	for(const _item of history){
 		const item={..._item};
 		const src="["+itemSource(item)+"] ";
+		const content=item.content;	// todo: revisit src+content
 		switch(item.role){
 			case "system":
-				list.push({role:"system",content:src+item.content});
+				list.push({role:"system",content});
 				break;
 			case "assistant":
 				if(item.tool_calls){
-					list.push({role:item.role,content:src+item.content,tool_calls:item.tool_calls});
+					list.push({role:item.role,content,tool_calls:item.tool_calls});
 				}else{
-					list.push({role:"assistant",content:src+item.content});
+					list.push({role:"assistant",content});
 				}
 				break;
 			case "user":{
-					const content=src+item.content;
-					list.push({role:item.role,content});
+//					const content=src+item.content;
+					list.push({role:item.role,content:item.content});
 				}
 				break;
 			case "tool":
@@ -3301,19 +3302,19 @@ function strictHistory(history){
 	for(const _item of history){
 		const item={..._item};
 		const src="["+itemSource(item)+"] ";
+		const content=item.content;	 //todo: revisit src+
 		switch(item.role){
 			case "system":
-				list.push({role:"system",content:src+item.content});
+				list.push({role:"system",content});
 				break;
 			case "assistant":
 				if(item.tool_calls){
-					list.push({role:item.role,content:src+item.content,tool_calls:item.tool_calls});
+					list.push({role:item.role,content,tool_calls:item.tool_calls});
 				}else{
-					list.push({role:"assistant",content:src+item.content});
+					list.push({role:"assistant",content});
 				}
 				break;
 			case "user":{
-					const content=src+item.content;
 					list.push({role:item.role,content});
 				}
 				break;
@@ -3367,8 +3368,8 @@ function multiHistory(history){
 						// TODO: support other encodings
 					}
 					const name=item.name||"anon";
-					const text="["+name+"] "+item.content;
-					const content=[{type:"text",text}];
+//					const text="["+name+"] "+item.content;
+					const content=[{type:"text",text:item.content}];
 					list.push({role:item.role,content});
 				}
 				break;
@@ -3418,9 +3419,9 @@ function inlineHistory(history){
 					if(item.name=="content"){
 						// TODO: support other encodings
 					}
-					const name=item.name||"anon";
-					const text="["+name+"] "+item.content;
-					const content=[{type:"text",text}];
+//					const name=item.name||"anon";
+//					const text="["+name+"] "+item.content;
+					const content=[{type:"text",text:item.content}];
 					list.push({role:item.role,content});
 				}
 				break;
@@ -3672,7 +3673,7 @@ async function relay(depth:number) {
 			}
 			if(replies.length){
 				const content=flattenTables(replies.join("\n"));
-				slopBroadcast(content,mut);
+				slopBroadcast(content,emoji);	// was mut
 				rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
 			}
 			return spend;
@@ -3833,7 +3834,7 @@ async function relay(depth:number) {
 			const content=flattenTables(replies.join("\n"));
 			rohaHistory.push({role:"assistant",mut,emoji,name:model,content,elapsed,price:spend});
 			const content2="\n### "+content;
-			slopBroadcast(content2,mut);
+			slopBroadcast(content2,emoji);	// was mut
 		}
 	} catch (error) {
 		const line=error.message || String(error);
@@ -3964,8 +3965,9 @@ async function chat() {
 							continue;
 						}
 						if(m.message){
-							const line=("["+m.from+"] "+m.message);
-							lines.push(line);
+							// todo: what the where ???
+							// const line=("["+m.from+"] "+m.message);
+							lines.push(m.message);
 						}
 					}
 					break;

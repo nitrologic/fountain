@@ -33,11 +33,11 @@ async function messageSloppy(message:string,from:string){
 	if(openChannel){
 		const channel = await discordClient.channels.fetch(openChannel);
 		if (channel?.isTextBased()) {
-//			channel.send("["+from+"] "+message);
 			const chunks=chunkContent(message,2000-400);
 			for(const chunk of chunks){
-				const post="["+from+"]\n"+chunk;
-				channel.send(post);
+//				const post=from+chunk;
+//				channel.send(post);
+				channel.send(chunk);
 			}
 			await(sleep(1500));
 		}
@@ -50,7 +50,7 @@ async function onFountain(message:string){
 	const line=message;
 	if(line.startsWith("/announce ")){
 		const message=line.substring(10);
-		await messageSloppy(message,"fountain");
+		await messageSloppy(message,"⛲");
 	}
 	if(line.startsWith("{")||line.startsWith("[")){
 		try{
@@ -62,7 +62,7 @@ async function onFountain(message:string){
 				cursor+=json.length;
 				const payload=JSON.parse(json);
 				for(const {message,from} of payload.messages){
-					await messageSloppy(message,from);
+					await messageSloppy(message,"💫"+from+":");
 				}
 			}
 		}catch(error){
@@ -84,7 +84,7 @@ async function onSystem(rx:Uint8Array){
 		if(line=="exit") Deno.exit(0);
 		if(line.startsWith("/announce ")){
 			const message=line.substring(10);
-			await messageSloppy(message,"system");
+			await messageSloppy(message,"🌏");	// was "system"
 		}
 		if(!line.startsWith("/")){
 			await writeFountain(line);
