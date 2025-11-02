@@ -3294,7 +3294,7 @@ function plainHistory(history,model){
 		let role=item.role;
 		if(role=="assistant"){
 			if(name!=model){
-				console.log({src,name});
+//				console.log({src,name});
 				role="user";
 			}
 		}		
