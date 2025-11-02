@@ -231,6 +231,8 @@ const WideRanges=[
 ];
 const isWide=(cp: number) => WideRanges.some(([start, end]) => cp >= start && cp <= end);
 
+//🌏 1f30f
+
 const isDoubleWidth = (() => {
 	const ranges = [
 		[0x1100, 0x115F],
@@ -269,17 +271,26 @@ export function stringWidth(text:string):number{
 	return w;
 }
 
+function discordWide(cp:number):boolean{
+    if (cp >= 0x1100 && cp <= 0x115F) return true;
+    if (cp >= 0x2E80 && cp <= 0xA4CF) return true;
+    if (cp >= 0xAC00 && cp <= 0xD7AF) return true;
+    if (cp >= 0xF900 && cp <= 0xFAFF) return true;
+    if (cp >= 0xFE10 && cp <= 0xFE1F) return true;
+    if (cp >= 0xFE30 && cp <= 0xFE6F) return true;
+    if (cp >= 0xFF00 && cp <= 0xFF60) return true;
+    if (cp >= 0xFFE0 && cp <= 0xFFE6) return true; 	
+	if (cp >= 0x1F300 && cp <= 0x1F9FF) return true;   // emoji
+	return false;
+}
 
 export function discordStringWidth(text:string):number{
-	const thinPail:boolean=false;
 	let w=0;
 	for (const ch of text) {
 		const codepoint=ch.codePointAt(0) ?? 0;
 		if (codepoint===0xFE0F) continue; // Skip variation selectors
-		const thin=false;
-//		w += isWide(codePoint) ? 2 : 1;
-//		const thin=(codepoint==0x1F3dB)||(codepoint==0x1F5A5)||(thinPail && codepoint==0x1FAA3);//🏛️🖥️🪣
-		w+=thin?1:(isDoubleWidth(codepoint)?2:1);
+		const width=discordWide(codepoint)?2:1;
+		w+=width;
 	}
 	return w;
 }

@@ -105,32 +105,7 @@ const ANSI={
 	]
 };
 
-
-function insertTable(result:string[],table:string[][]){
-	const widths=[];
-	for(const row of table){
-		for(let i=0;i<row.length;i++){
-			const w=2+row[i].length|0;
-			if(w>(widths[i]|0)) widths[i]=w;
-		}
-	}
-	let header=true;
-	for(const row of table){
-		if(header){
-			result.push(boxTop(widths));
-			result.push(boxCells(widths,row));
-			result.push(boxSplit(widths));
-			header=false
-		}else{
-			// ignore spacers
-			const content=row.join("").replaceAll("-","").replaceAll(" ","");
-			if(content.length) result.push(boxCells(widths,row));
-		}
-	}
-	result.push(boxBottom(widths));
-}
-
-const pageBreak="━".repeat(500);
+const sloppyBreak="━".repeat(500);
 
 function wrapMarkdown(md:string,cols:number) {
 	const lines=md.split("\n");
@@ -154,7 +129,7 @@ function wrapMarkdown(md:string,cols:number) {
 			if (!inCode) {
 				// rules
 				if(line.startsWith("---")||line.startsWith("***")||line.startsWith("___")){
-					line=pageBreak.substring(0,cols-10);
+					line=sloppyBreak.substring(0,cols-10);
 				}
 				if(line.startsWith("|")){
 					const split=line.split("|");

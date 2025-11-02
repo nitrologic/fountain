@@ -2104,7 +2104,7 @@ function boxBottom(widths){
 	return bl+bits.join(hu)+br;
 }
 
-function insertTable(result:string[],table:string[][],addFence:boolean,discordHost:boolean){
+function insertTable(result:string[],table:string[][],addFence:boolean,discord:boolean){
 	const widths=[];
 	for(const row of table){
 		for(let i=0;i<row.length;i++){
@@ -2117,13 +2117,13 @@ function insertTable(result:string[],table:string[][],addFence:boolean,discordHo
 	for(const row of table){
 		if(header){
 			result.push(boxTop(widths));
-			result.push(boxCells(widths,row));
+			result.push(boxCells(widths,row,discord));
 			result.push(boxSplit(widths));
 			header=false
 		}else{
 			// ignore spacers
 			const content=row.join("").replaceAll("-","").replaceAll(" ","");
-			if(content.length) result.push(boxCells(widths,row));
+			if(content.length) result.push(boxCells(widths,row,discord));
 		}
 	}
 	result.push(boxBottom(widths));
@@ -4197,6 +4197,8 @@ echo("type /help for latest and exit to quit");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
+
+echo(discordStringWidth("🌏"));
 
 if(roha.config.listen){
 	listenService();
