@@ -269,6 +269,22 @@ export function stringWidth(text:string):number{
 	return w;
 }
 
+
+export function discordStringWidth(text:string):number{
+	const thinPail:boolean=false;
+	let w=0;
+	for (const ch of text) {
+		const codepoint=ch.codePointAt(0) ?? 0;
+		if (codepoint===0xFE0F) continue; // Skip variation selectors
+		const thin=false;
+//		w += isWide(codePoint) ? 2 : 1;
+//		const thin=(codepoint==0x1F3dB)||(codepoint==0x1F5A5)||(thinPail && codepoint==0x1FAA3);//🏛️🖥️🪣
+		w+=thin?1:(isDoubleWidth(codepoint)?2:1);
+	}
+	return w;
+}
+
+
 // terminal history
 
 let currentInput="";

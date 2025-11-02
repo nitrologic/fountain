@@ -1,3 +1,4 @@
+- [dev] administrator role exclusive to mut under prompt, other muts quoted with user role
 - [issue] sloppybot ragged tables - need discord string width rules
 - [issue] slopprompt ctrl z >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 - [issue] slopprompt paste 🌟

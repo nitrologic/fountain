@@ -6,7 +6,7 @@
 
 // ⛲🪣🐸🪠🐋🜁🐉🏛️❁𝕏🌟💫🌏📆💰👀🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 🌕🌙✿
 
-import { stringWidth, announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
+import { discordStringWidth, stringWidth, announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
 import { OpenAI, ChatCompletionRequest, ChatCompletionResponse } from "jsr:@openai/openai@5.23.0";
 
@@ -830,7 +830,7 @@ async function readFileNames(path:string,suffix:string){
 	return result;
 }
 
-// observe
+// until discord supports native markdown tables 
 
 function flattenTables(content){
 	let fenced=false;
@@ -843,7 +843,7 @@ function flattenTables(content){
 			table.push(items);
 		} else {
 			if (table.length) {
-				insertTable(result, table, !fenced); 
+				insertTable(result, table, !fenced, true); 
 				table.length = 0; 
 			}
 			if (line.startsWith("```")) {
@@ -853,7 +853,7 @@ function flattenTables(content){
 		}
 	}		
 	if (table.length) {
-		insertTable(result, table, !fenced); 
+		insertTable(result, table, !fenced, true); 
 	}
 	return result.join("\n");
 }
@@ -1814,53 +1814,61 @@ async function shareSlop(path:string,depth:number){
 	}
 }
 
-// days,sessions
-async function historyCommand(words){
-	let path=resolve(forgePath,"forge.log");
-	let log=await Deno.readTextFile(path);
+async function readHistory(paths:string[]){
 	let count=0;
 	let min=0;
 	let max=0;
-	const lines=log.split("\n");
-	let prev=0;
-	let lineNumber=0;
-	let sessions=[];
 	let tags={};
 	let days={};
-	for(const line of lines){
-		const hex=line.substring(0,8);	// ignore 16ths
-		const secs=parseInt(hex,16);
-		if(Number.isNaN(secs)) continue;
-		const date=slopDate(secs);
-		if(date in days){
-			days[date].count++;
-		}else{
-			days[date]={sessions:0,bytes:0,count:0,tags:{}}
+	let sessions=[];
+	for(const path of paths){
+		echo("[LOG]",path);
+		let log=await Deno.readTextFile(path);
+		const lines=log.split("\n");
+
+		let lineNumber=0;		
+		for(const line of lines){
+			const hex=line.substring(0,8);	// ignore 16ths
+			const secs=parseInt(hex,16);
+			if(Number.isNaN(secs)) continue;
+			const date=slopDate(secs);
+			
+			if(date in days){
+				days[date].count++;
+			}else{
+				days[date]={sessions:0,bytes:0,count:0,tags:{}}
+			}
+			const day=days[date];
+			const tagline=line.substring(8);
+			if(tagline=="[roha] 𓅷 𓅸 𓅹 𓅺 𓅻 𓅼 𓅽"){
+				sessions.push({line:lineNumber,tags});
+				tags={};
+				day.sessions++;
+			}
+			const b0=line.indexOf("[");
+			const b1=line.indexOf("]");
+			if(b1>b0){
+				const n=line.length-b1;
+				day.bytes+=n;
+				const key=line.substring(b0+1,b1);
+				if(key in tags){tags[key].count++;tags[key].bytes+=n}else tags[key]={key,count:1,bytes:n};
+				if(key in day.tags){day.tags[key].count++;day.tags[key].bytes+=n;}else day.tags[key]={key,count:1,bytes:n}
+			}
+			if(!min || secs<min) min=secs;
+			if(secs>max) max=secs;
+			lineNumber++;
 		}
-		const day=days[date];
-		const tagline=line.substring(8);
-		if(tagline=="[roha] 𓅷 𓅸 𓅹 𓅺 𓅻 𓅼 𓅽"){
-			sessions.push({line:lineNumber,tags});
-			tags={};
-			day.sessions++;
-		}
-		const b0=line.indexOf("[");
-		const b1=line.indexOf("]");
-		if(b1>b0){
-			const n=line.length-b1;
-			day.bytes+=n;
-			const key=line.substring(b0+1,b1);
-			if(key in tags){tags[key].count++;tags[key].bytes+=n}else tags[key]={key,count:1,bytes:n};
-			if(key in day.tags){day.tags[key].count++;day.tags[key].bytes+=n;}else day.tags[key]={key,count:1,bytes:n}
-		}
-		if(!min || secs<min) min=secs;
-		if(secs>max) max=secs;
-		lineNumber++;
+		sessions.push({line:lineNumber,tags});
 	}
-	sessions.push({line:lineNumber,tags});
+	
+//	echo("[LOG]",path,count,minDate,maxDate,sessions.length,Object.keys(days).length);
+
+
 	const minDate=slopDate(min);
 	const maxDate=slopDate(max);
-	echo("[LOG]",path,count,minDate,maxDate,sessions.length,Object.keys(days).length);
+
+	echo("[LOG]",{count,minDate,maxDate,sessions:sessions.length,days:Object.keys(days).length});
+
 	const keys=Object.keys(days);
 	let index=1;
 	for(const day of keys){
@@ -1871,9 +1879,22 @@ async function historyCommand(words){
 			tags.push(mut.key+"["+mut.count+"]");
 		}
 		const sessions=days[day].sessions;
-		echo("#"+index,day,sessions,tags.join());
+		echo("#"+index,day,{sessions,tags:tags.join()});
 		index++;
 	}
+}
+
+
+async function historyCommand(words){
+	let logPath=resolve(forgePath,"forge.log");
+	const paths=[logPath];
+	const archivePath="../../nitrologic.github.io/raw";
+	const archives=await readFileNames(archivePath,".log");
+	for(const archive of archives){
+		const path=resolve(archivePath,archive);
+		paths.push(path);
+	}
+	return readHistory(paths);
 }
 
 async function stripLog(path:string,counts){
@@ -2039,7 +2060,7 @@ function boxTop(widths){
 	return tl+bits.join(hd)+tr;
 }
 
-function boxCells(widths,cells){
+function boxCells(widths,cells,discord:boolean){
 	const box=boxChars[0];
 	const v=box.charAt(Vertical);
 	const bits=[];
@@ -2048,7 +2069,7 @@ function boxCells(widths,cells){
 		const value=cells[i];
 		const indent=(w>2)?" ":"";
 		const cell=indent+value;
-		const wide=stringWidth(cell);
+		const wide=discord?discordStringWidth(cell):stringWidth(cell);
 		const pads=w-wide;
 		const padding=(pads>0)?" ".repeat(pads):"";
 		bits.push(cell+padding);
@@ -2083,7 +2104,7 @@ function boxBottom(widths){
 	return bl+bits.join(hu)+br;
 }
 
-function insertTable(result:string[],table:string[][],addFence:boolean){
+function insertTable(result:string[],table:string[][],addFence:boolean,discordHost:boolean){
 	const widths=[];
 	for(const row of table){
 		for(let i=0;i<row.length;i++){
@@ -3262,27 +3283,35 @@ async function processToolCalls(calls) {
 }
 
 // replaced [..rohaHistory] as default behavior
-
-function plainHistory(history){
+// assistant role only when model==mut
+function plainHistory(history,model){
 	const list=[];
 	for(const _item of history){
 		const item={..._item};
-		const src="["+itemSource(item)+"] ";
+		const src=itemSource(item);	//"["+itemSource(item)+"] ";
 		const content=item.content;	// todo: revisit src+content
+		const name=item.name||"anon";
+		let role=item.role;
+		if(role=="assistant"){
+			if(name!=model){
+				console.log({src,name});
+				role="user";
+			}
+		}		
 		switch(item.role){
 			case "system":
 				list.push({role:"system",content});
 				break;
 			case "assistant":
 				if(item.tool_calls){
-					list.push({role:item.role,content,tool_calls:item.tool_calls});
+					list.push({role:"assistant",content,tool_calls:item.tool_calls});
 				}else{
 					list.push({role:"assistant",content});
 				}
 				break;
 			case "user":{
 //					const content=src+item.content;
-					list.push({role:item.role,content:item.content});
+					list.push({role:item.role,content:item.content,name});
 				}
 				break;
 			case "tool":
@@ -3552,13 +3581,9 @@ async function relay(depth:number) {
 			// warning - not compatible with google generative ai api
 			payload.messages=multiHistory(rohaHistory)
 		}else{
-			payload.messages=plainHistory(rohaHistory)
-			// warning - not compatible with most models
-			//=[...rohaHistory];
+			payload.messages=plainHistory(rohaHistory,model)
 		}
-
 		// if(config.hasCache) payload.cache_tokens=true;
-
 	// use tools
 		const useTools=grokFunctions&&roha.config.tools;
 		if(useTools){
