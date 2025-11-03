@@ -31,6 +31,9 @@ Pleased to welcome and assign active model under test status to 🎉 Qwen3 Max a
 
 ## SSH and Discord 
 
+![](sloppy/sloppy.png)
+
+
 The sloppy bot Deno worker joins [Discord Channel](https://discord.gg/e49ZhmQEjC) to Slop Fountain and routes posts to prompts.
 
 Sloppy SSH endpoint in development - not currently available remotely. 
