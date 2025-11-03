@@ -203,6 +203,7 @@
 		"purpose":"gpt-5 mini"
 	},
 	"gpt-5-nano-2025-08-07@openai":{
+		"active": true,
 		"cold":true,
 		"pricing":[0.05,0.025,0.20],
 		"purpose":"nano nano 5 - faster than a fast thing",

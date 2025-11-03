@@ -1,3 +1,27 @@
+function key could buffer multi line? 
+f1="/model next, thoughts %model.name?"
+
+adding the model name framing to model change events improves lack of attribution due to other changes in history
+
+ ꔀ Fountain 1.5.7 ⛲  gpt-5-nano ❁ 🪠 0.7° $0.008 331.7KB 24.10s
+>/model next
+model: {"name":"grok-code-fast-1","brand":"𝕏","rate":[0.2,0.02,1.5],"limit":0,"balance":"$9.7560","modelname":"grok-code-fast-1@xai"}
+>/model next
+model: {"name":"deepseek-chat","brand":"🐋","rate":[0.28,0.028,0.42],"limit":0,"balance":"$8.9399","modelname":"deepseek-chat@deepseek"}
+>/model next
+model: {"name":"kimi-k2-0905","brand":"🜁","rate":[0.6,0.15,2.5],"limit":0,"balance":"$16.0590","modelname":"kimi-k2-0905-preview@moonshot"}
+>/model next
+model: {"name":"qwen3-coder-plus","brand":"🐉","rate":[0.4,1.2],"limit":0,"balance":"$-1.3239","modelname":"qwen3-coder-plus-2025-09-23@alibaba"}
+>/model next
+model: {"name":"claude-sonnet-4","brand":"A\\","rate":[3,0.3,15],"limit":0,"balance":"$-3.2113","modelname":"claude-sonnet-4-20250514@anthropic"}
+>/model next
+model: {"name":"grok-code-fast-1","brand":"𝕏","rate":[0.2,0.02,1.5],"limit":0,"balance":"$9.7560","modelname":"grok-code-fast-1@xai"}
+>/model next
+model: {"name":"deepseek-chat","brand":"🐋","rate":[0.28,0.028,0.42],"limit":0,"balance":"$8.9399","modelname":"deepseek-chat@deepseek"}
+>/model next
+model: {"name":"kimi-k2-0905","brand":"🜁","rate":[0.6,0.15,2.5],"limit":0,"balance":"$16.0590","modelname":"kimi-k2-0905-preview@moonshot"}
+>
+
 nitro@ryzen5 {"key":"nitro@ryzen5","count":4139,"bytes":250227}
 simon@midnightblue {"key":"simon@midnightblue","count":391,"bytes":17711}
 

@@ -2078,8 +2078,9 @@ function boxCells(widths,cells,discord:boolean){
 		const indent=(w>2)?" ":"";
 		const cell=indent+value;
 		const wide=discord?discordStringWidth(cell):stringWidth(cell);
-		const pads=w-wide;
-		const thinpad=((pads*2)&1)?HairSpace:"";
+		const thinpad=((wide*2)&1)?ThinSpace:"";
+		const diff=w-wide;
+		const pads=Math.floor(diff);
 		const padding=(pads>0)?" ".repeat(pads):"";
 		bits.push(cell+thinpad+padding);
 	}

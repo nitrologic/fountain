@@ -17,7 +17,7 @@ async function sleep(ms:number) {
 const quotes=[
 	"🦜 I am sloppy the janitor",
 	"did thing thing call for a plunge? 🪠",
-	"frump system prompt you say?"
+	"stochastic parrot wants a cracker 🥤"
 ];
 
 // discord channel send
@@ -30,6 +30,8 @@ let openChannel="1410693060672753704";
 // rate guard required, a sleep 1500 ms currently in force on all writes
 
 async function messageSloppy(message:string,from:string){
+	// suppress embeds
+	message = message.replace(/https\S+/g, "<$&>");
 	if(openChannel){
 		const channel = await discordClient.channels.fetch(openChannel);
 		if (channel?.isTextBased()) {
