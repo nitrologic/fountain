@@ -1,3 +1,146 @@
+nitro@ryzen5 {"key":"nitro@ryzen5","count":4139,"bytes":250227}
+simon@midnightblue {"key":"simon@midnightblue","count":391,"bytes":17711}
+
+skidracer@skid.nz {"key":"skidracer@skid.nz","count":11,"bytes":414}
+skidnz@skid.nz {"key":"skidnz@skid.nz","count":3,"bytes":163}
+
+ec2-user@skidnz {"key":"ec2-user@skidnz","count":168,"bytes":8743}
+ec2-user@sydney {"key":"ec2-user@sydney","count":8,"bytes":271}
+ec2-user@ip-172-31-37-83 {"key":"ec2-user@ip-172-31-37-83","count":9,"bytes":260}
+ec2-user@syd {"key":"ec2-user@syd","count":1,"bytes":4}
+
+roha {"key":"roha","count":135922,"bytes":19585602}
+PORT {"key":"PORT","count":876,"bytes":47508}
+stdin {"key":"stdin","count":413,"bytes":8569}
+
+deepseek-chat {"key":"deepseek-chat","count":22681,"bytes":777803}
+gpt-5-mini {"key":"gpt-5-mini","count":8186,"bytes":390350}
+claude-sonnet-4 {"key":"claude-sonnet-4","count":6824,"bytes":264577}
+kimi-k2-0905 {"key":"kimi-k2-0905","count":4751,"bytes":174985}
+grok-4-0709 {"key":"grok-4-0709","count":1977,"bytes":84878}
+grok-code-fast-1 {"key":"grok-code-fast-1","count":1223,"bytes":57334}
+qwen3-coder-plus {"key":"qwen3-coder-plus","count":1849,"bytes":56320}
+gemini-2.5-flash {"key":"gemini-2.5-flash","count":1088,"bytes":48362}
+kimi-k2-0711 {"key":"kimi-k2-0711","count":998,"bytes":36675}
+o4-mini-2025 {"key":"o4-mini-2025","count":863,"bytes":26947}
+claude-haiku-4-5 {"key":"claude-haiku-4-5","count":709,"bytes":26118}
+gemini-2.5-05 {"key":"gemini-2.5-05","count":450,"bytes":23096}
+grok-4-fast-reasoning {"key":"grok-4-fast-reasoning","count":425,"bytes":18380}
+llama-4-maverick {"key":"llama-4-maverick","count":392,"bytes":17772}
+gpt-5-2025 {"key":"gpt-5-2025","count":390,"bytes":17437}
+qwen-plus {"key":"qwen-plus","count":427,"bytes":14519}
+grok-4-fast-non {"key":"grok-4-fast-non","count":314,"bytes":11692}
+claude-opus-4-1 {"key":"claude-opus-4-1","count":224,"bytes":10809}
+gpt-5-codex {"key":"gpt-5-codex","count":187,"bytes":9999}
+gpt-5-nano {"key":"gpt-5-nano","count":175,"bytes":8943}
+kimi-k2-turbo {"key":"kimi-k2-turbo","count":195,"bytes":7698}
+gemini-2.5-flash-preview {"key":"gemini-2.5-flash-preview","count":139,"bytes":7352}
+claude-sonnet-4-5 {"key":"claude-sonnet-4-5","count":256,"bytes":7255}
+claude-3-haiku {"key":"claude-3-haiku","count":166,"bytes":7185}
+deepseek-reasoner {"key":"deepseek-reasoner","count":105,"bytes":6336}
+codex-mini-latest {"key":"codex-mini-latest","count":160,"bytes":5163}
+grok-3 {"key":"grok-3","count":75,"bytes":4123}
+gemini-2.5-pro-preview {"key":"gemini-2.5-pro-preview","count":63,"bytes":3666}
+gpt-4.1-2025 {"key":"gpt-4.1-2025","count":62,"bytes":3274}
+qwen3-next-80b-a3b {"key":"qwen3-next-80b-a3b","count":69,"bytes":3044}
+gpt-5-pro {"key":"gpt-5-pro","count":60,"bytes":2833}
+moonshot-v1-128k {"key":"moonshot-v1-128k","count":41,"bytes":2590}
+qwen-plus-2025 {"key":"qwen-plus-2025","count":48,"bytes":2371}
+gpt-4.1-nano {"key":"gpt-4.1-nano","count":41,"bytes":1773}
+claude-opus-4 {"key":"claude-opus-4","count":31,"bytes":1459}
+qwen3-max-2025 {"key":"qwen3-max-2025","count":18,"bytes":1032}
+llama-4-scout {"key":"llama-4-scout","count":13,"bytes":609}
+gemini-2.5-pro {"key":"gemini-2.5-pro","count":2,"bytes":75}
+gpt-5-chat-latest {"key":"gpt-5-chat-latest","count":2,"bytes":33}
+
+
+
+[LOG] {"count":0,"minDate":"Sun Aug 03 2025","maxDate":"Mon Nov 03 2025","sessions":1094,"days":75}
+#1 Sat Nov 01 2025 {"sessions":27,"tags":"nitro@ryzen5[38],grok-code-fast-1[243],deepseek-chat[474],PORT[61],kimi-k2-0905[298]"}
+#2 Sun Nov 02 2025 {"sessions":8,"tags":"PORT[13],nitro@ryzen5[9],deepseek-chat[220],kimi-k2-0905[8],grok-code-fast-1[7]"}
+#3 Mon Nov 03 2025 {"sessions":21,"tags":"PORT[20],kimi-k2-0905[343],nitro@ryzen5[15],deepseek-chat[98],gemini-2.5-05[114]"}
+#4 Fri Sep 26 2025 {"sessions":10,"tags":"ec2-user@syd[1],nitro@ryzen5[3],o4-mini-2025[96]"}
+#5 Sat Sep 27 2025 {"sessions":10,"tags":"ec2-user@sydney[8],deepseek-chat[347],PORT[6],ec2-user@ip-172-31-37-83[9]"}
+#6 Mon Aug 04 2025 {"sessions":0,"tags":"stdin[1],deepseek-chat[580],nitro@ryzen5[94],llama-4-scout[13],llama-4-maverick[392],gpt-4.1-2025[62],moonshot-v1-128k[41],grok-3[75],gemini-2.5-flash-preview[139],grok-4-0709[2],gemini-2.5-pro-preview[63]"}
+#7 Tue Aug 05 2025 {"sessions":0,"tags":"stdin[31],simon@midnightblue[13],claude-sonnet-4[536],nitro@ryzen5[171],deepseek-chat[1837],claude-3-haiku[166]"}
+#8 Wed Aug 06 2025 {"sessions":0,"tags":"stdin[61],simon@midnightblue[12],claude-opus-4[31],claude-sonnet-4[1775],nitro@ryzen5[297],deepseek-chat[121]"}
+#9 Fri Aug 08 2025 {"sessions":0,"tags":"stdin[138],simon@midnightblue[79],deepseek-chat[832],gpt-5-mini[536],nitro@ryzen5[125],gpt-5-nano[81],gpt-5-2025[17],claude-sonnet-4[2075]"}
+#10 Sat Aug 09 2025 {"sessions":0,"tags":"stdin[43],gpt-5-mini[191],simon@midnightblue[13],claude-sonnet-4[1337],nitro@ryzen5[55],deepseek-chat[464]"}
+#11 Sun Aug 10 2025 {"sessions":0,"tags":"stdin[55],simon@midnightblue[5],gpt-5-mini[504],deepseek-chat[1284],nitro@ryzen5[439],kimi-k2-turbo[135],claude-opus-4-1[224]"}
+#12 Mon Aug 11 2025 {"sessions":0,"tags":"stdin[4],simon@midnightblue[1],nitro@ryzen5[457],gpt-5-mini[2903],deepseek-chat[352]"}
+#13 Tue Aug 12 2025 {"sessions":0,"tags":"stdin[2],nitro@ryzen5[153],gpt-5-mini[514],deepseek-chat[849],grok-4-0709[781]"}
+#14 Wed Aug 13 2025 {"sessions":24,"tags":"stdin[77],simon@midnightblue[18],gpt-5-mini[684],grok-4-0709[832],nitro@ryzen5[259],deepseek-chat[1392],claude-sonnet-4[914],kimi-k2-0711[208]"}
+#15 Fri Aug 15 2025 {"sessions":12,"tags":"stdin[1],nitro@ryzen5[31],deepseek-chat[435]"}
+#16 Sat Aug 16 2025 {"sessions":57,"tags":"nitro@ryzen5[125],deepseek-chat[1681]"}
+#17 Sun Aug 17 2025 {"sessions":12,"tags":"simon@midnightblue[22],deepseek-chat[247],nitro@ryzen5[17]"}
+#18 Mon Aug 18 2025 {"sessions":23,"tags":"simon@midnightblue[12],deepseek-chat[853],nitro@ryzen5[48]"}
+#19 Tue Aug 19 2025 {"sessions":46,"tags":"simon@midnightblue[31],deepseek-chat[1187],nitro@ryzen5[69],gemini-2.5-flash[98]"}
+#20 Wed Aug 20 2025 {"sessions":32,"tags":"nitro@ryzen5[173],deepseek-chat[475],kimi-k2-0711[22],grok-4-0709[348],gpt-5-mini[552]"}
+#21 Thu Aug 21 2025 {"sessions":89,"tags":"simon@midnightblue[22],gemini-2.5-pro[2],deepseek-chat[782],gpt-5-mini[148],nitro@ryzen5[134],deepseek-reasoner[19],kimi-k2-0711[400]"}
+#22 Fri Aug 22 2025 {"sessions":31,"tags":"simon@midnightblue[40],gpt-5-mini[821],gpt-5-2025[238],kimi-k2-0711[112],nitro@ryzen5[88],gpt-5-nano[94],grok-4-0709[6],deepseek-chat[200]"}
+#23 Sat Aug 23 2025 {"sessions":8,"tags":"simon@midnightblue[13],deepseek-chat[153]"}
+#24 Mon Aug 25 2025 {"sessions":4,"tags":"simon@midnightblue[4],deepseek-chat[45],qwen-plus[9]"}
+#25 Tue Aug 26 2025 {"sessions":3,"tags":"qwen-plus[410],simon@midnightblue[3],deepseek-chat[185]"}
+#26 Wed Aug 27 2025 {"sessions":1,"tags":""}
+#27 Thu Aug 28 2025 {"sessions":2,"tags":"simon@midnightblue[2],deepseek-chat[5]"}
+#28 Sat Aug 30 2025 {"sessions":2,"tags":"deepseek-chat[58],simon@midnightblue[2]"}
+#29 Sun Aug 31 2025 {"sessions":0,"tags":"simon@midnightblue[3],gemini-2.5-flash[140]"}
+#30 Mon Sep 01 2025 {"sessions":4,"tags":""}
+#31 Fri Sep 05 2025 {"sessions":3,"tags":"simon@midnightblue[1],kimi-k2-0905[4]"}
+#32 Sat Sep 06 2025 {"sessions":2,"tags":""}
+#33 Sun Sep 07 2025 {"sessions":1,"tags":""}
+#34 Tue Sep 09 2025 {"sessions":1,"tags":""}
+#35 Thu Sep 11 2025 {"sessions":1,"tags":"PORT[16],kimi-k2-0905[2],simon@midnightblue[1],deepseek-chat[2]"}
+#36 Fri Sep 12 2025 {"sessions":4,"tags":"PORT[19],simon@midnightblue[2],deepseek-chat[44]"}
+#37 Sun Sep 14 2025 {"sessions":19,"tags":"PORT[156],deepseek-chat[57],simon@midnightblue[1],grok-code-fast-1[424],nitro@ryzen5[9]"}
+#38 Mon Sep 15 2025 {"sessions":16,"tags":"simon@midnightblue[1],deepseek-chat[106],PORT[64],grok-code-fast-1[23],nitro@ryzen5[11]"}
+#39 Tue Sep 16 2025 {"sessions":11,"tags":"PORT[47],deepseek-chat[305],simon@midnightblue[4],gpt-5-mini[800],kimi-k2-0905[278],nitro@ryzen5[3]"}
+#40 Wed Sep 17 2025 {"sessions":6,"tags":"PORT[22]"}
+#41 Thu Sep 18 2025 {"sessions":13,"tags":"nitro@ryzen5[30],kimi-k2-0905[36],qwen-plus-2025[48],qwen-plus[8],kimi-k2-turbo[60],deepseek-chat[45],PORT[2]"}
+#42 Fri Sep 19 2025 {"sessions":3,"tags":""}
+#43 Mon Sep 22 2025 {"sessions":4,"tags":"nitro@ryzen5[2],grok-4-fast-reasoning[5]"}
+#44 Tue Sep 23 2025 {"sessions":17,"tags":"simon@midnightblue[4],deepseek-chat[376],nitro@ryzen5[73],grok-4-fast-reasoning[420],qwen3-next-80b-a3b[69]"}
+#45 Wed Sep 24 2025 {"sessions":44,"tags":"simon@midnightblue[16],codex-mini-latest[160],deepseek-chat[225],gpt-5-codex[126],nitro@ryzen5[82],gpt-5-chat-latest[2],o4-mini-2025[85]"}
+#46 Thu Sep 25 2025 {"sessions":28,"tags":"simon@midnightblue[25],gpt-5-codex[61],deepseek-chat[398],PORT[3],deepseek-reasoner[86],nitro@ryzen5[63],o4-mini-2025[672]"}
+#47 Sun Sep 28 2025 {"sessions":2,"tags":"simon@midnightblue[2],deepseek-chat[29],nitro@ryzen5[1],o4-mini-2025[10]"}
+#48 Mon Sep 29 2025 {"sessions":5,"tags":"simon@midnightblue[1],deepseek-chat[654],nitro@ryzen5[111]"}
+#49 Sat Oct 11 2025 {"sessions":19,"tags":"simon@midnightblue[4],deepseek-chat[170],grok-4-fast-non[314],nitro@ryzen5[40],PORT[1],kimi-k2-0905[272]"}
+#50 Tue Oct 14 2025 {"sessions":14,"tags":"PORT[21]"}
+#51 Thu Oct 16 2025 {"sessions":2,"tags":""}
+#52 Fri Oct 17 2025 {"sessions":2,"tags":"PORT[1],simon@midnightblue[4],kimi-k2-0905[53],nitro@ryzen5[3],grok-code-fast-1[52]"}
+#53 Wed Oct 22 2025 {"sessions":34,"tags":"kimi-k2-0905[193],PORT[29],simon@midnightblue[7],gpt-5-pro[58],nitro@ryzen5[12],qwen3-coder-plus[58]"}
+#54 Thu Oct 23 2025 {"sessions":4,"tags":"nitro@ryzen5[6],qwen3-coder-plus[350]"}
+#55 Fri Oct 24 2025 {"sessions":21,"tags":"nitro@ryzen5[34],qwen3-coder-plus[688],PORT[11]"}
+#56 Sat Oct 25 2025 {"sessions":8,"tags":"skidracer@skid.nz[6],gpt-5-pro[2],deepseek-chat[303],nitro@ryzen5[68],qwen3-coder-plus[195],PORT[5]"}
+#57 Mon Oct 27 2025 {"sessions":6,"tags":"simon@midnightblue[1],deepseek-chat[104],nitro@ryzen5[44],kimi-k2-0905[370],claude-haiku-4-5[127]"}
+#58 Tue Oct 28 2025 {"sessions":30,"tags":"simon@midnightblue[20],deepseek-chat[206],claude-haiku-4-5[255],claude-sonnet-4[27],grok-4-0709[8],gpt-5-mini[96],nitro@ryzen5[52],kimi-k2-0905[119],kimi-k2-0711[82],PORT[130],grok-code-fast-1[109]"}
+#59 Wed Oct 29 2025 {"sessions":50,"tags":"nitro@ryzen5[168],kimi-k2-0905[701],PORT[20],claude-haiku-4-5[131],gpt-5-mini[390],grok-code-fast-1[12],gemini-2.5-05[119],kimi-k2-0711[26],deepseek-chat[63]"}
+#60 Thu Oct 30 2025 {"sessions":101,"tags":"PORT[32],kimi-k2-0905[378],simon@midnightblue[2],nitro@ryzen5[92],gemini-2.5-05[217]"}
+#61 Fri Oct 31 2025 {"sessions":18,"tags":"PORT[30],kimi-k2-0905[568],nitro@ryzen5[21]"}
+#62 Tue Sep 30 2025 {"sessions":6,"tags":"ec2-user@skidnz[1],deepseek-chat[281],PORT[4],nitro@ryzen5[18]"}
+#63 Wed Oct 01 2025 {"sessions":6,"tags":"ec2-user@skidnz[120],deepseek-chat[968],PORT[4]"}
+#64 Thu Oct 02 2025 {"sessions":14,"tags":"ec2-user@skidnz[47],deepseek-chat[770],PORT[10],skidnz@skid.nz[3],skidracer@skid.nz[5],kimi-k2-0905[11]"}
+#65 Sun Aug 03 2025 {"sessions":0,"tags":"nitro@ryzen5[24],deepseek-chat[358]"}
+#66 Thu Aug 07 2025 {"sessions":0,"tags":"nitro@ryzen5[52],gemini-2.5-flash[33],deepseek-chat[277]"}
+#67 Thu Aug 14 2025 {"sessions":30,"tags":"nitro@ryzen5[46],kimi-k2-0711[148],deepseek-chat[818]"}
+#68 Sat Sep 13 2025 {"sessions":16,"tags":"PORT[127],nitro@ryzen5[16],grok-code-fast-1[138],deepseek-chat[114]"}    
+#69 Thu Oct 09 2025 {"sessions":19,"tags":"grok-code-fast-1[17],nitro@ryzen5[15],PORT[1],gemini-2.5-flash[333]"}    
+#70 Fri Oct 10 2025 {"sessions":10,"tags":"PORT[13],nitro@ryzen5[12],gemini-2.5-flash[480]"}
+#71 Sun Oct 12 2025 {"sessions":24,"tags":"nitro@ryzen5[35],kimi-k2-0905[632]"}
+#72 Wed Oct 15 2025 {"sessions":2,"tags":"nitro@ryzen5[4],kimi-k2-0905[2],grok-code-fast-1[52]"}
+#73 Sat Oct 18 2025 {"sessions":1,"tags":"nitro@ryzen5[10],deepseek-chat[74]"}
+#74 Sun Oct 19 2025 {"sessions":12,"tags":"nitro@ryzen5[3],claude-haiku-4-5[119],qwen3-max-2025[18],qwen3-coder-plus[92]"}
+#75 Tue Oct 21 2025 {"sessions":31,"tags":"nitro@ryzen5[132],qwen3-coder-plus[466],gpt-4.1-nano[41],deepseek-chat[356],claude-haiku-4-5[77],gpt-5-mini[47],gemini-2.5-flash[4],gpt-5-2025[135],PORT[2],kimi-k2-0905[402],claude-sonnet-4[160],grok-code-fast-1[74]"}
+
+
+🦜🐦‍⬛🐦🦤🦩🪿🦃
+🦉🐧🦚🐦‍🔥
+🕊️🦅
+🦆🦢
+🐓🐔🥚🐣🐤🐥
+
+🪽🪶
+
 
 
 RELAY noise TOOLS ON

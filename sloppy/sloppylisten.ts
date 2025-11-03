@@ -159,13 +159,13 @@ class SSHSession {
 			if(line.startsWith("/")) {
 				const from=this.name;
 				const blob={messages:[{command:line,from}]};
-				const json=JSON.stringify(blob,null,0);
-				await writeFountain(json);
+				const ndjson=JSON.stringify(blob,null,0)+"\n";
+				await writeFountain(ndjson);
 			}else{
 				const from=this.name;
 				const blob={messages:[{message:line,from}]};
-				const json=JSON.stringify(blob,null,0);
-				await writeFountain(json);
+				const ndjson=JSON.stringify(blob,null,0)+"\n";
+				await writeFountain(ndjson);
 			}
 		}
 	}

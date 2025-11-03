@@ -8,14 +8,14 @@
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
-const sloppyBanner="[SLOPPY] sloppy 0.06 sentient discord bot by nitrologic";
+const sloppyBanner="[SLOPPY] sloppy 0.07 🦜 a fountain discord bot by nitrologic";
 
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
 }
 
 const quotes=[
-	"🤖 I am sloppy the janitor",
+	"🦜 I am sloppy the janitor",
 	"did thing thing call for a plunge? 🪠",
 	"frump system prompt you say?"
 ];
@@ -133,6 +133,10 @@ async function writeFountain(message:string){
 	}
 	echo("wrote",message);
 }
+async function slopFountain(slop){
+	const message:string=JSON.stringify(slop,null,0)+"\n";
+	return writeFountain(message);
+}
 
 const rxBufferSize=1e6;
 const rxBuffer = new Uint8Array(rxBufferSize);
@@ -245,7 +249,7 @@ const AllUserCommands=[
 discordClient.on('messageCreate', async (message) => {
 	if (message.author.bot) return;
 	if (message.content === '!ping') {
-		await message.react("❤️");
+		await message.react("🦜");
 		await message.reply('pong!');
 		openChannel=message.channelId;
 		const flake=message.channelId.toString();
@@ -266,7 +270,7 @@ discordClient.on('messageCreate', async (message) => {
 			}else{
 				echo("User command in discord channel",command,args,from)
 				const blob={command:{name:command,args,from}};
-				await writeFountain(JSON.stringify(blob,null,0));
+				await slopFountain(blob);
 			}
 			return;
 		}
@@ -274,7 +278,7 @@ discordClient.on('messageCreate', async (message) => {
 		const contents=chunkContent(message.content,4000-400);
 		for(const content of contents){
 			const blob={messages:[{message:content,from}]};
-			await writeFountain(JSON.stringify(blob,null,0));
+			await slopFountain(blob);
 		}
 		if(true||contents.length==0){
 			const quote=quotes[quoteCount++%quotes.length];

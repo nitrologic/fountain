@@ -21,7 +21,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.5.6, V8 14.0.365.5-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.5.6";
+const fountainVersion="1.5.7";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -62,8 +62,9 @@ const boxChars=["╭╮╰╯─┬┴│┤├┼","┌┐└┘─┬┴│┤
 const TextVariant="\uFE0E";
 const NonBreakingSpace="\u00a0";
 const FatSpace="\u2003";
-const ThinSpace="\u2009";
+const ThinSpace="\u2009";	//" "
 const HairSpace="\u200A";
+
 
 function getEnv(key:string):string{
 	return Deno.env.get(key)||"";
@@ -751,8 +752,8 @@ function latinString(latin, line: string, space=ThinSpace): string {
 	let out="";
 	for (const ch of line) {
 		const c = ch.charCodeAt(0);
-		if (c >= 48 && c <= 57)  out += digits[c-48];
-		else if (c >= 65 && c <= 90)  out += upper[c-65]+space;
+		if (c >= 48 && c <= 57) out += digits[c-48];
+		else if (c >= 65 && c <= 90) out += upper[c-65]+space;
 		else if (c >= 97 && c <= 122) out += lower[c-97]+space;
 		else out += ch;
 	}
@@ -830,7 +831,7 @@ async function readFileNames(path:string,suffix:string){
 	return result;
 }
 
-// until discord supports native markdown tables 
+// until discord supports native markdown tables
 
 function flattenTables(content){
 	let fenced=false;
@@ -843,17 +844,17 @@ function flattenTables(content){
 			table.push(items);
 		} else {
 			if (table.length) {
-				insertTable(result, table, !fenced, true); 
-				table.length = 0; 
+				insertTable(result, table, !fenced, true);
+				table.length = 0;
 			}
 			if (line.startsWith("```")) {
 				fenced=!fenced;
 			}
 			result.push(line);
 		}
-	}		
+	}
 	if (table.length) {
-		insertTable(result, table, !fenced, true); 
+		insertTable(result, table, !fenced, true);
 	}
 	return result.join("\n");
 }
@@ -1818,28 +1819,32 @@ async function readHistory(paths:string[]){
 	let count=0;
 	let min=0;
 	let max=0;
-	let tags={};
 	let days={};
+	let users={};
 	let sessions=[];
+	let tags={};	// reset on [roha] session boundaries
+	let stats={};	// all tags
 	for(const path of paths){
 		echo("[LOG]",path);
 		let log=await Deno.readTextFile(path);
 		const lines=log.split("\n");
 
-		let lineNumber=0;		
+		let lineNumber=0;
 		for(const line of lines){
 			const hex=line.substring(0,8);	// ignore 16ths
 			const secs=parseInt(hex,16);
 			if(Number.isNaN(secs)) continue;
 			const date=slopDate(secs);
-			
+
 			if(date in days){
 				days[date].count++;
 			}else{
 				days[date]={sessions:0,bytes:0,count:0,tags:{}}
 			}
 			const day=days[date];
+
 			const tagline=line.substring(8);
+
 			if(tagline=="[roha] 𓅷 𓅸 𓅹 𓅺 𓅻 𓅼 𓅽"){
 				sessions.push({line:lineNumber,tags});
 				tags={};
@@ -1853,27 +1858,25 @@ async function readHistory(paths:string[]){
 				const key=line.substring(b0+1,b1);
 				if(key in tags){tags[key].count++;tags[key].bytes+=n}else tags[key]={key,count:1,bytes:n};
 				if(key in day.tags){day.tags[key].count++;day.tags[key].bytes+=n;}else day.tags[key]={key,count:1,bytes:n}
+				if(key in stats){stats[key].count++;stats[key].bytes+=n}else stats[key]={key,count:1,bytes:n};
 			}
 			if(!min || secs<min) min=secs;
 			if(secs>max) max=secs;
 			lineNumber++;
 		}
-		sessions.push({line:lineNumber,tags});
+		sessions.push({line:lineNumber,tags:{...tags}});
 	}
-	
-//	echo("[LOG]",path,count,minDate,maxDate,sessions.length,Object.keys(days).length);
 
+//	echo("[LOG]",path,count,minDate,maxDate,sessions.length,Object.keys(days).length);
 
 	const minDate=slopDate(min);
 	const maxDate=slopDate(max);
-
 	echo("[LOG]",{count,minDate,maxDate,sessions:sessions.length,days:Object.keys(days).length});
-
-	const keys=Object.keys(days);
+	const sortedDays = Object.keys(days).sort((a, b) => {a.localeCompare(b)});
 	let index=1;
-	for(const day of keys){
+	for(const day of sortedDays){
 		const tags=[];
-		for(const tag in days[day].tags){
+		for(const tag in days[day].tags||[]){
 			const mut=days[day].tags[tag];
 			if(mut.key=="roha") continue;
 			tags.push(mut.key+"["+mut.count+"]");
@@ -1881,6 +1884,11 @@ async function readHistory(paths:string[]){
 		const sessions=days[day].sessions;
 		echo("#"+index,day,{sessions,tags:tags.join()});
 		index++;
+	}
+
+	const sortedStats = Object.keys(stats).sort((a, b) => stats[b].bytes-stats[a].bytes);
+	for(const key of sortedStats){
+		echo(stats[key]);
 	}
 }
 
@@ -2071,8 +2079,9 @@ function boxCells(widths,cells,discord:boolean){
 		const cell=indent+value;
 		const wide=discord?discordStringWidth(cell):stringWidth(cell);
 		const pads=w-wide;
+		const thinpad=((pads*2)&1)?HairSpace:"";
 		const padding=(pads>0)?" ".repeat(pads):"";
-		bits.push(cell+padding);
+		bits.push(cell+thinpad+padding);
 	}
 	return v+bits.join(v)+v;
 }
@@ -3297,7 +3306,7 @@ function plainHistory(history,model){
 //				console.log({src,name});
 				role="user";
 			}
-		}		
+		}
 		switch(item.role){
 			case "system":
 				list.push({role:"system",content});
@@ -3331,7 +3340,7 @@ function strictHistory(history){
 	for(const _item of history){
 		const item={..._item};
 		const src="["+itemSource(item)+"] ";
-		const content=item.content;	 //todo: revisit src+
+		const content=src+item.content;	 //todo: testing revisit src+
 		switch(item.role){
 			case "system":
 				list.push({role:"system",content});
@@ -3803,7 +3812,7 @@ async function relay(depth:number) {
 					echoStatus(status);
 			}
 		}
-		// 
+		//
 
 		const replies=[];
 		for (const choice of completion.choices) {
@@ -4053,7 +4062,7 @@ async function chat() {
 }
 
 const areSame = (arr1, arr2) => {
-  return arr1&&arr2&&(arr1.length === arr2.length) && (arr1.every(item => arr2.includes(item)));
+	return arr1&&arr2&&(arr1.length === arr2.length) && (arr1.every(item => arr2.includes(item)));
 };
 
 // forge uses rohaPath to boot
@@ -4197,8 +4206,6 @@ echo("type /help for latest and exit to quit");
 
 const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
 echo(birds);
-
-echo(discordStringWidth("🌏"));
 
 if(roha.config.listen){
 	listenService();

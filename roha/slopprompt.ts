@@ -289,7 +289,7 @@ export function discordStringWidth(text:string):number{
 	for (const ch of text) {
 		const codepoint=ch.codePointAt(0) ?? 0;
 		if (codepoint===0xFE0F) continue; // Skip variation selectors
-		const width=discordWide(codepoint)?2:1;
+		const width=discordWide(codepoint)?1.5:1;
 		w+=width;
 	}
 	return w;
