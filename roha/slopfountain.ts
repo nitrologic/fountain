@@ -59,6 +59,7 @@ const pageBreak=rule500;
 
 const boxChars=["╭╮╰╯─┬┴│┤├┼","┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
 
+const ZeroWidthJoiner="\uFE0F";
 const TextVariant="\uFE0E";
 const NonBreakingSpace="\u00a0";
 const FatSpace="\u2003";
@@ -2917,14 +2918,17 @@ async function attachMedia(words){
 	}
 }
 
+const glyphs=" ⛲🪣🐸🪠🐋🜁🐉🌟💫🌏📆💰👀🫦💻👄🔧🧊🔉📷📡🧮📠⛅🧰🌕🌙🗜️❁𝕏❃👁✿⚙️⣯🏛️🎙️🖼️🗣️";
 function testUnicode(){
 	echo("```")
 	echo("|    "+ThinSpace+"|");
-	for(const code of " ⛲🪣🐸🪠🐋🜁🐉🏛️❁𝕏🌟💫🌏📆💰👀🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 🌕🌙✿"){
+	for(const code of glyphs){
+		if(code==ZeroWidthJoiner) continue;
 		let padding=" --"+ThinSpace;
 		const w=discordStringWidth(code);
-		if(w==2.5) padding="++";
-		if(w==1.5) padding="~~~";//🜁 
+		if(w==2.5) padding="++";	//🪣 Wide
+		if(w==2) padding=HairSpace+"**";		//🏛️ thick = normal???
+		if(w==1.5) padding="~~~";	//🜁 thin
 		echo("|"+code+padding+"|");
 	}
 	echo("```")

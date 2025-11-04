@@ -288,6 +288,7 @@ function discordWide(cp:number):boolean{
 	if (cp==0x1f399) return false;//🎙
 	if (cp==0x1f5bc) return false;//🖼
 	if (cp==0x1f5e3) return false;//🗣
+	if (cp==0x1f441) return false;//👁
 	if (cp >= 0x1F300 && cp <= 0x1F5FF) return true;  // Pictographs
 	if (cp >= 0x1F600 && cp <= 0x1F64F) return true;  // Emoticons
 	if (cp >= 0x1F680 && cp <= 0x1F6FF) return true;  // Transport & Map
@@ -299,21 +300,30 @@ function discordWide(cp:number):boolean{
 }
 // 1.5 discord wide unicode
 function discordThin(cp:number):boolean{
-//	if (cp==0x1f3db) return true;//🏛️
+	if (cp==0x1f3db) return true;//🏛️
 	if (cp === 0x1f701) return true; //🜁
 	if (cp === 0x2741) return true; // ❁
 	if (cp === 0x2743) return true; // ❃
 	if (cp==0x1f5bc) return true;//🖼
 	if (cp==0x1f5e3) return true;//🗣
+	if (cp==0x1f441) return true;//👁
 	return false;
 }
+
+function discordThick(cp:number):boolean{
+	if (cp==0x1f3db) return true;//🏛️
+	if (cp==0x1f399) return true;//🎙
+	if (cp==0x1f5bc) return true;//🖼
+	if (cp==0x1f5e3) return true;//🗣
+}
+
 
 export function discordStringWidth(text:string):number{
 	let w=0;
 	for (const ch of text) {
 		const codepoint=ch.codePointAt(0) ?? 0;
 		if (codepoint===0xFE0F) continue; // Skip variation selectors
-		const width=discordWide(codepoint)?2.5:discordThin(codepoint)?1.5:1;
+		const width=discordWide(codepoint)?2.5:discordThick(codepoint)?2:discordThin(codepoint)?1.5:1;
 		w+=width;
 	}
 	return w;
