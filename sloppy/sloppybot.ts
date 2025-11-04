@@ -8,7 +8,7 @@
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
 
-const sloppyBanner="[SLOPPY] sloppy 0.07 🦜 a fountain discord bot by nitrologic";
+const sloppyBanner="[SLOPPY] sloppy 0.07 🦜 a stochastic parrot from slop fountain";
 
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
@@ -16,7 +16,7 @@ async function sleep(ms:number) {
 
 const quotes=[
 	"🦜 I am sloppy the janitor",
-	"did thing thing call for a plunge? 🪠",
+	"did sing sing call for a plunge? 🪠",
 	"stochastic parrot wants a cracker 🥤"
 ];
 

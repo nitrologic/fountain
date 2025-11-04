@@ -35,15 +35,17 @@ function closeConnections(){
 	slopConnections.length=0;
 }
 
-async function readConnection(name:string,connection:Deno.TcpConn){
+// these async functions end up in receiver promise lists
+// retun source,receive,name or source,error,name
+async function readNamedConnection(name:string,connection:Deno.TcpConn){
 	try{
 		const n=await connection.read(rxBuffer);
-		//echo("readConnection",n,name);
+		//echo("readNamedConnection",n,name);
 		if(n==null) return {source:connection};
 		const bytes=rxBuffer.subarray(0,n);
 		return {source:connection,receive:bytes,name};
 	}catch(error){
-		echo("readConnection error",error);
+		echo("readNamedConnection error",error);
 		return {source:connection,error,name};
 	}
 }
@@ -487,7 +489,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			}
 			slopConnections.push(connection);
 			listenerPromise=listenPort(8081);
-			const receiver=readConnection(name,connection);
+			const receiver=readNamedConnection(name,connection);
 			receivePromises[name]=receiver;
 			//echo("reading connection 1",name);
 			continue;
@@ -495,7 +497,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if(source){
 			//echo("receivePromise name,source",name,source);//,receive
 			delete receivePromises[name];
-			const receiver=readConnection(name,source);
+			const receiver=readNamedConnection(name,source);
 			receivePromises[name]=receiver;
 			const messages=[];
 			// TODO: test with discontinuous stream of messages
