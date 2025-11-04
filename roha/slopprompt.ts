@@ -21,7 +21,7 @@ function echo(...args:any[]){
 }
 
 let listenerPromise;
-const slopConnections=[];
+const slopConnections=new Map();
 let receivePromises={};
 
 //: Promise<{source:Deno.TcpConn, receive:Uint8Array}>[]=[];
@@ -30,10 +30,6 @@ const decoderConnection=new TextDecoder("utf-8");
 const rxBufferSize=1e6;
 const rxBuffer=new Uint8Array(rxBufferSize);
 const rxDecoder=new TextDecoder("utf-8",{stream:true});
-
-function closeConnections(){
-	slopConnections.length=0;
-}
 
 // these async functions end up in receiver promise lists
 // retun source,receive,name or source,error,name
@@ -119,23 +115,26 @@ export async function slopBroadcast(text:string,from:string){
 		// NDJSON is the rule
 		const bytes=encoder.encode(json+"\n");
 		const n=bytes.byteLength;
-		try{
-			for(const slopConnection of slopConnections){
+		const good=[];
+		for(const [name,connection] of slopConnections){
+			try{
 				let total=0;
 				while(total<n){
 					const packet=bytes.subarray(total);
-					const sent=await slopConnection.write(packet);
+					const sent=await connection.write(packet);
 					if(sent==null || sent==-1){
 						throw("chunks");
 					}
 					total+=sent;
 				}
+				good.push(connection)
 			}
-		}
-		catch(error){
-			// connection reset
-			closeConnections();
-			echo("slopBroadcast closed all connections",error.message);
+			catch(error){
+				echo("faking it until we make it",name,error.message);
+				await connection.close();
+				slopConnections.delete(name);
+				delete receivePromises[name];
+			}
 		}
 	}else{
 		echo("help me help you");
@@ -477,17 +476,22 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		const { value, done, connection, name, source, receive, error }=winner;
 		if(error){
 			// Address already in use (os error 98)
-			echo("slopPrompt error",error.message);
+			echo("[PROMPT] error from",name,error.message);
+			delete receivePromises[name];
+			continue;
 //			slopConnections.length=0;
 //			receivePromises={};
-			throw(error);
+//			throw(error); // this will cause a crash
 //			continue;
 		}
 		if (connection) {
 			if(name in receivePromises){
+				echo("promise already exists for",name);
+			}
+			if(name in slopConnections){
 				echo("connection already exists for",name);
 			}
-			slopConnections.push(connection);
+			slopConnections.set(name,connection);
 			listenerPromise=listenPort(8081);
 			const receiver=readNamedConnection(name,connection);
 			receivePromises[name]=receiver;

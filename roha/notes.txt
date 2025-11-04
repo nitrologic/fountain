@@ -1,3 +1,8 @@
+function closeConnections(){
+	slopConnections.length=0;
+}
+
+
 function key could buffer multi line? 
 f1="/model next, thoughts %model.name?"
 
