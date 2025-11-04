@@ -1892,15 +1892,17 @@ async function readHistory(paths:string[]){
 	}
 }
 
-
-async function historyCommand(words){
+async function historyCommand(words:string[]){
+	let scanAll:boolean=words[1]=="all";
 	let logPath=resolve(forgePath,"forge.log");
 	const paths=[logPath];
-	const archivePath="../../nitrologic.github.io/raw";
-	const archives=await readFileNames(archivePath,".log");
-	for(const archive of archives){
-		const path=resolve(archivePath,archive);
-		paths.push(path);
+	if(scanAll){
+		const archivePath="../../nitrologic.github.io/raw";
+		const archives=await readFileNames(archivePath,".log");
+		for(const archive of archives){
+			const path=resolve(archivePath,archive);
+			paths.push(path);
+		}
 	}
 	return readHistory(paths);
 }
