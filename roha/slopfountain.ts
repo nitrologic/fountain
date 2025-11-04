@@ -654,7 +654,8 @@ let statusBuffer=[];
 let remoteBuffer=[];
 async function errorHandler(...args:any[]) {
 	const line=args.join(",");
-	remoteBuffer.push(line);
+	const from="remote";
+	remoteBuffer.push({line,from});
 	originalError.apply(console, [line]);//args);
 };
 const originalError=console.error;
@@ -712,8 +713,9 @@ async function echoFail(...args:any){
 		lines.push(line);
 	}
 	const text=lines.join(" ");
-	// TODO: verify text joins errors in remoteBuffer
-	remoteBuffer.push(text);
+	const from="FAIL";
+	remoteBuffer.push({line:text,from});
+
 	const styledText=ansiStyle(text,"bold",2);
 	outputBuffer.push(styledText);
 	outputBuffer.push(cleanupRequired);
@@ -862,11 +864,10 @@ function flattenTables(content){
 async function flush() {
 	const send=[];
 	const delay=roha.config.slow ? slowMillis : 0;
-	for (const error of remoteBuffer) {
-		const line="!"+error;
+	for (const {line,from} of remoteBuffer) {
 		send.push(line);
-		rohaPush(line,"PORT");
-		await logForge(line,"PORT");
+		rohaPush(line,from);
+		await logForge(line,from);
 	}
 	remoteBuffer=[];
 	for (const mutline of printBuffer) {
@@ -2916,15 +2917,29 @@ async function attachMedia(words){
 	}
 }
 
+function testUnicode(){
+	echo("```")
+	echo("|    "+ThinSpace+"|");
+	for(const code of " ⛲🪣🐸🪠🐋🜁🐉🏛️❁𝕏🌟💫🌏📆💰👀🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 🌕🌙✿"){
+		let padding=" --"+ThinSpace;
+		const w=discordStringWidth(code);
+		if(w==2.5) padding="++";
+		if(w==1.5) padding="~~~";//🜁 
+		echo("|"+code+padding+"|");
+	}
+	echo("```")
+}
+
 // can emit [FOUNTAIN] callCommand error
 // TODO: validate docs and link to information
 async function callCommand(command:string) {
 	let dirty=false;
 	let words=command.split(" ");
-	try {
+	try {``
 		switch (words[0]) {
 			case "bibli":
-				parseBibli();
+//				parseBibli();
+				testUnicode();
 				break;
 			case "spec":
 				parseUnicode();

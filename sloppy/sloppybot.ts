@@ -238,7 +238,7 @@ function chunkContent(content:string,chunk:number):string[]{
 }
 
 const UserCommands=[
-	"commit","log"
+	"commit","log","bibli"
 ]
 
 const AllUserCommands=[

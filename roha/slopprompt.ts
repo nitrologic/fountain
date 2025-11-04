@@ -274,16 +274,37 @@ export function stringWidth(text:string):number{
 	return w;
 }
 
+// 2.5 discord wide unicode
 function discordWide(cp:number):boolean{
-    if (cp >= 0x1100 && cp <= 0x115F) return true;
-    if (cp >= 0x2E80 && cp <= 0xA4CF) return true;
-    if (cp >= 0xAC00 && cp <= 0xD7AF) return true;
-    if (cp >= 0xF900 && cp <= 0xFAFF) return true;
-    if (cp >= 0xFE10 && cp <= 0xFE1F) return true;
-    if (cp >= 0xFE30 && cp <= 0xFE6F) return true;
-    if (cp >= 0xFF00 && cp <= 0xFF60) return true;
-    if (cp >= 0xFFE0 && cp <= 0xFFE6) return true; 	
-	if (cp >= 0x1F300 && cp <= 0x1F9FF) return true;   // emoji
+	if (cp >= 0x1100 && cp <= 0x115F) return true;
+	if (cp >= 0x2E80 && cp <= 0xA4CF) return true;
+	if (cp >= 0xAC00 && cp <= 0xD7AF) return true;
+	if (cp >= 0xF900 && cp <= 0xFAFF) return true;
+	if (cp >= 0xFE10 && cp <= 0xFE1F) return true;
+	if (cp >= 0xFE30 && cp <= 0xFE6F) return true;
+	if (cp >= 0xFF00 && cp <= 0xFF60) return true;
+	if (cp >= 0xFFE0 && cp <= 0xFFE6) return true;
+	if (cp==0x1f3db) return false;//🏛️
+	if (cp==0x1f399) return false;//🎙
+	if (cp==0x1f5bc) return false;//🖼
+	if (cp==0x1f5e3) return false;//🗣
+	if (cp >= 0x1F300 && cp <= 0x1F5FF) return true;  // Pictographs
+	if (cp >= 0x1F600 && cp <= 0x1F64F) return true;  // Emoticons
+	if (cp >= 0x1F680 && cp <= 0x1F6FF) return true;  // Transport & Map
+	if (cp >= 0x1F900 && cp <= 0x1F9FF) return true;  // Supplemental
+	if (cp >= 0x1FA00 && cp <= 0x1FAFF) return true;  // NEW: includes 🪣 U+1FAD0
+	if (cp === 0x26F2) return true; // ⛲
+	if (cp === 0x26C5) return true; // ⛅
+	return false;
+}
+// 1.5 discord wide unicode
+function discordThin(cp:number):boolean{
+//	if (cp==0x1f3db) return true;//🏛️
+	if (cp === 0x1f701) return true; //🜁
+	if (cp === 0x2741) return true; // ❁
+	if (cp === 0x2743) return true; // ❃
+	if (cp==0x1f5bc) return true;//🖼
+	if (cp==0x1f5e3) return true;//🗣
 	return false;
 }
 
@@ -292,7 +313,7 @@ export function discordStringWidth(text:string):number{
 	for (const ch of text) {
 		const codepoint=ch.codePointAt(0) ?? 0;
 		if (codepoint===0xFE0F) continue; // Skip variation selectors
-		const width=discordWide(codepoint)?2.5:1;
+		const width=discordWide(codepoint)?2.5:discordThin(codepoint)?1.5:1;
 		w+=width;
 	}
 	return w;
@@ -424,7 +445,7 @@ function processUtf8(value: Uint8Array, i: number, bytes: number[]): number {
 			const charText = decoder.decode(sequence);
 			addInput(charText);
 			bytes.push(...sequence);
-// TODO: better unicode support for raw windows consoles			
+// TODO: better unicode support for raw windows consoles
 //			console.log("[RAW] skipping ",bytesNeeded,sequence,charText);
 			return bytesNeeded - 1;
 		} catch (e) {

@@ -1,6 +1,4 @@
-# 🦜
-
-![](sloppy.png)
+# ⛲🦜🪣🐸🪠
 
 # code under observation
 
@@ -194,3 +192,5 @@ async function readFountain(){
 	}
 }
 ```
+
+![](sloppy.png) ![](pail.png)

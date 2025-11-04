@@ -33,6 +33,7 @@ Pleased to welcome and assign active model under test status to 🎉 Qwen3 Max a
 
 ![](sloppy/sloppy.png)
 
+> ssh localhost -p 6669
 
 The sloppy bot Deno worker joins [Discord Channel](https://discord.gg/e49ZhmQEjC) to Slop Fountain and routes posts to prompts.
 

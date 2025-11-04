@@ -18,7 +18,7 @@
 		"locale": "zh-CN"
 	},
 	"alibaba": {
-		"emoji": "🐉",
+		"emoji": "𝓪",
 		"env": "ALIBABA_API_KEY",
 		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
 		"platform": "https://bailian.console.alibabacloud.com/",
@@ -35,7 +35,7 @@
 		"locale": "en-US"
 	},
 	"openai": {
-		"emoji": "❁",
+		"emoji": "🕸️",
 		"env": "OPENAI_API_KEY",
 		"url": "https://api.openai.com/v1",
 		"platform":"https://auth.openai.com/log-in",
