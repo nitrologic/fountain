@@ -4000,9 +4000,8 @@ async function chat() {
 							continue;
 						}
 						if(m.message){
-							// todo: what the where ???
-							// const line=("["+m.from+"] "+m.message);
 							lines.push(m.message);
+							logForge(m.message,m.from);
 						}
 					}
 					break;

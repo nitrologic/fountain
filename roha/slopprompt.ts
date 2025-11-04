@@ -52,6 +52,8 @@ async function readNamedConnection(name:string,connection:Deno.TcpConn){
 let connectionCount=0;
 let slopListener=null;
 
+// returns {connection,name} or {error}
+
 async function listenPort(port:number){
 	if(!slopListener){
 		//echo("listening from fountain for slop on port",port);
@@ -435,6 +437,7 @@ function processUtf8(value: Uint8Array, i: number, bytes: number[]): number {
 }
 
 // main egress for discord ssh stdin users
+// returns response as messages or line
 
 export async function slopPrompt(message:string,interval:number,refreshHandler?:(num:number,msg:string)=>Promise<void>) {
 	Deno.stdin.setRaw(true);
@@ -529,14 +532,6 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					echo("slopPrompt JSON error",text,error);
 				}
 				if(messages){
-//					echo("response messages",JSON.stringify({messages}));
-
-					if(false){
-						for(const message of messages){
-							const line=message.command?message.command:("_["+message.from+"] "+ message.message);
-							console.log(line);
-						}
-					}
 					response={messages};
 					break;
 				}
