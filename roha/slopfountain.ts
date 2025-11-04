@@ -2918,7 +2918,7 @@ async function attachMedia(words){
 	}
 }
 
-const glyphs=" ⛲🪣🐸🪠🐋🜁🐉🌟💫🌏📆💰👀🫦💻👄🔧🧊🔉📷📡🧮📠⛅🧰🌕🌙🗜️❁𝕏❃👁✿⚙️⣯🏛️🎙️🖼️🗣️";
+const glyphs=" ⛲🪣🐸🪠🐋🜁🐉🌟💫🌏📆💰👀🫦💻👄🔧🧊🔉📷📡🧮📠⛅🧰🌕🌙❁❃𝕏👁⣯✿⚙️🏛️🎙️🖼️🗣️🗜️";
 function testUnicode(){
 	echo("```")
 	echo("|    "+ThinSpace+"|");
