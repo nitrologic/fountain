@@ -268,7 +268,7 @@ export function stringWidth(text:string):number{
 		const codepoint=ch.codePointAt(0) ?? 0;
 		if (codepoint===0xFE0F) continue; // Skip variation selectors
 //		w += isWide(codePoint) ? 2 : 1;
-		const thin=(codepoint==0x1F3dB)||(codepoint==0x1F5A5)||(thinPail && codepoint==0x1FAA3);//🏛️🖥️🪣
+		const thin=(codepoint==0x1F578)||(codepoint==0x1F3dB)||(codepoint==0x1F5A5)||(thinPail && codepoint==0x1FAA3);//🏛️🖥️🪣
 		w+=thin?1:(isDoubleWidth(codepoint)?2:1);
 	}
 	return w;
