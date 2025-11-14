@@ -59,10 +59,13 @@ const pageBreak=rule500;
 
 const boxChars=["╭╮╰╯─┬┴│┤├┼","┌┐└┘─┬┴│┤├┼","╔╗╚╝═╦╩║╣╠╬","┏┓┗┛━┳┻┃┫┣╋"];
 
-const ZeroWidthJoiner="\uFE0F";
 const TextVariant="\uFE0E";
+const ZeroWidthJoiner="\uFE0F";
 const NonBreakingSpace="\u00a0";
-const FatSpace="\u2003";
+
+const EnSpace="\u2002";
+const EmSpace="\u2003";
+
 const ThinSpace="\u2009";	//" "
 const HairSpace="\u200A";
 
@@ -2918,17 +2921,20 @@ async function attachMedia(words){
 	}
 }
 
-const glyphs=" ⛲🪣🐸🪠🐋🜁🐉🌟💫🌏📆💰👀🫦💻👄🔧🧊🔉📷📡🧮📠⛅🧰🌕🌙❁❃𝕏👁⣯✿⚙️🏛️🎙️🖼️🗣️🗜️";
+const glyphs=" ⛲🪣🐸🪠🐋🐉🌟💫🌏📆💰👀🫦💻👄🔧🧊🔉📷📡🧮📠⛅🧰🌕🌙🏛️🎙️🖼️🗣️🗜️👁𝕏⣯🜁❁❃⚙️✿";
 function testUnicode(){
 	echo("```")
-	echo("|    "+ThinSpace+"|");
+	echo("|1234|");
 	for(const code of glyphs){
 		if(code==ZeroWidthJoiner) continue;
-		let padding=" --"+ThinSpace;
 		const w=discordStringWidth(code);
+		let padding=(w==1)?"---":(ZeroWidthJoiner+"--");
+/*
+		let padding=" --"+ThinSpace;
 		if(w==2.5) padding="++";	//🪣 Wide
-		if(w==2) padding=HairSpace+"**";		//🏛️ thick = normal???
+		if(w==2) padding="**"+ThinSpace;		//🏛️ thick = normal???
 		if(w==1.5) padding="~~~";	//🜁 thin
+*/
 		echo("|"+code+padding+"|");
 	}
 	echo("```")
@@ -3564,7 +3570,7 @@ async function bumpModel(spent3,elapsed,account,useTools){
 		mutspec.completion_tokens=(mutspec.completion_tokens|0)+spent3[2];
 		// TODO: explain hasForge false condition
 		if(useTools && mutspec.hasForge!==true){
-			echo("[RELAY] enabling forge for",mut);
+			echo("[RELAY] enabling forge for",grokModel);
 			mutspec.hasForge=true;
 			await writeForge();
 		}
@@ -3851,7 +3857,8 @@ async function relay(depth:number) {
 				}));
 				const toolResults=await processToolCalls(calls);
 				for (const result of toolResults) {
-					const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content:result.content};
+					const content = result.name+" replied "+result.content;
+					const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content};
 					debugValue("item",item);
 					if(verbose)echo("[RELAY] pushing tool result",item);
 					rohaHistory.push(item);

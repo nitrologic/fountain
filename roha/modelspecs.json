@@ -210,6 +210,21 @@
 		"press":"supporting up to ? million tokens of context",
 		"reality":"hopefully does not suffer from clueless ideation"
 	},
+	"gpt-5.1-2025-11-13@openai":{
+		"cold":true,
+		"pricing":[1.25,0.125,10.0],
+		"purpose":"gpt-5"
+	},
+	"gpt-5.1-codex@openai":{
+		"pricing":[1.25,0.125,10.0],
+		"purpose":"coding stuff",
+		"endpoints":["v1/responses"]
+	},
+	"gpt-5.1-codex-mini@openai":{
+		"pricing":[0.25,0.025,2.0],
+		"purpose":"coding stuff",
+		"endpoints":["v1/responses"]
+	},
 	"o3-2025-04-16@openai":{
 		"deprecated":true,
 		"pricing":[2.00, 0.50, 8.00],

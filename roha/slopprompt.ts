@@ -67,7 +67,7 @@ async function listenPort(port:number){
 	try{
 		const connection=await slopListener.accept();
 		const name="connection"+(connectionCount++);
-		echo("connection accepted",name);
+		echo("Accepted ",name);
 		return {connection,name};
 	}catch(error){
 		echo("listenPort await failure",port);
@@ -301,11 +301,11 @@ function discordWide(cp:number):boolean{
 // 1.5 discord wide unicode
 function discordThin(cp:number):boolean{
 	if (cp==0x1f3db) return true;//🏛️
-	if (cp === 0x1f701) return true; //🜁
-	if (cp === 0x2741) return true; // ❁
-	if (cp === 0x2743) return true; // ❃
+//	if (cp==0x1f701) return true; //🜁
 	if (cp==0x1f5bc) return true;//🖼
 	if (cp==0x1f5e3) return true;//🗣
+//	if (cp === 0x2741) return true; // ❁
+//	if (cp === 0x2743) return true; // ❃
 	if (cp==0x1f441) return true;//👁
 	return false;
 }
