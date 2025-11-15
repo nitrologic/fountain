@@ -2403,8 +2403,6 @@ const textExtensions=[
 	"log","py","csv","xml","ini"
 ];
 
-// this is an anthropic thing, due for removal
-
 const fileTypes={
 	"pdf": "application/pdf",
 	"js": "text/x-javascript",
