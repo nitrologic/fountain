@@ -3291,8 +3291,8 @@ async function processToolCalls(calls) {
 				name: tool.function?.name || "unknown",
 				content: JSON.stringify({error: "Invalid tool call format"})
 			});
-			await logForge("processToolCalls error");
-			//Invalid tool call: ${JSON.stringify(tool)}`, "error");
+			await logForge("processToolCalls error");	//Invalid tool call: ${JSON.stringify(tool)}`, "error");
+			// todo: enforce a notools bar?
 			continue;
 		}
 		try {
@@ -3375,7 +3375,7 @@ function strictHistory(history){
 				break;
 			case "assistant":
 				if(item.tool_calls){
-					list.push({role:item.role,content,tool_calls:item.tool_calls});
+					list.push({role:"tool",content,tool_calls:item.tool_calls});
 				}else{
 					list.push({role:"assistant",content});
 				}
@@ -3857,8 +3857,10 @@ async function relay(depth:number) {
 				}));
 				const toolResults=await processToolCalls(calls);
 				for (const result of toolResults) {
+					const id=result.tool_call_id;
+					const title="ToolCall:"+id;
 					const content = result.name+" replied "+result.content;
-					const item={role:"assistant",tool_call_id:result.tool_call_id,title:result.name,content};
+					const item={role:"system",title,tool_call_id:id,content};
 					debugValue("item",item);
 					if(verbose)echo("[RELAY] pushing tool result",item);
 					rohaHistory.push(item);
@@ -3866,7 +3868,7 @@ async function relay(depth:number) {
 				// new behavior, message content comes after tool reports
 				const content=choice.message.content;
 				if(content){
-					if(verbose)echo("[RELAY] pushing asssistant model",depth,payload.model,mut,content);
+					if(verbose)echo("[RELAY] pushing asssistant model ?",depth,payload.model,mut,content);
 //					rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
 				}
 				// warning - here be dragons
