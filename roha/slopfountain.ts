@@ -2414,6 +2414,7 @@ const fileTypes={
 	"md": "text/markdown",
 	"css": "text/css",
 	"html": "text/html",
+	"gles": "text/x-gles",
 	"svg": "image/svg+xml",
 	"cpp": "text/x-c++src",
 	"c": "text/x-csrc",
