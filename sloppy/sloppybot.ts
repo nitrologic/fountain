@@ -3,10 +3,11 @@
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
-// receive message from fountain /announce and echo to discord bot
-// keep json flat single line
+import { Client, GatewayIntentBits } from "npm:discord.js@14.15.3";
 
-import { Client, GatewayIntentBits } from "npm:discord.js@14.14.1";
+// receive message from fountain /announce and echo to discord bot with splurt
+// keep json flat single line
+// guildmembers intent not enabled at this time
 
 const sloppyBanner="[SLOPPY] sloppy 0.07 🦜 a stochastic parrot from slop fountain";
 
@@ -20,12 +21,42 @@ const quotes=[
 	"stochastic parrot wants a cracker 🥤"
 ];
 
+function splurt(...data: any[]){
+	console.error("[SPLURT]",data);
+}
+
 // discord channel send
+
+const DumpGuild=false;
 
 let quoteCount=0;
 
 //let openChannel="1235838347717378118";
 let openChannel="1410693060672753704";
+
+async function dumpChannel(channel){
+	if(channel && channel.guild && channel.guild.id){
+		splurt("channel dump", {
+			id: channel.id,
+			type: channel.type,
+			name: channel.name,
+			recipients: channel.recipients,
+			guild: channel.guild?.id
+		});
+		const guild:Guild = await discordClient.guilds.fetch(channel.guild.id);
+		splurt("discord guild",guild.memberCount);
+//		const fetched=await guild.members.fetch({withPresences:false});
+//		if(fetched){
+		if(DumpGuild){
+			splurt("discord members",guild.memberCount);
+			for (const [id, member] of guild.members.cache) {
+				splurt("-",member.user.tag, member);
+			}	
+		}
+//		}else{
+//			splurt("discord fetch guild presence failure");
+	}
+}
 
 // rate guard required, a sleep 1500 ms currently in force on all writes
 
@@ -34,7 +65,9 @@ async function messageSloppy(message:string,from:string){
 	message = message.replace(/https\S+/g, "<$&>");
 	if(openChannel){
 		const channel = await discordClient.channels.fetch(openChannel);
+		await dumpChannel(channel);
 		if (channel?.isTextBased()) {
+			splurt("discord fetch",channel.name,channel.recipients,message.length);
 			const chunks=chunkContent(message,2000-400);
 			for(const chunk of chunks){
 //				const post=from+chunk;
@@ -68,8 +101,8 @@ async function onFountain(message:string){
 				}
 			}
 		}catch(error){
-			echo("JSON parse error",error);
-			echo("JSON parse error",line);
+			splurt("JSON parse error",error);
+			splurt("JSON parse error",line);
 		}
 	}
 }
@@ -104,7 +137,7 @@ async function readSystem(){
 	try{
 		n = await Deno.stdin.read(systemBuffer);
 	}catch(e){
-		echo("readFountain",e);
+		splurt("readFountain",e);
 	}
 	readingSystem=false;
 	if (n == null) {
@@ -119,21 +152,17 @@ async function readSystem(){
 
 // log noise signed [BOT]
 
-function echo(...data: any[]){
-	console.error("[BOT]",data);
-}
-
 const encoder = new TextEncoder();
 async function writeFountain(message:string){
 	if(!slopPipe) return;
 	const data=encoder.encode(message);	
 	let offset = 0;
-//	echo("writing",message);
+//	splurt("writing",message);
 	while (offset < data.length) {
 		const written = await slopPipe.write(data.subarray(offset));
 		offset += written;
 	}
-	echo("wrote",message);
+	splurt("wrote",message);
 }
 async function slopFountain(slop){
 	const message:string=JSON.stringify(slop,null,0)+"\n";
@@ -148,14 +177,14 @@ let slopPipe:Deno.Conn;
 async function connectFountain():Promise<boolean>{
 	try{
 		slopPipe = await Deno.connect({hostname:"localhost",port:8081});
-		echo("connected","localhost:8081");
+		splurt("connected","localhost:8081");
 		return true;
 	}catch(error){
 		if (error instanceof Deno.errors.ConnectionRefused) {
-			echo("Connection Refused",error.message);
+			splurt("Connection Refused",error.message);
 		}else{
 			const message=JSON.stringify(error,null,0);
-			echo("Connection Error",message);
+			splurt("Connection Error",message);
 		}
 	}
 	return false;
@@ -164,7 +193,7 @@ async function connectFountain():Promise<boolean>{
 function disconnectFountain(){
 	if(!slopPipe) return false;
 	slopPipe.close();
-	echo("Disconnected");
+	splurt("Disconnected");
 	slopPipe=null;
 	return true;
 }
@@ -178,7 +207,7 @@ async function readFountain(){
 	try{
 		n = await slopPipe.read(rxBuffer);
 	}catch(e){
-		echo("readFountain",e);
+		splurt("readFountain",e);
 	}
 	readingSlop=false;
 	if (n == null) {
@@ -199,6 +228,7 @@ console.log(sloppyBanner);
 const discordClient = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
+//		GatewayIntentBits.GuildMembers,
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.MessageContent
 	]
@@ -268,9 +298,9 @@ discordClient.on('messageCreate', async (message) => {
 		const args=words[1]||"";
 		if(UserCommands.includes(command.substring(1))){
 			if(false){
-				echo("User commands in discord channel currently disabled",command,args,from)
+				splurt("User commands in discord channel currently disabled",command,args,from)
 			}else{
-				echo("User command in discord channel",command,args,from)
+				splurt("User command in discord channel",command,args,from)
 				const blob={command:{name:command,args,from}};
 				await slopFountain(blob);
 			}
@@ -287,7 +317,7 @@ discordClient.on('messageCreate', async (message) => {
 			message.reply("@"+name+" "+quote);
 		}
 		if(false){
-			echo("[MESSAGE]",message);
+			splurt("[MESSAGE]",message);
 		}
 	}
 });
@@ -319,10 +349,10 @@ while(true){
 		await onFountain(result.message);
 		portPromise=readFountain();		
 	}
-//	echo("result",result);
+//	splurt("result",result);
 	await(sleep(500));
 }
 
-echo("bye");
+splurt("bye");
 disconnectFountain();
 Deno.exit(0);
