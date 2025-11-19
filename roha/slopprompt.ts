@@ -13,7 +13,7 @@ const vscodeNonce=Deno.env.get("VSCODE_NONCE")||Deno.env.get("VSCODE_INJECTION")
 function echo(...args:any[]){
 	const lines=[];
 	for(const arg of args){
-		const line=arg.toString();
+		const line=arg?.toString();
 		lines.push(line);
 	}
 	const text=lines.join(" ");
@@ -510,11 +510,10 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		const { value, done, connection, name, source, receive, error }=winner;
 		if(error){
 			// Address already in use (os error 98)
-			echo("[PROMPT] error from",name,error.message);
+			echo("[PROMPT] oh no error from",name,error.message);
+			delete slopConnections[name];
 			delete receivePromises[name];
 			continue;
-//			slopConnections.length=0;
-//			receivePromises={};
 //			throw(error); // this will cause a crash
 //			continue;
 		}
