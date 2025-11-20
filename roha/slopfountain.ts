@@ -21,7 +21,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.5.6, V8 14.0.365.5-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.5.7";
+const fountainVersion="1.6.0";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -869,7 +869,8 @@ async function flush() {
 	const send=[];
 	const delay=roha.config.slow ? slowMillis : 0;
 	for (const {line,from} of remoteBuffer) {
-		send.push(line);
+// muted on public channels		
+//		send.push(line); 
 		rohaPush(line,from);
 		await logForge(line,from);
 	}
@@ -1077,7 +1078,7 @@ function geminiTools(payload){
 }
 
 function prepareGeminiPrompt(payload){
-	const debugging=true;//roha.config.debugging;
+	const debugging=roha.config.debugging;
 	if(debugging) echo("[GEMINI] payload",payload);
 	const contents=[];
 	const sysparts=[];	// GenerateContentRequest systemInstruction content

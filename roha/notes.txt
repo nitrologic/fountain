@@ -1,3 +1,9 @@
+//		const fetched=await guild.members.fetch({withPresences:true});
+//		if(fetched){
+//		}else{
+//			splurt("discord fetch guild presence failure");
+
+
 e845acc [kimi-k2-0905] #You’re right—local console prompts hit `logForge` inside slopfountain, but the SSH path bypasses
 e845acc [kimi-k2-0905] #it.
 e845acc [kimi-k2-0905] #Quick patch: make sloppylisten echo the NDJSON it sends to Fountain and duplicate that line

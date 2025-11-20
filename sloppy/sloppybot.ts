@@ -27,12 +27,16 @@ function splurt(...data: any[]){
 
 // discord channel send
 
+const DumpChannel=true;
 const DumpGuild=false;
 
 let quoteCount=0;
 
 //let openChannel="1235838347717378118";
 let openChannel="1410693060672753704";
+
+
+let directChannels={};
 
 async function dumpChannel(channel){
 	if(channel && channel.guild && channel.guild.id){
@@ -44,30 +48,29 @@ async function dumpChannel(channel){
 			guild: channel.guild?.id
 		});
 		const guild:Guild = await discordClient.guilds.fetch(channel.guild.id);
-		splurt("discord guild",guild.memberCount);
-//		const fetched=await guild.members.fetch({withPresences:false});
-//		if(fetched){
+		splurt("guild",guild.name,guild.memberCount);
 		if(DumpGuild){
-			splurt("discord members",guild.memberCount);
 			for (const [id, member] of guild.members.cache) {
 				splurt("-",member.user.tag, member);
 			}	
 		}
-//		}else{
-//			splurt("discord fetch guild presence failure");
 	}
 }
 
 // rate guard required, a sleep 1500 ms currently in force on all writes
+// no recipients permissions at this time
 
 async function messageSloppy(message:string,from:string){
 	// suppress embeds
 	message = message.replace(/https\S+/g, "<$&>");
 	if(openChannel){
 		const channel = await discordClient.channels.fetch(openChannel);
-		await dumpChannel(channel);
+
+		if(DumpChannel)
+			await dumpChannel(channel);
+
 		if (channel?.isTextBased()) {
-			splurt("discord fetch",channel.name,channel.recipients,message.length);
+			splurt("discord fetch",channel.name,message.length);
 			const chunks=chunkContent(message,2000-400);
 			for(const chunk of chunks){
 //				const post=from+chunk;
@@ -230,6 +233,7 @@ const discordClient = new Client({
 		GatewayIntentBits.Guilds,
 //		GatewayIntentBits.GuildMembers,
 		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.DirectMessages,
 		GatewayIntentBits.MessageContent
 	]
 });
@@ -279,6 +283,10 @@ const AllUserCommands=[
 
 // content has BASE_TYPE_MAX_LENGTH = 4000
 discordClient.on('messageCreate', async (message) => {
+	if(message.channel.type==="DM") {
+		splurt("DM!");
+		return;
+	}
 	if (message.author.bot) return;
 	if (message.content === '!ping') {
 		await message.react("🦜");

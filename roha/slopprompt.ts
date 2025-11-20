@@ -26,7 +26,9 @@ let receivePromises={};
 
 //: Promise<{source:Deno.TcpConn, receive:Uint8Array}>[]=[];
 
-const decoderConnection=new TextDecoder("utf-8");
+const connectionDecoders = new Map<string, TextDecoder>();
+
+//const decoderConnection=new TextDecoder("utf-8");
 const rxBufferSize=1e6;
 const rxBuffer=new Uint8Array(rxBufferSize);
 const rxDecoder=new TextDecoder("utf-8",{stream:true});
@@ -513,10 +515,9 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			echo("[PROMPT] oh no error from",name,error.message);
 			delete slopConnections[name];
 			delete receivePromises[name];
-			continue;
-//			throw(error); // this will cause a crash
-//			continue;
+			throw(error); // this will cause a crash - an existing slop fountain process can cause this
 		}
+		// 
 		if (connection) {
 			if(name in receivePromises){
 				echo("promise already exists for",name);
@@ -524,6 +525,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			if(name in slopConnections){
 				echo("connection already exists for",name);
 			}
+			echo("connection listening on port 8081",name);
 			slopConnections.set(name,connection);
 			listenerPromise=listenPort(8081);
 			const receiver=readNamedConnection(name,connection);
