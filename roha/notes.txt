@@ -1,3 +1,8 @@
+"robotic_use_cases": "Agentic coding for robot behaviors; multimodal (vision+text) for scene understanding.",
+"key_optimizations_for_low_latency": "MoE (Mixture-of-Experts) for sparse activation; on-device tool-calling.",
+"est_latency_ttft_per_token": "<30ms / 8-12ms",
+"notes_sources": "Local/offline for bipeds; excels in long-horizon tasks like tidying (e.g., NEO robot).",
+
 //		const fetched=await guild.members.fetch({withPresences:true});
 //		if(fetched){
 //		}else{

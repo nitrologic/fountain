@@ -1737,7 +1737,10 @@ function mutName(modelname:string):string{
 	name=name.replace("-next","");
 // qwen3 trims
 	name=name.replace("-flash","");
-	name=name.replace("-realtime","");
+//	name=name.replace("-realtime","");
+// grok 4 trims
+	name=name.replace("-fast","");
+	name=name.replace("-non-reasoning","");
 //	name=name.replace("-generate","");
 	const namebits=name.split("-");
 	const muts=namebits.slice(0,3);
