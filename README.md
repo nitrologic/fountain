@@ -6,10 +6,9 @@
 
 Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
-Addressing 269 models from 7 providers <del>249 models from 8 providers</del> the LLM research 
-project Slop Fountain 1.5.5 ⛲ approaches connected.
+Addressing 281 models from 7 providers the LLM research project Slop Fountain 1.6.2 ⛲ approaches connected.
 
-Pleased to welcome and assign active model under test status to 🎉 Qwen3 Max and 🎉 Claude Haiku 4.5.
+Pleased to welcome and assign active model under test status to 🎉 Gemini 3 Pro<del>🎉Qwen3 Max and 🎉 Claude Haiku 4.5</del>.
 
 > Planet earth is blue and there is nothing I can do - David Bowie
 
@@ -29,6 +28,19 @@ Pleased to welcome and assign active model under test status to 🎉 Qwen3 Max a
 | 5 | 𝕏 | xai | 9 | $10.9298 | https://console.x.ai |
 | 6 | 🌟 | gemini | 50 | $-2.4094 | https://console.cloud.google.com/ |
 
+## Developer setup
+
+Install [Deno 2.4](https://deno.com/)
+
+## Blogs
+
+* [blog-sloppy](sloppy/sloppy.md) a discord bot calls home 
+* [blog-lab](lab/README.md) on the bench and in the sandbox - a bare metal MIPS R3000 tool chain side project
+* [blog-nitrologic](nitro/nitrologic.md) the sprawl - a stream of notions in recreational programming
+* [blog-slops](slop/blog2/blogust.md) 𐃅 recent test slop for fountain dwellers
+* [blog-fountain](slop/blog/blogfountain.md) recent fountain models under test
+* [blog-forge](https://github.com/nitrologic/forge/blob/main/blog.md) archived forge model under test
+
 ## SSH and Discord 
 
 ![](sloppy/sloppy.png)
@@ -39,7 +51,7 @@ The sloppy bot Deno worker joins [Discord Channel](https://discord.gg/e49ZhmQEjC
 
 Sloppy SSH endpoint in development - not currently available remotely. 
 
-## Recent Personal Usage
+## My Personal Usage
 
 Default Temperature in Slop Fountain reduced to 0.7. Breaks gpt-5-mini-2025-08-07.
 
@@ -83,19 +95,6 @@ The raw sloppy prompt mode is a low level keyboard driver designed to add new fe
 * [forge.md](roha/forge.md) Command Set
 * [plan.txt](roha/plan.txt) On the list
 * [license](LICENSE) Copyright (c) 2025 Simon Armstrong - MIT License
-
-# blog commentary
-
-* [blog-sloppy](sloppy/sloppy.md) a discord bot calls home 
-* [blog-lab](lab/README.md) on the bench and in the sandbox - a bare metal MIPS R3000 tool chain side project
-* [blog-nitrologic](nitro/nitrologic.md) the sprawl - a stream of notions in recreational programming
-* [blog-slops](slop/blog2/blogust.md) 𐃅 recent test slop for fountain dwellers
-* [blog-fountain](slop/blog/blogfountain.md) recent fountain models under test
-* [blog-forge](https://github.com/nitrologic/forge/blob/main/blog.md) archived forge model under test
-
-## Developer setup
-
-Install [Deno 2.4](https://deno.com/)
 
 ## Additional Llama support 
 
