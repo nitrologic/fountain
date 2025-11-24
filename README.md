@@ -51,7 +51,18 @@ The sloppy bot Deno worker joins [Discord Channel](https://discord.gg/e49ZhmQEjC
 
 Sloppy SSH endpoint in development - not currently available remotely. 
 
-## My Personal Usage
+## Latest Commits
+
+Added a robot 🤖 low latency boolean field to model spec.
+
+The raw sloppy prompt mode is a low level keyboard driver designed to add new features to Fountain input
+
+* shortcode :eyes: type : eyes :
+* tab support - huh, no wonder the vanilla Deno prompt() is tab free
+* history support - cursor up down to step through command history like a real shell
+* async cursor keys - prepare to fire cursor and extended key presses at slop workers in focus
+
+## Personal Usage August 2025
 
 Default Temperature in Slop Fountain reduced to 0.7. Breaks gpt-5-mini-2025-08-07.
 
@@ -79,15 +90,6 @@ The next is a line count of the models under test, my top 5 for August to date.
 * claude-sonnet-4 6637
 * grok-4-0709 1969
 * kimi-k2-0711 890
-
-## Latest Commits
-
-The raw sloppy prompt mode is a low level keyboard driver designed to add new features to Fountain input
-
-* shortcode :eyes: type : eyes :
-* tab support - huh, no wonder the vanilla Deno prompt() is tab free
-* history support - cursor up down to step through command history like a real shell
-* async cursor keys - prepare to fire cursor and extended key presses at slop workers in focus
 
 ## Researcher Links
 
