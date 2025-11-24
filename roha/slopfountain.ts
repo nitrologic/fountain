@@ -4,7 +4,7 @@
 
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space
 
-// ⛲🪣🐸🪠🐋🜁🐉🏛️❁𝕏🌟💫🌏📆💰👀🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 🌕🌙✿
+// ⛲🪣🐸🪠🐋🜁🐉🏛️❁𝕏🌟💫🌏📆💰👀🤖🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 🌕🌙✿
 
 import { discordStringWidth, stringWidth, announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
@@ -21,7 +21,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.5.6, V8 14.0.365.5-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.6.0";
+const fountainVersion="1.6.1";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -894,9 +894,17 @@ async function flush() {
 		send.push(md);
 	}
 	markdownBuffer=[];
-
+// TODO: sort out windows unicode paste error that crashes here
+//	const encoder=new TextEncoder();
+//	const decoder=new TextDecoder("utf-8");
 	for (const output of outputBuffer) {
-		console.log(output);
+		try{
+			console.log(output);
+		}catch(e){
+//			const encoded=encoder.encode(output);
+//			const clean=decoder.decode(encoded);
+			console.error("[CRASH] binary data in outputBuffer");
+		}
 		const lines=output.split("\n");
 		for(const line of lines){
 			if(line.length){
@@ -2842,8 +2850,8 @@ async function openCommand(words){
 
 // modelCommand - list table of models
 
-const modelKeys="👀👄"+Pail+"🧊❃";
-const modelKey={"👀":"Vision","👄":"Speech","🪣":"Tools","🧊":"Frigid","❃":"Active"};
+const modelKeys="👀🤖👄"+Pail+"🧊❃";
+const modelKey={"👀":"Vision","🤖":"Low Latency","👄":"Speech","🪣":"Tools","🧊":"Frigid","❃":"Active"};
 
 async function modelCommand(words){
 	let name=words[1];
@@ -2878,6 +2886,7 @@ async function modelCommand(words){
 			if(info.active) notes.push(activeChar);
 			if(info.cold) notes.push("🧊");
 			if(info.multi) notes.push("👀");
+			if(info.robot) notes.push("🤖");
 			if(speech) notes.push("👄");
 //			if(info.strict) notes.push("🌪️");
 //			if(info.inline) notes.push("📘");
@@ -2924,7 +2933,7 @@ async function attachMedia(words){
 	}
 }
 
-const glyphs=" ⛲🪣🐸🪠🐋🐉🌟💫🌏📆💰👀🫦💻👄🔧🧊🔉📷📡🧮📠⛅🧰🌕🌙🏛️🎙️🖼️🗣️🗜️👁𝕏⣯🜁❁❃⚙️✿";
+const glyphs=" ⛲🪣🐸🪠🐋🐉🌟💫🌏📆💰👀🤖🫦💻👄🔧🧊🔉📷📡🧮📠⛅🧰🌕🌙🏛️🎙️🖼️🗣️🗜️👁𝕏⣯🜁❁❃⚙️✿";
 function testUnicode(){
 	echo("```")
 	echo("|1234|");

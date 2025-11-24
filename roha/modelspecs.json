@@ -95,6 +95,7 @@
 	}
 	,
 	"qwen3-omni-flash-realtime@alibaba":{
+		"robot":true,
 		"released": "2025-09-23",
 		"pricing":[0.52,3.67],
 		"purpose":"Clean the house."
@@ -161,7 +162,8 @@
 	}
 	,
 	"gpt-realtime-2025-08-28@openai": {
-		"deprecated":true,
+		"robot":true,
+		"multi":true,
 		"released": "2025-08-28",
 		"pricing":[32,64],
 		"purpose":"speech-to-speech voice agents",
@@ -300,6 +302,12 @@
 		"deprecated":true,
 		"pricing":[75.00,37.50,150.00],
 		"purpose":"burn money"
+	},
+	"models/gemini-robotics-er-1.5-preview@gemini":{
+		"robot":true,
+		"pricing":[0.30,2.50],
+		"released":"2025-9-25",
+		"purpose":"low-latency robotics control and autonomous agent tasks"
 	},
 	"models/gemini-3-pro-preview@gemini":{
 		"pricing":[2.00,0.20,12.0],
