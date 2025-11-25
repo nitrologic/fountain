@@ -58,7 +58,7 @@ let slopListener=null;
 
 async function listenPort(port:number){
 	if(!slopListener){
-		//echo("listening from fountain for slop on port",port);
+		echo("[PROMPT] listening for slop on port",port);
 		try{
 			slopListener=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
 		}catch(error){
@@ -69,10 +69,10 @@ async function listenPort(port:number){
 	try{
 		const connection=await slopListener.accept();
 		const name="connection"+(connectionCount++);
-		echo("Accepted ",name);
+		echo("[PROMPT] accepted connection",name);
 		return {connection,name};
 	}catch(error){
-		echo("listenPort await failure",port);
+		echo("[PROMPT] listenPort await failure",port);
 		slopListener = null;
 		// TODO: short circuit - Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
 		return {error:error};
@@ -525,7 +525,6 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			if(name in slopConnections){
 				echo("connection already exists for",name);
 			}
-			echo("connection listening on port 8081",name);
 			slopConnections.set(name,connection);
 			listenerPromise=listenPort(8081);
 			const receiver=readNamedConnection(name,connection);

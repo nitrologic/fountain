@@ -8,7 +8,7 @@
 
 const AppVersion="Slop Studio 0.2"
 const AppBanner=AppVersion+" ©2025 nitrologic All Rights Reserved";
-const AppAbout="a boot";
+const AppAbout="Insert Key to Post";
 
 let PollSession=false;
 
@@ -344,6 +344,7 @@ function onLoad(){
 	initLog();
 	initPrompt();
 	log(AppBanner);
+	log(AppAbout);
 	refreshSession();
 }
 
