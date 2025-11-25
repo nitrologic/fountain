@@ -1,6 +1,6 @@
-[![Discord](https://img.shields.io/discord/GUILD_ID?label=discord&logo=discord)](https://discord.gg/xkSVNT2xYR)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 [![Deno](https://img.shields.io/badge/deno-2.4.2-black?logo=deno)](https://deno.land/)
+[![Discord](https://img.shields.io/discord/GUILD_ID?label=discord&logo=discord)](https://discord.gg/xkSVNT2xYR)
 
 # ꕶLOP Fountain ⛲
 
@@ -31,6 +31,13 @@ Pleased to welcome and assign active model under test status to 🎉 Gemini 3 Pr
 ## Developer setup
 
 Install [Deno 2.4](https://deno.com/)
+
+### Researcher Links
+
+* [fountain.md](roha/fountain.md) Configuration
+* [forge.md](roha/forge.md) Command Set
+* [plan.txt](roha/plan.txt) On the list
+* [license](LICENSE) Copyright (c) 2025 Simon Armstrong - MIT License
 
 ## Blogs
 
@@ -90,10 +97,3 @@ The next is a line count of the models under test, my top 5 for August to date.
 * claude-sonnet-4 6637
 * grok-4-0709 1969
 * kimi-k2-0711 890
-
-## Researcher Links
-
-* [fountain.md](roha/fountain.md) Configuration
-* [forge.md](roha/forge.md) Command Set
-* [plan.txt](roha/plan.txt) On the list
-* [license](LICENSE) Copyright (c) 2025 Simon Armstrong - MIT License
