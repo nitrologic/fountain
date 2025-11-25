@@ -6,7 +6,7 @@
 
 // ⛲🪣🐸🪠🐋🜁🐉🏛️❁𝕏🌟💫🌏📆💰👀🤖🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 🌕🌙✿
 
-import { discordStringWidth, stringWidth, announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
+import { safeString, discordStringWidth, stringWidth, announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
 import { OpenAI, ChatCompletionRequest, ChatCompletionResponse } from "jsr:@openai/openai@5.23.0";
 
@@ -2306,6 +2306,7 @@ async function resetRoha(){
 	resetHistory();
 	echo("resetRoha","All shares and history reset. Resetting model.");
 	await resetModel(roha.model||defaultModel);
+	// log still fill
 }
 
 function resolvePath(dir,filename){
@@ -4042,8 +4043,10 @@ async function chat() {
 							continue;
 						}
 						if(m.message){
+							const safe=safeString(m.message);
+							if(safe!=m.message) echo("unsafestring");
 							lines.push(m.message);
-							logForge(m.message,m.from);
+							logForge(safe,m.from);
 						}
 					}
 					break;

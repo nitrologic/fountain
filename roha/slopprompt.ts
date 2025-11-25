@@ -5,8 +5,15 @@
 // uses winner=await Promise.race(race) logic to maintain communications
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space - sorry
 // no abort controllers if you don't mind
+// may crash on complex paste on windows - work in progress
 
 const vscodeNonce=Deno.env.get("VSCODE_NONCE")||Deno.env.get("VSCODE_INJECTION")||"";
+
+export function safeString(raw:any):string{
+	if (raw === null || raw === undefined) return '';
+	if (typeof raw === 'string') return raw;
+	return raw.toString();
+}
 
 //__vsc_nonce=d21c4091-f036-4908-bdcc-5e653abb076b
 
@@ -115,6 +122,10 @@ export async function slopBroadcast(text:string,from:string){
 	// fix content with only \n
 	if(text && from){
 		const message=text.replaceAll("\r\n","\n").replaceAll("\n","\r\n");
+		const safe=safeString(message);
+		if(safe!=message){
+			echo("[PROMPT] slopBroadcast unsafe");
+		}
 		const json=JSON.stringify({messages:[{message,from}]},null,0);
 		// NDJSON is the rule
 		const bytes=encoder.encode(json+"\n");
@@ -554,9 +565,12 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					}
 					if(blob.messages){
 						for(const message of blob.messages){
-							// todo: safeguard reckless behavior
-							// echo("receivePromise",message);
-							messages.push({message:message.message,from:message.from});
+							const safe=safeString(message);
+							if(safe!=message){
+								echo("[PROMPT] unsafe string");
+
+							}
+							messages.push({message:safe,from:message.from});
 						}
 					}
 				}catch(error){
@@ -569,7 +583,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			}
 			continue;
 		}
-
+		// under investigation
 		readPromise=null;
 		busy=true;
 		if (done || !value) break;
