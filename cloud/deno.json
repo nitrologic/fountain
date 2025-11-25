@@ -1,6 +1,6 @@
 {
 	"nodeModulesDir": "auto",
 	"tasks":{
-		"s3": "deno run --allow-net s3.ts"
+		"s3": "deno run --allow-read --allow-env --allow-net s3.ts"
     }
 }
