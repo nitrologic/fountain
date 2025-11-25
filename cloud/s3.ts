@@ -7,3 +7,10 @@ const result = await s3.send(new ListObjectsV2Command({Bucket: "dsp-nitro"}));
 console.log(result.Contents);
 
 console.log("aws s3 fountain pipe 0.1");
+
+
+const out = await s3.send(new GetObjectCommand({Bucket: "dsp-nitro",Key: "surfsail.png"}));
+const bytes = await out.Body?.transformToByteArray();
+await Deno.writeFile("surfsail.png", bytes);
+
+console.log("File saved locally");
