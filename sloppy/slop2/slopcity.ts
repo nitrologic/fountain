@@ -6,7 +6,7 @@
 import { serveFile } from "https://deno.land/std@0.224.0/http/file_server.ts";                                                                                                                                                                             
 
 const slopPid=Deno.pid;
-const sessionName="slopfiles"+slopPid;
+const sessionName="slopcity"+slopPid;
 let sessionCount=0;
 let slopMessage="";	// guard against repeating results
 

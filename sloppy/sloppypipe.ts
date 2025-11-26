@@ -1,0 +1,123 @@
+// sloppylisten.ts - a sloppy ssh telnet server for Slop Fountain
+// Copyright (c) 2025 Simon Armstrong
+
+// Licensed under the MIT License - See LICENSE file
+
+//import { Client } from "https://deno.land/x/ssh2@0.9.0/mod.ts";
+import { readFileSync } from "node:fs";
+
+import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
+
+export const ANSI={
+	Reset:"\x1BC",
+	Defaults:"\x1B[0m",//"\x1B[39;49m",//\x1B[0m",
+	Clear:"\x1B[2J",
+	Home:"\x1B[H",
+	White:"\x1B[37m",
+	NavyBackground:"\x1b[48;5;24m",
+	Aqua:"\x1B[38;5;122m",
+	Pink:"\x1B[38;5;206m",
+	HideCursor:"\x1b[?25l",
+	ShowCursor:"\x1b[?25h",
+	Cursor:"\x1B["//+ row + ";1H"
+}
+
+const sloppyStyle=ANSI.NavyBackground+ANSI.White+ANSI.Clear;
+
+const sloppyLogo="✴ slopcity";
+const sloppyPipeVersion=0.8;
+
+// raw key handling work in progress
+// ssh-keygen -t rsa -f hostkey_rsa -N ''.
+
+// TODO: make multi planetary
+const HomeDir=Deno.env.get("HOME")||Deno.env.get("HOMEPATH");
+
+//const rsaPath=HomeDir+"/.ssh/id_rsa";
+//const rsaPath=HomeDir+"/fountain_key_skidnz"
+// sloppyNet uses slopfeed workers in a responsible manner
+
+const connections={};
+const users={};
+
+let slopPail:unknown[]=[];
+let connectionCount=0;
+let sessionCount=0;
+let connectionClosed=0;
+
+const greetings=[sloppyStyle,"Welcome to ",sloppyLogo,sloppyPipeVersion].join("");
+const notice="type exit to quit";
+
+function logSlop(_result:any) {
+	const message=JSON.stringify(_result);
+	console.error("[LISTEN]",message);
+	slopPail.push(message);
+}
+
+async function sleep(ms:number) {
+	await new Promise(function(resolve) {setTimeout(resolve,ms);});
+}
+
+const encoder=new TextEncoder();
+async function writeSloppy(message:string,from:string){
+	const text="["+from+"] "+message+"\r\n";
+	for(const key of Object.keys(connections)){
+		const session=connections[key];
+		await session.print(text);
+	}
+}
+
+export async function onFountain(message:string){
+	const line=message;
+	if(line.startsWith("/announce ")){
+		const message=line.substring(10);
+		await writeSloppy(message,"fountain");
+	}
+	if(line.startsWith("{")||line.startsWith("[")){
+		try{
+			let cursor=0;
+			while(cursor<line.length){
+				const delim=line.indexOf("}\n{",cursor);// less than healthy
+				const json=(delim==-1)?line.substring(cursor):line.substring(cursor,delim+1);
+				cursor+=json.length;
+				const payload=JSON.parse(json);
+				for(const {message,from} of payload.messages){
+					await writeSloppy(message,from);
+				}
+			}
+		}catch(error){
+			console.log("JSON parse error",error);
+			console.log("JSON parse error",line);
+		}
+	}else{
+		console.log("non json line",line);
+	}
+}
+try {
+	await connectFountain();
+	await writeFountain('{"action":"connect"}');
+	let portPromise=readFountain();
+	let systemPromise=readSystem();
+
+	while(true){
+		const race=[portPromise,systemPromise];
+		const result=await Promise.race(race);
+		if (result == null) break;
+
+		if(result.system) {
+			await onSystem(result.system);
+			systemPromise=readSystem();
+		}
+		if(result.message) {
+			await onFountain(result.message);
+			portPromise=readFountain();
+		}
+		await sleep(500);
+	}
+} catch (error) {
+	console.error("Error in main loop:",error);
+} finally {
+	console.log("bye");
+	disconnectFountain();
+	Deno.exit(0);
+}

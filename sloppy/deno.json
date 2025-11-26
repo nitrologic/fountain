@@ -5,6 +5,10 @@
 		"sloppylisten": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppylisten.ts",
 		"sloppynet": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppynet.ts",
 		"sloppyhost": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppyhost.ts",
+		"sloppypipe": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppypipe.ts",
+		"pipe":{
+			"dependencies":["sloppypipe"]
+		},
 		"host":{
 			"dependencies":["sloppyhost"]
 		},

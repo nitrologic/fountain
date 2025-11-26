@@ -67,7 +67,7 @@ let readingSlop:boolean=false;
 async function readFountain(){
 	if(!slopPipe) return;
 	readingSlop=true;
-	echo(readingSlop);
+	echo("readingSlop");
 	let n=null;
 	try{
 		n = await slopPipe.read(rxBuffer);

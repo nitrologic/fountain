@@ -55,7 +55,7 @@ function onLocalEvent(e){
 function flushLocalEvents(){
 	const events=localEventQueue;
 	localEventQueue=[];
-	return [];//events;
+	return events;
 }
 
 function onRemoteEvent(src,handler){
@@ -210,7 +210,11 @@ function onTick(tick){
 	pollMillis=millis;
 //	var index=tick.index;
 	for(const message of tick.messages){
-		// someone was here
+		const request=JSON.parse(message);
+		for(const result of request.result){
+			const packet=JSON.parse(result);
+			log(packet);
+		}
 	}
 	if(PollSession){
 		pollSession();
@@ -311,14 +315,15 @@ function initLog(){
 
 function onKeydown(e){
 	const keycode=e.code;
-	if(keycode=="Insert"){
+	if(keycode=="Insert" || (e.shiftKey==false && keycode=="Enter")){ //"Return"
 		const text=promptBox.value;
+		promptBox.setSelectionRange(0, 0);		
 		promptBox.value="";
+		e.preventDefault();
 		if(text){
 			log("[STUDIO]",text);
 			queueMessage(text);
 // todo: send prompt to sloppipe connection
-
 		}
 	}
 }
