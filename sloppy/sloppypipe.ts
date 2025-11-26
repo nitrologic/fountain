@@ -76,16 +76,42 @@ export async function onFountainPipe(message:string){
 	}
 }
 
-// ssh stuff is out, basic pipe to fit3 process is in
+function onConnection(conn) {
+    connections[conn.rid] = createSession(conn.w);
+    connectionCount++;
+    writeGreeting(conn.w);
+    processClientStream(conn.r, conn.rid);
+}
+
+function startConnectionListener(server, resolve) {
+    function listenerLoop() {
+        (async function() {
+            for await (const conn of server) {
+                onConnection(conn);
+                resolve(conn);
+                break;
+            }
+        })();
+    }
+    listenerLoop();
+}
+
+function openSloppyPipe() {
+	const server = Deno.listen({transport: "unix", path: "/tmp/sloppy.sock"});
+	return new Promise(function(resolve) {
+		startConnectionListener(server, resolve);
+	});
+}
 
 try {
 	await connectFountain();
 	await writeFountain('{"action":"connect"}');
 	let portPromise=readFountain();
 	let systemPromise=readSystem();
+	let pipePromise=openSloppyPipe();
 
 	while(true){
-		const race=[portPromise,systemPromise];
+		const race=[portPromise,systemPromise,pipePromise];
 		const result=await Promise.race(race);
 		if (result == null) break;
 //		console.log("[PIPE] race result",result);
