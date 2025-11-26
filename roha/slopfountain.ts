@@ -4043,10 +4043,10 @@ async function chat() {
 							continue;
 						}
 						if(m.message){
-							const safe=safeString(m.message);
-							if(safe!=m.message) echo("unsafestring");
-							lines.push(m.message);
-							logForge(safe,m.from);
+							// TODO: enforce message content rules
+							const content=m.message.content||m.message.message||JSON.stringify(m.message)||"<nocontent>";
+							lines.push(content);
+							logForge(content,m.from);
 						}
 					}
 					break;

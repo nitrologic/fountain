@@ -12,6 +12,9 @@ const vscodeNonce=Deno.env.get("VSCODE_NONCE")||Deno.env.get("VSCODE_INJECTION")
 export function safeString(raw:any):string{
 	if (raw === null || raw === undefined) return '';
 	if (typeof raw === 'string') return raw;
+	console.log("[UNSAFE]",raw.toString());
+	const error=new Error("BAD STRING");
+	console.log("error",error);
 	return raw.toString();
 }
 
@@ -565,12 +568,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 					}
 					if(blob.messages){
 						for(const message of blob.messages){
-							const safe=safeString(message);
-							if(safe!=message){
-								echo("[PROMPT] unsafe string");
-
-							}
-							messages.push({message:safe,from:message.from});
+							messages.push({message,from:message.from});
 						}
 					}
 				}catch(error){
