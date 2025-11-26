@@ -1,0 +1,15 @@
+C:\nitrologic\fountain>echo off 
+Hosting SlopCity  
+Task sloppyhost deno run --allow-run --allow-net --allow-env --allow-sys --allow-read sloppyhost.ts
+Listening on http://localhost:8000/
+[HOLE] slopPipe connected localhost:8081
+[HOST] {"connected":true}
+[HOLE] wrote {"slop":["slopfiles28776 server says hello into the slop hole"]}
+[HOLE] true
+[HOST] sys.info {"jsonrpc":"2.0","id":1,"result":{"hostName":"ryzen5","userName":"nitro","platform":"Windows 10.0.26200","session":"slopfiles28776.1"}}
+[HOST] {"request":{"jsonrpc":"2.0","id":2,"method":"sys.tick","params":{"session":"slopfiles28776.1","tick":0,"events":[]}},"result":["{\"connected\":true}"]}
+[HOST] sys.tick {"jsonrpc":"2.0","id":2,"result":{"messages":["{\"connected\":true}"]}}
+[HOST] {"request":{"jsonrpc":"2.0","id":3,"method":"sys.tick","params":{"session":"slopfiles28776.1","tick":1,"events":[]}},"result":["{\"request\":{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles28776.1\",\"tick\":0,\"events\":[]}},\"result\":[\"{\\\"connected\\\":true}\"]}"]}
+[HOST] sys.tick {"jsonrpc":"2.0","id":3,"result":{"messages":["{\"request\":{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles28776.1\",\"tick\":0,\"events\":[]}},\"result\":[\"{\\\"connected\\\":true}\"]}"]}}
+[HOST] {"request":{"jsonrpc":"2.0","id":4,"method":"sys.tick","params":{"session":"slopfiles28776.1","tick":2,"events":[]}},"result":["{\"request\":{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles28776.1\",\"tick\":1,\"events\":[]}},\"result\":[\"{\\\"request\\\":{\\\"jsonrpc\\\":\\\"2.0\\\",\\\"id\\\":2,\\\"method\\\":\\\"sys.tick\\\",\\\"params\\\":{\\\"session\\\":\\\"slopfiles28776.1\\\",\\\"tick\\\":0,\\\"events\\\":[]}},\\\"result\\\":[\\\"{\\\\\\\"connected\\\\\\\":true}\\\"]}\"]}"]}
+[HOST] sys.tick {"jsonrpc":"2.0","id":4,"result":{"messages":["{\"request\":{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles28776.1\",\"tick\":1,\"events\":[]}},\"result\":[\"{\\\"request\\\":{\\\"jsonrpc\\\":\\\"2.0\\\",\\\"id\\\":2,\\\"method\\\":\\\"sys.tick\\\",\\\"params\\\":{\\\"session\\\":\\\"slopfiles28776.1\\\",\\\"tick\\\":0,\\\"events\\\":[]}},\\\"result\\\":[\\\"{\\\\\\\"connected\\\\\\\":true}\\\"]}\"]}"]}}

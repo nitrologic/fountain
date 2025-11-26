@@ -14,6 +14,10 @@ let slopMessage="";	// guard against repeating results
 
 let slopPail:unknown[]=[];
 
+function sloppyEvent(message:string){
+	slopPail.push({content:message,from:"sloppyhost"});
+}
+
 function logSlop(_result:any){
 	const message=JSON.stringify(_result);
 	if(message!=slopMessage){
