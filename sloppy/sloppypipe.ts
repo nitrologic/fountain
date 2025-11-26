@@ -67,32 +67,17 @@ async function writeSloppy(message:string,from:string){
 	}
 }
 
-export async function onFountain(message:string){
-	const line=message;
-	if(line.startsWith("/announce ")){
-		const message=line.substring(10);
-		await writeSloppy(message,"fountain");
-	}
-	if(line.startsWith("{")||line.startsWith("[")){
-		try{
-			let cursor=0;
-			while(cursor<line.length){
-				const delim=line.indexOf("}\n{",cursor);// less than healthy
-				const json=(delim==-1)?line.substring(cursor):line.substring(cursor,delim+1);
-				cursor+=json.length;
-				const payload=JSON.parse(json);
-				for(const {message,from} of payload.messages){
-					await writeSloppy(message,from);
-				}
-			}
-		}catch(error){
-			console.log("JSON parse error",error);
-			console.log("JSON parse error",line);
-		}
-	}else{
-		console.log("non json line",line);
+export async function onFountainPipe(message:string){
+	const blob=JSON.parse(message);
+	for(const message of blob.messages){
+		const line=message.message||message.content||"[BLANK]";
+		const from=message.from;
+		console.log("["+from+"] "+line);
 	}
 }
+
+// ssh stuff is out, basic pipe to fit3 process is in
+
 try {
 	await connectFountain();
 	await writeFountain('{"action":"connect"}');
@@ -103,13 +88,13 @@ try {
 		const race=[portPromise,systemPromise];
 		const result=await Promise.race(race);
 		if (result == null) break;
-
+//		console.log("[PIPE] race result",result);
 		if(result.system) {
 			await onSystem(result.system);
 			systemPromise=readSystem();
 		}
 		if(result.message) {
-			await onFountain(result.message);
+			await onFountainPipe(result.message);
 			portPromise=readFountain();
 		}
 		await sleep(500);

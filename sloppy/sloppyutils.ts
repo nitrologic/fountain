@@ -18,10 +18,10 @@ const quotes=[
 const systemDecoder = new TextDecoder();
 export async function onSystem(rx:Uint8Array){
 	const message:string=systemDecoder.decode(rx);
-	const lines=message.split("\r\n");
+	const lines=message.split("\n"); // sloppypipe was here ("\r\n");
 	lines.pop();//ignore the incomplete
 	for(const line of lines){
-		console.log("[STDIO]",line);
+//		console.log("[STDIO]",line);
 		if(line=="exit") Deno.exit(0);
 		if(line.startsWith("/announce ")){
 			const message=line.substring(10);
@@ -29,7 +29,9 @@ export async function onSystem(rx:Uint8Array){
 //			await postSloppyBot(client,message,"system");
 		}
 		if(!line.startsWith("/")){
-			await writeFountain(line);
+			const messages=[{message:line,from:"system"}];
+			await writeFountain(JSON.stringify({messages}));
+//			await writeFountain(line);
 		}
 	}
 }
@@ -191,7 +193,7 @@ function wrapMarkdown(md:string,cols:number) {
 // fountain connection goes PEEP
 
 function echo(...data: any[]){
-	console.error("[FEEP]",data);
+	console.error("[PEEP]",data);
 }
 
 const encoder = new TextEncoder();
@@ -203,7 +205,7 @@ export async function writeFountain(message:string){
 		const written = await slopPipe.write(data.subarray(offset));
 		offset += written;
 	}
-	echo("wrote",message);
+//	echo("wrote",message);
 }
 
 let slopPipe:Deno.Conn;
