@@ -8,6 +8,8 @@ import { readFileSync } from "node:fs";
 
 import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
 
+const sockPath="/tmp/sloppy4.sock";
+
 export const ANSI={
 	Reset:"\x1BC",
 	Defaults:"\x1B[0m",//"\x1B[39;49m",//\x1B[0m",
@@ -47,12 +49,6 @@ let connectionClosed=0;
 
 const greetings=[sloppyStyle,"Welcome to ",sloppyLogo,sloppyPipeVersion].join("");
 const notice="type exit to quit";
-
-function logSlop(_result:any) {
-	const message=JSON.stringify(_result);
-	console.error("[LISTEN]",message);
-	slopPail.push(message);
-}
 
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve,ms);});
@@ -96,11 +92,21 @@ function startConnectionListener(server, resolve) {
     listenerLoop();
 }
 
+let sloppySocket=null;
+
 function openSloppyPipe() {
-	const server = Deno.listen({transport: "unix", path: "/tmp/sloppy.sock"});
+	// assert sloppySocket is null
+	sloppySocket = Deno.listen({transport: "unix", path: sockPath});
 	return new Promise(function(resolve) {
-		startConnectionListener(server, resolve);
+		startConnectionListener(sloppySocket, resolve);
 	});
+}
+
+function closeSloppyPipe(){
+	if(sloppySocket){
+		sloppySocket.close();
+		sloppySocket=null;
+	}
 }
 
 try {
@@ -114,7 +120,7 @@ try {
 		const race=[portPromise,systemPromise,pipePromise];
 		const result=await Promise.race(race);
 		if (result == null) break;
-//		console.log("[PIPE] race result",result);
+		console.log("[PIPE] race result",result);
 		if(result.system) {
 			await onSystem(result.system);
 			systemPromise=readSystem();
@@ -128,7 +134,8 @@ try {
 } catch (error) {
 	console.error("Error in main loop:",error);
 } finally {
-	console.log("bye");
+	console.log("[PIPE] bye");
 	disconnectFountain();
+	closeSloppyPipe();
 	Deno.exit(0);
 }
