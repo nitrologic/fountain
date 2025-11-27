@@ -1,18 +1,19 @@
-// sloppylisten.ts - a sloppy ssh telnet server for Slop Fountain
+// sloppypipe.ts - a socket server for Slop Fountain
 // Copyright (c) 2025 Simon Armstrong
 
 // Licensed under the MIT License - See LICENSE file
 
-//import { Client } from "https://deno.land/x/ssh2@0.9.0/mod.ts";
-import { readFileSync } from "node:fs";
+import {onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
 
-import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
+const sloppypipeName="SloppyPipe";
+const sloppypipeVersion="1.2.1";
 
 const sockPath="/tmp/sloppy.sock";
 
-const brandSloppyPipe="SloppyPipe";
-const sloppypipeVersion="1.1.0";
-const appDetails=brandSloppyPipe+" "+sloppypipeVersion+" @ "+sockPath;
+const appDetails=sloppypipeName+" "+sloppypipeVersion+" @ "+sockPath;
+const greetings=["Welcome to",sloppypipeName,sloppypipeVersion].join(" ");
+const notice="type exit to quit";
+
 
 console.log(appDetails);
 
@@ -57,31 +58,12 @@ class SocketSession{
 		const connection=this.connection;
 		return readStream(connection);
 	}
-	async print(text){
+	async print(text:string){
 		const bytes=this.encoder.encode(text);
 		// TODO: check partial writes
 		await this.connection.write(bytes);
 	}
 };
-
-export const ANSI={
-	Reset:"\x1BC",
-	Defaults:"\x1B[0m",//"\x1B[39;49m",//\x1B[0m",
-	Clear:"\x1B[2J",
-	Home:"\x1B[H",
-	White:"\x1B[37m",
-	NavyBackground:"\x1b[48;5;24m",
-	Aqua:"\x1B[38;5;122m",
-	Pink:"\x1B[38;5;206m",
-	HideCursor:"\x1b[?25l",
-	ShowCursor:"\x1b[?25h",
-	Cursor:"\x1B["//+ row + ";1H"
-}
-
-const sloppyStyle=ANSI.NavyBackground+ANSI.White+ANSI.Clear;
-
-const sloppyLogo="✴ slopcity";
-const sloppyPipeVersion=0.8;
 
 const connections: Record<string, SocketSession> = {};
 
@@ -89,9 +71,6 @@ let slopPail:unknown[]=[];
 let connectionCount=0;
 let sessionCount=0;
 let connectionClosed=0;
-
-const greetings=[sloppyStyle,"Welcome to ",sloppyLogo,sloppyPipeVersion].join("");
-const notice="type exit to quit";
 
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve,ms);});
@@ -120,6 +99,7 @@ async function onConnection(connection) {
 	const session = new SocketSession(connection);
 	connections[rid]=session;
 	connectionCount++;
+	await session.print(greetings+"\r\n");
 	return session.read();
 
 }

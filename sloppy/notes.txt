@@ -1,3 +1,6 @@
+$ nc -U /tmp/sloppy.sock
+
+
 Task sloppypipe deno run --allow-write --allow-run --allow-net --allow-env --allow-sys --allow-read sloppypipe.ts
 [PEEP] [ "connected", "localhost:8081" ]
 123
