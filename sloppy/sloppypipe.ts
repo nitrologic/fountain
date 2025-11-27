@@ -8,7 +8,55 @@ import { readFileSync } from "node:fs";
 
 import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
 
-const sockPath="/tmp/sloppy4.sock";
+const sockPath="/tmp/sloppy5.sock";
+
+const brandSloppyPipe="SloppyPipe";
+const sloppypipeVersion="1.0.0";
+const appDetails=brandSloppyPipe+" "+sloppypipeVersion;
+console.log(appDetails);
+
+async function readStream(reader, rid) {
+	const decoder = new TextDecoder();
+	const session = connections[rid];
+	try {
+		for await (const chunk of reader) {
+			const text = decoder.decode(chunk);
+			const line = text.trim();
+
+			if (line === 'exit') {
+				await session.print('Goodbye!\r\n');
+				delete connections[rid];
+				break;
+			}
+
+			if (line.length) {
+				// Send to fountain (no loopback)
+				const blob = {messages: [{message: line, from: 'pipe:' + rid}]};
+				await writeFountain(JSON.stringify(blob) + '\n');
+			}
+		}
+	} catch (err) {
+		console.error('Stream error:', err);
+	} finally {
+		delete connections[rid];
+	}
+}
+
+class SocketSession{
+	constructor(conn){
+		this.encoder=new TextEncoder();
+		this.connection=conn;
+	}
+	async read(){
+		const conn=this.connection;
+		return readStream(conn.r, conn.rid);
+	}
+	async print(text){
+		const bytes=this.encoder.encode(text);
+		// TODO: check partial writes
+		await this.connection.w(bytes);
+	}
+};
 
 export const ANSI={
 	Reset:"\x1BC",
@@ -72,24 +120,24 @@ export async function onFountainPipe(message:string){
 	}
 }
 
-function onConnection(conn) {
-    connections[conn.rid] = createSession(conn.w);
-    connectionCount++;
-    writeGreeting(conn.w);
-    processClientStream(conn.r, conn.rid);
+async function onConnection(connection) {
+	const rid=connection.rid;
+	const session = new SocketSession(connection);
+	connections[rid]=session;
+	connectionCount++;
+	return session.read();
+
 }
 
 function startConnectionListener(server, resolve) {
-    function listenerLoop() {
-        (async function() {
-            for await (const conn of server) {
-                onConnection(conn);
-                resolve(conn);
-                break;
-            }
-        })();
-    }
-    listenerLoop();
+	function listenerLoop() {
+		(async function() {
+			for await (const connection of server) {
+				onConnection(connection);
+			}
+		})();
+	}
+	listenerLoop();
 }
 
 let sloppySocket=null;
@@ -120,7 +168,7 @@ try {
 		const race=[portPromise,systemPromise,pipePromise];
 		const result=await Promise.race(race);
 		if (result == null) break;
-		console.log("[PIPE] race result",result);
+//		console.log("[PIPE] race result",result);
 		if(result.system) {
 			await onSystem(result.system);
 			systemPromise=readSystem();
