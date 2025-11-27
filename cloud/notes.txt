@@ -1,0 +1,13 @@
+$ nc -U /tmp/sloppy.sock
+testing sloppy pipe 1
+```
+Should appear in fountain AND get echoed back to the pipe client.
+
+Want me to provide the full corrected main loop?
+[slop] > - ꔀ Fountain 1.6.2 ⛲  grok-4-1 𝕏 🪠 0.7° $0.001 5.972KB 5.02s
+Stream error: TypeError: Cannot read properties of undefined (reading 'Symbol(Symbol.asyncIterator)')
+    at readStream (file:///Users/simon/fountain/sloppy/sloppypipe.ts:23:29)
+    at SocketSession.read (file:///Users/simon/fountain/sloppy/sloppypipe.ts:53:10)
+    at onConnection (file:///Users/simon/fountain/sloppy/sloppypipe.ts:129:17)
+    at file:///Users/simon/fountain/sloppy/sloppypipe.ts:137:5
+    at eventLoopTick (ext:core/01_core.js:178:7)

@@ -8,31 +8,37 @@ import { readFileSync } from "node:fs";
 
 import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFountain,connectFountain} from "./sloppyutils.ts";
 
-const sockPath="/tmp/sloppy5.sock";
+const sockPath="/tmp/sloppy.sock";
 
 const brandSloppyPipe="SloppyPipe";
 const sloppypipeVersion="1.0.0";
-const appDetails=brandSloppyPipe+" "+sloppypipeVersion;
+const appDetails=brandSloppyPipe+" "+sloppypipeVersion+" @ "+sockPath;
+
 console.log(appDetails);
 
-async function readStream(reader, rid) {
+async function readStream(connection) {
+	const rid=connection.rid;
 	const decoder = new TextDecoder();
 	const session = connections[rid];
+	if (!session) return;
+	const buffer = new Uint8Array(1024);
 	try {
-		for await (const chunk of reader) {
-			const text = decoder.decode(chunk);
-			const line = text.trim();
-
-			if (line === 'exit') {
-				await session.print('Goodbye!\r\n');
-				delete connections[rid];
-				break;
-			}
-
-			if (line.length) {
-				// Send to fountain (no loopback)
-				const blob = {messages: [{message: line, from: 'pipe:' + rid}]};
-				await writeFountain(JSON.stringify(blob) + '\n');
+		while (true) {
+			const n = await connection.read(buffer);
+			if (n === null) break; // EOF
+			const text = decoder.decode(buffer.subarray(0, n));
+			const lines = text.split('\n');
+			for (const line of lines) {
+				const trimmed = line.trim();
+				if (trimmed === 'exit') {
+					await session.print('SloppyPipe Closed\r\n');
+					delete connections[rid];
+					return;
+				}
+				if (trimmed.length) {
+					const blob = {messages: [{message: trimmed, from: 'pipe:' + rid}]};
+					await writeFountain(JSON.stringify(blob) + '\n');
+				}
 			}
 		}
 	} catch (err) {
@@ -48,13 +54,13 @@ class SocketSession{
 		this.connection=conn;
 	}
 	async read(){
-		const conn=this.connection;
-		return readStream(conn.r, conn.rid);
+		const connection=this.connection;
+		return readStream(connection);
 	}
 	async print(text){
 		const bytes=this.encoder.encode(text);
 		// TODO: check partial writes
-		await this.connection.w(bytes);
+		await this.connection.write(bytes);
 	}
 };
 
@@ -77,18 +83,7 @@ const sloppyStyle=ANSI.NavyBackground+ANSI.White+ANSI.Clear;
 const sloppyLogo="✴ slopcity";
 const sloppyPipeVersion=0.8;
 
-// raw key handling work in progress
-// ssh-keygen -t rsa -f hostkey_rsa -N ''.
-
-// TODO: make multi planetary
-const HomeDir=Deno.env.get("HOME")||Deno.env.get("HOMEPATH");
-
-//const rsaPath=HomeDir+"/.ssh/id_rsa";
-//const rsaPath=HomeDir+"/fountain_key_skidnz"
-// sloppyNet uses slopfeed workers in a responsible manner
-
-const connections={};
-const users={};
+const connections: Record<string, SocketSession> = {};
 
 let slopPail:unknown[]=[];
 let connectionCount=0;
@@ -102,7 +97,6 @@ async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve,ms);});
 }
 
-const encoder=new TextEncoder();
 async function writeSloppy(message:string,from:string){
 	const text="["+from+"] "+message+"\r\n";
 	for(const key of Object.keys(connections)){
@@ -117,6 +111,7 @@ export async function onFountainPipe(message:string){
 		const line=message.message||message.content||"[BLANK]";
 		const from=message.from;
 		console.log("["+from+"] "+line);
+		await writeSloppy(line, from);
 	}
 }
 
