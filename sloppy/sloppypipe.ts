@@ -11,7 +11,7 @@ import {wrapText,onSystem,readSystem,readFountain,writeFountain,disconnectFounta
 const sockPath="/tmp/sloppy.sock";
 
 const brandSloppyPipe="SloppyPipe";
-const sloppypipeVersion="1.0.0";
+const sloppypipeVersion="1.1.0";
 const appDetails=brandSloppyPipe+" "+sloppypipeVersion+" @ "+sockPath;
 
 console.log(appDetails);
