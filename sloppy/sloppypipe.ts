@@ -104,7 +104,7 @@ async function onConnection(connection) {
 
 }
 
-function startConnectionListener(server, resolve) {
+function startConnectionListener(server) {
 	function listenerLoop() {
 		(async function() {
 			for await (const connection of server) {
@@ -120,9 +120,7 @@ let sloppySocket=null;
 function openSloppyPipe() {
 	// assert sloppySocket is null
 	sloppySocket = Deno.listen({transport: "unix", path: sockPath});
-	return new Promise(function(resolve) {
-		startConnectionListener(sloppySocket, resolve);
-	});
+	startConnectionListener(sloppySocket);
 }
 
 function closeSloppyPipe(){
@@ -137,10 +135,11 @@ try {
 	await writeFountain('{"action":"connect"}');
 	let portPromise=readFountain();
 	let systemPromise=readSystem();
-	let pipePromise=openSloppyPipe();
+	
+	openSloppyPipe();
 
 	while(true){
-		const race=[portPromise,systemPromise,pipePromise];
+		const race=[portPromise,systemPromise];
 		const result=await Promise.race(race);
 		if (result == null) break;
 //		console.log("[PIPE] race result",result);
