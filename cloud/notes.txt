@@ -11,3 +11,312 @@ Stream error: TypeError: Cannot read properties of undefined (reading 'Symbol(Sy
     at onConnection (file:///Users/simon/fountain/sloppy/sloppypipe.ts:129:17)
     at file:///Users/simon/fountain/sloppy/sloppypipe.ts:137:5
     at eventLoopTick (ext:core/01_core.js:178:7)
+openssl rand -hex 32
+
+theme: dark
+server:
+  host: 127.0.0.1
+  port: 9091
+log:
+  level: info
+authentication_backend:
+  file:
+    path: /etc/authelia/users.yml
+access_control:
+  default_policy: one_factor
+session:
+  name: authelia_session
+  secret: 'GENERATE_32_RANDOM_CHARS'
+  expiration: 3600
+  inactivity: 300
+  domain: demo.local
+  redis:
+    host: 127.0.0.1
+    port: 6379
+regulation:
+  max_retries: 3
+storage:
+  local:
+    path: /var/lib/authelia/db.sqlite3
+identity_providers:
+  oidc:
+    enable_client_debug_messages: false
+    clients:
+      - client_id: nginx
+        client_secret: 'GENERATE_ANOTHER_SECRET'
+        public: false
+        authorization_policy: one_factor
+        scopes: ['openid', 'profile', 'email']
+        redirect_uris:
+          - https://a.demo.local/oauth2/callback
+          - https://b.demo.local/oauth2/callback
+
+
+
+
+
+Pi5 (arm64) – use the distro repo and a one-liner build.
+
+
+# 1. deps
+sudo apt update && sudo apt install -y redis-server build-essential git golang-go nodejs npm
+
+# 2. grab pre-built arm64 binary (official)
+sudo mkdir -p /opt/authelia && cd /opt/authelia
+wget https://github.com/authelia/authelia/releases/download/v4.38.8/authelia-linux-arm64.tar.gz
+tar xf authelia-linux-arm64.tar.gz
+chmod +x authelia
+
+wget https://github.com/authelia/authelia/releases/authelia-v4.39.14-linux-arm-musl.tar.gz
+
+https://github.com/authelia/authelia/releases/download/v4.39.14/authelia-v4.39.14-linux-arm-musl.tar.gz
+
+# 3. user + folders
+sudo useradd -r -M -s /bin/false authelia
+sudo mkdir -p /etc/authelia /var/lib/authelia
+sudo chown authelia:authelia /var/lib/authelia
+
+# 4. drop the same two files (configuration.yml & users.yml) into /etc/authelia
+# 5. systemd unit exactly as above
+# 6. enable services
+sudo systemctl enable --now redis authelia
+
+
+No Docker, no Go build on the Pi – just download, unpack, start.
+
+
+
+
+
+
+
+
+Authelia static Linux binary + local systemd units – no Docker.
+
+1. Grab the binary
+
+sudo mkdir -p /opt/authelia
+cd /opt/authelia
+wget https://github.com/authelia/authelia/releases/download/v4.38.8/authelia-linux-amd64.tar.gz
+tar -xzf authelia-linux-amd64.tar.gz
+chmod +x authelia
+
+
+2. Create `/etc/authelia/configuration.yml` (minimal, Redis store)
+
+
+theme: dark
+server:
+  host: 127.0.0.1
+  port: 9091
+log:
+  level: info
+authentication_backend:
+  file:
+    path: /etc/authelia/users.yml
+access_control:
+  default_policy: one_factor
+session:
+  name: authelia_session
+  secret: 'GENERATE_32_RANDOM_CHARS'
+  expiration: 3600
+  inactivity: 300
+  domain: demo.local
+  redis:
+    host: 127.0.0.1
+    port: 6379
+regulation:
+  max_retries: 3
+storage:
+  local:
+    path: /var/lib/authelia/db.sqlite3
+identity_providers:
+  oidc:
+    enable_client_debug_messages: false
+    clients:
+      - client_id: nginx
+        client_secret: 'GENERATE_ANOTHER_SECRET'
+        public: false
+        authorization_policy: one_factor
+        scopes: ['openid', 'profile', 'email']
+        redirect_uris:
+          - https://a.demo.local/oauth2/callback
+          - https://b.demo.local/oauth2/callback
+
+
+3. Create `/etc/authelia/users.yml`
+
+
+users:
+  alice:
+    displayname: "Alice"
+    password: "$argon2id$v=19$m=65536,t=3,p=4$abc$xyz"   # authelia hash-password
+    email: alice@demo.local
+
+
+4. systemd units
+
+`/etc/systemd/system/authelia.service`
+
+
+[Unit]
+Description=Authelia OpenID provider
+After=network.target redis.service
+
+[Service]
+Type=simple
+User=authelia
+Group=authelia
+WorkingDirectory=/opt/authelia
+ExecStart=/opt/authelia/authelia --config /etc/authelia/configuration.yml
+Restart=on-failure
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
+
+
+Create user, enable/start:
+
+
+sudo useradd -r -M -s /bin/false authelia
+sudo mkdir -p /var/lib/authelia
+sudo chown authelia:authelia /var/lib/authelia
+sudo systemctl daemon-reload
+sudo systemctl enable --now authelia
+
+
+5. NGINX (same snippet as before, just change `proxy_pass`)
+
+
+location = /oauth2/auth {
+    internal;
+    proxy_pass              http://127.0.0.1:9091/api/verify;
+    proxy_pass_request_body off;
+    proxy_set_header        Content-Length "";
+    proxy_set_header        X-Original-URI $request_uri;
+    proxy_set_header        X-Original-Method $request_method;
+}
+
+
+6. Done – single sign-on across all zones, sessions in Redis, no containers.
+
+usage {"prompt_tokens":2086,"completion_tokens":715,"total_tokens":2801,"cached_tokens":1536}
+{account:moonshot,spent:0.0030,cached:0,balance:10.5388}
+ ꔀ Fountain 1.6.2 ⛲  kimi-k2-0905 🜁 🪠 0.7° $0.003 8.584KB 52.87s
+>
+
+
+
+
+
+
+
+
+
+
+
+
+
+Task s3 deno run --allow-write --allow-sys --allow-read --allow-env --allow-net s3.ts
+aws s3 sandbox 0.2
+redis connected true
+Syncing S3: dsp-nitro
+{
+  key: "S3.dsp-nitro:surfsail.png",
+  value: '{"key":"surfsail.png","size":3297691,"date":"2025-11-25T22:41:17.000Z","etag":"2f8fd4989d9dfafd57ecd32a5515fb36"}'
+}
+Mission Complete
+
+
+1. Pick one auth method
+   - OpenID-Connect (Keycloak, Authelia, Auth0, Ory Hydra …)
+   - SAML (simpleSAMLphp, Shibboleth)
+   - Basic auth + htpasswd (quick demo only)
+
+2. Put an auth daemon in front of NGINX
+   lua-resty-openidc (Lua) or nginx-auth-jwt (Go) are the lightest; they validate the cookie / JWT
+and set `X-User: alice`.
+
+3. NGINX snippet (works in `http` or `server` block):
+
+
+# ——— shared resolver for OIDC ———
+resolver 8.8.8.8 8.8.4.4 valid=10s;
+
+# ——— external auth endpoint ———
+location = /oauth2/auth {
+        internal;
+        proxy_pass              http://auth_daemon:4180;   # oauth2-proxy, Authelia, …
+        proxy_pass_request_body off;
+        proxy_set_header        Content-Length "";
+        proxy_set_header        X-Original-URI $request_uri;
+        proxy_set_header        X-Original-Method $request_method;
+}
+
+# ——— protected zone A ———
+server {
+        listen 80;
+        server_name a.demo.local;
+
+        location / {
+                auth_request        /oauth2/auth;          # 1. check cookie
+                auth_request_set    $auth_user $upstream_http_x_user;
+                proxy_set_header    X-User  $auth_user;    # 2. inject header
+                proxy_pass          http://deno_zone_a:8080;
+        }
+}
+
+# ——— protected zone B ———
+server {
+        listen 80;
+        server_name b.demo.local;
+
+        location / {
+                auth_request        /oauth2/auth;          # same endpoint
+                auth_request_set    $auth_user $upstream_http_x_user;
+                proxy_set_header    X-User  $auth_user;
+                proxy_pass          http://deno_zone_b:8081;
+        }
+}
+
+
+4. Deno side – reusable helper (`auth.ts`):
+
+
+import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
+
+export function mustAuth(req: Request): string {
+        const user = req.headers.get("x-user");
+        if (!user) throw new Error("Unauthorized");
+        return user;
+}
+
+export function handler(user: string): Response {
+        return new Response(`hello ${user} from Deno\n`);
+}
+
+if (import.meta.main) {
+        serve((req) => {
+                try {
+                        const user = mustAuth(req);
+                        return handler(user);
+                } catch {
+                        return new Response("Unauthorized", { status: 401 });
+                }
+        });
+}
+
+
+5. Cookie domain
+Set the cookie domain to `.demo.local` so it is sent to `a.demo.local`, `b.demo.local`, etc.
+Most OIDC proxies do this with `--cookie-domain=.demo.local`.
+
+6. HTTPS
+Terminate TLS at NGINX (certbot/Let’s Encrypt) so the cookie is `Secure`.
+
+Result: user logs in once on any zone; NGINX re-uses the same session for every Deno backend.
+
+usage {"prompt_tokens":111,"completion_tokens":731,"total_tokens":842}
+{account:moonshot,spent:0.0019,cached:0,balance:10.5463}
+ ꔀ Fountain 1.6.2 ⛲  kimi-k2-0905 🜁 🪠 0.7° $0.002 630B 48.13s

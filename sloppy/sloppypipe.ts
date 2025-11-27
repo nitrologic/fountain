@@ -117,8 +117,9 @@ function startConnectionListener(server) {
 
 let sloppySocket=null;
 
-function openSloppyPipe() {
-	// assert sloppySocket is null
+async function openSloppyPipe() {
+	// todo: assert sloppySocket is null
+	await Deno.remove(sockPath).catch(() => {});
 	sloppySocket = Deno.listen({transport: "unix", path: sockPath});
 	startConnectionListener(sloppySocket);
 }
