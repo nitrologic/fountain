@@ -3,6 +3,9 @@
 // All rights reserved
 
 import { CostExplorerClient, GetCostAndUsageCommand } from "npm:@aws-sdk/client-cost-explorer";
+import {EC2Client, DescribeVolumesCommand, DescribeInstancesCommand} from "npm:@aws-sdk/client-ec2";
+
+const ec2 = new EC2Client({ region: "ap-southeast-6" }); // Your NZ region
 
 //import {S3Client,CreateBucketCommand,GetObjectCommand,PutObjectCommand,ListObjectsV2Command} from "npm:@aws-sdk/client-s3";
 //import { createClient } from "npm:redis@4";
@@ -26,5 +29,47 @@ async function getCurrentMonthBill() {
 }
 
 await getCurrentMonthBill();
+
+async function listMyVolumes(instanceId) {
+    console.log("Listing EC2 volumes...");
+	const cmd = new DescribeVolumesCommand({
+	Filters: [
+		{
+		Name: "attachment.instance-id",
+		Values: [instanceId],
+		},
+	],
+	});
+	const result = await ec2.send(cmd);
+	console.log(result);
+}
+
+async function listMyInstances() {
+    console.log("Listing EC2 instances...");
+    const command = new DescribeInstancesCommand({
+        Filters: [
+            { Name: "instance-state-name", Values: ["running"] }
+        ]
+    });    
+    console.log("sending Listing EC2 instances...");  
+    const result = await ec2.send(command);
+    console.log("Processing Listing EC2 instances...");  
+    for (const res of result.Reservations ?? []) {
+        for (const inst of res.Instances ?? []) {
+            console.log({
+                InstanceId: inst.InstanceId,
+                State: inst.State?.Name,
+                Type: inst.InstanceType,
+                PrivateIp: inst.PrivateIpAddress,
+                PublicIp: inst.PublicIpAddress,
+                LaunchTime: inst.LaunchTime?.toISOString()
+            });
+
+			await listMyVolumes(inst.InstanceId);
+        }
+    }
+}
+
+await listMyInstances();
 
 console.log("Mission Complete");
