@@ -2163,6 +2163,23 @@ const rohaPrompt=">";
 let colorCycle=0;
 
 // warning - do not call echo from here
+// work in progress latex $\mu$ support
+
+// kimi-k2 tiny tex→unicode mapper (extend as needed)
+
+function texToUnicode(tex: string): string {
+	return tex
+		.replace(/\\mu/g,'μ')
+		.replace(/\\alpha/g,'α')
+		.replace(/\\beta/g,'β')
+		.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1⁄$2') // ½ style
+		.replace(/\\sqrt/g,'√');
+}
+
+function replaceLatex(line: string): string {
+	line = line.replace(/\$\$?([^$]+)\$\$?/g, (_, tex) => texToUnicode(tex));
+	return line;
+}
 
 function mdToAnsi(md) {
 	const broken=roha.config.broken;
@@ -2230,6 +2247,7 @@ function mdToAnsi(md) {
 				// italic
 				line=line.replace(/\*(.*?)\*/g, "\x1b[3m$1\x1b[0m");
 				line=line.replace(/_(.*?)_/g, "\x1b[3m$1\x1b[0m");
+				line=replaceLatex(line);
 				// wordwrap
 				line=wordWrap(line,terminalColumns);
 			}
