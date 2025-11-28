@@ -2169,16 +2169,24 @@ let colorCycle=0;
 
 function texToUnicode(tex: string): string {
 	return tex
-		.replace(/\\mu/g,'μ')
-		.replace(/\\alpha/g,'α')
-		.replace(/\\beta/g,'β')
-		.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1⁄$2') // ½ style
-		.replace(/\\sqrt/g,'√');
+		// Greek
+		.replace(/\\alpha/g,'α').replace(/\\beta/g,'β').replace(/\\gamma/g,'γ')
+		.replace(/\\delta/g,'δ').replace(/\\theta/g,'θ').replace(/\\mu/g,'μ')
+		.replace(/\\pi/g,'π').replace(/\\sigma/g,'σ').replace(/\\omega/g,'ω')
+		// Math
+		.replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '$1⁄$2')
+		.replace(/\\sqrt\{([^}]+)\}/g, '√$1')
+		.replace(/\\sqrt/g,'√')
+		.replace(/\\cdot/g,'·').replace(/\\times/g,'×')
+		.replace(/\\leq/g,'≤').replace(/\\geq/g,'≥')
+		// Superscripts (simple single digit)
+		.replace(/\^([0-9])/g, (m, d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"[d])
+		// Cleanup braces
+		.replace(/\{|\}/g, '');
 }
 
 function replaceLatex(line: string): string {
-	line = line.replace(/\$\$?([^$]+)\$\$?/g, (_, tex) => texToUnicode(tex));
-	return line;
+	return line.replace(/(\$\$?)((\\.|[^$])+?)\1/g, (_, delim, tex) => texToUnicode(tex));
 }
 
 function mdToAnsi(md) {
@@ -2978,9 +2986,13 @@ async function callCommand(command:string) {
 	let words=command.split(" ");
 	try {``
 		switch (words[0]) {
+			case "tex":
+				const tex=words[1];
+				echo(replaceLatex(tex));
+				break;
 			case "bibli":
-//				parseBibli();
-				testUnicode();
+				parseBibli();
+//				testUnicode();
 				break;
 			case "spec":
 				parseUnicode();
