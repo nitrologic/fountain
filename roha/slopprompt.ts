@@ -483,6 +483,16 @@ function processUtf8(value: Uint8Array, i: number, bytes: number[]): number {
 	return 0;
 }
 
+async function writeString(message:string){
+	try{
+		await writer.write(encoder.encode(harden(message,1e6)));
+		await writer.ready;
+	}catch (e){
+		console.log("[RAW] writeString failure");
+		throw e;
+	}
+}
+
 // main egress for discord ssh stdin users
 // returns response as messages or line
 
@@ -490,8 +500,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 	Deno.stdin.setRaw(true);
 	let response={};
 	if(message){
-		await writer.write(encoder.encode(harden(message,1e6)));
-		await writer.ready;
+		await writeString(message)
 	}
 	let busy=true;
 	while(true){
@@ -651,8 +660,13 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		}
 		if (bytes.length) {
 			const rawBytes=new Uint8Array(bytes);
-			await writer.write(rawBytes);
-			await writer.ready;
+			try{
+				await writer.write(rawBytes);
+				await writer.ready;
+			}catch(e){
+				console.log("[RAW] writer exception",e.message);
+				console.log(e.stack);
+			}
 		}
 	}
 	inCode=false;
