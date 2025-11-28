@@ -175,6 +175,8 @@ const encoder=new TextEncoder();
 const decoder=new TextDecoder("utf-8");
 const segmenter=new Intl.Segmenter("en", { granularity: "grapheme" });
 
+const streamDecoder=new TextDecoder("utf-8",{stream:true});
+
 let grapheme:string[]=[];
 
 function addInput(input:string) {
@@ -661,8 +663,10 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		if (bytes.length) {
 			const rawBytes=new Uint8Array(bytes);
 			try{
-				await writer.write(rawBytes);
-				await writer.ready;
+				const text=streamDecoder.decode(rawBytes);
+				await writeString(text);
+//				await writer.write(text);
+//				await writer.ready;
 			}catch(e){
 				console.log("[RAW] writer exception",e.message);
 				console.log(e.stack);
