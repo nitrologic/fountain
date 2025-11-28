@@ -1,3 +1,21 @@
+Task aws deno run --allow-write --allow-sys --allow-read --allow-env --allow-net aws.ts
+Listing EC2 instances...
+sending Listing EC2 instances...
+Processing Listing EC2 instances...
+{
+  InstanceId: "i-0fa5f85d1ec84796c",
+  State: "running",
+  Type: "t3.micro",
+  PrivateIp: "172.31.38.85",
+  PublicIp: "3.102.200.106",
+  LaunchTime: "2025-09-29T19:30:53.000Z"
+}
+
+Task aws deno run --allow-write --allow-sys --allow-read --allow-env --allow-net aws.ts
+error: Uncaught (in promise) AccessDeniedException: User: arn:aws:sts::403508462369:assumed-role/server/i-0fa5f85d1ec84796c 
+is not authorized to perform: ce:GetCostAndUsage on resource: arn:aws:ce:us-east-1:403508462369:/GetCostAndUsage because no 
+identity-based policy allows the ce:GetCostAndUsage action
+
 $ nc -U /tmp/sloppy.sock
 testing sloppy pipe 1
 ```
