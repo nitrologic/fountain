@@ -1,6 +1,0 @@
-{
-	"nodeModulesDir": "auto",
-	"tasks":{
-		"step": "deno run --allow-write --allow-sys --allow-read --allow-env --allow-net collectmodels.ts",
-    }
-}
