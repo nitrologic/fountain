@@ -1,6 +1,6 @@
 {
 	"nodeModulesDir": "auto",
 	"tasks":{
-		"step": "deno run --allow-write --allow-sys --allow-read --allow-env --allow-net kiscan.ts",
+		"scan": "deno run --allow-write --allow-sys --allow-read --allow-env --allow-net kiscan.ts"
     }
 }

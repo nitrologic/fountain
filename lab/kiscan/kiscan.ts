@@ -1,5 +1,11 @@
+// kiscan.ts - builds gltf libraries from step files
+// Copyright (c) 2025 Simon Armstrong
+// All rights reserved
+
 import { walk } from "https://deno.land/std/fs/mod.ts";
 import { join, basename } from "https://deno.land/std/path/mod.ts";
+
+const kiscan = "kiscan 0.2";
 
 const srcDir = "../../../kicad9share/kicad/3dmodels";
 const outDir = "./output";
@@ -202,6 +208,9 @@ async function parseStepFile(filePath: string) {
 }
 
 let count=0;
+
+console.log(kiscan)
+
 for await (const entry of walk(srcDir, { exts: [".step", ".stp"] })) {
 	const stepJSON = await parseStepFile(entry.path);
 	const gltf=createGLTF(stepJSON);
