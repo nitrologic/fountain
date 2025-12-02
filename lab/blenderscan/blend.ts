@@ -1,4 +1,5 @@
 // blend.ts - builds gltf libraries from blender files
+// thanks to kimi k2 for assistance
 // Copyright (c) 2025 Simon Armstrong
 // All rights reserved
 
@@ -11,7 +12,6 @@ let count=0;
 console.log("blend 0.01");
 
 for await (const entry of walk(path, { exts: [".blend"] })) {
-
     console.log(entry.path);
     count++;
 }
