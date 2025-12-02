@@ -1,0 +1,73 @@
+
+	// Find FILE_NAME or FILE_DESCRIPTION entities
+	for (const e of entities) {
+	if (e.type === "FILE_NAME") {
+		const m = /'([^']*)'\s*,\s*'([^']*)'/.exec(e.params);
+		if (m) {
+		meta.name = m[1].trim();
+		const timestamp = m[2];
+		}
+		// Sometimes author and organization are here
+		const parts = e.params.split(",").map((s: string) => s.trim().replace(/^'|'$/g, ""));
+		if (parts.length > 3) {
+		meta.author = parts[3];
+		}
+	}
+
+	if (e.type === "FILE_DESCRIPTION") {
+		const m = /\('([^']+)'.*\)/.exec(e.params);
+		if (m) meta.description = m[1];
+	}
+
+	// Most important: look for PROPERTY_DEFINITION with name 'kicad_footprint'
+	if (e.type === "PROPERTY_DEFINITION") {
+		if (e.params.includes("'kicad_footprint'")) {
+		// Find the associated SIMPLE_PROPERTY_VALUE
+		const propId = e.id;
+		const valueEnt = entities.find(ent =>
+			ent.type === "SIMPLE_PROPERTY_VALUE" &&
+			ent.params.includes(`#${propId}`)
+		);
+		if (valueEnt) {
+			const match = /'([^']+)'/.exec(valueEnt.params);
+			if (match) meta.footprint = match[1];
+		}
+		}
+		// Also check for manufacturer, part number, etc.
+		const nameMatch = /'([^']+)'/.exec(e.params);
+		if (nameMatch) {
+		const name = nameMatch[1].toLowerCase();
+		if (name.includes("manufacturer")) meta.manufacturer = tryExtractPropertyValue(entities, e.id);
+		if (name.includes("part number") || name.includes("mpn")) meta.partNumber = tryExtractPropertyValue(entities, e.id);
+		 (name.includes("keywords")) meta.keywords = tryExtractPropertyValue(entities, e.id);
+		if (name.includes("license")) meta.license = tryExtractPropertyValue(entities, e.id);
+		}
+	}
+	}
+
+	return meta;
+
+
+const CGAMaterials=[
+	{
+		name: "Black",
+		pbrMetallicRoughness: { baseColorFactor: [0.0, 0.0, 0.0, 1.0] },
+		doubleSided: true
+	},
+	{
+		name: "Cyan",
+		pbrMetallicRoughness: { baseColorFactor: [0.0, 1.0, 1.0, 1.0] },
+		doubleSided: true
+	},
+	{
+		name: "Magenta",
+		pbrMetallicRoughness: { baseColorFactor: [1.0, 0.0, 1.0, 1.0] },
+		doubleSided: true
+	},
+	{
+		name: "White",
+		pbrMetallicRoughness: { baseColorFactor: [1.0, 1.0, 1.0, 1.0] },
+		doubleSided: true
+	}
+];
+

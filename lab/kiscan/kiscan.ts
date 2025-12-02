@@ -12,84 +12,95 @@ const outDir = "./output";
 
 await Deno.mkdir(outDir, { recursive: true });
 
-// eek chatgpt code ahead :)
-
-function tryExtractPropertyValue(entities: any[], propDefId: number): string | null {
-	const applied = entities.find(e =>
-	e.type === "APPLIED_PROPERTY" &&
-	e.params.includes(`#${propDefId}`)
-	);
-	if (!applied) return null;
-
-	const valueEnt = entities.find(e =>
-	e.type === "SIMPLE_PROPERTY_VALUE" &&
-	e.params.includes(`#${applied.id}`)
-	);
-
-	if (valueEnt) {
-	const m = /'([^']+)'/.exec(valueEnt.params);
-	return m ? m[1] : null;
-	}
-	return null;
+function parseSteps(entities: any[]) {
+	const steps=[];
+	entities.forEach(item => {
+		const id=parseInt(item.id);
+		if(id){
+			steps[id]=item;
+		}
+	});
+	return steps;
 }
 
+function parseStyles(entities: any[]){
+	const styles=[];
+	const styleItems = entities.filter(e => e.type === "PRESENTATION_STYLE_ASSIGNMENT");
+	styleItems.forEach(item => {
+		const params = item.params.split(",");
+		const index=parseInt(params[0]);
+		const id=parseInt(item.id);
+		if(id){
+			styles[id]=index;
+			console.log("style",{id,index,item});
+		}
+	});
+	return styles;
+}
+
+function parseColors(entities: any[]) {
+	const colors=[];
+	const colorItems = entities.filter(e => e.type === "COLOUR_RGB");
+	colorItems.forEach(item => {
+		const nrgb = item.params.split(",");
+		const rgb=[parseFloat(nrgb[1]),parseFloat(nrgb[2]),parseFloat(nrgb[3])];
+//		console.log("color item",item,rgb);
+		const id=parseInt(item.id);
+		if(id){
+			colors[id]=rgb;
+		}
+	});
+	return colors;
+}
+
+function resolveColor(steps:[],styles:number[],colors:number[],id: number){
+	if (id in colors) return colors[id];
+	if (id in styles){
+		const index=styles[id];
+		if (index in colors) return colors[index];
+	}
+	console.log("resolveColor failure id",id,steps[id])
+	return [0,0,0];
+}
+
+function logStyles(entities: any[]) {
+	const steps=parseSteps(entities);
+	const styles=parseStyles(entities);
+	const colors=parseColors(entities);
+	const styleItems = entities.filter(e => e.type === "STYLED_ITEM");
+	styleItems.forEach(item => {
+//		console.log("style item",item);
+		const refs = item.params.match(/#\d+/g) || [];
+		const styleRef = parseInt(refs[0].slice(1), 10);
+		const targetId = parseInt(refs[1].slice(1), 10);
+		const color = resolveColor(steps,styles,colors,styleRef);
+		console.log("style color",{styleRef,targetId,color});
+	});
+}
+// eek chatgpt code ahead :)
+
 function kiCadMeta(entities: any[]) {
-	const meta: any = {
-		footprint: null,
-		description: null,
-		keywords: null,
-		manufacturer: null,
-		partNumber: null,
-		author: null,
-		license: null
-	};
-
-	// Find FILE_NAME or FILE_DESCRIPTION entities
-	for (const e of entities) {
-	if (e.type === "FILE_NAME") {
-		const m = /'([^']*)'\s*,\s*'([^']*)'/.exec(e.params);
+	const meta: any = { product:"Jon Doe" };
+	const productStep = entities.find(e => e.type === "PRODUCT");
+	if (productStep) {
+		const m = /'([^']+)'/.exec(productStep.params);
 		if (m) {
-		meta.name = m[1].trim();
-		const timestamp = m[2];
-		}
-		// Sometimes author and organization are here
-		const parts = e.params.split(",").map((s: string) => s.trim().replace(/^'|'$/g, ""));
-		if (parts.length > 3) {
-		meta.author = parts[3];
-		}
-	}
-
-	if (e.type === "FILE_DESCRIPTION") {
-		const m = /\('([^']+)'.*\)/.exec(e.params);
-		if (m) meta.description = m[1];
-	}
-
-	// Most important: look for PROPERTY_DEFINITION with name 'kicad_footprint'
-	if (e.type === "PROPERTY_DEFINITION") {
-		if (e.params.includes("'kicad_footprint'")) {
-		// Find the associated SIMPLE_PROPERTY_VALUE
-		const propId = e.id;
-		const valueEnt = entities.find(ent =>
-			ent.type === "SIMPLE_PROPERTY_VALUE" &&
-			ent.params.includes(`#${propId}`)
-		);
-		if (valueEnt) {
-			const match = /'([^']+)'/.exec(valueEnt.params);
-			if (match) meta.footprint = match[1];
-		}
-		}
-		// Also check for manufacturer, part number, etc.
-		const nameMatch = /'([^']+)'/.exec(e.params);
-		if (nameMatch) {
-		const name = nameMatch[1].toLowerCase();
-		if (name.includes("manufacturer")) meta.manufacturer = tryExtractPropertyValue(entities, e.id);
-		if (name.includes("part number") || name.includes("mpn")) meta.partNumber = tryExtractPropertyValue(entities, e.id);
-		if (name.includes("keywords")) meta.keywords = tryExtractPropertyValue(entities, e.id);
-		if (name.includes("license")) meta.license = tryExtractPropertyValue(entities, e.id);
+			const code=m[0];
+			const name=m[1];
+			const inputs=m["input"]||[];
+			const groups=m["groups"];
+// todo: assert on index or groups
+			meta.product = name;
+			meta.inputs = inputs;
+//			console.log("kicadMeta",{meta,m});
+			if(m["index"]){
+				console.log("kicadMeta index",m.index);
+			}
+			if(groups){
+				console.log("kicadMeta groups",groups);
+			}
 		}
 	}
-	}
-
 	return meta;
 }
 
@@ -109,8 +120,15 @@ function encodeGLTFBuffer(vertices: Float32Array, indices: Uint16Array): string 
 	return encoded;
 }
 
-function createGLTF(stepJson: { entities: any[] }) {
-	const points = stepJson.entities
+function createGLTF(steps: { entities: any[] }) {
+	logStyles(steps.entities);
+
+//	console.log("steps",steps);
+
+	const meta=kiCadMeta(steps.entities);
+//	console.log("meta",meta);
+
+	const points = steps.entities
 	.filter(e => e.type === "CARTESIAN_POINT")
 	.map(e => {
 		const match = /\(([^)]+)\)/.exec(e.params);
@@ -118,7 +136,7 @@ function createGLTF(stepJson: { entities: any[] }) {
 		return match[1].split(",").map(Number);
 	});
 	const vertices = new Float32Array(points.flat());
-	const edges = stepJson.entities
+	const edges = steps.entities
 	.filter(e => e.type === "ORIENTED_EDGE" || e.type === "EDGE_CURVE");
 	const indices: number[] = [];
 	// TODO: edges make polygons
@@ -133,7 +151,7 @@ function createGLTF(stepJson: { entities: any[] }) {
 	const gltf = {
 		asset: { version: "2.0" },
 		scenes: [{ nodes: [0] }],
-		nodes: [{ mesh: 0 }],
+		nodes: [{ mesh: 0, extras:{meta} }],
 		meshes: [{
 			primitives: [{
 			attributes: { POSITION: 0 },
