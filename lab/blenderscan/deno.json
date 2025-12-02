@@ -1,0 +1,7 @@
+{
+	"nodeModulesDir": "auto",
+	"tasks":{
+		"blend": "deno run --allow-write --allow-sys --allow-read --allow-env --allow-net ./blend.ts"
+    }
+}
+
