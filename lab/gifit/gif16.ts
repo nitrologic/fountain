@@ -1,178 +1,178 @@
-// gif16.ts - streams gif
+// gif16.ts - streams gif (fixed)
 // Copyright (c) 2025 Simon Armstrong
 // All rights reserved
 
-// "gif": "deno run --allow-write --allow-sys --allow-read --allow-env --allow-net gifit/gif16.ts"
-
-// 1. 320×200 16-colour GIF encoder for Deno C64 streams
-
-const C64_WIDTH  = 320;
-const C64_HEIGHT = 200;
-const C64_RGB_16 = [
-  0x00, 0x00, 0x00, // 0 black
-  0xFF, 0xFF, 0xFF, // 1 white
-  0x68, 0x37, 0x2B, // 2 red
-  0x70, 0xA4, 0xB2, // 3 cyan
-  0x6F, 0x3D, 0x86, // 4 purple
-  0x58, 0x8D, 0x43, // 5 green
-  0x35, 0x28, 0x79, // 6 blue
-  0xB8, 0xC7, 0x6F, // 7 yellow
-  0x6F, 0x4F, 0x25, // 8 orange
-  0x43, 0x39, 0x00, // 9 brown
-  0x9A, 0x67, 0x59, // 10 light red
-  0x44, 0x44, 0x44, // 11 dark grey
-  0x6C, 0x6C, 0x6C, // 12 medium grey
-  0x9A, 0xD2, 0x84, // 13 light green
-  0x6C, 0x5E, 0xB5, // 14 light blue
-  0x95, 0x95, 0x95  // 15 light grey
+const c64_rgb = [
+	0,0,0,255,255,255,104,55,43,112,164,178,111,61,134,88,141,67,53,136,72,184,199,111,110,79,37,67,103,89,154,103,89,100,103,78,188,210,132,108,94,181,255,255,255
 ];
 
-class gif16{
-  width;
-  height;
-  #frame = new Uint8Array(WIDTH * HEIGHT); // current pixels (0-15)
-  #bytes: number[] = [];
+const u16le = (n: number): number[] => [n & 255, (n >> 8) & 255];
+const header = "GIF89a".split("").map(c => c.charCodeAt(0));
 
-  constructor(w,h) {
-    this.#bytes.push(...header());
-    this.#bytes.push(...logicalScreen());
-    this.#bytes.push(...globalColorTable());
-    this.#bytes.push(...appExt());
-    this.#bytes.push(...graphicsControl(0)); // first frame
-  }
+class GIF16 {
+	#w: number; #h: number; #bg: number; #pal: Uint8Array; #frame: Uint8Array; #bytes: number[] = [];
 
-  setPixel(x: number, y: number, c: number) {
-    if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) this.#frame[y * WIDTH + x] = c & 15;
-  }
+	constructor(
+		width = 320, height = 200,
+		palette = new Uint8Array(c64_rgb.flatMap((v, i) => i % 3 ? v : [])), // 16 * 3 = 48 bytes
+		borderIndex = 0,
+	) {
+		this.#w = width; this.#h = height;
+		this.#bg = borderIndex & 15;
+		this.#pal = palette;
+		this.#frame = new Uint8Array(width * height);
+		this.#bytes.push(...header, ...this.#lsd(), ...this.#gct(), ...this.#appext());
+	}
 
-  addFrame(delay100ths = 4) {
-    const image = lzw(packImage(this.#frame));
-    this.#bytes.push(...graphicsControl(delay100ths));
-    this.#bytes.push(0x2C); // Image separator
-    this.#bytes.push(...u16le(0), ...u16le(0)); // NW corner
-    this.#bytes.push(...u16le(WIDTH), ...u16le(HEIGHT));
-    this.#bytes.push(0x00); // no local table
-    this.#bytes.push(0x08); // LZW min code size
-    this.#bytes.push(image.length);
-    this.#bytes.push(...image);
-  }
+	setPixel(x: number, y: number, c: number) {
+		this.#frame[y * this.#w + x] = c & 15; 
+	}
 
-  finish() {
-    this.#bytes.push(0x3B); // Trailer
-    return new Uint8Array(this.#bytes);
-  }
+	setPixelSafe(x: number, y: number, c: number) { if (x >= 0 && x < this.#w && y >= 0 && y < this.#h) this.#frame[y * this.#w + x] = c & 15; }
+	setBorder(c: number) { this.#bg = c & 15; }
+
+	#lsd() {
+		// Packed: GCT flag = 1, Color resolution = 7 (arbitrary but benign), Sort=0, Size = 3 -> 2^(3+1)=16 entries
+		const packed = (1 << 7) | (7 << 4) | 0 << 3 | 3; // 0xF3
+		return [...u16le(this.#w), ...u16le(this.#h), packed, this.#bg, 0];
+	}
+
+	#gct() {
+		// Our global color table: exactly 16 * 3 = 48 bytes
+		const t = new Uint8Array(16 * 3);
+		for (let i = 0; i < 16; i++) {
+			t.set(this.#pal.subarray(i * 3, i * 3 + 3), i * 3);
+		}
+		return [...t];
+	}
+
+	#appext() {
+		// Netscape loop extension (infinite loop: 0)
+		return [0x21, 0xFF, 11, ...("NETSCAPE2.0".split("").map(c => c.charCodeAt(0))), 3, 1, 0, 0];
+	}
+
+	#gce(d: number) {
+		// Graphic Control Extension: no transparency, disposal=0, user input flag=0
+		// block: 0x21,0xF9,4,packed,delay_lo,delay_hi,transparency_index,0
+		const packed = 0x00; // no transparency, no disposal specified
+		return [0x21, 0xF9, 4, packed, ...u16le(d), 0 /*transparency index*/, 0];
+	}
+
+	addFrame(delay = 4) {
+		// image position - whole screen
+		const px = 0, py = 0;
+		// pack: we MUST feed LZW with one index per pixel (0..15), not nibble-packed bytes
+		const packed = this.#pack(); // returns Uint8Array of length w*h with values 0..15
+		const lzwData = this.#compress(packed, 4); // min code size 4
+		this.#bytes.push(...this.#gce(delay));
+		this.#bytes.push(0x2C, ...u16le(px), ...u16le(py), ...u16le(this.#w), ...u16le(this.#h), 0x00);
+		// LZW minimum code size byte
+		this.#bytes.push(4);
+		// data as sub-blocks
+		for (let i = 0; i < lzwData.length; i += 255) {
+			const c = lzwData.subarray(i, i + 255);
+			this.#bytes.push(c.length, ...c);
+		}
+		// block terminator
+		this.#bytes.push(0);
+	}
+
+	finish() { this.#bytes.push(0x3B); return new Uint8Array(this.#bytes); }
+
+	#pack() {
+		// return one 8-bit index per pixel (0..15)
+		return this.#frame.slice(); // already each is 0..15 by setPixel
+	}
+
+	// --- LZW compressor for GIF (minCodeSize provided) ---
+	#compress(data: Uint8Array, minCodeSize: number) {
+		// GIF LZW: clear = 1<<minCodeSize, EOI = clear+1, codes begin after that
+		const clear = 1 << minCodeSize;
+		const eoi = clear + 1;
+		let codeSize = minCodeSize + 1;
+
+		// Initialize dictionary with single-byte sequences
+		const dict = new Map<string, number>();
+		const resetDict = () => {
+			dict.clear();
+			for (let i = 0; i < clear; i++) dict.set(String.fromCharCode(i), i);
+		};
+		resetDict();
+		let nextCode = eoi + 1;
+
+		let bitBuf = 0, bitLen = 0;
+		const out: number[] = [];
+		const emit = (code: number) => {
+			bitBuf |= (code << bitLen);
+			bitLen += codeSize;
+			while (bitLen >= 8) {
+				out.push(bitBuf & 0xFF);
+				bitBuf >>>= 8;
+				bitLen -= 8;
+			}
+		};
+
+		// Start with CLEAR
+		emit(clear);
+
+		if (data.length === 0) {
+			emit(eoi);
+			if (bitLen) out.push(bitBuf & 0xFF);
+			return new Uint8Array(out);
+		}
+
+		let w = String.fromCharCode(data[0]);
+
+		for (let i = 1; i < data.length; i++) {
+			const k = String.fromCharCode(data[i]);
+			const wk = w + k;
+			if (dict.has(wk)) {
+				w = wk;
+			} else {
+				// output code for w
+				emit(dict.get(w)!);
+				// add wk to the dictionary
+				if (nextCode < 4096) {
+					dict.set(wk, nextCode++);
+					// if nextCode reaches the limit for current codeSize, increase codeSize (up to 12)
+					if (nextCode === (1 << codeSize) && codeSize < 12) codeSize++;
+				} else {
+					// dictionary full: emit CLEAR and reset
+					emit(clear);
+					resetDict();
+					nextCode = eoi + 1;
+					codeSize = minCodeSize + 1;
+				}
+				w = k;
+			}
+		}
+
+		// output last code
+		if (w.length) {
+			emit(dict.get(w)!);
+		}
+		// EOI
+		emit(eoi);
+		// flush remaining bits
+		if (bitLen > 0) out.push(bitBuf & 0xFF);
+		return new Uint8Array(out);
+	}
 }
 
-// --- GIF primitives ----------------------------------------------------------
-function header() { return textToBytes("GIF89a"); }
-function u16le(n: number) { return [n & 255, (n >>> 8) & 255]; }
-function textToBytes(s: string) { return [...new TextEncoder().encode(s)]; }
+// ===== example usage (same as your original harness) =====
 
-function logicalScreen() {
-  const b: number[] = [];
-  b.push(...u16le(WIDTH), ...u16le(HEIGHT));
-  b.push(0xF7); // global table present, 4 bpp (16 cols)
-  b.push(0x00); // background index
-  b.push(0x00); // aspect
-  return b;
-}
+const path = "output/c64.gif";
 
-function globalColorTable() {
-  const t = new Uint8Array(48);
-  for (let i = 0; i < 16; i++) t.set(PALETTE.slice(i * 3, i * 3 + 3), i * 3);
-  return [...t];
-}
-
-function appExt() {
-  const b = [0x21, 0xFF, 11];
-  b.push(...textToBytes("NETSCAPE2.0"));
-  b.push(3, 1, 0, 0, 0);
-  return b;
-}
-
-function graphicsControl(delay: number) {
-  return [0x21, 0xF9, 4, 0x04, delay & 255, (delay >>> 8) & 255, 0x00, 0x00];
-}
-
-function packImage(pixels: Uint8Array) {
-  // 320 cols → 40 bytes per row (2 pixels per byte, big-nibble first)
-  const out = new Uint8Array((WIDTH / 2) * HEIGHT);
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = 0; x < WIDTH; x += 2) {
-      const hi = pixels[y * WIDTH + x];
-      const lo = pixels[y * WIDTH + x + 1];
-      out[y * (WIDTH / 2) + x / 2] = (hi << 4) | lo;
-    }
-  }
-  return out;
-}
-
-// --- minimal LZW encoder ------------------------------------------------------
-function lzw(indices: Uint8Array, minCodeSize = 4) {
-  const clear = 1 << minCodeSize;
-  const end   = clear + 1;
-  let codeSize = minCodeSize + 1;
-  let nextCode = end + 1;
-  const max = 4095;
-
-  const dict = new Map<string, number>();
-  function resetDict() {
-    dict.clear();
-    for (let i = 0; i < clear; i++) dict.set(String(i), i);
-    nextCode = end + 1;
-    codeSize = minCodeSize + 1;
-  }
-  resetDict();
-
-  let buf = 0, bits = 0;
-  const out: number[] = [];
-
-  function write(c: number) {
-    buf |= c << bits;
-    bits += codeSize;
-    while (bits >= 8) {
-      out.push(buf & 255);
-      buf >>>= 8;
-      bits -= 8;
-    }
-  }
-
-  write(clear);
-  let prefix = String(indices[0]);
-  for (let i = 1; i < indices.length; i++) {
-    const c = String(indices[i]);
-    const key = prefix + "," + c;
-    if (dict.has(key)) {
-      prefix = key;
-    } else {
-      write(dict.get(prefix)!);
-      if (nextCode <= max) {
-        dict.set(key, nextCode++);
-        if (nextCode === (1 << codeSize) + 1 && codeSize < 12) codeSize++;
-      }
-      prefix = c;
-    }
-  }
-  write(dict.get(prefix)!);
-  write(end);
-  if (bits) out.push(buf & 255);
-  return new Uint8Array(out);
-}
-
-// --- demo --------------------------------------------------------------------
 if (import.meta.main) {
-  const gif = new GIF16();
-  // simple 16-frame spinning colour-bar
-  for (let f = 0; f < 16; f++) {
-    for (let y = 0; y < HEIGHT; y++) {
-      for (let x = 0; x < WIDTH; x++) {
-        gif.setPixel(x, y, (Math.floor(x / 20) + f) & 15);
-      }
-    }
-    gif.addFrame(6); // 60 ms per frame
-  }
-  const bytes = gif.finish();
-  await Deno.writeFile("spin.gif", bytes);
-  console.log("wrote spin.gif", bytes.length, "bytes");
+	const gif = new GIF16();
+	for (let f = 0; f < 32; f++) {
+		for (let y = 0; y < 200; y++) 
+			for (let x = 0; x < 320; x++) 
+				gif.setPixel(x, y, ((x >> 4) ^ f) & 15);
+		gif.setBorder(f & 15);
+		gif.addFrame(6);
+	}
+	// write file (Deno)
+	await Deno.writeFile(path, gif.finish());
+	console.log("wrote gif", path);
 }
-
