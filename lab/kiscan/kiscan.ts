@@ -7,7 +7,7 @@ import { join, basename } from "https://deno.land/std/path/mod.ts";
 
 const kiscan = "kiscan 0.2";
 
-const srcDir = "../../../kicad9share/kicad/3dmodels";
+const srcDir = "../../kicad9share/kicad/3dmodels";
 const outDir = "./output";
 
 await Deno.mkdir(outDir, { recursive: true });
