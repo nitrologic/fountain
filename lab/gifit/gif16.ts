@@ -4,12 +4,11 @@
 
 // "gif": "deno run --allow-write --allow-sys --allow-read --allow-env --allow-net gifit/gif16.ts"
 
-// 1. 320×200 16-colour GIF encoder for Deno
+// 1. 320×200 16-colour GIF encoder for Deno C64 streams
 
 const C64_WIDTH  = 320;
 const C64_HEIGHT = 200;
-
-const C64_PALETTE_PEETO = [
+const C64_RGB_16 = [
   0x00, 0x00, 0x00, // 0 black
   0xFF, 0xFF, 0xFF, // 1 white
   0x68, 0x37, 0x2B, // 2 red
@@ -26,13 +25,15 @@ const C64_PALETTE_PEETO = [
   0x9A, 0xD2, 0x84, // 13 light green
   0x6C, 0x5E, 0xB5, // 14 light blue
   0x95, 0x95, 0x95  // 15 light grey
-] as const;
+];
 
-class C64_GIF {
+class gif16{
+  width;
+  height;
   #frame = new Uint8Array(WIDTH * HEIGHT); // current pixels (0-15)
   #bytes: number[] = [];
 
-  constructor() {
+  constructor(w,h) {
     this.#bytes.push(...header());
     this.#bytes.push(...logicalScreen());
     this.#bytes.push(...globalColorTable());
