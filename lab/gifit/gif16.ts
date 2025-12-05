@@ -1,0 +1,177 @@
+// gif16.ts - streams gif
+// Copyright (c) 2025 Simon Armstrong
+// All rights reserved
+
+// "gif": "deno run --allow-write --allow-sys --allow-read --allow-env --allow-net gifit/gif16.ts"
+
+// 1. 320×200 16-colour GIF encoder for Deno
+
+const C64_WIDTH  = 320;
+const C64_HEIGHT = 200;
+
+const C64_PALETTE_PEETO = [
+  0x00, 0x00, 0x00, // 0 black
+  0xFF, 0xFF, 0xFF, // 1 white
+  0x68, 0x37, 0x2B, // 2 red
+  0x70, 0xA4, 0xB2, // 3 cyan
+  0x6F, 0x3D, 0x86, // 4 purple
+  0x58, 0x8D, 0x43, // 5 green
+  0x35, 0x28, 0x79, // 6 blue
+  0xB8, 0xC7, 0x6F, // 7 yellow
+  0x6F, 0x4F, 0x25, // 8 orange
+  0x43, 0x39, 0x00, // 9 brown
+  0x9A, 0x67, 0x59, // 10 light red
+  0x44, 0x44, 0x44, // 11 dark grey
+  0x6C, 0x6C, 0x6C, // 12 medium grey
+  0x9A, 0xD2, 0x84, // 13 light green
+  0x6C, 0x5E, 0xB5, // 14 light blue
+  0x95, 0x95, 0x95  // 15 light grey
+] as const;
+
+class C64_GIF {
+  #frame = new Uint8Array(WIDTH * HEIGHT); // current pixels (0-15)
+  #bytes: number[] = [];
+
+  constructor() {
+    this.#bytes.push(...header());
+    this.#bytes.push(...logicalScreen());
+    this.#bytes.push(...globalColorTable());
+    this.#bytes.push(...appExt());
+    this.#bytes.push(...graphicsControl(0)); // first frame
+  }
+
+  setPixel(x: number, y: number, c: number) {
+    if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) this.#frame[y * WIDTH + x] = c & 15;
+  }
+
+  addFrame(delay100ths = 4) {
+    const image = lzw(packImage(this.#frame));
+    this.#bytes.push(...graphicsControl(delay100ths));
+    this.#bytes.push(0x2C); // Image separator
+    this.#bytes.push(...u16le(0), ...u16le(0)); // NW corner
+    this.#bytes.push(...u16le(WIDTH), ...u16le(HEIGHT));
+    this.#bytes.push(0x00); // no local table
+    this.#bytes.push(0x08); // LZW min code size
+    this.#bytes.push(image.length);
+    this.#bytes.push(...image);
+  }
+
+  finish() {
+    this.#bytes.push(0x3B); // Trailer
+    return new Uint8Array(this.#bytes);
+  }
+}
+
+// --- GIF primitives ----------------------------------------------------------
+function header() { return textToBytes("GIF89a"); }
+function u16le(n: number) { return [n & 255, (n >>> 8) & 255]; }
+function textToBytes(s: string) { return [...new TextEncoder().encode(s)]; }
+
+function logicalScreen() {
+  const b: number[] = [];
+  b.push(...u16le(WIDTH), ...u16le(HEIGHT));
+  b.push(0xF7); // global table present, 4 bpp (16 cols)
+  b.push(0x00); // background index
+  b.push(0x00); // aspect
+  return b;
+}
+
+function globalColorTable() {
+  const t = new Uint8Array(48);
+  for (let i = 0; i < 16; i++) t.set(PALETTE.slice(i * 3, i * 3 + 3), i * 3);
+  return [...t];
+}
+
+function appExt() {
+  const b = [0x21, 0xFF, 11];
+  b.push(...textToBytes("NETSCAPE2.0"));
+  b.push(3, 1, 0, 0, 0);
+  return b;
+}
+
+function graphicsControl(delay: number) {
+  return [0x21, 0xF9, 4, 0x04, delay & 255, (delay >>> 8) & 255, 0x00, 0x00];
+}
+
+function packImage(pixels: Uint8Array) {
+  // 320 cols → 40 bytes per row (2 pixels per byte, big-nibble first)
+  const out = new Uint8Array((WIDTH / 2) * HEIGHT);
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = 0; x < WIDTH; x += 2) {
+      const hi = pixels[y * WIDTH + x];
+      const lo = pixels[y * WIDTH + x + 1];
+      out[y * (WIDTH / 2) + x / 2] = (hi << 4) | lo;
+    }
+  }
+  return out;
+}
+
+// --- minimal LZW encoder ------------------------------------------------------
+function lzw(indices: Uint8Array, minCodeSize = 4) {
+  const clear = 1 << minCodeSize;
+  const end   = clear + 1;
+  let codeSize = minCodeSize + 1;
+  let nextCode = end + 1;
+  const max = 4095;
+
+  const dict = new Map<string, number>();
+  function resetDict() {
+    dict.clear();
+    for (let i = 0; i < clear; i++) dict.set(String(i), i);
+    nextCode = end + 1;
+    codeSize = minCodeSize + 1;
+  }
+  resetDict();
+
+  let buf = 0, bits = 0;
+  const out: number[] = [];
+
+  function write(c: number) {
+    buf |= c << bits;
+    bits += codeSize;
+    while (bits >= 8) {
+      out.push(buf & 255);
+      buf >>>= 8;
+      bits -= 8;
+    }
+  }
+
+  write(clear);
+  let prefix = String(indices[0]);
+  for (let i = 1; i < indices.length; i++) {
+    const c = String(indices[i]);
+    const key = prefix + "," + c;
+    if (dict.has(key)) {
+      prefix = key;
+    } else {
+      write(dict.get(prefix)!);
+      if (nextCode <= max) {
+        dict.set(key, nextCode++);
+        if (nextCode === (1 << codeSize) + 1 && codeSize < 12) codeSize++;
+      }
+      prefix = c;
+    }
+  }
+  write(dict.get(prefix)!);
+  write(end);
+  if (bits) out.push(buf & 255);
+  return new Uint8Array(out);
+}
+
+// --- demo --------------------------------------------------------------------
+if (import.meta.main) {
+  const gif = new GIF16();
+  // simple 16-frame spinning colour-bar
+  for (let f = 0; f < 16; f++) {
+    for (let y = 0; y < HEIGHT; y++) {
+      for (let x = 0; x < WIDTH; x++) {
+        gif.setPixel(x, y, (Math.floor(x / 20) + f) & 15);
+      }
+    }
+    gif.addFrame(6); // 60 ms per frame
+  }
+  const bytes = gif.finish();
+  await Deno.writeFile("spin.gif", bytes);
+  console.log("wrote spin.gif", bytes.length, "bytes");
+}
+

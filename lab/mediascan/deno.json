@@ -1,0 +1,6 @@
+{
+  "tasks":{"blend": "deno run --allow-write --allow-sys --allow-read --allow-env --allow-net ./blend.ts"},
+  "imports": {
+    "denoland": "npm:denoland@^1.0.0"
+  }
+}

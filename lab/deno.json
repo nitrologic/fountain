@@ -1,0 +1,7 @@
+{
+	"nodeModulesDir": "auto",
+	"tasks":{
+		"scan": "deno run --allow-write --allow-sys --allow-read --allow-env --allow-net kiscan/kiscan.ts",
+		"gif": "deno run --allow-write --allow-sys --allow-read --allow-env --allow-net gifit/gif16.ts"
+    }
+}
