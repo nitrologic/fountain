@@ -40,13 +40,30 @@ class GIF16{
 	setBorder(c:number){this.#bg=c&15;}
 
 	addBlank(delay: number = 1) {
+		const fullFrame = new Uint8Array(this.#cw * this.#ch);
+		fullFrame.fill(this.#bg);
+		const lzwData = this.#compress(fullFrame);
+		this.#bytes.push(
+			...this.#gce(delay),
+			0x2C,
+			0, 0, 0, 0,            // Left: 0, Top: 0
+			...u16le(this.#cw),    // Width: canvasW
+			...u16le(this.#ch),    // Height: canvasH
+			0x00,                  // Packed Fields (No LCT)
+			0x04                   // LZW Minimum Code Size (4 bits for 16 colors)
+		);
+
+		for (let i = 0; i < lzwData.length; i += 255) {
+			const chunk = lzwData.subarray(i, i + 255);
+			this.#bytes.push(chunk.length, ...chunk);
+		}
+		this.#bytes.push(0);
+	}	
+
+	addBlank2(delay: number = 1) {
 		this.#frame.fill(this.#bg);
-		this.#addFrameBuffer(delay, 0b00101000);
-	}
-
-	private addFrameBuffer(delay: number, packedFlags: number) {
+		const packedFlags=0b00101000;
 		const lzwData = this.#compress(this.#frame);
-
 		this.#bytes.push(
 			...this.#gce(delay, packedFlags),
 			0x2C,
@@ -55,19 +72,11 @@ class GIF16{
 			0x00,
 			0x04
 		);
-
 		for (let i = 0; i < lzwData.length; i += 255) {
 			const chunk = lzwData.subarray(i, i + 255);
 			this.#bytes.push(chunk.length, ...chunk);
 		}
 		this.#bytes.push(0);
-	}
-
-	private _gce(delay: number, packed: number) {
-		return [33, 249, 4, packed, ...u16le(delay), 0, 0];
-	}
-	addFrame(delay: number = 4) {
-	this.#addFrameInternal(delay, 0b00000100);
 	}
 
 	addFrame(delay=4){
@@ -160,6 +169,7 @@ class GIF16{
 if(import.meta.main){
 	const gif=new GIF16();
 	gif.setBorder(6);
+	gif.addBlank(0);
 	for(let f=0;f<32;f++){
 		for(let y=0;y<200;y++){
 			for(let x=0;x<320;x++){
@@ -168,6 +178,6 @@ if(import.meta.main){
 		}
 		gif.addFrame(6);
 	}
-	await Deno.writeFile("output/test7.gif",gif.finish());
+	await Deno.writeFile("output/test10.gif",gif.finish());
 	console.log("done");
 }
