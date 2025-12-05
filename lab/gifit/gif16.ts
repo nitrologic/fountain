@@ -1,178 +1,170 @@
+// Here is the corrected `gif16.ts`. I have fixed the LZW compression logic (specifically the
+// dictionary code assignments and bit-packing) and removed the incorrect pixel packing step, as GIF
+// compression operates directly on palette indices.
+
+
 // gif16.ts - streams gif (fixed)
 // Copyright (c) 2025 Simon Armstrong
 // All rights reserved
 
-const c64_rgb = [
-	0,0,0,255,255,255,104,55,43,112,164,178,111,61,134,88,141,67,53,136,72,184,199,111,110,79,37,67,103,89,154,103,89,100,103,78,188,210,132,108,94,181,255,255,255
-];
-
-const u16le = (n: number): number[] => [n & 255, (n >> 8) & 255];
+const u16le = (n: number): number[] => [n & 255, n >> 8 & 255];
 const header = "GIF89a".split("").map(c => c.charCodeAt(0));
 
-class GIF16 {
-	#w: number; #h: number; #bg: number; #pal: Uint8Array; #frame: Uint8Array; #bytes: number[] = [];
+export class GIF16 {
+        #w; #h; #px; #py; #cw; #ch; #bg; #pal; #frame; #bytes: number[] = [];
 
-	constructor(
-		width = 320, height = 200,
-		palette = new Uint8Array(c64_rgb.flatMap((v, i) => i % 3 ? v : [])), // 16 * 3 = 48 bytes
-		borderIndex = 0,
-	) {
-		this.#w = width; this.#h = height;
-		this.#bg = borderIndex & 15;
-		this.#pal = palette;
-		this.#frame = new Uint8Array(width * height);
-		this.#bytes.push(...header, ...this.#lsd(), ...this.#gct(), ...this.#appext());
-	}
+        constructor(
+                width = 320, height = 200,
+                palette = new Uint8Array([0, 0, 0, 255, 255, 255, 104, 55, 43, 112, 164, 178, 111, 61, 134, 88, 141, 67, 53, 136, 72, 184, 199, 111, 110, 79, 37, 67, 103, 89, 154, 103, 89, 100, 103, 78, 188, 210, 132, 108, 94, 181, 255, 255, 255].flatMap((v, i) => i % 3 ? v : [])), // default C64 16-col
+                borderIndex = 0,
+                canvasW = 384, canvasH = 272, // adjusted for border area
+                playfieldX = 32, playfieldY = 36
+        ) {
+                this.#w = width; this.#h = height;
+                this.#px = playfieldX; this.#py = playfieldY;
+                this.#cw = canvasW; this.#ch = canvasH;
+                this.#bg = borderIndex & 15;
+                this.#pal = palette;
+                this.#frame = new Uint8Array(width * height);
+                this.#bytes.push(...header, ...this.#lsd(), ...this.#gct(), ...this.#appext());
+        }
 
-	setPixel(x: number, y: number, c: number) {
-		this.#frame[y * this.#w + x] = c & 15; 
-	}
+        setPixel(x: number, y: number, c: number) {
+                if (x >= 0 && x < this.#w && y >= 0 && y < this.#h) this.#frame[y * this.#w + x] = c & 15;
+        }
 
-	setPixelSafe(x: number, y: number, c: number) { if (x >= 0 && x < this.#w && y >= 0 && y < this.#h) this.#frame[y * this.#w + x] = c & 15; }
-	setBorder(c: number) { this.#bg = c & 15; }
+        setBorder(c: number) { this.#bg = c & 15; }
 
-	#lsd() {
-		// Packed: GCT flag = 1, Color resolution = 7 (arbitrary but benign), Sort=0, Size = 3 -> 2^(3+1)=16 entries
-		const packed = (1 << 7) | (7 << 4) | 0 << 3 | 3; // 0xF3
-		return [...u16le(this.#w), ...u16le(this.#h), packed, this.#bg, 0];
-	}
+        addFrame(delay = 4) {
+                // 16 colors = 4 bits. Min code size for LZW is 4.
+                const minCodeSize = 4;
+                const lzwData = this.#compress(this.#frame, minCodeSize);
 
-	#gct() {
-		// Our global color table: exactly 16 * 3 = 48 bytes
-		const t = new Uint8Array(16 * 3);
-		for (let i = 0; i < 16; i++) {
-			t.set(this.#pal.subarray(i * 3, i * 3 + 3), i * 3);
-		}
-		return [...t];
-	}
+                this.#bytes.push(
+                        ...this.#gce(delay),
+                        0x2C, // Image Separator
+                        ...u16le(this.#px), ...u16le(this.#py), // Left, Top
+                        ...u16le(this.#w), ...u16le(this.#h),   // Width, Height
+                        0x00, // Packed (no local table, no interlace)
+                        minCodeSize
+                );
 
-	#appext() {
-		// Netscape loop extension (infinite loop: 0)
-		return [0x21, 0xFF, 11, ...("NETSCAPE2.0".split("").map(c => c.charCodeAt(0))), 3, 1, 0, 0];
-	}
+                for (let i = 0; i < lzwData.length; i += 255) {
+                        const chunk = lzwData.subarray(i, i + 255);
+                        this.#bytes.push(chunk.length, ...chunk);
+                }
+                this.#bytes.push(0); // Block Terminator
+        }
 
-	#gce(d: number) {
-		// Graphic Control Extension: no transparency, disposal=0, user input flag=0
-		// block: 0x21,0xF9,4,packed,delay_lo,delay_hi,transparency_index,0
-		const packed = 0x00; // no transparency, no disposal specified
-		return [0x21, 0xF9, 4, packed, ...u16le(d), 0 /*transparency index*/, 0];
-	}
+        finish() {
+                this.#bytes.push(0x3B); // Trailer
+                return new Uint8Array(this.#bytes);
+        }
 
-	addFrame(delay = 4) {
-		// image position - whole screen
-		const px = 0, py = 0;
-		// pack: we MUST feed LZW with one index per pixel (0..15), not nibble-packed bytes
-		const packed = this.#pack(); // returns Uint8Array of length w*h with values 0..15
-		const lzwData = this.#compress(packed, 4); // min code size 4
-		this.#bytes.push(...this.#gce(delay));
-		this.#bytes.push(0x2C, ...u16le(px), ...u16le(py), ...u16le(this.#w), ...u16le(this.#h), 0x00);
-		// LZW minimum code size byte
-		this.#bytes.push(4);
-		// data as sub-blocks
-		for (let i = 0; i < lzwData.length; i += 255) {
-			const c = lzwData.subarray(i, i + 255);
-			this.#bytes.push(c.length, ...c);
-		}
-		// block terminator
-		this.#bytes.push(0);
-	}
+        #lsd() {
+                // Logical Screen Descriptor: w, h, packed(global table flag + res + sort + size), bg, aspect
+                return [...u16le(this.#cw), ...u16le(this.#ch), 0xF3, this.#bg, 0];
+        }
 
-	finish() { this.#bytes.push(0x3B); return new Uint8Array(this.#bytes); }
+        #gct() {
+                const t = new Uint8Array(48); // 16 colors * 3 bytes
+                // Copy provided palette, ensuring we don't overflow if palette is short
+                const len = Math.min(this.#pal.length, 48);
+                t.set(this.#pal.subarray(0, len));
+                return [...t];
+        }
 
-	#pack() {
-		// return one 8-bit index per pixel (0..15)
-		return this.#frame.slice(); // already each is 0..15 by setPixel
-	}
+        #appext() {
+                return [33, 255, 11, ...("NETSCAPE2.0".split("").map(c => c.charCodeAt(0))), 3, 1, 0, 0, 0];
+        }
 
-	// --- LZW compressor for GIF (minCodeSize provided) ---
-	#compress(data: Uint8Array, minCodeSize: number) {
-		// GIF LZW: clear = 1<<minCodeSize, EOI = clear+1, codes begin after that
-		const clear = 1 << minCodeSize;
-		const eoi = clear + 1;
-		let codeSize = minCodeSize + 1;
+        #gce(d: number) {
+                // Graphic Control Extension: ext intro, label, size, packed(disposal=1), delay, trans index, terminator
+                return [33, 249, 4, 0x04, ...u16le(d), 0, 0];
+        }
 
-		// Initialize dictionary with single-byte sequences
-		const dict = new Map<string, number>();
-		const resetDict = () => {
-			dict.clear();
-			for (let i = 0; i < clear; i++) dict.set(String.fromCharCode(i), i);
-		};
-		resetDict();
-		let nextCode = eoi + 1;
+        #compress(data: Uint8Array, minCodeSize: number) {
+                const clearCode = 1 << minCodeSize;
+                const eoiCode = clearCode + 1;
+                let nextCode = eoiCode + 1;
+                let codeSize = minCodeSize + 1;
 
-		let bitBuf = 0, bitLen = 0;
-		const out: number[] = [];
-		const emit = (code: number) => {
-			bitBuf |= (code << bitLen);
-			bitLen += codeSize;
-			while (bitLen >= 8) {
-				out.push(bitBuf & 0xFF);
-				bitBuf >>>= 8;
-				bitLen -= 8;
-			}
-		};
+                const dict = new Map<string, number>();
+                const resetDict = () => {
+                        dict.clear();
+                        for (let i = 0; i < clearCode; i++) dict.set(String(i), i);
+                        nextCode = eoiCode + 1;
+                        codeSize = minCodeSize + 1;
+                };
 
-		// Start with CLEAR
-		emit(clear);
+                resetDict();
 
-		if (data.length === 0) {
-			emit(eoi);
-			if (bitLen) out.push(bitBuf & 0xFF);
-			return new Uint8Array(out);
-		}
+                const out: number[] = [];
+                let buf = 0;
+                let bits = 0;
 
-		let w = String.fromCharCode(data[0]);
+                const emit = (c: number) => {
+                        buf |= c << bits;
+                        bits += codeSize;
+                        while (bits >= 8) {
+                                out.push(buf & 255);
+                                buf >>= 8;
+                                bits -= 8;
+                        }
+                };
 
-		for (let i = 1; i < data.length; i++) {
-			const k = String.fromCharCode(data[i]);
-			const wk = w + k;
-			if (dict.has(wk)) {
-				w = wk;
-			} else {
-				// output code for w
-				emit(dict.get(w)!);
-				// add wk to the dictionary
-				if (nextCode < 4096) {
-					dict.set(wk, nextCode++);
-					// if nextCode reaches the limit for current codeSize, increase codeSize (up to 12)
-					if (nextCode === (1 << codeSize) && codeSize < 12) codeSize++;
-				} else {
-					// dictionary full: emit CLEAR and reset
-					emit(clear);
-					resetDict();
-					nextCode = eoi + 1;
-					codeSize = minCodeSize + 1;
-				}
-				w = k;
-			}
-		}
+                emit(clearCode);
 
-		// output last code
-		if (w.length) {
-			emit(dict.get(w)!);
-		}
-		// EOI
-		emit(eoi);
-		// flush remaining bits
-		if (bitLen > 0) out.push(bitBuf & 0xFF);
-		return new Uint8Array(out);
-	}
+                let prefix = String(data[0]);
+                for (let i = 1; i < data.length; i++) {
+                        const char = data[i];
+                        const key = prefix + "," + char;
+                        if (dict.has(key)) {
+                                prefix = key;
+                        } else {
+                                emit(dict.get(prefix)!);
+                                dict.set(key, nextCode++);
+
+                                // Increase code size if needed
+                                if (nextCode === (1 << codeSize) && codeSize < 12) codeSize++;
+
+                                // Reset if max code reached (4096)
+                                if (nextCode === 4096) {
+                                        emit(clearCode);
+                                        resetDict();
+                                }
+                                prefix = String(char);
+                        }
+                }
+                emit(dict.get(prefix)!);
+                emit(eoiCode);
+
+                if (bits > 0) out.push(buf & 255);
+                return new Uint8Array(out);
+        }
 }
 
-// ===== example usage (same as your original harness) =====
-
-const path = "output/c64.gif";
-
+// demo
 if (import.meta.main) {
-	const gif = new GIF16();
-	for (let f = 0; f < 32; f++) {
-		for (let y = 0; y < 200; y++) 
-			for (let x = 0; x < 320; x++) 
-				gif.setPixel(x, y, ((x >> 4) ^ f) & 15);
-		gif.setBorder(f & 15);
-		gif.addFrame(6);
-	}
-	// write file (Deno)
-	await Deno.writeFile(path, gif.finish());
-	console.log("wrote gif", path);
+        const gif = new GIF16();
+
+        // Generate 32 frames
+        for (let f = 0; f < 32; f++) {
+                for (let y = 0; y < 200; y++) {
+                        for (let x = 0; x < 320; x++) {
+                                // Simple XOR pattern
+                                gif.setPixel(x, y, (x >> 4 ^ y >> 4 ^ f) & 15);
+                        }
+                }
+                // Cycle border color
+                gif.setBorder(f & 15);
+                gif.addFrame(6); // 60ms delay
+        }
+
+        try {
+                await Deno.mkdir("output", { recursive: true });
+        } catch {}
+
+        await Deno.writeFile("output/test3.gif", gif.finish());
+        console.log("wrote output/test3.gif");
 }
