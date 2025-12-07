@@ -1,7 +1,6 @@
 // gif16.ts - streams gif (fixed)
 // Copyright (c) 2025 Simon Armstrong
 // All rights reserved
-
 const c64_rgb = [
 	0,0,0, // 0: Black
 	255,255,255, // 1: White
@@ -292,6 +291,7 @@ class GIF16Playfield{
 		return new Uint8Array(out);
 	}
 }
+
 
 // demo
 if(import.meta.main){
