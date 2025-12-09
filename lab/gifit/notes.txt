@@ -1,3 +1,39 @@
+CHROUT
+$FFD2
+
+
+
+
+class VicII{
+  const registers={
+    MSBC:0xd010
+  }      
+}
+
+53264,d010,MSBX,MMMMMMMM
+53265,d011,CRLC,raster:1 yscroll:3 24row:1 blank:1 unused:2
+53266,d012,RASTER,raster:8
+53267,d013,LPX,light-pen X
+53268,d014,LPY,light-pen Y
+53269,d015,ENAM,enable sprites
+53270,d016,XSCROLL,xscroll:3|40col:1|res:1|unused:3
+53271,d017,YEXP,double-height sprites
+53272,d018,CHBAS,screen:4|charset:3|unused:1
+53273,d019,VICIRQ,irq flags
+53274,d01a,VICMASK,irq mask
+53275,d01b,SPRI,sprite-to-sprite priority
+53276,d01c,MCM,sprite multicolor
+53277,d01d,XEXP,double-width sprites
+53278,d01e,SSCOL,sprite-sprite collision
+53279,d01f,SBCOL,sprite-background collision
+53280,d020,EXBGCOL,border color
+53281,d021,BGCOL0,background 0
+53282,d022,BGCOL1,background 1
+53283,d023,BGCOL2,background 2
+53284,d024,BGCOL3,background 3
+
+
+
 /*
 		for(let y=0;y<200;y++){
 			for(let x=0;x<320;x++){
