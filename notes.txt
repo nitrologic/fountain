@@ -1,0 +1,21 @@
+cmake [options] -S <path-to-source> -B <path-to-build>
+
+C:\nitrologic\fountain\native>build
+-- Building for: Ninja
+CMake Error: Could not find cmake module file: CMakeDetermineCPPCompiler.cmake
+CMake Error: Could not find cmake module file: C:/nitrologic/fountain/native/bin/CMakeFiles/3.30.2/CMakeCPPCompiler.cmake
+CMake Error at CMakeLists.txt:2 (project):
+  No CMAKE_CPP_COMPILER could be found.
+
+  Tell CMake where to find the compiler by setting the CMake cache entry
+  CMAKE_CPP_COMPILER to the full path to the compiler, or to the compiler
+  name if it is in the PATH.
+
+
+CMake Error: Could not find cmake module file: CMakeCPPInformation.cmake
+CMake Error: CMAKE_CPP_COMPILER not set, after EnableLanguage
+-- Configuring incomplete, errors occurred!
+ninja: error: loading 'build.ninja': The system cannot find the file specified.
+
+'pop' is not recognized as an internal or external command,
+operable program or batch file.
