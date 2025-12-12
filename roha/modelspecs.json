@@ -248,6 +248,18 @@
 		"purpose":"coding stuff",
 		"endpoints":["v1/responses"]
 	},
+	"gpt-5.2-pro@openai":{
+		"pricing":[21,168],
+		"purpose":"new model - under evaluation"
+	},
+	"gpt-5.2-2025-12-11@openai":{
+		"pricing":[1.75,14.0],
+		"purpose":"new model - under evaluation"
+	},
+	"gpt-5.2-chat-latest@openai":{
+		"pricing":[1.75,14.0],
+		"purpose":"new model - under evaluation"
+	},
 	"o3-2025-04-16@openai":{
 		"deprecated":true,
 		"pricing":[2.00, 0.50, 8.00],
