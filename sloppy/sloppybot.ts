@@ -2,6 +2,7 @@
 // A research tool connecting large language models and tiny humans
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
+// status messages are sent to standard.error - no use of standard in out
 
 import { Client, GatewayIntentBits } from "npm:discord.js@14.15.3";
 
@@ -34,7 +35,6 @@ let quoteCount=0;
 
 //let openChannel="1235838347717378118";
 let openChannel="1410693060672753704";
-
 
 let directChannels={};
 
@@ -110,6 +110,26 @@ async function onFountain(message:string){
 	}
 }
 
+async function onSignal(){
+	splurt(":poop:");
+}
+
+async function initSystem(){
+	splurt("Waiting for SIGINT");
+	Deno.addSignalListener("SIGINT",onSignal);
+
+	const promise=new Promise<void>((resolve) => {
+		Deno.addSignalListener("SIGINT", () => {
+			onSignal();
+			resolve(); // resolves the promise on SIGINT
+		});
+	});
+
+	return promise;
+}
+
+/* 
+
 // system stdin support for sloppies
 
 const systemDecoder = new TextDecoder();
@@ -152,6 +172,7 @@ async function readSystem(){
 		return {system:received};
 	}
 }
+*/
 
 // log noise signed [BOT]
 
@@ -227,6 +248,7 @@ async function readFountain(){
 // main app starts here
 
 console.log(sloppyBanner);
+await sleep(5200);
 
 const discordClient = new Client({
 	intents: [
@@ -344,7 +366,9 @@ await discordClient.login(token)
 await connectFountain();
 writeFountain("{\"action\":\"connect\"}");
 let portPromise=readFountain();
-let systemPromise=readSystem();
+let systemPromise=initSystem();//readSystem();
+
+
 while(true){
 	const race=[portPromise,systemPromise];
 	const result=await Promise.race(race);

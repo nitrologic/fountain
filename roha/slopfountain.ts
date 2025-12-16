@@ -1,4 +1,4 @@
-// slopfountain.ts - A research tool for dunking large language models.
+// slopfountain.ts - a research tool for dunking large language models
 // Copyright (c) 2025 Simon Armstrong
 // Licensed under the MIT License
 
@@ -21,7 +21,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.5.6, V8 14.0.365.5-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.6.2";
+const fountainVersion="1.6.3";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -795,6 +795,11 @@ function echo_row(...cells:any):void{
 	markdownBuffer.push("|"+row+"|");
 }
 
+function echo_row2(...cells:any):void{
+	const row = cells.map(String).join('|');
+	markdownBuffer.push("|"+row);
+}
+
 function debugValue(title:string,value:unknown){
 	if(roha.config.debugging){
 		const json=JSON.stringify(value);
@@ -846,8 +851,11 @@ function flattenTables(content){
 	const result: string[] = [];
 	for(const line of lines){
 		if (line.startsWith("|")) {
-			const items=line.split("|").slice(1, -1);
-			table.push(items);
+			const items=line.split("|");
+			const n=items.length;
+			const last=n?items[n-1]:"";
+			const end=last.length?0:-1;
+			table.push(items.slice(1, end));
 		} else {
 			if (table.length) {
 				insertTable(result, table, !fenced, true);
@@ -2091,6 +2099,7 @@ function boxCells(widths,cells,discord:boolean){
 	const box=boxChars[0];
 	const v=box.charAt(Vertical);
 	const bits=[];
+	const dags=[];
 	for(let i=0;i<widths.length;i++){
 		const w=widths[i];
 		const value=cells[i];
@@ -2103,7 +2112,11 @@ function boxCells(widths,cells,discord:boolean){
 		const padding=(pads>0)?" ".repeat(pads):"";
 		bits.push(cell+thinpad+padding);
 	}
-	return v+bits.join(v)+v;
+	for(let i=widths.length;i<cells.length;i++){
+		const value=cells[i];
+		dags.push(value);
+	}
+	return v+bits.join(v)+v+dags.join( );
 }
 
 function boxSplit(widths){
@@ -2893,7 +2906,7 @@ async function modelCommand(words){
 		}
 	}else{
 		echoKey(modelKey,100);
-		echo_row("id","☐","model","🌏","💫","📆","💰",modelKeys);
+		echo_row("id","☐","model","vendor","count","date","price");
 		const all=(name && name=="all");
 		const voice=(name && name=="voice");
 		for(let i=0;i<modelList.length;i++){
@@ -2933,7 +2946,7 @@ async function modelCommand(words){
 			const audible=speech && voice;
 			if(cheap || all || audible || isMut){
 				const pricing=(info&&info.pricing)?stringifyArray(info.pricing):"";
-				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
+				echo_row2(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
 			}
 		}
 		listCommand="model";

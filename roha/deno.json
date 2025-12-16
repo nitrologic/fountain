@@ -1,9 +1,12 @@
 {
 	"tasks":{
+		"sloppybot": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read ../sloppy/sloppybot.ts",
+		"sloppylisten": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read ../sloppy/sloppylisten.ts",
+		"sloppynet": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read ../sloppy/sloppynet.ts",
+		"sloppyhost": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read ../sloppy/sloppyhost.ts",
 		"slopfountain": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read --allow-write=./forge slopfountain.ts",
-		"fountain":{
-			"dependencies":["slopfountain"]
-		}
+		"fountain":{"dependencies":["slopfountain"]},
+		"sloppy":{"dependencies":["slopfountain","sloppybot"]}
 	},
 	"imports": {
 		"@openai/openai": "jsr:@openai/openai@^5.23.0"

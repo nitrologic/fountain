@@ -257,6 +257,7 @@
 		"purpose":"new model - under evaluation"
 	},
 	"gpt-5.2-chat-latest@openai":{
+		"active": true,
 		"pricing":[1.75,14.0],
 		"purpose":"new model - under evaluation"
 	},
