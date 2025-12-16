@@ -4,15 +4,16 @@
 
 ## Socialist countries of the world - Do It Yourself
 
-What ever was in the local water that induced Rewi Alley into a catalyst for modern China
-so was the socialist trade protections that allowed kiwi amplifier manufactures such as 
-Fountain, Jansen and Holden 
+The socialist trade protections in late 20th century New Zealand allowed kiwi amplifier 
+manufactures such as Fountain, Jansen and Holden to thrive.
 
 Audio electronics manufacturers protected to employ solder and smelt the warmest amplifiers
-on stages and living rooms across the land, also introduce the nation's television to the
-nascent technology of video games.
+on stages and living rooms across the land.
 
-Soldered, tested and proudly manufactured in New Lynn, Parori...
+Similar manufacturing shops were also responsible for introducing tha nation's television 
+owners to the nascent technology of video games.
+
+Soldered, tested and proudly manufactured in New Lynn, Parori etc.
 
 ## The Fountain Video Game System
 
