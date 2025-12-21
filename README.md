@@ -6,7 +6,7 @@
 
 Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
-Addressing 281 models from 7 providers the LLM research project Slop Fountain 1.6.2 ⛲ approaches connected.
+Addressing 305 models from 7 providers the LLM research project Slop Fountain 1.6.4 ⛲ approaches connected.
 
 Pleased to welcome 🎉 Gemini 3 Pro<del>🎉Qwen3 Max and 🎉 Claude Haiku 4.5</del>.
 
@@ -30,7 +30,7 @@ Pleased to welcome 🎉 Gemini 3 Pro<del>🎉Qwen3 Max and 🎉 Claude Haiku 4.5
 
 ## Developer setup
 
-Install [Deno 2.4](https://deno.com/)
+Install [Deno 2.6](https://deno.com/)
 
 ### Researcher Links
 
