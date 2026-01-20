@@ -323,6 +323,12 @@
 		"pricing":[75.00,37.50,150.00],
 		"purpose":"burn money"
 	},
+	"models/gemini-3-flash-preview@gemini":{
+		"robot":true,
+		"pricing":[0.50,0.05,3.00],
+		"released":"2025-12-17",
+		"purpose":"most intelligent model built for speed, combining frontier intelligence with superior search and grounding"
+	},
 	"models/gemini-robotics-er-1.5-preview@gemini":{
 		"robot":true,
 		"pricing":[0.30,2.50],
