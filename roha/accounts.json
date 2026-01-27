@@ -17,14 +17,6 @@
 		"api": "OpenAI",
 		"locale": "zh-CN"
 	},
-	"alibaba": {
-		"emoji": "𝓪",
-		"env": "ALIBABA_API_KEY",
-		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
-		"platform": "https://bailian.console.alibabacloud.com/",
-		"api": "OpenAI",
-		"locale": "zh-CN"
-	},
 	"anthropic": {
 		"emoji": "A\\",
 		"env": "ANTHROPIC_API_KEY",

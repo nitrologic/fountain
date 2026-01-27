@@ -21,7 +21,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.5.6, V8 14.0.365.5-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.6.4";
+const fountainVersion="1.6.6";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -3776,7 +3776,8 @@ async function relay(depth:number) {
 			// TODO: refactor duplicate code below
 			const echostatus=(depth==0);
 			if(echostatus){
-				const temp=grokTemperature.toFixed(1)+"°";
+				const warm=(info && !info.cold);
+				const temp=warm?grokTemperature.toFixed(1)+"°":"";
 				const forge = roha.config.tools? (grokFunctions ? Pail : "🐸") : "🪠";
 				const modelSpec=[rohaTitle,rohaModel,emoji,temp,cost,forge,size,elapsed.toFixed(2)+"s"];
 				const status=statusChar+modelSpec.join(" ")+" ";

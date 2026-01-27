@@ -11,10 +11,15 @@
 		"released": "2025-05-28",
 		"purpose": "V3.2 Advanced reasoning and problem-solving",
 		"press": "High-performance model for complex math, coding, and logical tasks."
-	}
-	,
-	"kimi-k2-0905-preview@moonshot": {
+	},
+	"kimi-k2.5@moonshot": {
 		"active": true,
+		"cold":true,
+		"released": "2026-01-26",
+		"pricing": [0.60,0.10,3.0],
+		"purpose": "beta"
+	},
+	"kimi-k2-0905-preview@moonshot": {
 		"released": "2025-09-05",
 		"pricing": [0.60,0.15,2.5],
 		"purpose": "Large scale mixture of Experts model, 128K context window",

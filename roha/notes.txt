@@ -1,3 +1,13 @@
+	"alibaba": {
+		"emoji": "𝓪",
+		"env": "ALIBABA_API_KEY",
+		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+		"platform": "https://bailian.console.alibabacloud.com/",
+		"api": "OpenAI",
+		"locale": "zh-CN"
+	},
+
+
 [HOST] {"request":{"jsonrpc":"2.0","id":4,"method":"sys.tick","params":{"session":"slopfiles27068.1","tick":2,"events":[]}},"result":["{\"request\":{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles27068.1\",\"tick\":1,\"events\":[]}},\"result\":[\"{\\\"request\\\":{\\\"jsonrpc\\\":\\\"2.0\\\",\\\"id\\\":2,\\\"method\\\":\\\"sys.tick\\\",\\\"params\\\":{\\\"session\\\":\\\"slopfiles27068.1\\\",\\\"tick\\\":0,\\\"events\\\":[]}},\\\"result\\\":[\\\"{\\\\\\\"connected\\\\\\\":true}\\\"]}\"]}"]}
 [HOST] sys.tick {"jsonrpc":"2.0","id":4,"result":{"messages":["{\"request\":{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"sys.tick\",\"params\":{\"session\":\"slopfiles27068.1\",\"tick\":1,\"events\":[]}},\"result\":[\"{\\\"request\\\":{\\\"jsonrpc\\\":\\\"2.0\\\",\\\"id\\\":2,\\\"method\\\":\\\"sys.tick\\\",\\\"params\\\":{\\\"session\\\":\\\"slopfiles27068.1\\\",\\\"tick\\\":0,\\\"events\\\":[]}},\\\"result\\\":[\\\"{\\\\\\\"connected\\\\\\\":true}\\\"]}\"]}"]}}
 
