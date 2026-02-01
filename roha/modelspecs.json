@@ -104,75 +104,7 @@
 		"pricing":[0.80,4.0],
 		"purpose":"fast speeds, improved instruction following, and more accurate tool use",
 		"reality":"I do not feel comfortable providing or discussing blah blah."
-	}
-	,
-	"qwen3-omni-flash-realtime@alibaba":{
-		"robot":true,
-		"released": "2025-09-23",
-		"pricing":[0.52,3.67],
-		"purpose":"Clean the house."
 	},
-	"qwen3-omni-flash@alibaba":{
-		"released": "2025-09-23",
-		"pricing":[0.52,3.67],
-		"purpose":"Clean the house."
-	},
-	"qwen3-coder-plus-2025-09-23@alibaba":{
-		"active": true,
-		"released": "2025-09-23",
-		"pricing":[0.40,1.20],
-		"purpose":"Balanced performance, speed and cost."
-	},
-	"qwen3-max-2025-09-23@alibaba":{
-		"released": "2025-09-23",
-		"pricing":[1.20,6.00],
-		"purpose":"Proprietary flagship Qwen3-Max variant"
-	},
-	"qwen3-next-80b-a3b-instruct@alibaba":{
-		"deprecated":true,
-		"pricing":[0.10,0.80],
-		"multi":true,
-		"purpose":"Open source Qwen3 model"
-	},
-	"qwen3-next-80b-a3b-thinking@alibaba":{
-		"deprecated":true,
-		"pricing":[0.10,0.80],
-		"multi":true,
-		"purpose":"Open source Qwen3 model"
-	},
-	"qwen3-max-preview@alibaba":{
-		"deprecated":true,
-		"pricing": [1.20,6.00],
-		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
-	},
-	"qwen-max@alibaba":{
-		"deprecated":true,
-		"pricing": [1.60,6.40],
-		"purpose":"Flagship model, complex reasoning, coding, and multimodal tasks."
-	},
-	"qwen-plus-2025-09-11@alibaba":{
-		"deprecated":true,
-		"released": "2025-09-11",
-		"pricing": [0.4,1.20],
-		"purpose":"Polite, balanced performance, speed and cost."
-	},
-	"qwen-plus@alibaba":{
-		"deprecated":true,
-		"pricing":[0.40,1.20],
-		"purpose":"Balanced performance, speed and cost."
-	},
-	"qwen-turbo@alibaba":{
-		"deprecated":true,
-		"pricing":[0.05,0.20],
-		"purpose":"Fast speed and low cost"
-	},
-	"qwen2-7b-instruct@alibaba":{
-		"deprecated":true,
-		"pricing":[0.175,0.70],
-		"multi":true,
-		"purpose":"Open source Qwen2 model, failing multi image test"
-	}
-	,
 	"gpt-realtime-2025-08-28@openai": {
 		"robot":true,
 		"multi":true,
