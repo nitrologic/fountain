@@ -927,6 +927,7 @@ async function flush() {
 
 	if(send.length) {
 		const packet=flattenTables(send.join("\n"));
+		console.log(packet);	//simon was here
 		slopBroadcast(packet,"slop");
 	}
 
@@ -2906,7 +2907,7 @@ async function modelCommand(words){
 		}
 	}else{
 		echoKey(modelKey,100);
-		echo_row("id","☐","model","vendor","count","date","price");
+		echo_row("id","☐","model","vendor","count","date","price","");
 		const all=(name && name=="all");
 		const voice=(name && name=="voice");
 		for(let i=0;i<modelList.length;i++){
@@ -2946,7 +2947,7 @@ async function modelCommand(words){
 			const audible=speech && voice;
 			if(cheap || all || audible || isMut){
 				const pricing=(info&&info.pricing)?stringifyArray(info.pricing):"";
-				echo_row2(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
+				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
 			}
 		}
 		listCommand="model";

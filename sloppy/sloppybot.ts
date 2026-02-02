@@ -22,8 +22,12 @@ const quotes=[
 	"stochastic parrot wants a cracker 🥤"
 ];
 
+const Splurt=false;	// debug sloppy bot
+
 function splurt(...data: any[]){
-	console.error("[SPLURT]",data);
+	if(Splurt){
+		console.error("[SPLURT]",data);
+	}
 }
 
 // discord channel send
