@@ -851,11 +851,15 @@ function flattenTables(content){
 	const result: string[] = [];
 	for(const line of lines){
 		if (line.startsWith("|")) {
+			const items=line.split("|").slice(1, -1);
+			table.push(items);
+/*
 			const items=line.split("|");
 			const n=items.length;
 			const last=n?items[n-1]:"";
 			const end=last.length?0:-1;
 			table.push(items.slice(1, end));
+*/			
 		} else {
 			if (table.length) {
 				insertTable(result, table, !fenced, true);
@@ -926,8 +930,9 @@ async function flush() {
 	outputBuffer=[];
 
 	if(send.length) {
+//		console.log(send);
 		const packet=flattenTables(send.join("\n"));
-		console.log(packet);	//simon was here
+//		console.log(packet);	//simon was here
 		slopBroadcast(packet,"slop");
 	}
 
@@ -2151,10 +2156,11 @@ function insertTable(result:string[],table:string[][],addFence:boolean,discord:b
 	const widths=[];
 	for(const row of table){
 		for(let i=0;i<row.length;i++){
-			const w=2+row[i].length|0;
+			const w=2+(row[i].length|0);
 			if(w>(widths[i]|0)) widths[i]=w;
 		}
 	}
+//	console.log("widths",widths);
 	if(addFence) result.push("```");
 	let header=true;
 	for(const row of table){
