@@ -64,6 +64,12 @@
 		"purpose": "Comprehensive text understanding, 128K context window",
 		"press": "Ideal for deep learning applications requiring comprehensive text understanding."
 	},
+	"claude-opus-4-6@anthropic":{
+		"pricing":[5.0,25.0],
+		"limit":[20000],
+		"purpose":"frontier model for coding, agentic search, and creative writing",
+		"reality":"rate limited 20,000 input tokens per minute"
+	},
 	"claude-opus-4-5-20251101@anthropic":{
 		"pricing":[5.0,25.0],
 		"limit":[20000],
