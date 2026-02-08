@@ -6,7 +6,7 @@
 
 // ⛲🪣🐸🪠🐋🜁🐉🏛️❁𝕏🌟💫🌏📆💰👀🤖🫦💻👄🔧🧊❃🎙️🔉📷🖼️🗣️📡👁🧮📠⣯⛅⚙️🗜️🧰 🌕🌙✿
 
-import { safeString, discordStringWidth, stringWidth, announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
+import { replaceShortCodes, safeString, discordStringWidth, stringWidth, announceCommand, listenService, slopPrompt, slopBroadcast } from "./slopprompt.ts";
 
 import { OpenAI, ChatCompletionRequest, ChatCompletionResponse } from "jsr:@openai/openai@5.23.0";
 
@@ -21,7 +21,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.5.6, V8 14.0.365.5-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.6.6";
+const fountainVersion="1.6.7";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -206,7 +206,6 @@ const appDir=Deno.cwd();
 const accountsPath=resolve(appDir,"accounts.json");
 const specsPath=resolve(appDir,"modelspecs.json");
 const unicodePath=resolve(appDir,"slopspec.json");
-const bibliPath=resolve(appDir,"bibli.json");
 
 const slopPath=resolve(appDir,"../slop");
 
@@ -216,7 +215,6 @@ const rohaPath=resolve(forgePath,"forge.json");
 const modelAccounts=JSON.parse(await Deno.readTextFile(accountsPath));
 const modelSpecs=JSON.parse(await Deno.readTextFile(specsPath));
 const unicodeSpec=JSON.parse(await Deno.readTextFile(unicodePath));
-const bibli=JSON.parse(await Deno.readTextFile(bibliPath));
 
 const emojiIndex = {};
 
@@ -297,43 +295,6 @@ function formatObject(obj: Record<string, unknown>): string {
 	return Object.entries(obj)
 		.map(([key, value]) => `${key}:${value}`)
 		.join(', ');
-}
-
-function parseBibli(){
-	const tag=roha.config.verbose?"[BIBLI]":"";
-	const glyphs=bibli.separator;
-//	const size=Deno.consoleSize();
-//	const wide=size.columns;
-	const wide=terminalColumns-10;
-	const spaced=padChars(glyphs.repeat(150));
-	const br=stringFit(spaced,wide);
-	const hr=stringFit(rule500,wide);
-	echo(tag,hr);
-	for(const index in bibli.spec){
-		const item=bibli.spec[index];
-		const keys = Object.keys(item);
-		if(index=="shortcode"){
-//			echo(tag,index,formatObject(item));
-			echo(tag,index,formatValues(item));
-			continue;
-		}
-		echo_bold(tag,index,keys.join(" "));
-		if(item.alphabet){
-			for (const [key, codes] of Object.entries(item.alphabet)) {
-//			for(const index in item.alphabet){
-//				const codes=item.alphabet[index];
-				echo(tag,key,codes);
-			}
-//			echo(tag+" alphabet:",item.alphabet);
-		}
-		if(item.lexis){
-			const blocks=Object.keys(item.lexis);
-			echo(tag+" lexis:",blocks.join(" "));
-		}
-	}
-	echo(tag,hr);
-	echo(tag,bibli.moto);
-	echo(tag,hr);
 }
 
 const decoder=new TextDecoder("utf-8");
@@ -3010,10 +2971,6 @@ async function callCommand(command:string) {
 				const tex=words[1];
 				echo(replaceLatex(tex));
 				break;
-			case "bibli":
-				parseBibli();
-//				testUnicode();
-				break;
 			case "spec":
 				parseUnicode();
 				break;
@@ -3783,8 +3740,8 @@ async function relay(depth:number) {
 			// TODO: refactor duplicate code below
 			const echostatus=(depth==0);
 			if(echostatus){
-				const warm=(info && !info.cold);
-				const temp=warm?grokTemperature.toFixed(1)+"°":"";
+				const frigid=(info && info.cold);
+				const temp=frigid?"🧊":grokTemperature.toFixed(1)+"°";
 				const forge = roha.config.tools? (grokFunctions ? Pail : "🐸") : "🪠";
 				const modelSpec=[rohaTitle,rohaModel,emoji,temp,cost,forge,size,elapsed.toFixed(2)+"s"];
 				const status=statusChar+modelSpec.join(" ")+" ";
@@ -3891,7 +3848,8 @@ async function relay(depth:number) {
 		}
 		const echostatus=(depth==0);
 		if(echostatus){
-			const temp=grokTemperature.toFixed(1)+"°";
+			const frigid=(info && info.cold); 
+			const temp=frigid?"🧊":grokTemperature.toFixed(1)+"°";
 			const forge = roha.config.tools? (grokFunctions ? Pail : "🐸") : "🪠";
 			const modelSpec=[rohaTitle,rohaModel,emoji,forge,temp,cost,size,elapsed.toFixed(2)+"s"];
 			const status=statusChar+modelSpec.join(" ")+" ";
@@ -4036,10 +3994,6 @@ async function relay(depth:number) {
 		}
 	}
 	return spend;
-}
-
-function replaceShortCodes(text: string): string {
-	return text.replace(/:([a-z_]+):/g, (match, code) => {return bibli.spec.shortcode[code] || match;});
 }
 
 // while true promptForge, callCommand and solicit completion
@@ -4300,7 +4254,7 @@ echo("console:",termSize);
 echo("user:",{nic:rohaNic,user:rohaUser,sharecount,terminal:userterminal})
 echo("type /help for latest and exit to quit");
 
-const birds=padChars(bibli.spec.unicode.lexis.𓅷𓅽.codes,HairSpace);
+const birds=padChars("𓅷𓅸𓅹𓅺𓅻𓅼𓅽",HairSpace);
 echo(birds);
 
 if(roha.config.listen){

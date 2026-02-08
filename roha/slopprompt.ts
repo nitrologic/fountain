@@ -164,8 +164,12 @@ const writer=Deno.stdout.writable.getWriter();
 
 // shortcode :heart: mapping :eyes:
 
-const bibli=JSON.parse(await Deno.readTextFile("./bibli.json"));
-const shortcode=bibli.spec.shortcode;
+const shortcode=JSON.parse(await Deno.readTextFile("./shortcode.json"));
+
+export function replaceShortCodes(text: string): string {
+	return text.replace(/:([a-z_]+):/g, (match, code) => {return shortcode[code] || match;});
+}
+
 
 // grapheme clusters are the new u8 ???
 

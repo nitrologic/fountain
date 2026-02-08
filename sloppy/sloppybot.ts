@@ -10,7 +10,7 @@ import { Client, GatewayIntentBits } from "npm:discord.js@14.15.3";
 // keep json flat single line
 // guildmembers intent not enabled at this time
 
-const sloppyBanner="[SLOPPY] sloppy 0.07 🦜 a stochastic parrot from slop fountain";
+const sloppyBanner="[SLOPPY] sloppy 0.08 🦜 a stochastic parrot from slop fountain";
 
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
