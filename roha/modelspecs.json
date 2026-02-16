@@ -63,6 +63,26 @@
 		"purpose": "Comprehensive text understanding, 128K context window",
 		"press": "Ideal for deep learning applications requiring comprehensive text understanding."
 	},
+	"qwen-turbo-latest@alibaba":{
+		"pricing":[0.05,0.20],
+		"purpose":"fastest cheap general llm, perfect for burner scripts & chat"
+	},
+	"qwen-plus-latest@alibaba":{
+		"pricing":[0.15,0.60],
+		"purpose":"step-up when you need deeper reasoning or long docs"
+	},
+	"qwq-plus@alibaba":{
+		"pricing":[0.30,1.20],
+		"purpose":"math/code reasoning beast, local deepseek-r1 vibe"
+	},
+	"qwen3-coder-30b-a3b-instruct@alibaba":{
+		"pricing":[0.18,0.72],
+		"purpose":"agentic coding with tool calls, good for auto-repo hacks"
+	},
+	"qwen-vl-max-latest@alibaba":{
+		"pricing":[0.32,1.28],
+		"purpose":"vision heavy-hitter, ocr + chart + meme understanding"
+	},
 	"claude-opus-4-6@anthropic":{
 		"pricing":[5.0,25.0],
 		"limit":[20000],
