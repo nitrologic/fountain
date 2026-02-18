@@ -51,15 +51,15 @@
 		"purpose":"frontier model for coding, agentic search, and creative writing",
 		"reality":"rate limited 20,000 input tokens per minute"
 	},
+	"claude-sonnet-4-6@anthropic":{
+		"pricing":[3.0,0.30,15.0],
+		"purpose":"frontier model for coding, agentic search, and creative writing"
+	},
 	"claude-haiku-4-5-20251001@anthropic":{
 		"active": true,
 		"pricing":[0.80,4.0],
 		"purpose":"under evaluation",
 		"reality":"I am new."
-	},
-	"claude-sonnet-4-5-20250929@anthropic":{
-		"pricing":[3.0,0.30,15.0],
-		"purpose":"frontier model for coding, agentic search, and creative writing"
 	},
 	"claude-opus-4-1-20250805@anthropic":{
 		"deprecated":true,
