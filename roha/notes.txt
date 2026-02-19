@@ -1,3 +1,37 @@
+### Looking at your current setup, you have a linear pipeline: **User → Fountain → Sloppy → Discord**. To make this a true social hub with multiple models and users, you need to move from a relay architecture to a **message bus with routing logic**.
+
+Here are architectural options leveraging your existing `slopBroadcast`, `rohaHistory`, and the `forge` session system:
+
+## 1. Multi-Model Orchestration Modes
+
+Instead of `relay(0)` calling one model, implement **conversation topologies**:
+
+**Round-Robin Panel** (`/panel mode`)
+- User message broadcasts to N models sequentially
+- Each model sees the previous model's response in history
+- Sloppy posts threaded replies: "Claude says…", "GPT says…"
+- Users vote with reactions to select the "winner" that continues
+
+**Debate Mode** (`/debate`)
+- Two models argue opposing sides
+- `rohaHistory` branches using your existing `sessionStack`/`pushHistory`
+- Each model gets isolated context of just their side + the debate topic
+- Sloppy relays both streams with "Pro:" and "Con:" headers
+
+**Ensemble Mode** (`/ensemble`)
+- Parallel async relays (your `beginRelay()` is already async-capable)
+- Wait for all models, then use a "synthesizer" prompt to merge responses
+- Post the synthesis as the official reply, with model attributions in a spoiler tag
+
+## 2. Multi-Integration Routing Layer
+
+Your `listenService` on 8081 currently accepts single connections. Expand this to a **room-based pub/sub**:
+
+```typescript
+// rooms: Map<roomId, Set<Connection>>
+// Instead of slopBroadcast(content, emoji) → broadcast to all,
+```
+
 copy-paste ready mvp biz plan (street micro-vendor – akl)
 
 1. problem  

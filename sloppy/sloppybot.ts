@@ -38,7 +38,8 @@ const DumpGuild=false;
 let quoteCount=0;
 
 //let openChannel="1235838347717378118";
-let openChannel="1410693060672753704";
+//let openChannel="1410693060672753704";
+let openChannel="1473539274384211999";
 
 let directChannels={};
 
