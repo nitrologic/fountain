@@ -1,3 +1,14 @@
+I want to wash my car. The car wash is 100m away. Should I walk or drive?
+
+DEBUG,INFO,WARN,ERROR,CRITICAL
+
+Home
+Marketplace
+Computers
+Peripherals
+Headsets & microphones
+Headsets
+
 ### Looking at your current setup, you have a linear pipeline: **User → Fountain → Sloppy → Discord**. To make this a true social hub with multiple models and users, you need to move from a relay architecture to a **message bus with routing logic**.
 
 Here are architectural options leveraging your existing `slopBroadcast`, `rohaHistory`, and the `forge` session system:

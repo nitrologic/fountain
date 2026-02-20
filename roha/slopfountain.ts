@@ -18,10 +18,10 @@ import { decodeBase64, encodeBase64 } from "https://deno.land/std/encoding/base6
 import { expandGlob } from "https://deno.land/std/fs/mod.ts";
 import { resolve } from "https://deno.land/std/path/mod.ts";
 
-// Testing with Deno 2.5.6, V8 14.0.365.5-rusty, TypeScript 5.9.2
+// Testing with Deno 2.6.10, V8 14.5.201.2-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.6.7";
+const fountainVersion="1.6.8";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -656,6 +656,18 @@ async function echoStatus(...args:any){
 	const output=lines.join(" ").trimEnd();
 	if(output.length){
 		statusBuffer.push(output);
+	}
+}
+
+function echoInfo(...args:any):void{
+	const lines=[];
+	for(const arg of args){
+		const line=toString(arg);
+		lines.push(line.trimEnd());
+	}
+	const output=lines.join(" ").trimEnd();
+	if(output.length){
+		console.log(output);
 	}
 }
 
@@ -1800,9 +1812,9 @@ async function shareSlop(path:string,depth:number){
 		// attachMedia(words);
 		const size=stat.size;
 		const modified=stat.mtime.getTime();
-		echo("Share file path:",path," size:",size," ");
+		echoInfo("Share file path:",path," size:",size," ");
 		const hash=await hashFile(path);
-		echo("hash:",hash);
+		echoInfo("hash:",hash);
 		await addShare({path,size,modified,hash,tag});
 	}
 }
@@ -2009,7 +2021,7 @@ async function saveHistory(name) {
 //		rohaHistory.push({role:"system",title:"Fountain History Saved",content:line});
 		rohaHistory.push({role:"system",title:"saveHistory",content:line});
 		await Deno.writeTextFile(filePath,JSON.stringify(rohaHistory,null,"\t"));
-		echo("[FORGE]",line);
+		echoInfo("[FORGE]",line);
 		roha.saves.push(filename);
 		await writeForge();
 	} catch (error) {
@@ -2400,7 +2412,7 @@ async function shareDir(dir:string, tag:string, depth=1, maxDepth=5) {
 				continue;
 			}
 		}
-		echo("Shared",paths.length,"files from",dir,"with tag",tag);
+		echoInfo("Shared",paths.length,"files from",dir,"with tag",tag);
 	} catch (error) {
 		echo("shareDir error",String(error)); //.message
 		throw error;
@@ -2519,10 +2531,10 @@ async function commitShares(tag) {
 					if (!rohaShares.includes(path)) {
 						rohaShares.push(path);
 						if(roha.config.verbose){
-							echo("[KOHA] Shared path",path);
+							echoInfo("[KOHA] Shared path",path);
 						}
 					}else{
-						echo("[KOHA] Updated share path",path);
+						echoInfo("[KOHA] Updated share path",path);
 					}
 				}
 			}
@@ -2539,13 +2551,13 @@ async function commitShares(tag) {
 	if (removedPaths.length) {
 		roha.sharedFiles=validShares;
 		await writeForge();
-		echo("[KOHA] commitShares removed", removedPaths.join(" "));
+		echoInfo("[KOHA] commitShares removed", removedPaths.join(" "));
 	}
 	if (dirty && tag) {
 		rohaHistory.push({ role: "system", title:"Fountain Tool Hint", content: "Feel free to call annotate_forge to tag " + tag });
 	}
 	if (count && roha.config.verbose) {
-		echo("[KOHA] Updated files",count,"of",validShares.length);
+		echoInfo("[KOHA] Updated files",count,"of",validShares.length);
 	}
 	return dirty;
 }
@@ -3804,7 +3816,7 @@ async function relay(depth:number) {
 				const rate=modelSpecs[grokModel].pricing||[0,0];
 				const tokenRate=rate[0];
 				const outputRate=rate[rate.length>2?2:1];
-				if (verbose) echo("usage",usage);
+				if (verbose) echoInfo("usage",usage);
 				const cached=usage.cache_tokens||usage.prompt_tokens_details?.cached_tokens||0;
 				if(rate.length>2){
 					const cacheRate=rate[1];
@@ -3820,7 +3832,7 @@ async function relay(depth:number) {
 					lode.credit=credit-spend;
 					if (verbose) {
 						const summary="{account:"+account+",spent:"+spend.toFixed(4)+",cached:"+cached+",balance:"+(lode.credit).toFixed(4)+"}";
-						echo(summary);
+						echoInfo(summary);
 					}
 				}else{
 					echo("no lode for account",account);
@@ -4149,7 +4161,7 @@ async function enumerateModels(){
 		if(endpoint) {
 			const count=endpoint.modelList?.length||0;		//",endpoint.modelList
 			if(roha.config.verbose){
-				echo("[FORGE] Connected to",account,count,elapsed.toFixed(2)+"s");
+				echoInfo("[FORGE] Connected to",account,count,elapsed.toFixed(2)+"s");
 			}
 			rohaEndpoint[account]=endpoint;
 			specAccount(account);
