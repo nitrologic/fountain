@@ -628,7 +628,6 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 				busy=false;
 			} else {
 				if(byte==3) return null;	// ctrl c triggers a Deno exit
-				if(byte==3) return null;	// ctrl c triggers a Deno exit
 				if(byte<32 && byte!=9){
 					console.log("[RAW] bad byte",byte);
 					busy=false;

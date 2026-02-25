@@ -8,6 +8,15 @@
 		"api": "DeepSeek",
 		"locale": "zh-CN"
 	},
+	"zai": {
+		"emoji": "Z",
+		"env": "ZAI_API_KEY",
+		"url": "https://api.z.ai/api/paas/v4",
+		"docs": "https://docs.z.ai/guides/overview/quick-start",
+		"platform": "https://z.ai/manage-apikey/billing",
+		"api": "OpenAI",
+		"locale": "zh-CN"
+	},
 	"moonshot": {
 		"emoji": "🜁",
 		"env": "MOONSHOT_API_KEY",

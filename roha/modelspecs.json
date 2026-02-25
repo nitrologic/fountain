@@ -1,4 +1,9 @@
 {
+	"glm-5@zai":{
+		"pricing": [1.00, 0.20, 3.20],
+		"released": "2026-02-11",
+		"purpose": "frontier Chinese model"
+	},
 	"deepseek-chat@deepseek": {
 		"active": true,
 		"pricing": [0.28, 0.028, 0.42],
