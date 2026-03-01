@@ -22,13 +22,7 @@
 		"cold":true,
 		"released": "2026-01-26",
 		"pricing": [0.60,0.10,3.0],
-		"purpose": "beta"
-	},
-	"kimi-k2-0905-preview@moonshot": {
-		"released": "2025-09-05",
-		"pricing": [0.60,0.15,2.5],
-		"purpose": "Large scale mixture of Experts model, 128K context window",
-		"press": "Embraces lunacy with a smile, fabricate that date kimi k2."
+		"purpose": "Large scale mixture of Experts model, 256K context window"
 	},
 	"qwen-turbo-latest@alibaba":{
 		"pricing":[0.05,0.20],

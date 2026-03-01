@@ -1,3 +1,11 @@
+	"kimi-k2-0905-preview@moonshot": {
+		"released": "2025-09-05",
+		"pricing": [0.60,0.15,2.5],
+		"purpose": "Large scale mixture of Experts model, 128K context window",
+		"press": "Embraces lunacy with a smile, fabricate that date kimi k2."
+	},
+
+
 I want to wash my car. The car wash is 100m away. Should I walk or drive?
 
 DEBUG,INFO,WARN,ERROR,CRITICAL
