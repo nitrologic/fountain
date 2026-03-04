@@ -1,3 +1,6 @@
+[RELAY] unhandled error 400 invalid temperature: only 1 is allowed for this model
+[RELAY] Error: 400 invalid temperature: only 1 is allowed for this model
+
 cmake [options] -S <path-to-source> -B <path-to-build>
 
 C:\nitrologic\fountain\native>build
