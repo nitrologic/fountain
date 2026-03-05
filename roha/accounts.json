@@ -1,4 +1,21 @@
 {
+	"cohere": {
+		"emoji": "🧩",
+		"env": "COHERE_API_KEY",
+		"url": "https://api.cohere.com/v2",
+		"docs": "https://docs.cohere.com/reference/about",
+		"api": "Cohere",
+		"locale": "en-CA"
+	},
+	"mistral": {
+		"emoji": "⚡️",
+		"env": "MISTRAL_API_KEY",
+		"url": "https://api.mistral.ai/v1",
+		"docs": "https://docs.mistral.ai/",
+		"platform": "https://console.mistral.ai/home",
+		"api": "OpenAI",
+		"locale": "fr-FR"
+	},
 	"deepseek": {
 		"emoji": "🐋",
 		"env": "DEEPSEEK_API_KEY",
