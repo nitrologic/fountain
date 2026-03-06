@@ -67,6 +67,12 @@
 		"purpose":"frontier model for coding, agentic search, and creative writing",
 		"reality":"rate limited 20,000 input tokens per minute"
 	},
+	"gpt-5.3-codex@openai":{
+		"released": "2026-03-6",
+		"pricing":[1.75,14.00],
+		"endpoints":["v1/responses"],
+		"purpose":"High Cybersecurity Capability"
+	},
 	"gpt-5.4-2026-03-05@openai":{
 		"released": "2026-03-6",
 		"pricing":[2.50,0.50,15.00],
