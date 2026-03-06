@@ -1399,11 +1399,41 @@ async function connectCohere(account,config){
 
 // API support for mistral
 
-// [MISTRAL] {"id":"mistral-vibe-cli-latest","object":"model","created":1772755081,"ownedBy":"mistralai",
-// "capabilities":{"completionChat":true,"functionCalling":true,"completionFim":false,"fineTuning":false,
-// "vision":false,"ocr":false,"classification":false,"moderation":false,"audio":false,"audioTranscription":false},
-// "name":"devstral-2512","description":"Official devstral-2512 Mistral AI model","maxContextLength":262144,
-// "aliases":[],"deprecation":null,"deprecationReplacementModel":null,"defaultModelTemperature":0.2,"type":"base"}
+function prepareMistralRequest(payload){
+	const history=[];
+	let blob={};
+	for(const item of payload.messages){
+		const content=item.content;
+		switch(item.role){
+			case "system":
+				history.push({role:"system",content});
+				break;
+			case "user":
+				if(item.name=="blob"){
+					blob=JSON.parse(content);
+					continue;
+				}
+				if(item.name=="image"){
+					const image_url={url:"https://jpeg.org/images/jpeg-home.jpg"}
+					history.push({role:"user",content:[{type:"image_url",image_url}]});
+					continue;
+				}
+				history.push({role:"user",content});
+				break;
+			case "assistant":
+				history.push({role:"assistant",content});
+				break;
+		}
+	}
+	const temperature=grokTemperature;
+	const request={
+		model:payload.model,
+		temperature,
+		stream:false,
+		messages:history
+	};
+	return request;
+}
 
 async function connectMistral(account,config){
 	try{
@@ -1436,7 +1466,21 @@ async function connectMistral(account,config){
 				completions: {
 					create: async (payload) => {
 						const model=payload.model;
-						const content=prepareCohereRequest(payload);
+						const request=prepareMistralRequest(payload);
+						const response = await client.chat.complete(request);
+						if(roha.config.debugging){
+							echo("[MISTRAL] response",response);
+						}
+						const text="mistral says what?";
+						const prompt_tokens=response.usage.promptTokens;
+						const completion_tokens=response.usage.completionTokens;
+						const total_tokens=response.usage.totalTokens;
+						const usage={prompt_tokens,completion_tokens,total_tokens};
+						const choices=[];
+						for(const choice of response.choices){
+							choices.push({message:{content:choice.message.content}});
+						}
+						return {model,choices,usage};
 					}
 				}
 			}
