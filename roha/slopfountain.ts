@@ -10,6 +10,8 @@ import { replaceShortCodes, safeString, discordStringWidth, stringWidth, announc
 
 import { OpenAI, ChatCompletionRequest, ChatCompletionResponse } from "jsr:@openai/openai@5.23.0";
 
+import { CohereClientV2 } from "npm:cohere-ai";
+import { Mistral } from "npm:@mistralai/mistralai";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
 import { TextToSpeechClient } from "npm:@google-cloud/text-to-speech";
@@ -1256,6 +1258,135 @@ async function connectGoogle(account,config){
 	}
 }
 
+// API support for cohere
+
+//  {"name":"command-a-vision-07-2025","endpoints":["chat"],"finetuned":false,"contextLength":128000,
+//  "tokenizerUrl":"https://storage.googleapis.com/cohere-public/tokenizers/command-a-vision-07-2025.json",
+//  "features":["vision","logprobs","json_mode","json_schema","strict_tools","safety_modes"],"defaultEndpoints":[]}
+
+async function connectCohere(account,config){
+	try{
+		const baseURL=config.url;
+		const apiKey=getEnv(config.env);
+		if(!apiKey) return null;
+		const client=new CohereClientV2({token:apiKey});
+		const models=await client.models.list();
+//		echo("[COHERE]",models);
+		const list=[];
+		for(const model of models.models){
+//			echo("[COHERE]",model);//model.name);
+			if(model.endpoints?.includes("chat")){
+//				echo("[COHERE]",model.name);
+				const name=model.name+"@"+account;
+				list.push(name);
+				const spec={id:model.name,object:"model",owner:"owner"}
+				specModel(spec,account);
+			}
+		}
+		modelList.push(...list);
+		return {
+			client,
+			apiKey,
+			baseURL,
+			modelList:list,
+			models: {
+				list: async () => models, // Return cached models or fetch fresh
+			},
+			chat: {
+				completions: {
+					create: async (payload) => {
+/*
+//						config: { systemInstruction: setup, maxOutputTokens: 500,temperature: 0.1, }
+						const model=genAI.getGenerativeModel({model:payload.model});
+						const request=prepareGeminiPrompt(payload);
+						// TODO: hook up ,signal SingleRequestOptions parameter
+						// if(roha.config.debugging) echo("[GEMINI] generateContent",request);
+						const result=await model.generateContent(request);
+						const debugging=roha.config.debugging;
+						if(debugging) echo("[GEMINI] result",result);
+						const text=await result.response.text();
+						const usage=result.response.usageMetadata||{};
+						const choices = [];
+						choices.push({message:{content:text}});
+						const calls = result.response.functionCalls(); // Get Gemini's raw function calls
+						if(calls){
+							echo("[GEMINI] toolCall",calls);
+							const toolCalls = calls.map((call,index)=>({id:"call_"+(geminiCallCount++),type:"function",function:{name:call.name,arguments:JSON.stringify(call.args)}}));
+							choices[0].message.tool_calls=toolCalls;
+							echo("[GEMINI] toolCalls",toolCalls);
+//							for(const call of toolCalls){
+//								echo("[GEMINI] toolCall",call);
+//								choices.push({tool_calls:call});
+//							}
+						}
+						// TODO: add cached usage to reply
+						const temperature=grokTemperature;
+						return {
+							model:payload.model,
+							temperature,
+							choices,
+							usage:{
+								prompt_tokens:usage.promptTokenCount,
+								completion_tokens:usage.candidatesTokenCount+usage.thoughtsTokenCount,
+								total_tokens:usage.totalTokenCount
+							}
+						};
+*/						
+					},
+				},
+			},
+		};
+	}catch( error){
+		echo("[COHERE] error:",error);
+	}
+			
+}
+
+// API support for mistral
+
+// [MISTRAL] {"id":"mistral-vibe-cli-latest","object":"model","created":1772755081,"ownedBy":"mistralai",
+// "capabilities":{"completionChat":true,"functionCalling":true,"completionFim":false,"fineTuning":false,
+// "vision":false,"ocr":false,"classification":false,"moderation":false,"audio":false,"audioTranscription":false},
+// "name":"devstral-2512","description":"Official devstral-2512 Mistral AI model","maxContextLength":262144,
+// "aliases":[],"deprecation":null,"deprecationReplacementModel":null,"defaultModelTemperature":0.2,"type":"base"}
+
+async function connectMistral(account,config){
+	try{
+		const baseURL=config.url;
+		const apiKey=getEnv(config.env);
+		if(!apiKey) return null;
+		const client=new Mistral({apiKey:apiKey});
+		const models=await client.models.list();
+		echo("[MISTRAL]",models);
+		const list=[];
+		for(const model of models.data){
+//			echo("[MISTRAL]",model);//model.id);
+			if(model.capabilities.completionChat){
+				const name=model.id+"@"+account;
+				list.push(name);
+				const spec={id:model.id,object:"model",owner:"owner"}
+				specModel(spec,account);
+			}
+		}
+		modelList.push(...list);
+		return {
+			client,
+			apiKey,
+			baseURL,
+			modelList:list,
+			models: {
+				list: async () => models, // Return cached models or fetch fresh
+			},
+			chat: {
+				completions: {
+				}
+			}
+		};
+	}catch( error){
+		echo("[MISTRAL] error:",error);
+	}			
+}
+
 // API support for anthropic
 
 function anthropicSystem(payload){
@@ -1642,6 +1773,10 @@ async function connectAccount(account) {
 			return await connectGoogle(account,config);
 		case "Anthropic":
 			return await connectAnthropic(account,config);
+		case "Mistral":
+			return await connectMistral(account,config);
+		case "Cohere":
+			return await connectCohere(account,config);
 	}
 	return null;
 }
