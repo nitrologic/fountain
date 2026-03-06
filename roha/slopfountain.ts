@@ -1357,7 +1357,7 @@ async function connectMistral(account,config){
 		if(!apiKey) return null;
 		const client=new Mistral({apiKey:apiKey});
 		const models=await client.models.list();
-		echo("[MISTRAL]",models);
+//		echo("[MISTRAL]",models);
 		const list=[];
 		for(const model of models.data){
 //			echo("[MISTRAL]",model);//model.id);

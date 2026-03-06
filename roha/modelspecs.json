@@ -67,6 +67,16 @@
 		"purpose":"frontier model for coding, agentic search, and creative writing",
 		"reality":"rate limited 20,000 input tokens per minute"
 	},
+	"gpt-5.4-2026-03-05@openai":{
+		"released": "2026-03-6",
+		"pricing":[2.50,0.50,15.00],
+		"purpose":"frontier model for complex professional work"
+	},
+	"gpt-5.4-pro-2026-03-05@openai":{
+		"released": "2026-03-6",
+		"pricing":[30.0,180.00],
+		"purpose":"frontier model designed to tackle tough problems"
+	},
 	"gpt-realtime-2025-08-28@openai": {
 		"deprecated":true,
 		"robot":true,
@@ -75,92 +85,6 @@
 		"pricing":[32,64],
 		"purpose":"speech-to-speech voice agents",
 		"endpoints":["wss://api.openai.com/v1/realtime"]
-	},
-	"gpt-5-pro-2025-10-06@openai":{
-		"deprecated":true,
-		"released": "2025-10-06",
-		"pricing":[15.00,120.0],
-		"endpoints":["v1/responses"],
-		"purpose":"The smartest and most precise model"
-	},
-	"gpt-5-codex@openai":{
-		"deprecated":true,
-		"pricing":[1.25,0.125,10.0],
-		"purpose":"coding stuff",
-		"endpoints":["v1/responses"]
-	},
-	"codex-mini-latest@openai":{
-		"deprecated":true,
-		"pricing":[0.60,12.0],
-		"purpose":"coding stuff",
-		"endpoints":["v1/responses"]
-	},
-	"gpt-audio@openai":{
-		"deprecated":true,
-		"pricing":[0.60,12.0],
-		"purpose":"gpt audio stuff",
-		"endpoints":["v1/audio/speech"]
-	},
-	"tts-1@openai":{
-		"deprecated":true,
-		"pricing":[0.60,12.0],
-		"purpose":"tts $4 per 1000 seconds",
-		"endpoints":["v1/audio/speech"]
-	},
-	"gpt-4o-mini-tts@openai":{
-		"deprecated":true,
-		"pricing":[0.60,12.0],
-		"purpose":"gpt-5",
-		"endpoints":["v1/audio/speech"]
-	},
-	"gpt-5-2025-08-07@openai":{
-		"deprecated":true,
-		"cold":true,
-		"pricing":[1.25,0.125,10.0],
-		"purpose":"gpt-5"
-	},
-	"gpt-5-mini-2025-08-07@openai":{
-		"deprecated":true,
-		"cold":true,
-		"pricing":[0.25,0.025,2.0],
-		"purpose":"gpt-5 mini"
-	},
-	"gpt-5-nano-2025-08-07@openai":{
-		"active": true,
-		"cold":true,
-		"pricing":[0.05,0.025,0.20],
-		"purpose":"nano nano 5 - faster than a fast thing",
-		"press":"supporting up to ? million tokens of context",
-		"reality":"hopefully does not suffer from clueless ideation"
-	},
-	"gpt-5.1-2025-11-13@openai":{
-		"deprecated":true,
-		"cold":true,
-		"pricing":[1.25,0.125,10.0],
-		"purpose":"gpt-5"
-	},
-	"gpt-5.1-codex@openai":{
-		"pricing":[1.25,0.125,10.0],
-		"purpose":"coding stuff",
-		"endpoints":["v1/responses"]
-	},
-	"gpt-5.1-codex-mini@openai":{
-		"pricing":[0.25,0.025,2.0],
-		"purpose":"coding stuff",
-		"endpoints":["v1/responses"]
-	},
-	"gpt-5.2-pro@openai":{
-		"pricing":[21,168],
-		"purpose":"new model - under evaluation"
-	},
-	"gpt-5.2-2025-12-11@openai":{
-		"pricing":[1.75,14.0],
-		"purpose":"new model - under evaluation"
-	},
-	"gpt-5.2-chat-latest@openai":{
-		"active": true,
-		"pricing":[1.75,14.0],
-		"purpose":"new model - under evaluation"
 	},
 	"models/gemini-3-flash-preview@gemini":{
 		"robot":true,
