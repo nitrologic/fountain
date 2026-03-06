@@ -39,6 +39,7 @@
 		"env": "COHERE_API_KEY",
 		"url": "https://api.cohere.com/v2",
 		"docs": "https://docs.cohere.com/reference/about",
+		"platform": "https://dashboard.cohere.com/billing",
 		"api": "Cohere",
 		"locale": "en-CA"
 	},

@@ -6,9 +6,9 @@
 
 Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
-Addressing 394 models from 10 providers the LLM research project Slop Fountain 1.7.1 ⛲ approaches connected.
+Addressing 395 models from 10 providers the LLM research project Slop Fountain 1.7.1 ⛲ approaches connected.
 
-Pleased to welcome 🎉 Z.ai GLM 5 <del>🎉 Claude Sonnet 4.6 🎉 Gemini 3 Pro 🎉Qwen3 Max and 🎉 Claude Haiku 4.5</del>.
+Pleased to welcome 🎉 ChatGPT 5.4 <del> 🎉 Z.ai GLM 5 🎉 Claude Sonnet 4.6 🎉 Gemini 3 Pro 🎉Qwen3 Max and 🎉 Claude Haiku 4.5</del>.
 
 > Planet earth is blue and there is nothing I can do - David Bowie
 
@@ -18,19 +18,22 @@ Pleased to welcome 🎉 Z.ai GLM 5 <del>🎉 Claude Sonnet 4.6 🎉 Gemini 3 Pro
 
 > /account
 
-| id | emoji | name | llm | credit | topup |
+| id | emoji | name      | llm | credit   | topup |
 |---:|-------|-----------|----:|----------|-------| 
-| 0 | 🐋 | deepseek | 2 | $11.6685 | https://platform.deepseek.com/usage |
-| 1 | 🜁 | moonshot | 12 | $0.4798 | https://platform.moonshot.ai/console/account |
-| 2 | 𝓪 | alibaba | 82 | $-1.2830 | https://bailian.console.alibabacloud.com/ |
-| 3 | A\ | anthropic | 11 | $-1.0176 | https://console.anthropic.com/dashboard |
-| 4 | 🌀 | openai | 103 | $-8.2816 | https://auth.openai.com/log-in |
-| 5 | 𝕏 | xai | 9 | $10.9298 | https://console.x.ai |
-| 6 | 🌟 | gemini | 50 | $-2.4094 | https://console.cloud.google.com/ |
+| 0 | 🐋 | deepseek | 2 | $9.8200 | https://platform.deepseek.com/usage |
+| 1 | Z | zai | 5 | $2.8538 | https://z.ai/manage-apikey/billing |
+| 2 | 🜁 | moonshot | 14 | $10.7700 | https://platform.moonshot.ai/console/account |
+| 3 | 𝓪 | alibaba | 134 | $-0.0079 | https://bailian.console.alibabacloud.com/ |
+| 4 | 🧩 | cohere | 10 | $0.0000 | https://dashboard.cohere.com/billing |
+| 5 | ⚡️ | mistral | 40 | $0.0000 | https://console.mistral.ai/home |
+| 6 | A\ | anthropic | 9 | $4.9765 | https://console.anthropic.com/dashboard |
+| 7 | 🌀 | openai | 125 | $8.9900 | https://platform.openai.com/settings/organization/billing |
+| 8 | 𝕏 | xai | 11 | $8.3976 | https://console.x.ai |
+| 9 | 🌟 | gemini | 45 | $-0.0023 | https://console.cloud.google.com/ 
 
 ## Developer setup
 
-Install [Deno 2.6](https://deno.com/)
+Install [Deno 2.7.4](https://deno.com/)
 
 ### Researcher Links
 
