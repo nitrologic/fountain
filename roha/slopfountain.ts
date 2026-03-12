@@ -1966,6 +1966,7 @@ function mutName(modelname:string):string{
 	name=name.replace("-experimental","#");
 //	name=name.replace("-Instruct","");
 //	name=name.replace("-instruct","");
+	name=name.replace("-beta","");
 	name=name.replace("-preview","");
 	name=name.replace("-next","");
 // qwen3 trims
