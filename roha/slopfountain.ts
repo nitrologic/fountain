@@ -1833,7 +1833,7 @@ async function connectOpenAI(account,config) {
 		const apiKey=getEnv(config.env);
 		const endpoint=new OpenAI({ apiKey, baseURL: config.url });
 		if(roha.config.debugging){
-			debugValue("endpoint",endpoint)
+//			debugValue("endpoint",endpoint)
 		}
 		const models=await endpoint.models.list();
 		const list=[];
@@ -1854,6 +1854,7 @@ async function connectOpenAI(account,config) {
 		if(error.status==429){
 			echo("Account Credit Error, please topup.");
 		}else{
+			echo("Connection Error");
 			echo(JSON.stringify(error));
 		}
 	}

@@ -87,5 +87,14 @@
 		"platform":"https://console.cloud.google.com/",
 		"api": "Google",
 		"locale": "en-US"
+	},
+	"nvidia":{
+		"emoji":"💚",
+		"env": "NVIDIA_API_KEY",
+		"url": "https://integrate.api.nvidia.com/v1",
+		"docs": "https://docs.api.nvidia.com/nim/reference/models-1",
+		"platform": "https://build.nvidia.com/explore/discover",
+		"api": "OpenAI",
+		"locale": "en-US"
 	}
 }
