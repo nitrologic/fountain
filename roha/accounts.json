@@ -1,9 +1,4 @@
 {
-	"ollama":{
-		"emoji": "🔗",
-		"url":"http://192.168.1.10:11434/v1",
-		"api": "OpenAI"
-	},
 	"deepseek": {
 		"emoji": "🐋",
 		"env": "DEEPSEEK_API_KEY",
@@ -70,7 +65,7 @@
 		"emoji": "🌀",
 		"env": "OPENAI_API_KEY",
 		"url": "https://api.openai.com/v1",
-		"platform":"https://platform.openai.com/settings/organization/billing",
+		"platform":"https://platform.openai.com/settings",
 		"api": "OpenAI",
 		"locale": "en-US"
 	},
@@ -101,5 +96,11 @@
 		"platform": "https://build.nvidia.com/explore/discover",
 		"api": "OpenAI",
 		"locale": "en-US"
+	},
+	"ollama":{
+		"emoji": "🔗",
+		"url":"http://192.168.1.10:11434/v1",
+		"platform":"https://ollama.com/library",
+		"api": "OpenAI"
 	}
 }
