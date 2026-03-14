@@ -1,4 +1,9 @@
 {
+	"ollama":{
+		"emoji": "🔗",
+		"url":"http://192.168.1.10:11434/v1",
+		"api": "OpenAI"
+	},
 	"deepseek": {
 		"emoji": "🐋",
 		"env": "DEEPSEEK_API_KEY",

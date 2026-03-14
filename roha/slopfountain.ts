@@ -1830,7 +1830,7 @@ function onSpeak(endpoint, apiKey, config) {
 }
 async function connectOpenAI(account,config) {
 	try{
-		const apiKey=getEnv(config.env);
+		const apiKey=config.env?getEnv(config.env):"";
 		const endpoint=new OpenAI({ apiKey, baseURL: config.url });
 		if(roha.config.debugging){
 //			debugValue("endpoint",endpoint)
@@ -1865,9 +1865,11 @@ async function connectOpenAI(account,config) {
 async function connectAccount(account) {
 	const config=modelAccounts[account];
 	if (!config) return null;
-	const apiKey=getEnv(config.env);
-	if (!apiKey) return null;
-	const api= config.api;
+	if (config.env){
+		const apiKey=getEnv(config.env);
+		if(!apiKey) return null;
+	}
+	const api=config.api;
 	switch(api){
 		case "OpenAI":
 			return await connectOpenAI(account,config);

@@ -1,4 +1,16 @@
 {
+	"deepseek-coder:6.7b@ollama":{
+		"pricing": [0,0],
+		"purpose": "locally hosted ollama model"
+	},
+	"deepseek-r1:7b@ollama":{
+		"pricing": [0,0],
+		"purpose": "locally hosted ollama model"
+	},
+	"glm4:9b-chat-q4_0@ollama":{
+		"pricing": [0,0],
+		"purpose": "locally hosted ollama model"
+	},
 	"glm-5@zai":{
 		"pricing": [1.00, 0.20, 3.20],
 		"released": "2026-02-11",
