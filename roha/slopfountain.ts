@@ -3125,15 +3125,12 @@ async function modelCommand(words){
 			await writeForge();
 		}
 	}else{
-		echoKey(modelKey,100);
-		echo_row("id","☐","model","vendor","count","date","price","");
+//		echoKey(modelKey,100);
+		echo_row("id","☐","model","vendor","count","price");
 		const all=(name && name=="all");
 		const voice=(name && name=="voice");
 		for(let i=0;i<modelList.length;i++){
 			const modelname=modelList[i];
-// todo: ⭐power
-			const isMut=(modelname==grokModel);
-			const attr=isMut?"☑":" ";
 // mutspec from roha.mut
 			const mutspec=(modelname in roha.mut)?roha.mut[modelname]:{...emptyMUT};
 			mutspec.name=modelname;
@@ -3142,7 +3139,11 @@ async function modelCommand(words){
 			// info is model rated stats
 			const info=modelname in modelSpecs?modelSpecs[modelname]:{};
 			const speech=info.endpoints && info.endpoints.includes("v1/audio/speech");
-			// tag model key
+// todo: ⭐power
+			const isMut=(modelname==grokModel);
+			const isActive=info.active;
+			const attr=isMut?"☑":(isActive?"☐":" ");
+// tag model key
 			if(info.active) notes.push(activeChar);
 			if(info.cold) notes.push("🧊");
 			if(info.multi) notes.push("👀");
@@ -3166,7 +3167,8 @@ async function modelCommand(words){
 			const audible=speech && voice;
 			if(cheap || all || audible || isMut){
 				const pricing=(info&&info.pricing)?stringifyArray(info.pricing):"";
-				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
+//				echo_row(i,attr,mut,provider,mutspec.relays|0,created,pricing,notes.join(" "));
+				echo_row(i,attr,mut,provider,mutspec.relays|0,pricing);
 			}
 		}
 		listCommand="model";
