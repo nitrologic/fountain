@@ -1869,6 +1869,9 @@ async function connectAccount(account) {
 		const apiKey=getEnv(config.env);
 		if(!apiKey) return null;
 	}
+	const url=config.url;
+	const header=await fetch(url, { method: "HEAD", signal: AbortSignal.timeout(5000)}).catch(() => "fail");
+	if (header=="fail") return null;
 	const api=config.api;
 	switch(api){
 		case "OpenAI":
