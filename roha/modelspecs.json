@@ -79,6 +79,17 @@
 		"purpose":"frontier model for coding, agentic search, and creative writing",
 		"reality":"rate limited 20,000 input tokens per minute"
 	},
+	"gpt-5.4-mini-2026-03-17@openai":{
+		"active": true,
+		"pricing":[0.75,0.075,4.50],
+		"purpose":"gpt-5 mini"
+	},
+	"gpt-5.4-nano-2026-03-17@openai":{
+		"active": true,
+		"pricing":[0.20,0.02,1.25],
+		"purpose":"nano nano 5 - faster than a fast thing",
+		"press":"supporting up to ? million tokens of context"
+	},
 	"gpt-5.3-codex@openai":{
 		"released": "2026-03-6",
 		"pricing":[1.75,14.00],
@@ -94,19 +105,6 @@
 		"released": "2026-03-6",
 		"pricing":[30.0,180.00],
 		"purpose":"frontier model designed to tackle tough problems"
-	},
-	"gpt-5-mini-2025-08-07@openai":{
-		"cold":true,
-		"pricing":[0.25,0.025,2.0],
-		"purpose":"gpt-5 mini"
-	},
-	"gpt-5-nano-2025-08-07@openai":{
-		"active": true,
-		"cold":true,
-		"pricing":[0.05,0.025,0.20],
-		"purpose":"nano nano 5 - faster than a fast thing",
-		"press":"supporting up to ? million tokens of context",
-		"reality":"hopefully does not suffer from clueless ideation"
 	},
 	"gpt-realtime-2025-08-28@openai": {
 		"deprecated":true,
@@ -125,12 +123,12 @@
 		"pricing":[0.25,0.05,1.50],
 		"released":"2026-03-3"
 	},
-	"grok-4.20-beta-0309-reasoning@xai":{
+	"grok-4.20-0309-reasoning@xai":{
 		"pricing": [2.0, 0.20, 6.0],
 		"released": "2026-03-12",
 		"purpose":"Reasoning model with 2M context window."
 	},
-	"grok-4.20-beta-0309-non-reasoning@xai":{
+	"grok-4.20-0309-non-reasoning@xai":{
 		"pricing": [2.0, 0.20, 6.0],
 		"released": "2026-03-12",
 		"purpose":"2M context window."

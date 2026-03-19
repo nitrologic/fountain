@@ -6,9 +6,9 @@
 
 Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
-Addressing 586 models from 11 providers the LLM research project Slop Fountain 1.7.2 ⛲ approaches connected.
+Addressing 586 models from 11 providers the LLM research project Slop Fountain 1.7.3 ⛲ approaches connected.
 
-Pleased to welcome 🎉 ChatGPT 5.4 🎉 Gemini 3.1 <del> 🎉 Z.ai GLM 5 🎉 Claude Sonnet 4.6 🎉 Gemini 3 Pro 🎉Qwen3 Max and 🎉 Claude Haiku 4.5</del>.
+Pleased to welcome 🎉 Grok 4.20 🎉 ChatGPT 5.4 <del>🎉 Gemini 3.1  🎉 Z.ai GLM 5 🎉 Claude Sonnet 4.6 🎉 Gemini 3 Pro 🎉Qwen3 Max and 🎉 Claude Haiku 4.5</del>.
 
 > Planet earth is blue and there is nothing I can do - David Bowie
 
