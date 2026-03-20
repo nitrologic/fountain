@@ -1,5 +1,5 @@
 // slopfountain.ts - a research tool for dunking large language models
-// Copyright (c) 2025 Simon Armstrong
+// Copyright (c) 2026 Simon Armstrong
 // Licensed under the MIT License
 
 // packed tab code style - unsafe typescript formatted with tabs and minimal white space
@@ -2959,7 +2959,7 @@ async function onAccount(args){
 		for(const key in modelAccounts){
 			list.push(key);
 		}
-		echo_row("id","emoji","name","llm","credit","topup");
+		echo_row("id","name","brand","llm","credit","topup");
 //		echo_row("----","--","-------------","-----","----------","--------------------");
 		for(let i=0;i<list.length;i++){
 			const key=list[i];
@@ -2971,7 +2971,7 @@ async function onAccount(args){
 				const count=(models?.length)|0;
 				const emoji=(config.emoji)||"?";
 				const link=config.platform||"";
-				echo_row(i,emoji,key,count,price(lode.credit),link);
+				echo_row(i,key,emoji,count,price(lode.credit),link);
 			}else{
 // inactive so hidden
 //				echo_row(i,key);

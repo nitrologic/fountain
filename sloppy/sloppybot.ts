@@ -1,6 +1,6 @@
 // sloppybot.ts 
 // A research tool connecting large language models and tiny humans
-// Copyright (c) 2025 Simon Armstrong
+// Copyright (c) 2026 Simon Armstrong
 // Licensed under the MIT License
 // status messages are sent to standard.error - no use of standard in out
 

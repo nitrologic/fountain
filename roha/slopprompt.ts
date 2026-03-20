@@ -1,5 +1,5 @@
 // slopprompt.ts - A raw mode prompt replacement for slop fountain
-// Copyright (c) 2025 Simon Armstrong
+// Copyright (c) 2026 Simon Armstrong
 // Licensed under the MIT License
 
 // uses winner=await Promise.race(race) logic to maintain communications

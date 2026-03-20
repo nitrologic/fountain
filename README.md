@@ -6,7 +6,9 @@
 
 Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
-Addressing 586 models from 11 providers the LLM research project Slop Fountain 1.7.3 ⛲ approaches connected.
+Addressing 595 models from 12* providers the LLM research project Slop Fountain 1.7.3 ⛲ approaches connected.
+
+    * now includes a local ollama server with various distilled models running on an RTX 3080
 
 Pleased to welcome 🎉 Grok 4.20 🎉 ChatGPT 5.4 <del>🎉 Gemini 3.1  🎉 Z.ai GLM 5 🎉 Claude Sonnet 4.6 🎉 Gemini 3 Pro 🎉Qwen3 Max and 🎉 Claude Haiku 4.5</del>.
 
@@ -18,18 +20,20 @@ Pleased to welcome 🎉 Grok 4.20 🎉 ChatGPT 5.4 <del>🎉 Gemini 3.1  🎉 Z.
 
 > /account
 
-| id | emoji | name      | llm | credit   | topup |
+| id | name      | brand | llm | credit   | topup                                        |
 |---:|-------|-----------|----:|----------|-------| 
-| 0 | 🐋 | deepseek | 2 | $9.8200 | https://platform.deepseek.com/usage |
-| 1 | Z | zai | 5 | $2.8538 | https://z.ai/manage-apikey/billing |
-| 2 | 🜁 | moonshot | 14 | $10.7700 | https://platform.moonshot.ai/console/account |
-| 3 | 𝓪 | alibaba | 134 | $-0.0079 | https://bailian.console.alibabacloud.com/ |
-| 4 | 🧩 | cohere | 10 | $0.0000 | https://dashboard.cohere.com/billing |
-| 5 | ⚡️ | mistral | 40 | $0.0000 | https://console.mistral.ai/home |
-| 6 | A\ | anthropic | 9 | $4.9765 | https://console.anthropic.com/dashboard |
-| 7 | 🌀 | openai | 125 | $8.9900 | https://platform.openai.com/settings/organization/billing |
-| 8 | 𝕏 | xai | 11 | $8.3976 | https://console.x.ai |
-| 9 | 🌟 | gemini | 45 | $-0.0023 | https://console.cloud.google.com/ 
+| 0  | deepseek  | 🐋    | 2   | $9.7996  | https://platform.deepseek.com/usage          |
+| 1  | zai       | Z     | 6   | $2.8430  | https://z.ai/manage-apikey/billing           |
+| 2  | moonshot  | 🜁     | 14  | $10.7483 | https://platform.moonshot.ai/console/account |
+| 3  | alibaba   | 𝓪     | 134 | $-0.0087 | https://bailian.console.alibabacloud.com/    |
+| 4  | cohere    | 🧩    | 8   | $-0.0015 | https://dashboard.cohere.com/billing         |
+| 5  | mistral   | ⚡️    | 45  | $-0.0110 | https://console.mistral.ai/home              |
+| 6  | anthropic | A\    | 9   | $2.3994  | https://console.anthropic.com/dashboard      |
+| 7  | openai    | 🌀    | 129 | $8.9827  | https://platform.openai.com/settings         |
+| 8  | xai       | 𝕏     | 14  | $8.3972  | https://console.x.ai                         |
+| 9  | gemini    | 🌟    | 45  | $-0.0024 | https://console.cloud.google.com/            |
+| 10 | nvidia    | 💚    | 189 | $0.0000  | https://build.nvidia.com/explore/discover    |
+| 11 | ollama    | 🔗    | 3   | $0.0000  | https://ollama.com/library                   |
 
 ## Developer setup
 
@@ -40,7 +44,7 @@ Install [Deno 2.7.4](https://deno.com/)
 * [fountain.md](roha/fountain.md) Configuration
 * [forge.md](roha/forge.md) Command Set
 * [plan.txt](roha/plan.txt) On the list
-* [license](LICENSE) Copyright (c) 2025 Simon Armstrong - MIT License
+* [license](LICENSE) Copyright (c) 2026 Simon Armstrong - MIT License
 
 ## Blogs
 
