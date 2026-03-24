@@ -858,7 +858,8 @@ async function flush() {
 	for (const {line,from} of remoteBuffer) {
 // muted on public channels		
 //		send.push(line); 
-		rohaPush(line,from);
+// dont share just log remote chatter
+//		rohaPush(line,from);
 		await logForge(line,from);
 	}
 	remoteBuffer=[];

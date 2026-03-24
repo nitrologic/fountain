@@ -4,7 +4,7 @@
 // Licensed under the MIT License
 // status messages are sent to standard.error - no use of standard in out
 
-import { Client, GatewayIntentBits } from "npm:discord.js@14.15.3";
+import { Client, GatewayIntentBits, AttachmentBuilder } from "npm:discord.js@14.15.3";
 
 // receive message from fountain /announce and echo to discord bot with splurt
 // keep json flat single line
@@ -341,6 +341,11 @@ discordClient.on('messageCreate', async (message) => {
 			}
 			return;
 		}
+		if(message.attachments){
+			message.attachments.forEach(attachment => {
+				console.log(attachment.url);
+			});			
+		}
 		// chunk the content under discord limit
 		const contents=chunkContent(message.content,4000-400);
 		for(const content of contents){
@@ -368,6 +373,7 @@ Deno.addSignalListener("SIGINT", () => {
 const token=Deno.env.get("DISCORD_BOT");
 await discordClient.login(token)
 
+await sleep(10e3);
 await connectFountain();
 writeFountain("{\"action\":\"connect\"}");
 let portPromise=readFountain();
