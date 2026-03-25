@@ -120,16 +120,14 @@ async function onSignal(){
 }
 
 async function initSystem(){
-	splurt("Waiting for SIGINT");
+	splurt("Listening for SIGINT");
 	Deno.addSignalListener("SIGINT",onSignal);
-
 	const promise=new Promise<void>((resolve) => {
 		Deno.addSignalListener("SIGINT", () => {
 			onSignal();
 			resolve(); // resolves the promise on SIGINT
 		});
 	});
-
 	return promise;
 }
 
@@ -206,7 +204,8 @@ let slopPipe:Deno.Conn;
 async function connectFountain():Promise<boolean>{
 	try{
 		slopPipe = await Deno.connect({hostname:"localhost",port:8081});
-		splurt("connected","localhost:8081");
+		(slopPipe as Deno.TcpConn).setNoDelay(true);
+		splurt("connected with noDelay","localhost:8081");
 		return true;
 	}catch(error){
 		if (error instanceof Deno.errors.ConnectionRefused) {
@@ -253,7 +252,7 @@ async function readFountain(){
 // main app starts here
 
 console.log(sloppyBanner);
-await sleep(5200);
+await sleep(1200);
 
 const discordClient = new Client({
 	intents: [
@@ -266,7 +265,8 @@ const discordClient = new Client({
 });
 
 discordClient.once('ready', () => {
-	console.log("[SLOPPY] discordClient online",discordClient.user?.tag||"");
+	// was console.log
+	splurt("[SLOPPY] discordClient online",discordClient.user?.tag||"");
 	discordClient.user?.setPresence({ status: 'online' });
 //	console.log("[SLOPPY] channels",discordClient.channels);
 });
@@ -320,7 +320,8 @@ discordClient.on('messageCreate', async (message) => {
 		await message.reply('pong!');
 		openChannel=message.channelId;
 		const flake=message.channelId.toString();
-		console.log("[SLOPPY]","pong flake",flake,openChannel);
+		// was console.log
+		splurt("[SLOPPY]","pong flake",flake,openChannel);
 		return;
 	}
 	if (message.channelId==openChannel) {
@@ -343,7 +344,8 @@ discordClient.on('messageCreate', async (message) => {
 		}
 		if(message.attachments){
 			message.attachments.forEach(attachment => {
-				console.log(attachment.url);
+				// was console.log
+				splurt(attachment.url);
 			});			
 		}
 		// chunk the content under discord limit
@@ -366,25 +368,26 @@ Deno.addSignalListener("SIGINT", () => {
 	discordClient.user?.setPresence({status:"dnd"});	// online idle dnd
 	// todo: validate disconnect?
 	discordClient.destroy();
-	console.log("[SLOPPY] exit");
+	// was console.log
+	splurt("[SLOPPY] exit");
 	Deno.exit(0);
 });
 
 const token=Deno.env.get("DISCORD_BOT");
 await discordClient.login(token)
 
-await sleep(10e3);
+await sleep(20e3);
 await connectFountain();
 writeFountain("{\"action\":\"connect\"}");
 let portPromise=readFountain();
-let systemPromise=initSystem();//readSystem();
-
+let systemPromise=initSystem();
 
 while(true){
 	const race=[portPromise,systemPromise];
 	const result=await Promise.race(race);
 	if (result==null) break;
 	if(result.system) {
+		splurt("[SLOPPY] result system");
 		await onSystem(result.system);
 		systemPromise=readSystem();
 	}

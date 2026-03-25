@@ -1,3 +1,44 @@
+promise already exists for connection0
+connection received for connection0
+
+async function acceptConnection(connection){
+	try{
+		const connection=await slopListener.accept();
+		connection.setNoDelay(true);
+		const name="connection"+(connectionCount++);
+		echo("[PROMPT] noDelay set on accepted connection",name);
+		return {connection,name};
+	}catch(error){
+		echo("[PROMPT] listenPort await failure",port);
+		slopListener = null;
+		// TODO: short circuit - Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
+		return {error:error};
+	}
+}
+
+
+
+
+/*
+// utility to format text for fixed width target
+function wrapText(content,wide){
+	const lines=[];
+	let cursor=0;
+	while(cursor<content.length){
+		let line=content.substring(cursor,cursor+wide);
+		if(line.length>wide){
+			let n=line.indexOf("\n");
+			if(n==-1) n=line.lastIndexOf(" ");
+			if(n!=-1) line=line.substring(0,n+1);
+		}
+		lines.push(line);
+		cursor+=line.length;
+	}
+	return lines;
+}
+*/
+
+
 	"models/gemini-3-flash-preview@gemini":{
 		"robot":true,
 		"pricing":[0.50,0.05,3.00],

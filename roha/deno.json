@@ -6,7 +6,7 @@
 		"sloppynet": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read ../sloppy/sloppynet.ts",
 		"sloppyhost": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read ../sloppy/sloppyhost.ts",
 		"fountain":{"dependencies":["slopfountain"]},
-		"sloppy":{"dependencies":["slopfountain","sloppybot"]}
+		"sloppy":{"dependencies":["sloppybot","slopfountain"]}
 	},
 	"imports": {
 		"@openai/openai": "jsr:@openai/openai@^5.23.0"

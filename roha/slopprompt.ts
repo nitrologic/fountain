@@ -68,7 +68,6 @@ let slopListener=null;
 
 async function listenPort(port:number){
 	if(!slopListener){
-		echo("[PROMPT] listening for slop on port",port);
 		try{
 			slopListener=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
 		}catch(error){
@@ -76,20 +75,17 @@ async function listenPort(port:number){
 			return {error:error};
 		}
 	}
-	try{
-		const connection=await slopListener.accept();
-		const name="connection"+(connectionCount++);
-		echo("[PROMPT] accepted connection",name);
-		return {connection,name};
-	}catch(error){
-		echo("[PROMPT] listenPort await failure",port);
-		slopListener = null;
-		// TODO: short circuit - Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
-		return {error:error};
-	}
+	echo("[PROMPT] listening for slop on port",port);
+	const connection=await slopListener.accept();
+	const name="connection"+(connectionCount++);
+	return {connection,name};
 }
 
 export function listenService(){
+	if(listenerPromise) {
+		echo("[PROMPT] listenService - listenPort already active");
+		return;
+	}
 	listenerPromise=listenPort(8081);
 }
 
@@ -102,24 +98,6 @@ export async function announceCommand(words:string[]){
 		}
 	}
 }
-/*
-// utility to format text for fixed width target
-function wrapText(content,wide){
-	const lines=[];
-	let cursor=0;
-	while(cursor<content.length){
-		let line=content.substring(cursor,cursor+wide);
-		if(line.length>wide){
-			let n=line.indexOf("\n");
-			if(n==-1) n=line.lastIndexOf(" ");
-			if(n!=-1) line=line.substring(0,n+1);
-		}
-		lines.push(line);
-		cursor+=line.length;
-	}
-	return lines;
-}
-*/
 
 export async function slopBroadcast(text:string,from:string){
 	// fix content with only \n
@@ -555,6 +533,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			if(name in slopConnections){
 				echo("connection already exists for",name);
 			}
+			echo("connection received for",name);
 			slopConnections.set(name,connection);
 			listenerPromise=listenPort(8081);
 			const receiver=readNamedConnection(name,connection);

@@ -1,3 +1,7 @@
+ren start "sloppy" cmd /k deno task sloppybot
+rem start "slopfountain" deno task slopfountain
+rem deno task slopfountain
+
 best-practice cheat-sheet for tool descriptors + google search:
 
 llama-index “openai-agent” style
