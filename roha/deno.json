@@ -1,5 +1,6 @@
 {
 	"tasks":{
+		"ditto": "deno run --allow-net --allow-env --allow-write=./forge slopsearch.ts",
 		"slopfountain": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read --allow-write=./forge slopfountain.ts",
 		"sloppybot": "deno run --allow-net --allow-env ../sloppy/sloppybot.ts",
 		"sloppylisten": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read ../sloppy/sloppylisten.ts",
