@@ -2710,7 +2710,8 @@ const fileTypes={
 	"png": "image/png",
 	"mp3": "audio/mpeg",
 	"ico": "image/x-icon",
-	"lock": "text/plain"
+	"lock": "text/plain",
+	"pio": "text/x-asm"
 };
 
 const commonTextFiles=["LICENSE","README","CHANGELOG","COPYING","AUTHORS","INSTALL"];
