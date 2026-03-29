@@ -1622,6 +1622,149 @@ function anthropicTools(payload){
 	return tools;
 }
 
+function specCohereModel(model,account){
+	if(roha.config.debugging) echo("[cohere] spec",model);
+	const name=model.name+"@"+account;
+	const exists=name in roha.mut;
+	const info=exists?roha.mut[name]:{name,notes:[],errors:[],relays:0,cost:0};
+	info.id=model.name;
+	info.object="model";
+	// TODO: fix me
+	info.created="created";
+	info.owner="owner";
+	if (!info.notes) info.notes=[];
+	if (!info.errors) info.errors=[];
+//	echo("mut",name,info);
+	roha.mut[name]=info;
+}
+
+function prepareCohereRequest(payload){
+	const history=[];
+	let blob={};
+	for(const item of payload.messages){
+		const content=item.content;
+		switch(item.role){
+			case "system":
+				history.push({role:"system",content});
+				break;
+			case "user":
+				if(item.name=="blob"){
+					blob=JSON.parse(content);
+					continue;
+				}
+				if(item.name=="image"){
+					const image_url={url:"https://jpeg.org/images/jpeg-home.jpg"}
+					history.push({role:"user",content:[{type:"image_url",image_url}]});
+					continue;
+//					const mediatype=blob.type;
+//					const image_url={url:"data:"+mediatype+";base64,"+content};
+// [<media-type>][;base64],<data>"
+// TODO: url=data:[<media-type>][;base64],<data>
+//					history.push({role:"user",content:[{type:"image",data}]});
+				}
+				history.push({role:"user",content});
+				break;
+			case "assistant":
+				history.push({role:"assistant",content});
+				break;
+		}
+	}
+	const temperature=grokTemperature;
+	const request={
+		model:payload.model,
+		temperature,
+		stream:false,
+		messages:history
+	};
+	return request;
+}
+
+async function connectCohere(account,config) {
+	try{
+		const baseURL=config.url;
+		const apiKey=getEnv(config.env);
+		if(!apiKey) return null;
+		const headers={
+			"Authorization":"Bearer "+apiKey,
+			"Content-Type":"application/json",
+			"Accept":"application/json"
+//			"X-Client-Name": "fountain.js"
+		};
+		const response=await fetch(baseURL+"/models",{method:"GET",headers});
+		if (!response.ok) return null;
+		const reply=await response.json();
+//		echo(reply.models);
+		const list=[];
+		for (const model of reply.models) {
+			const name=model.name+"@"+account;
+			list.push(name);
+			specCohereModel(model,account);
+		}
+		list.sort();
+		modelList=modelList.concat(list);
+		return {
+			apiKey,
+			headers,
+			baseURL,
+			modelList:list,
+			models: {
+				list: async () => models, // Return cached models or fetch fresh
+			},
+			chat: {
+				completions: {
+					create: async (payload) => {
+						const model=payload.model;
+						const content=prepareCohereRequest(payload);
+						const url=baseURL+"/chat";
+						const usage={prompt_tokens:0,completion_tokens:0,total_tokens:0};
+						if(roha.config.debugging){
+							echo("[cohere] url",url);
+							//echo("[cohere] content",content);
+							//echo("[cohere] usage",usage);
+							echo("[cohere] headers",headers);
+						}
+						try{
+							const response=await fetch(url,{method:"POST",headers,body:JSON.stringify(content)});
+							if(roha.config.debugging){
+								echo("[cohere] response.ok",response.ok);
+							}
+							if (response.ok) {
+								//[cohere] json
+								// {"id":"5b7e6d03-d348-40b8-8178-a60ad55d792e","message":{"role":"assistant","content":[{"type":"text","text":"Hello! How can I assist you today?"}]},
+								// "finish_reason":"COMPLETE","usage":{"billed_units":{"input_tokens":1,"output_tokens":9},"tokens":{"input_tokens":496,"output_tokens":11}}}
+								const reply=[];
+								const json=await response.json();
+								const role=json.message.role;
+								for(const item of json.message.content){
+									if(item.type=="text") reply.push(item.text);
+								}
+								const text=reply.join("\n");
+								// echo("[cohere]",text)
+								const tokens=json.usage.tokens;
+								const total_tokens=tokens.input_tokens+tokens.output_tokens;
+								const usage={prompt_tokens:tokens.input_tokens,completion_tokens:tokens.output_tokens,total_tokens};
+								return {model,choices:[{message:{content:text}}],usage};
+							}
+							echo("[cohere] status",response.status,response.statusText);
+							if(roha.config.debugging)
+								echo("[cohere] content",content);
+						}catch(e){
+							echo("[cohere] exception",e.message);
+						}
+						return {model,choices:[],usage};
+					},
+				},
+			},
+
+		}
+	} catch (error) {
+		echo(`Account ${account} fetch error: ${error.message}`);
+		return null;
+	}
+
+}
+
+
 async function connectAnthropic(account,config){
 	try{
 		const baseURL=config.url;
