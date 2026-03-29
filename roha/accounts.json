@@ -32,7 +32,8 @@
 		"url": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
 		"platform": "https://bailian.console.alibabacloud.com/",
 		"api": "OpenAI",
-		"locale": "zh-CN"
+		"locale": "zh-CN",
+		"disabled":true
 	},
 	"cohere": {
 		"emoji": "🧩",
@@ -95,7 +96,8 @@
 		"docs": "https://docs.api.nvidia.com/nim/reference/models-1",
 		"platform": "https://build.nvidia.com/explore/discover",
 		"api": "OpenAI",
-		"locale": "en-US"
+		"locale": "en-US",
+		"disabled":true
 	},
 	"ollama":{
 		"emoji": "🔗",

@@ -1865,7 +1865,7 @@ async function connectOpenAI(account,config) {
 
 async function connectAccount(account) {
 	const config=modelAccounts[account];
-	if (!config) return null;
+	if (!config || config.disabled) return null;
 	if (config.env){
 		const apiKey=getEnv(config.env);
 		if(!apiKey) return null;

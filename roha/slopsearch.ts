@@ -3,6 +3,17 @@ import Exa from 'npm:exa-js';
 const exaKey=Deno.env.get("EXA_API_KEY")
 const exa = new Exa(exaKey);
 
+const option={type:"fast",numResults: 5,  text: { maxCharacters: 150 }};
+
+const results = await exa.search("frontier models", option);
+
+console.log(results);
+
+
+// https://mcp.exa.ai/mcp?exaApiKey="
+// 
+/*
+
 const query="icecream flavours";
 
 const options={
@@ -11,16 +22,8 @@ const options={
   text: { maxCharacters: 15000 }
 };
 
-//const results = await exa.searchAndContents(query, options);
+const results = await exa.searchAndContents(query, options);
 
-const results = await exa.search("hottest AI startups", {numResults: 20});
-
-console.log(results);
-
-
-// https://mcp.exa.ai/mcp?exaApiKey="
-// 
-/*
 curl -X POST 'https://api.exa.ai/search' \
   -H 'x-api-key: YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
