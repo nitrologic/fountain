@@ -1036,7 +1036,7 @@ async function saveGeminiSpeech(audio: Uint8Array, mimeType:string, metaData:str
 	view.setUint32(16, 16, true); // Subchunk size (16 for PCM)
 	view.setUint16(20, 1, true); // Audio format (1 = PCM)
 	view.setUint16(22, 1, true); // Channels (1 = mono)
-	view.setUint32(24, 24000, true); // Sample rate (16kHz)
+	view.setUint32(24, 24000, true); // Sample rate (24kHz)
 	view.setUint32(28, 24000 * 2, true); // Byte rate (sample rate * bytes per sample)
 	view.setUint16(32, 2, true); // Block align (channels * bytes per sample)
 	view.setUint16(34, 16, true); // Bits per sample (16-bit)
@@ -1090,16 +1090,17 @@ function prepareGeminiPrompt(payload){
 				sysparts.push({text});
 				break;
 			case "assistant":{
-				if(item.tool_call_id){
-					if (debugging) echo("[GEMINI] assistant",item.tool_call_id);
-// todo: - geminifi the tool result
-					const ass={role:"user",parts:[{text}]}
-//					contents.push(ass);
-				}else{
-					const ass={role:"model",parts:[{text}]}
-					if (debugging) echo("[GEMINI] assistant",ass,item);
-					contents.push(ass);
-				}
+					if (item.tool_calls) {
+						const parts = item.tool_calls.map(tc => ({
+							functionCall: {
+								name: tc.function.name,
+								args: JSON.parse(tc.function.arguments)
+							}
+						}));
+						contents.push({ role: "model", parts });
+					} else {
+						contents.push({ role: "model", parts: [{ text: item.content || "" }] });
+					}
 				}
 				break;
 			case "user":{
@@ -1124,7 +1125,7 @@ function prepareGeminiPrompt(payload){
 			case "tool":{
 					const functionResponse={name:item.name,response:JSON.parse(text)};
 					if (debugging) echo("[GEMINI] functionResponse",functionResponse);
-					contents.push({role:"tool",parts:[{functionResponse}] });
+					contents.push({role:"function",parts:[{functionResponse}] });
 				}
 				break;
 		}
@@ -1220,7 +1221,14 @@ async function connectGoogle(account,config){
 						const result=await model.generateContent(request);
 						const debugging=roha.config.debugging;
 						if(debugging) echo("[GEMINI] result",result);
-						const text=await result.response.text();
+						// gemini was here
+						let text="";
+						try {
+							text=await result.response.text();
+						} catch (error) {
+							if(debugging) echo("[GEMINI] No text in response (likely function call only)");
+						}
+//						const text=await result.response.text();
 						const usage=result.response.usageMetadata||{};
 						const choices = [];
 						choices.push({message:{content:text}});
@@ -1244,7 +1252,8 @@ async function connectGoogle(account,config){
 							usage:{
 								prompt_tokens:usage.promptTokenCount,
 								completion_tokens:usage.candidatesTokenCount+usage.thoughtsTokenCount,
-								total_tokens:usage.totalTokenCount
+								total_tokens:usage.totalTokenCount,
+								cache_tokens:usage.cachedContentTokenCount||0
 							}
 						};
 					},

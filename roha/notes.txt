@@ -1,3 +1,106 @@
+>suggest fix for 2 please
++
+usage {"prompt_tokens":47997,"completion_tokens":1480,"total_tokens":49477}
+{account:gemini,spent:0.1138,cached:0,balance:-5.8356}
+Here is a safe way to handle the text extraction in `connectGoogle`. The `@google/generative-ai`
+SDK throws an error when calling `text()` if the model only returns a function call without any
+text parts.
+
+You can wrap the text extraction in a `try...catch` block. Update the `create: async (payload) => {
+... }` function inside `connectGoogle` (around line 1130) with the following:
+
+
+						const result=await model.generateContent(request);
+						const debugging=roha.config.debugging;
+						if(debugging) echo("[GEMINI] result",result);
+
+						let text="";
+						try {
+							text=await result.response.text();
+						} catch (error) {
+							if(debugging) echo("[GEMINI] No text in response (likely function call only)");
+						}
+
+						const usage=result.response.usageMetadata||{};
+						const choices = [];
+						choices.push({message:{content:text}});
+						const calls = result.response.functionCalls(); // Get Gemini's raw function calls
+
+
+This ensures that if the model decides to only use a tool without providing conversational filler,
+the application will catch the expected error and proceed to process the `tool_calls` normally.
+
+
+
+
+>can you review the google api code, tonight i have fixed a tool calling issue and a continuity issue where your replies were not being added to the history (for some reasone i had commented it out)
++
+usage {"prompt_tokens":47644,"completion_tokens":3920,"total_tokens":51564}
+{account:gemini,spent:0.1423,cached:0,balance:-5.5962}
+The Google API implementation is on the right track, mapping OpenAI-style payloads to Gemini's
+structure. However, there are two key issues in `prepareGeminiPrompt` and one potential crash in
+`connectGoogle` related to your recent tool calling and continuity fixes.
+
+1. Continuity Issue in `prepareGeminiPrompt`
+In your `assistant` case, you are checking for `item.toolcallid` instead of
+`item.toolcalls`. When the assistant makes a tool call, OpenAI format uses `toolcalls`.
+Because of this typo, the code falls through to the `else` block and pushes an empty text part
+instead of the required `functionCall` object, breaking Gemini's conversation history.
+
+Additionally, in the `tool` case, Gemini expects the role to be `"function"`, not `"tool"`.
+
+Here is the corrected switch block for `prepareGeminiPrompt`:
+
+
+			case "assistant": {
+				if (item.tool_calls) {
+					const parts = item.tool_calls.map(tc => ({
+						functionCall: {
+							name: tc.function.name,
+							args: JSON.parse(tc.function.arguments)
+						}
+					}));
+					contents.push({ role: "model", parts });
+				} else {
+					contents.push({ role: "model", parts: [{ text: item.content || "" }] });
+				}
+				break;
+			}
+			case "tool": {
+				const functionResponse = { name: item.name, response: JSON.parse(text) };
+				if (debugging) echo("[GEMINI] functionResponse", functionResponse);
+				contents.push({ role: "function", parts: [{ functionResponse }] });
+				break;
+			}
+
+
+2. Potential Crash in `connectGoogle`
+When Gemini decides to call a function, it often omits text entirely. Calling `await
+result.response.text()` will throw an error if no text parts exist in the response, terminating the
+relay.
+
+You should wrap the text extraction in a try-catch block:
+
+
+						let text = "";
+						try {
+							text = await result.response.text();
+						} catch (e) {
+							// Ignored: model returned a pure tool call without text
+						}
+
+						const usage = result.response.usageMetadata || {};
+						const choices = [];
+						choices.push({ message: { content: text || null } });
+
+						const calls = result.response.functionCalls();
+
+
+With these adjustments, the model's tool calls will be properly formatted as `functionCall` objects
+in the history, the tool results will be returned as `functionResponse` parts, and the strict
+alternating continuity required by the Gemini API will be maintained.
+
+
 <script async src="https://cse.google.com/cse.js?cx=911b80f8c74a94575">
 </script>
 <div class="gcse-search"></div>
