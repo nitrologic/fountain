@@ -44,7 +44,7 @@ const rohaMihi="Welcome to slop fountain a many:many user model research project
 const rohaGuide=[
 	"As a guest assistant language model please be mindful of others, courteous and professional.",
 	"Keep response short, only post code on request and do not patronise.",
-	"Use tabs for indenting js and json files.",
+	"Use tabs when indenting source files.",
 	"Prefer named reusable functions over inlining code with arrow and map style suggestions."
 ]
 
@@ -1098,7 +1098,7 @@ function prepareGeminiPrompt(payload){
 				}else{
 					const ass={role:"model",parts:[{text}]}
 					if (debugging) echo("[GEMINI] assistant",ass,item);
-//					contents.push(ass);
+					contents.push(ass);
 				}
 				}
 				break;
@@ -1123,10 +1123,8 @@ function prepareGeminiPrompt(payload){
 				break;
 			case "tool":{
 					const functionResponse={name:item.name,response:JSON.parse(text)};
-
 					if (debugging) echo("[GEMINI] functionResponse",functionResponse);
-
-//					contents.push({role:"user",parts:[{functionResponse}] });
+					contents.push({role:"tool",parts:[{functionResponse}] });
 				}
 				break;
 		}
