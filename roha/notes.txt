@@ -1,3 +1,83 @@
+>can you review my DeepSeek api implementation, i think there are similar issues with tool calling getting stuck in a loop
++
+usage {"prompt_tokens":95753,"completion_tokens":2862,"total_tokens":98615,"cache_tokens":95632}
+{account:gemini,spent:0.2450,cached:95632,balance:-7.0888}
+The tool calling loop is happening because the models are losing the context of their own tool
+requests.
+
+When a model calls a tool, the OpenAI/DeepSeek API specification requires a strict sequence in the
+message history:
+1. The `assistant` message containing the `tool_calls`.
+2. The `tool` message(s) containing the results, matching the `toolcallid`.
+
+In your `relay` function, two things are causing this sequence to break, making the model think it
+never called the tool (and thus prompting it to call it again, infinitely):
+
+1. The Assistant's tool call is commented out
+Around line 2541 in `relay()`, the code pushing the assistant's tool call to `rohaHistory` is
+commented out. The model never sees its own request in the next turn.
+
+2. Tool results are pushed as `system` instead of `tool`
+Around line 2533, tool results are being pushed as `role: "system"`. DeepSeek and OpenAI strictly
+require `role: "tool"` for these responses.
+
+The Fix
+
+Update the `if (calls)` block inside `relay()` (around line 2516) to correctly push both the
+assistant's request and the tool's response:
+
+
+			if (calls) {
+				const count=increment("calls");
+				if(verbose) echo("[RELAY] calls in progress",depth,count)
+
+				const toolCalls=calls.map((tool, index) => ({
+					id: tool.id,
+					type: "function",
+					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
+				}));
+
+				// 1. MUST push the assistant's tool_calls to history BEFORE the results
+				rohaHistory.push({
+					role: "assistant",
+					name: payload.model,
+					mut,
+					content: choice.message.content || "",
+					tool_calls: toolCalls
+				});
+
+				const toolResults=await processToolCalls(calls);
+				for (const result of toolResults) {
+					const id=result.tool_call_id;
+					const title="ToolCall:"+id;
+
+					// 2. MUST use role: "tool" and provide the raw content
+					const item={
+						role: "tool",
+						title,
+						name: result.name,
+						tool_call_id: id,
+						content: result.content
+					};
+
+					debugValue("item",item);
+					if(verbose)echo("[RELAY] pushing tool result",item);
+					rohaHistory.push(item);
+				}
+
+				// warning - here be dragons
+				const spent=await relay(depth+1); // Recursive call to process tool results
+				spend+=spent;
+			}
+
+
+• Note: Because you map `rohaHistory` down to specific provider formats in functions like
+`plainHistory`, `anthropicMessages`, and `prepareGeminiPrompt`, ensure those mappers correctly pass
+through `role: "tool"` and `role: "assistant"` with `tool_calls`. Your `plainHistory` and Gemini
+mappers already look well-equipped to handle this standard format.*
+
+
+
 >suggest fix for 2 please
 +
 usage {"prompt_tokens":47997,"completion_tokens":1480,"total_tokens":49477}
