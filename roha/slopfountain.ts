@@ -2804,7 +2804,7 @@ async function commitShares(tag) {
 		echoInfo("[KOHA] commitShares removed", removedPaths.join(" "));
 	}
 	if (dirty && tag) {
-		rohaHistory.push({ role: "system", title:"Fountain Tool Hint", content: "Feel free to call annotate_forge to tag " + tag });
+		rohaHistory.push({ role: "system", title:"Fountain Tool Hint", content: "Feel free to call tag_slop to tag " + tag });
 	}
 	if (count && roha.config.verbose) {
 		echoInfo("[KOHA] Updated files",count,"of",validShares.length);
@@ -3509,7 +3509,7 @@ async function onCall(toolCall) {
 			const base64=encodeBase64(data);
 			return { success: true, path: fileName, Base64:base64 };
 		}
-		case "annotate_forge":{
+		case "tag_slop":{
 			try {
 				const { name, type, description }=JSON.parse(toolCall.function.arguments || "{}");
 				switch(type){
@@ -3526,7 +3526,7 @@ async function onCall(toolCall) {
 				await writeForge(); // Persist changes
 				return { success: true, updated: 1 };
 			} catch (error) {
-				echo("annotate_forge error:",error);
+				echo("tag_slop error:",error);
 			}
 			return { success: false, updated: 0 };
 		}
