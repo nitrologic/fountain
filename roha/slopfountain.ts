@@ -23,7 +23,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.6.10, V8 14.5.201.2-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.7.3";
+const fountainVersion="1.7.4";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -834,7 +834,7 @@ function flattenTables(content){
 			const last=n?items[n-1]:"";
 			const end=last.length?0:-1;
 			table.push(items.slice(1, end));
-*/			
+*/
 		} else {
 			if (table.length) {
 				insertTable(result, table, !fenced, true);
@@ -856,8 +856,8 @@ async function flush() {
 	const send=[];
 	const delay=roha.config.slow ? slowMillis : 0;
 	for (const {line,from} of remoteBuffer) {
-// muted on public channels		
-//		send.push(line); 
+// muted on public channels
+//		send.push(line);
 // dont share just log remote chatter
 //		rohaPush(line,from);
 		await logForge(line,from);
@@ -1402,7 +1402,7 @@ async function connectCohere(account,config){
 	}catch( error){
 		echo("[COHERE] error:",error);
 	}
-			
+
 }
 
 // API support for mistral
@@ -1495,7 +1495,7 @@ async function connectMistral(account,config){
 		};
 	}catch( error){
 		echo("[MISTRAL] error:",error);
-	}			
+	}
 }
 
 // API support for anthropic
@@ -3568,7 +3568,7 @@ async function processToolCalls(calls) {
 	const results=[];
 	for (const tool of calls) {
 		const id=tool.id || !tool.function?.name
-		echo("[RELAY] processToolCalls",id,tool);
+		if(roha.config.debugging) echo("[RELAY] processToolCalls",id,tool);
 		if (!tool.id || !tool.function?.name) {
 			results.push({
 				tool_call_id: tool.id || "unknown",
@@ -4112,7 +4112,7 @@ async function relay(depth:number) {
 		}
 		const echostatus=(depth==0);
 		if(echostatus){
-			const frigid=(info && info.cold); 
+			const frigid=(info && info.cold);
 			const temp=frigid?"🧊":grokTemperature.toFixed(1)+"°";
 			const forge = roha.config.tools? (grokFunctions ? Pail : "🐸") : "🪠";
 			const modelSpec=[rohaTitle,rohaModel,emoji,forge,temp,cost,size,elapsed.toFixed(2)+"s"];
@@ -4134,30 +4134,43 @@ async function relay(depth:number) {
 			// choice has index message{role,content,refusal,annotations} finish_reason
 			if (calls) {
 				const count=increment("calls");
-				if(verbose) echo("[RELAY] calls in progress",depth,count)
+				if(debugging) echo("[RELAY] calls in progress",depth,count)
 				// TODO: map toolcalls index
+				// TODO: validate tool.function.arguments
 				const toolCalls=calls.map((tool, index) => ({
 					id: tool.id,
 					type: "function",
 					function: {name: tool.function.name,arguments: tool.function.arguments || "{}"}
 				}));
-				const toolResults=await processToolCalls(calls);
-				for (const result of toolResults) {
-					const id=result.tool_call_id;
-					const title="ToolCall:"+id;
-					const content = result.name+" replied "+result.content;
-					const item={role:"system",title,tool_call_id:id,content};
-					debugValue("item",item);
-					if(verbose)echo("[RELAY] pushing tool result",item);
-					rohaHistory.push(item);
+				// sanity check results
+				let validCallResult=true;
+				for (const call of toolCalls) {
+					try {
+						JSON.parse(call.function.arguments);
+					} catch (e) {
+						echo("[RELAY] argument fail:", call.function.arguments);
+						validCallResult=false;
+					}
 				}
-				// new behavior, message content comes after tool reports
-				const content=choice.message.content;
-				if(content){
-					if(verbose)echo("[RELAY] pushing asssistant model ?",depth,payload.model,mut,content);
-//					rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
+				if(validCallResult){
+					const content=choice.message.content;
+					if(content){
+						if(debugging) echo("[RELAY] pushing asssistant model ?",depth,payload.model,mut,content);
+						rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
+					}
+
+					const toolResults=await processToolCalls(calls);
+					for (const result of toolResults) {
+						const id=result.tool_call_id;
+						const title="ToolCall:"+id;
+						const content = result.name+" replied "+result.content;
+						const item={role:"tool",title,tool_call_id:id,content};
+						debugValue("item",item);
+						if(debugging) echo("[RELAY] pushing tool result",item);
+						rohaHistory.push(item);
+					}
 				}
-				// warning - here be dragons
+
 				const spent=await relay(depth+1); // Recursive call to process tool results
 				spend+=spent;
 			}

@@ -6,7 +6,7 @@
 
 Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
-Addressing 595 models from 12* providers the LLM research project Slop Fountain 1.7.3 ⛲ approaches connected.
+Addressing 595 models from 12* providers the LLM research project Slop Fountain 1.7.4 ⛲ approaches connected.
 
     * now includes a local ollama server with various distilled models running on an RTX 3080
 
