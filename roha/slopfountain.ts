@@ -2669,7 +2669,7 @@ async function shareDir(dir:string, tag:string, depth=1, maxDepth=5) {
 }
 
 function annotateCode(name,description){
-	echo("annotateCode",name,description);
+	echo("[TODO] annotateCode",name,description);
 }
 
 const imageExtensions=[
@@ -3636,6 +3636,7 @@ function plainHistory(history,model){
 				}
 				break;
 			case "tool":
+				echo("[TEST1]",item)
 				list.push({...item});
 				//({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
 				break;
@@ -3652,7 +3653,9 @@ function strictHistory(history){
 	for(const _item of history){
 		const item={..._item};
 		const src="["+itemSource(item)+"] ";
+		echo("[TESTING] ")
 		const content=src+item.content;	 //todo: testing revisit src+
+		echo("[TESTING]",content);
 		switch(item.role){
 			case "system":
 				list.push({role:"system",content});
@@ -3670,6 +3673,7 @@ function strictHistory(history){
 				break;
 			case "tool":
 				list.push({...item});
+				echo("[TEST2]",item)
 				//({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
 				break;
 		}
@@ -3726,6 +3730,7 @@ function multiHistory(history){
 			case "tool":
 				// TODO: tool result history is ok
 				list.push({...item});
+				echo("[TEST3]",item)
 				//({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
 				break;
 		}
@@ -3778,6 +3783,7 @@ function inlineHistory(history){
 			case "tool":
 				// TODO: tool result history is ok
 				list.push({...item});
+				echo("[TEST4]",item)
 				//({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
 				break;
 		}
@@ -4392,6 +4398,10 @@ const areSame = (arr1, arr2) => {
 	return arr1&&arr2&&(arr1.length === arr2.length) && (arr1.every(item => arr2.includes(item)));
 };
 
+const newItems = (originalList, newList) => {
+	return newList.filter(item => !originalList.includes(item));
+};
+
 // forge uses rohaPath to boot
 
 let forgeExists=await pathExists(forgePath);
@@ -4434,6 +4444,10 @@ async function enumerateModels(){
 	//		echo("[SPEW]",endpoint.modelList);
 			if(!areSame(lode.modelList,endpoint.modelList)){
 				echo("[FORGE] modifying modelList");
+				const items=newItems(lode.modelList,endpoint.modelList);
+				for(const item of items){
+					echo("[FORGE] added ",item);
+				}
 				lode.modelList=endpoint.modelList;
 			}
 	//		echo("[FORGE] endpoint modelList",endpoint.modelList);
