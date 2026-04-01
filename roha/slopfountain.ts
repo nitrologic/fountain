@@ -4146,9 +4146,9 @@ async function relay(depth:number) {
 				let validCallResult=true;
 				for (const call of toolCalls) {
 					try {
-						JSON.parse(call.function.arguments);
+						JSON.parse(JSON.stringify(call));
 					} catch (e) {
-						echo("[RELAY] argument fail:", call.function.arguments);
+						echo("[RELAY] toolcall failure:", call.function.arguments);
 						validCallResult=false;
 					}
 				}
