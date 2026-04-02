@@ -1124,11 +1124,17 @@ function prepareGeminiPrompt(payload){
 				}
 				break;
 			case "tool":{
-					const response=textify(text);
-					const functionResponse={name:item.name,response};
+					let geminiResponse;
+					try{
+						geminiResponse=typeof text === "string" ? JSON.parse(text) : text;					
+					}catch(e){
+						geminiResponse={ result: text };
+					}
+					const id=item.tool_call_id||"*item.tool_call_id is missing*";
+					const functionResponse={name:item.name||"*item.name is missing*",response:geminiResponse,id};
 					if (debugging) echo("[GEMINI] functionResponse",functionResponse);
 ///					contents.push({role:"tool",parts:[{functionResponse}] });
-				    contents.push({role:"function",parts:[{functionResponse}]});
+				    contents.push({role:"function",tool_call_id:id,parts:[{functionResponse}]});
 				}
 				break;
 		}
