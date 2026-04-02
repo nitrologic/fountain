@@ -3,5 +3,6 @@ pushd roha
 export USERNAME="$USER"
 export USERDOMAIN="$HOSTNAME"
 deno --version
-deno task fountain
+#deno task fountain
+deno task sloppy
 popd
