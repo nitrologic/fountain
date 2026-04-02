@@ -4449,9 +4449,12 @@ async function enumerateModels(){
 	//		echo("[SPEW]",endpoint.modelList);
 			if(!areSame(lode.modelList,endpoint.modelList)){
 				echo("[FORGE] modifying modelList");
-				const items=newItems(lode.modelList,endpoint.modelList);
-				for(const item of items){
-					echo("[FORGE] added ",item);
+				const original=lode.modelList;
+				if(original){
+					const items=newItems(lode.modelList,endpoint.modelList);
+					for(const item of items){
+						echo("[FORGE] added ",item);
+					}
 				}
 				lode.modelList=endpoint.modelList;
 			}

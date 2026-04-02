@@ -2,6 +2,10 @@
 // Copyright (c) 2025 Simon Armstrong
 // All rights reserved
 
+// TODO curCodeSize "GIF max code size is 12 bits"
+
+const VidSig="TOUCHGRASS INDUSTRIES";
+
 // c64 char map
 const c64_charset="@ABCDEFGHIJKLMNOPQRSTUVWXYZ[$]↑← \"!#$%&’()*+,-./0123456789:;<=>?";
 
@@ -130,23 +134,54 @@ class GIF16{
 		this.#bg=c&15;
 	}
 
+
 	addBlank(delay=20) {
 		const frame=this.#frame;
 		frame.fill(this.#bg);
-		this.#writeFrameBuffer(frame, delay);
+		this.#writeFrameBuffer(frame, delay, VidSig);
 	}
 
 	addFrame(delay=20,px=0,py=0){
 		const frame=this.#frame;
-		this.#writeFrameBuffer(frame, delay);
+		this.#writeFrameBuffer(frame, delay, VidSig);
 	}
 
 	finish(){this.#bytes.push(0x3B);return new Uint8Array(this.#bytes);}
 
-	#writeFrameBuffer(buffer: Uint8Array, delay: number) {
+	#pte(text:string, x=0, y=0, w=this.#w, h=8, cw=8, ch=8, fg=1, bg=this.#bg){
+		const bytes:number[] = [
+			0x21, 0x01, // Extension Introducer + Plain Text Label
+			0x0C,       // block size (12)
+
+			...u16le(x),
+			...u16le(y),
+			...u16le(w),
+			...u16le(h),
+
+			cw, ch,     // char cell size
+			fg & 15,
+			bg & 15
+		];
+
+		// ASCII sub-blocks (split to 255 max)
+		const data = Array.from(text).map(c => c.charCodeAt(0));
+		for(let i=0;i<data.length;i+=255){
+			const chunk = data.slice(i, i+255);
+			bytes.push(chunk.length, ...chunk);
+		}
+
+		bytes.push(0x00); // terminator
+		return bytes;
+	}
+
+	#writeFrameBuffer(buffer: Uint8Array, delay: number, captions:string) {
 		const lzwData = this.#compress(buffer);
 		// GCE: Reserved(000) | Disposal(000=Unspecified) | Input(0) | Trans(0)
 		this.#bytes.push(...this.#gce(delay));
+		// Image Captions
+		if (captions) {
+			this.#bytes.push(...this.#pte(captions, 0, this.#h-8, this.#w, 8));
+		}
 		// Image Descriptor (Full Canvas)
 		this.#bytes.push(
 				0x2C,
