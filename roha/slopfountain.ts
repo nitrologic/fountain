@@ -276,6 +276,11 @@ function stringRight(text:string,width:number):string{
 	return pad+text;
 }
 
+function textify(obj:unknown){
+	if (typeof(obj)=="string") return obj;
+	return JSON.stringify(obj);
+}
+
 function echoKey(key:object,wide:number){
 	const text=JSON.stringify(key);
 	const rtext=stringRight(text,wide);
@@ -779,10 +784,6 @@ function debugValue(title:string,value:unknown){
 	if(roha.config.debugging){
 		const json=JSON.stringify(value);
 		echo(title,json);
-	}else{
-		if(roha.config.verbose){
-			echo(title);
-		}
 	}
 }
 
@@ -917,7 +918,7 @@ async function flush() {
 		const lines=output.split("\n");
 		for(const line of lines){
 			if(line.length){
-				await logForge(line,"roha");
+				await logForge("[status] "+line,"roha");
 			}
 		}
 	}
@@ -1123,9 +1124,11 @@ function prepareGeminiPrompt(payload){
 				}
 				break;
 			case "tool":{
-					const functionResponse={name:item.name,response:JSON.parse(text)};
+					const response=textify(text);
+					const functionResponse={name:item.name,response};
 					if (debugging) echo("[GEMINI] functionResponse",functionResponse);
-					contents.push({role:"function",parts:[{functionResponse}] });
+///					contents.push({role:"tool",parts:[{functionResponse}] });
+				    contents.push({role:"function",parts:[{functionResponse}]});
 				}
 				break;
 		}
@@ -3636,9 +3639,10 @@ function plainHistory(history,model){
 				}
 				break;
 			case "tool":
-				echo("[TEST1]",item)
+				if (roha.config.debugging) echo("[TOOL]",item)
+				// captured from deepseek:
+				// {"role":"tool","title":"ToolCall:call_00_EXqrvzEfKEGk1GFxm0aVCJ8M","tool_call_id":"call_00_EXqrvzEfKEGk1GFxm0aVCJ8M","content":"{\"time\":\"2/04/2026, 10:15:45 am\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
 				list.push({...item});
-				//({role:"tool",tool_call_id:result.tool_call_id,name:result.name,content:result.content});
 				break;
 		}
 	}
@@ -4169,7 +4173,8 @@ async function relay(depth:number) {
 					for (const result of toolResults) {
 						const id=result.tool_call_id;
 						const title="ToolCall:"+id;
-						const content = result.name+" replied "+result.content;
+//						const content = result.name+" replied "+result.content;
+						const content = result.content;
 						const item={role:"tool",title,tool_call_id:id,content};
 						debugValue("item",item);
 						if(debugging) echo("[RELAY] pushing tool result",item);

@@ -1,3 +1,26 @@
+Here is a NY Times article about the Artemis Red Crew. They even mentioned the Apollo 11 similar incident. 
+In that distant past the Red Crew was engineer Jack Kramer, techs Wayne Gray and Red Davis and a Safety guy. I was in the Firing Room researching, writing the paper and directing the operation.
+Valiant effort was on display throughout the Kennedy Space Center on Wednesday when NASA’s Artemis I rocket lifted off toward the moon. But something extra needs to be said about the red crew, three men who played a key role in getting the mission back on track.
+NASA’s Space Launch System (SLS) rocket with the Orion spacecraft attached during final preparations on Tuesday.
+NASA’s Space Launch System (SLS) rocket with the Orion spacecraft attached during final preparations on Tuesday.© Kevin Dietsch/Getty Images
+The red crew members were Trent Annis, Billy Cairns and Chad Garrett, and they did something dangerous and risky thing when they performed live repairs to fix a leak on a fueled rocket. For them, it was another day at the office, if the office was a thing that could reduce you to nothing more than a memory in an unfortunate instant.
+When a rocket is filled with propellants, human beings usually aim to be as far away as possible. A rocket in the best of circumstances is a controlled chemical reaction that lifts tons of material to space on a tower of fire. On its worst day, it is an explosive catastrophe that incinerates anything that gets too close.
+So it was surprising on Tuesday during the launch countdown when Derrol Nail, the commentator on NASA’s live video feed, announced that real human beings were headed to the launchpad. Their goal was to fix parts on the Space Launch System, which was leaking hydrogen and threatening to ground the rocket — which by then had been packed full of huge quantities of explosive liquid hydrogen.
+The red crew members and their minders drove up to the launchpad in a pair of white — not red — vehicles. Three characters in dark — again, not red — clothing ascended a part of the launch tower and got to work.
+“We were very focused on what was happening up there,” Mr. Annis said in the post-launch interview. “It’s creaking, it’s making venting noises, it’s pretty scary.”
+The precise work was unfamiliar to anyone who was not a rocket engineer. Mr. Nail described a need to “torque” something he described as “packing nuts.” On Twitter, NASA explained that bolts needed to be tightened because the valves they controlled might have been leaking.
+While advanced technology is helpful, “there are also times when you’ve just got to put a wrench on a nut,” said Mike Bolger, the Exploration Ground Systems program manager at Kennedy Space Center, during a post-launch news conference on Wednesday.
+Engineers in launch control then tested the valves, and whatever the red crew actually did worked. The leak had stopped. The loading of hydrogen into the rocket resumed.
+While the red crew’s derring-do on Tuesday night was something, their work was not without precedent. A NASA spokeswoman highlighted the role such a group played in responding to a similar leak more than 50 years ago.
+“We have sent a team of three technicians and a safety man to the pad and these technicians are now tightening bolts around the valve,” said a launch control commentator according to a NASA transcript from 1969. “Once the technicians depart, we will send hydrogen again through the system to assure that the leak has been corrected.”
+The mission was Apollo 11, and the repair contributed to Neil Armstrong, Buzz Aldrin and Michael Collins making it to the moon.
+About five hours after their brief visit to the launchpad, the Artemis I mission rocket was on its way to the moon, and the Red Team was on the ground, discussing its deeds with NASA’s on-air team. They highlighted that Mr. Cairns had been working on red crews for 37 years but his first time going to the launchpad in such a dangerous circumstance. Mr. Annis said during the interview that he had yet to fully appreciate his contribution to the mission.
+“I still can’t believe it,” he said. “It’s surreal to me, just insane.”
+Kayla Barron, an astronaut who has served aboard the International Space Station and provided on-air commentary for NASA for Wednesday’s launch, said that the three men’s experience shows how space exploration is a “team sport.”
+“I think you guys perfectly demonstrated that today,” she said. “None of us could have accomplished this on our
+
+
+
 Thank you for sharing your code. I have reviewed `slopprompt.ts` and noted a few areas for
 potential improvement:
 
