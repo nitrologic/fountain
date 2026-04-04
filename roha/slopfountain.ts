@@ -23,7 +23,7 @@ import { resolve } from "https://deno.land/std/path/mod.ts";
 // Testing with Deno 2.6.10, V8 14.5.201.2-rusty, TypeScript 5.9.2
 
 const brandFountain="Fountain";
-const fountainVersion="1.7.4";
+const fountainVersion="1.7.5";
 const fountainName=brandFountain+" "+fountainVersion;
 
 const defaultModel="deepseek-chat@deepseek";
@@ -586,9 +586,22 @@ const rohaTools=[{
 
 // here be dragons - emoji widths based on userterminal may be required
 
-async function fileLength(path) {
-	const stat=await Deno.stat(path);
-	return stat.size;
+async function fileLength(path: string): Promise<number> {
+	try {
+		const stat=await Deno.stat(path);
+		return stat.size;
+	} catch (error) {
+		return 0;
+	}
+}
+
+async function fileModified(path: string): Promise<string>{
+	try {
+		const stat=await Deno.stat(path);
+		return stat.mtime.toLocaleString(userregion.locale, { dateStyle: "short", timeStyle: "short" });
+	} catch (error) {
+		return "";
+	}
 }
 
 async function sleep(ms) {
@@ -1124,17 +1137,13 @@ function prepareGeminiPrompt(payload){
 				}
 				break;
 			case "tool":{
-					let geminiResponse;
 					try{
-						geminiResponse=typeof text === "string" ? JSON.parse(text) : text;					
+						const functionResponse={name:item.name,response:JSON.parse(text)};
+						if (debugging) echo("[GEMINI] functionResponse",functionResponse);
+						contents.push({role:"function",parts:[{functionResponse}] });
 					}catch(e){
-						geminiResponse={ result: text };
+						if (debugging) echo("[GEMINI] tool crash",e);
 					}
-					const id=item.tool_call_id||"*item.tool_call_id is missing*";
-					const functionResponse={name:item.name||"*item.name is missing*",response:geminiResponse,id};
-					if (debugging) echo("[GEMINI] functionResponse",functionResponse);
-///					contents.push({role:"tool",parts:[{functionResponse}] });
-				    contents.push({role:"function",tool_call_id:id,parts:[{functionResponse}]});
 				}
 				break;
 		}
@@ -2249,7 +2258,8 @@ async function listSaves(){
 	for(let i=0;i<saves.length;i++){
 		const path="forge/"+saves[i];
 		const length=await fileLength(path)||"-";
-		echo(i,path,length);
+		const modified=await fileModified(path)||"-";
+		echo(i,path,length,modified);
 	}
 }
 
@@ -2553,6 +2563,16 @@ async function readForge(){
 		console.error("Error reading or parsing",rohaPath,error);
 		roha=emptyRoha;
 	}
+}
+
+async function refreshSaves() {
+	const files=await readFileNames(forgePath,".json");
+	for (const file of files) {
+		if (file.startsWith("transmission-") && !roha.saves.includes(file)) {
+			roha.saves.push(file);
+		}
+	}
+	roha.saves.sort();
 }
 
 async function writeForge(){
@@ -4434,6 +4454,7 @@ echo("Running from "+rohaPath);
 
 await flush();
 await readForge();
+await refreshSaves();
 
 // endpoints are used by models and in general to reset file API and the like
 

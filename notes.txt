@@ -1,3 +1,10 @@
+>/load
+[FOUNTAIN] calling load No such file or directory 
+(os error 2): stat 'forge/transmission-6868ffea.json'
+>
+
+
+
 ren start "sloppy" cmd /k deno task sloppybot
 rem start "slopfountain" deno task slopfountain
 rem deno task slopfountain
