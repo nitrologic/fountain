@@ -1,3 +1,58 @@
+# Pico Component VidBit16 Hardware Design
+
+## 1. Overview
+The VidBit16 is a high-performance component video generator for the RP2350. It utilizes a
+16-bit packed pixel architecture to drive YPbPr signals with 13-bit color/luma depth, 3-bit
+genlock/alpha, and per-pixel brightness trimming.
+
+## 2. Hardware Architecture
+The system uses a passive resistor-ladder DAC combined with a PIO-driven negative rail generator.
+
+Pinout Configuration
+╭───────────┬─────────────────┬──────────────────────────────────────────────────────╮
+│  Pin      │  Function       │  Description                                         │
+├───────────┼─────────────────┼──────────────────────────────────────────────────────┤
+│  **GP2**  │  Sync/Pedestal  │  Primary Luma Base (Tristate: Sync/Pedestal/Active)  │
+│  **GP3**  │  Luma+          │  Fine Detail Luma (PDM)                              │
+│  **GP4**  │  Pb             │  Blue-Yellow Difference (PDM)                        │
+│  **GP5**  │  Pr             │  Red-Cyan Difference (PDM)                           │
+│  **GP6**  │  Trim           │  Per-pixel PWM Attenuation (RC Filtered)             │
+│  **GP7**  │  Neg Rail       │  Charge Pump Driver (50% Duty Cycle)                 │
+╰───────────┴─────────────────┴──────────────────────────────────────────────────────╯
+
+## 3. Framebuffer Layout (16-bit Packed)
+Each 16-bit word is processed by five synchronized State Machines:
+
+╭─────────────┬─────────────────┬──────────────────────────╮
+│  Bits       │  Function       │  Resolution              │
+├─────────────┼─────────────────┼──────────────────────────┤
+│  **0-2**    │  Trim           │  3-bit Fine Brightness   │
+│  **3-5**    │  Pr             │  3-bit Red-Cyan          │
+│  **6-8**    │  Pb             │  3-bit Blue-Yellow       │
+│  **9-11**   │  Y Detail       │  3-bit Grayscale Detail  │
+│  **12**     │  Y Base         │  1-bit Sync/Pedestal     │
+│  **13-15**  │  Genlock/Alpha  │  3-bit Metadata          │
+╰─────────────┴─────────────────┴──────────────────────────╯
+
+## 4. Bill of Materials (BOM)
+• MCU: RP2350 (Pico 2)
+• Charge Pump (GP7): 2x BAT54S Diodes, 2x 1µF Ceramic Capacitors.
+• DAC/Filter (per Y, Pb, Pr): 3x 240Ω resistors, 3x 330Ω resistors, 3x 470pF capacitors.
+• Trim Filter (GP6): 1x 1kΩ resistor, 1x 10µF capacitor, 3x 10kΩ coupling resistors.
+• Connectors: 3x RCA Female Jacks.
+
+## 5. Design Principles
+• Passive DAC: Uses voltage division against the TV’s 75Ω load to achieve standard YPbPr
+levels.
+• PDM Modulation: 10-cycle pixel loops generate high-frequency pulse density patterns,
+smoothed by RC filters to achieve analog-like color depth.
+• Per-Pixel Trim: The GP6 PWM channel modulates the bias of the entire DAC network on a
+per-pixel basis, allowing for dynamic brightness and contrast adjustment.
+• Synchronization: SM0 acts as the master clock, triggering an IRQ to gate the activity of
+the PDM/Trim state machines, ensuring perfect alignment between sync, pedestal, and color data.
+
+
+
 >/load
 [FOUNTAIN] calling load No such file or directory 
 (os error 2): stat 'forge/transmission-6868ffea.json'

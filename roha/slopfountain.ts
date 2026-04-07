@@ -483,8 +483,9 @@ function listHistory(){
 	const wide=terminalColumns-statsColumn;
 	const history=rohaHistory;
 	let total=0;
+	let cost=0;
 	for(let i=0;i<history.length;i++){
-		const item=history[i];
+		const item=history[i];		
 		const content=readable(item.content);
 		const clip=content.substring(0,wide);
 		const size="("+content.length+")";
@@ -495,9 +496,10 @@ function listHistory(){
 		const seconds=item.elapsed?(item.elapsed.toFixed(2)+"s"):"";
 		echo(iii,role,from,clip,size,spend,seconds);
 		total+=content.length;
+		cost+=item.price||0;
 	}
 	const size=unitString(total,4,"B");
-	echo("History size",size);
+	echo("History size",size," cost ",cost.toFixed(4));
 }
 function logHistory(){
 	const wide=terminalColumns;
@@ -3045,9 +3047,9 @@ async function showHelp(words:string[]) {
 	}
 }
 
-function readable(text){
-	text=text.replace(/\s+/g, " ");
-	return text;
+function readable(content:any):string{
+	const text:string=textify(content);
+	return text.replace(/\s+/g, " ");
 }
 
 function listShares(shares){
@@ -3614,7 +3616,8 @@ async function processToolCalls(calls) {
 				// todo: fix for testing kimi
 				tool_call_id: tool.id,
 				name: tool.function.name,
-				content: JSON.stringify(result || {success: false})
+//				content: JSON.stringify(result || {success: false})
+				content: result
 			});
 		} catch (e) {
 			echo("processToolCalls] error",e);
