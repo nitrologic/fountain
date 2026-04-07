@@ -114,6 +114,7 @@ type ConfigFlags = {
 class Plop {
 	constructor(
 		public role: string,
+		public name: string,
 		public title: string,
 		public content: string
 	) {
@@ -121,6 +122,7 @@ class Plop {
 };
 
 let rohaHistory:Plop[]=[];
+let rohaCallNames={};
 
 const sessionStack:Plop[][]=[];
 
@@ -280,6 +282,12 @@ function textify(obj:unknown){
 	if (typeof(obj)=="string") return obj;
 	return JSON.stringify(obj);
 }
+
+function objectify(obj:unknown){
+	if (typeof(obj)=="string") return obj;
+	return obj;
+}
+
 
 function echoKey(key:object,wide:number){
 	const text=JSON.stringify(key);
@@ -488,13 +496,14 @@ function listHistory(){
 		const item=history[i];		
 		const content=readable(item.content);
 		const clip=content.substring(0,wide);
-		const size="("+content.length+")";
+		const size="("+content.length+"B)";
 		const role=item.role.padEnd(12," ");
 		const from=itemSource(item).padEnd(15," ");
+		const name=("["+itemSource(item)+"]");
 		const iii=String(i).padStart(3,"0");
-		const spend=item.price?(item.emoji+" "+item.price.toFixed(4)) :"";
+		const spend=item.price?("$"+item.price.toFixed(4)):"";	//item.emoji+" "+
 		const seconds=item.elapsed?(item.elapsed.toFixed(2)+"s"):"";
-		echo(iii,role,from,clip,size,spend,seconds);
+		echo(iii,name,clip,size,spend,seconds);
 		total+=content.length;
 		cost+=item.price||0;
 	}
@@ -1078,17 +1087,27 @@ async function saveGeminiSpeech(audio: Uint8Array, mimeType:string, metaData:str
 function geminiTools(payload){
 	const functions=[];
 	for(const tool of payload.tools){
-//		geminiTools(payload)
-//		echo("[GEMINI] tool",tool);
 		if(tool.type=="function"){
 			const f=tool.function;
-			const p=f.parameters;
-			const d={name:f.name,description:f.description,parameters:{type:p.type,properties:p.properties,required:p.required}};
-//			echo("[GEMINI] function",d);
-			functions.push(d);
+			if(f.parameters){
+				const p=f.parameters;
+				const d={name:f.name,description:f.description,parameters:{type:p.type,properties:p.properties,required:p.required}};
+				functions.push(d);
+			}else{
+				const d={name:f.name,description:f.description};
+				functions.push(d);
+			}
 		}
 	}
-	return {functionDeclarations:functions};
+	return [{functionDeclarations:functions}];
+}
+
+function parseToolResponse(text: string): object {
+	try {
+		return JSON.parse(text);
+	} catch (error) {
+		return { value: text };
+	}
 }
 
 function prepareGeminiPrompt(payload){
@@ -1140,11 +1159,16 @@ function prepareGeminiPrompt(payload){
 				break;
 			case "tool":{
 					try{
-						const functionResponse={name:item.name,response:JSON.parse(text)};
+						echo("[GEMINI] item.name",item.name);
+						const response=parseToolResponse(text);
+						const functionResponse={name:item.name,response};
 						if (debugging) echo("[GEMINI] functionResponse",functionResponse);
 						contents.push({role:"function",parts:[{functionResponse}] });
 					}catch(e){
-						if (debugging) echo("[GEMINI] tool crash",e);
+						echo("[GEMINI] tool crash",e);
+						console.log("text:",text)
+						console.log(e);
+						Deno.exit();
 					}
 				}
 				break;
@@ -3601,17 +3625,20 @@ async function processToolCalls(calls) {
 		const id=tool.id || !tool.function?.name
 		if(roha.config.debugging) echo("[RELAY] processToolCalls",id,tool);
 		if (!tool.id || !tool.function?.name) {
-			results.push({
+			const result={
 				tool_call_id: tool.id || "unknown",
 				name: tool.function?.name || "unknown",
 				content: JSON.stringify({error: "Invalid tool call format"})
-			});
+			};
+			rohaCallNames[result.tool_call_id]=result.name;
+			results.push(result);
 			await logForge("processToolCalls error");	//Invalid tool call: ${JSON.stringify(tool)}`, "error");
 			// todo: enforce a notools bar?
 			continue;
 		}
 		try {
 			const result=await onCall(tool);
+			rohaCallNames[id]=tool.function.name;
 			results.push({
 				// todo: fix for testing kimi
 				tool_call_id: tool.id,
@@ -3621,15 +3648,6 @@ async function processToolCalls(calls) {
 			});
 		} catch (e) {
 			echo("processToolCalls] error",e);
-/*
-			results.push({
-				tool_call_id: tool.id,
-				name: tool.function.name,
-				content: JSON.stringify({error: e.message})
-			});
-			await log("processToolCalls failure");
-*/
-			//`Tool call failed: ${tool.function.name} - ${e.message}`, "error");
 		}
 	}
 	return results;
@@ -3669,9 +3687,9 @@ function plainHistory(history,model){
 				break;
 			case "tool":
 				if (roha.config.debugging) echo("[TOOL]",item)
-				// captured from deepseek:
-				// {"role":"tool","title":"ToolCall:call_00_EXqrvzEfKEGk1GFxm0aVCJ8M","tool_call_id":"call_00_EXqrvzEfKEGk1GFxm0aVCJ8M","content":"{\"time\":\"2/04/2026, 10:15:45 am\",\"tz\":\"Pacific/Auckland\",\"locale\":\"en-NZ\"}"}
-				list.push({...item});
+				const content=textify(item.content);
+				const entry={role:"tool", name:item.name, tool_call_id:item.tool_call_id, content};
+				list.push(entry);
 				break;
 		}
 	}
@@ -4200,11 +4218,14 @@ async function relay(depth:number) {
 
 					const toolResults=await processToolCalls(calls);
 					for (const result of toolResults) {
+						debugValue("result",result);
 						const id=result.tool_call_id;
 						const title="ToolCall:"+id;
+						const name=rohaCallNames[id];
+//						echo("[RELAY] tool result name",name);
 //						const content = result.name+" replied "+result.content;
 						const content = result.content;
-						const item={role:"tool",title,tool_call_id:id,content};
+						const item={role:"tool",title,name,tool_call_id:id,content};
 						debugValue("item",item);
 						if(debugging) echo("[RELAY] pushing tool result",item);
 						rohaHistory.push(item);
@@ -4279,6 +4300,7 @@ async function relay(depth:number) {
 		const GenAIError="[GoogleGenerativeAI Error]";
 		if(line.includes(GenAIError)){
 			echo("[GEMINI] unhandled error",error.message);
+			echo(error.stack);
 			return spend;
 		}
 
