@@ -1,4 +1,8 @@
 {
+	"gemma4:latest@ollama":{
+		"pricing": [0,0],
+		"purpose": "locally hosted ollama model"
+	},
 	"deepseek-coder:6.7b@ollama":{
 		"pricing": [0,0],
 		"purpose": "locally hosted ollama model"
