@@ -11,6 +11,11 @@
 		"pricing": [0,0],
 		"purpose": "locally hosted ollama model"
 	},
+	"glm-5.1@zai":{
+		"pricing": [1.40, 0.26, 4.40],
+		"released": "2026-04-08",
+		"purpose": "frontier Chinese model"	
+	},
 	"glm-5@zai":{
 		"pricing": [1.00, 0.20, 3.20],
 		"released": "2026-02-11",

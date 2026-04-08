@@ -493,7 +493,7 @@ function listHistory(){
 	let total=0;
 	let cost=0;
 	for(let i=0;i<history.length;i++){
-		const item=history[i];		
+		const item=history[i];
 		const content=readable(item.content);
 		const clip=content.substring(0,wide);
 		const size="("+content.length+"B)";
@@ -1223,6 +1223,17 @@ async function connectGoogleVoice(){
 
 let geminiCallCount=0;
 
+function geminiToolCalls(geminiCalls){
+	return geminiCalls.map((call) => ({
+		id: "call_" + (geminiCallCount++),
+		type: "function",
+		function: {
+			name: call.name,
+			arguments: JSON.stringify(call.args)
+		}
+	}));
+}
+
 async function connectGoogle(account,config){
 //	await connectGoogleVoice();
 	try{
@@ -1279,9 +1290,9 @@ async function connectGoogle(account,config){
 						const calls = result.response.functionCalls(); // Get Gemini's raw function calls
 						if(calls){
 							echo("[GEMINI] toolCall",calls);
-							const toolCalls = calls.map((call,index)=>({id:"call_"+(geminiCallCount++),type:"function",function:{name:call.name,arguments:JSON.stringify(call.args)}}));
-							choices[0].message.tool_calls=toolCalls;
-							echo("[GEMINI] toolCalls",toolCalls);
+//							const toolCalls = calls.map((call,index)=>({id:"call_"+(geminiCallCount++),type:"function",function:{name:call.name,arguments:JSON.stringify(call.args)}}));
+							choices[0].message.tool_calls=geminiToolCalls(calls);
+//							echo("[GEMINI] toolCalls",toolCalls);
 //							for(const call of toolCalls){
 //								echo("[GEMINI] toolCall",call);
 //								choices.push({tool_calls:call});
@@ -3623,14 +3634,12 @@ async function processToolCalls(calls) {
 	const results=[];
 	for (const tool of calls) {
 		const id=tool.id || !tool.function?.name
+		const name=tool.function?.name || "unknown";
 		if(roha.config.debugging) echo("[RELAY] processToolCalls",id,tool);
 		if (!tool.id || !tool.function?.name) {
-			const result={
-				tool_call_id: tool.id || "unknown",
-				name: tool.function?.name || "unknown",
-				content: JSON.stringify({error: "Invalid tool call format"})
-			};
-			rohaCallNames[result.tool_call_id]=result.name;
+			const id=tool.id || "unknown";
+			const result={tool_call_id: id, name, content: JSON.stringify({error: "Invalid tool call format"})};
+			rohaCallNames[id]=result.name;
 			results.push(result);
 			await logForge("processToolCalls error");	//Invalid tool call: ${JSON.stringify(tool)}`, "error");
 			// todo: enforce a notools bar?
@@ -3638,16 +3647,10 @@ async function processToolCalls(calls) {
 		}
 		try {
 			const result=await onCall(tool);
-			rohaCallNames[id]=tool.function.name;
-			results.push({
-				// todo: fix for testing kimi
-				tool_call_id: tool.id,
-				name: tool.function.name,
-//				content: JSON.stringify(result || {success: false})
-				content: result
-			});
+			rohaCallNames[id]=name;
+			results.push({tool_call_id:id, name, content:result});
 		} catch (e) {
-			echo("processToolCalls] error",e);
+			echo("[RELAY] processToolCalls error",e);
 		}
 	}
 	return results;
