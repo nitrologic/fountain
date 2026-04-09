@@ -1,3 +1,15 @@
+[GEMINI] unhandled error [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent: [400 Bad Request] Function call is missing a thought_signature in functionCall parts. This is required for tools to work correctly, and missing thought_signature may lead to degraded model performance. Additional data, function call `default_api:read_time` , position 8. Please refer to https://ai.google.dev/gemini-api/docs/thought-signatures for more details.
+Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent: [400 Bad Request] Function call is missing a thought_signature in functionCall parts. This is required for tools to work correctly, and missing thought_signature may lead to degraded model performance. Additional data, function call `default_api:read_time` , position 8. Please refer to https://ai.google.dev/gemini-api/docs/thought-signatures for more details.
+    at handleResponseNotOk (file:///C:/Users/nitro/AppData/Local/deno/npm/registry.npmjs.org/@google/generative-ai/0.24.1/dist/index.mjs:432:11)
+    at async makeRequest (file:///C:/Users/nitro/AppData/Local/deno/npm/registry.npmjs.org/@google/generative-ai/0.24.1/dist/index.mjs:401:9)
+    at async generateContent (file:///C:/Users/nitro/AppData/Local/deno/npm/registry.npmjs.org/@google/generative-ai/0.24.1/dist/index.mjs:865:22)
+    at async Object.create (file:///C:/nitrologic/fountain/roha/slopfountain.ts:1277:20)
+    at async relay (file:///C:/nitrologic/fountain/roha/slopfountain.ts:4100:20)
+    at async relay (file:///C:/nitrologic/fountain/roha/slopfountain.ts:4238:17)
+    at async chat (file:///C:/nitrologic/fountain/roha/slopfountain.ts:4439:6)
+    at async file:///C:/nitrologic/fountain/roha/slopfountain.ts:4624:2
+    
+
 [RELAY] validCallResult {
 	"role":"assistant",
 	"content":"",

@@ -280,7 +280,8 @@ function stringRight(text:string,width:number):string{
 
 function textify(obj:unknown){
 	if (typeof(obj)=="string") return obj;
-	return JSON.stringify(obj);
+	if (obj) return JSON.stringify(obj);
+	return String(obj);
 }
 
 function objectify(obj:unknown){
@@ -3513,11 +3514,7 @@ async function callCommand(command:string) {
 				return false; // Command not recognized
 		}
 	} catch (error) {
-		if(roha.config.debugging){
-			echo("[FOUNTAIN] callCommand error",command,error.message,error.stack);
-		}else{
-			echo("[FOUNTAIN] calling",command,error.message);
-		}
+		echo("[FOUNTAIN] callCommand error",command,error.message,error.stack);
 	}
 	increment("calls");
 	return dirty;
