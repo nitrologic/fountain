@@ -1,3 +1,62 @@
+[RELAY] validCallResult {
+	"role":"assistant",
+	"content":"",
+	"reasoning_content":"The user is asking for the current time. I have access to the `read_time` function which returns the current local time. I'll call this function to get the time.",
+	"tool_calls":[{"index":0,"id":"read_time:0","type":"function","function":{"name":"read_time","arguments":"{}"}}]
+}
+
+[RELAY] plainMode
+[TOOL] {"role":"assistant","name":"kimi-k2.5","tool_calls":[{"id":"read_time:0","type":"function","function":{"name":"read_time","arguments":"{}"}}],"reasoning_content":"The user is asking for the current time. I have access to the `read_time` function which returns the current local time. I'll call this function to get the time."}
+[TOOL] {"role":"tool","title":"ToolCall:read_time:0","name":"read_time","tool_call_id":"read_time:0","content":{"time":"9/04/2026, 9:22:28 am","tz":"Pacific/Auckland","locale":"en-NZ"}}
+[RELAY] unhandled error 400 thinking is enabled but reasoning_content is missing in assistant tool call message at index 3
+[RELAY] Error: 400 thinking is enabled but reasoning_content is missing in assistant tool call message at index 3
+    at APIError.generate (https://jsr.io/@openai/openai/5.23.0/core/error.ts:72:14)
+    at OpenAI.makeStatusError (https://jsr.io/@openai/openai/5.23.0/client.ts:463:28)
+    at OpenAI.makeRequest (https://jsr.io/@openai/openai/5.23.0/client.ts:713:24)
+    at async relay (file:///C:/nitrologic/fountain/roha/slopfountain.ts:4103:20)
+    at async relay (file:///C:/nitrologic/fountain/roha/slopfountain.ts:4244:17)
+    at async chat (file:///C:/nitrologic/fountain/roha/slopfountain.ts:4445:6)
+    at async file:///C:/nitrologic/fountain/roha/slopfountain.ts:4630:2
+
+
+
+
+
+				if(validCallResult){
+					const content=choice.message.content||;
+					if(content){
+						if(debugging) echo("[RELAY] pushing asssistant model ?",depth,payload.model,mut,content);
+						rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
+					}else{
+						echo("[RELAY] validCallResult is missing content",toolCalls);
+						if(debugging) echo("[RELAY] pushing asssistant model ?",depth,payload.model,mut,content);
+						for(const call of toolCalls){
+							echo("[RELAY]",call);
+							rohaHistory.push({role:"assistant",name:payload.model,mut,tool_call_id:call.id,content:call.function.name});
+						}
+					}
+
+
+[RELAY] plainMode
+ ꔀ Fountain 1.7.5 ⛲  kimi-k2.5 🜁 🪣 🧊 $0.000 488B 30.11s
+[RELAY] calls in progress 0 564
+[RELAY] processToolCalls read_time:0 {"index":0,"id":"read_time:0","type":"function","function":{"name":"read_time","arguments":"{}"}}
+result {"tool_call_id":"read_time:0","name":"read_time","content":{"time":"8/04/2026, 7:40:45 pm","tz":"Pacific/Auckland","locale":"en-NZ"}}
+item {"role":"tool","title":"ToolCall:read_time:0","name":"read_time","tool_call_id":"read_time:0","content":{"time":"8/04/2026, 7:40:45 pm","tz":"Pacific/Auckland","locale":"en-NZ"}}
+[RELAY] pushing tool result {"role":"tool","title":"ToolCall:read_time:0","name":"read_time","tool_call_id":"read_time:0","content":{"time":"8/04/2026, 7:40:45 pm","tz":"Pacific/Auckland","locale":"en-NZ"}}
+[RELAY] plainMode
+[TOOL] {"role":"tool","title":"ToolCall:read_time:0","name":"read_time","tool_call_id":"read_time:0","content":{"time":"8/04/2026, 7:40:45 pm","tz":"Pacific/Auckland","locale":"en-NZ"}}
+[RELAY] unhandled error 400 Invalid request: tool_call_id  is not found
+[RELAY] Error: 400 Invalid request: tool_call_id  is not found
+    at APIError.generate (https://jsr.io/@openai/openai/5.23.0/core/error.ts:72:14)
+    at OpenAI.makeStatusError (https://jsr.io/@openai/openai/5.23.0/client.ts:463:28)
+    at OpenAI.makeRequest (https://jsr.io/@openai/openai/5.23.0/client.ts:713:24)
+    at async relay (file:///C:/nitrologic/fountain/roha/slopfountain.ts:4102:20)
+    at async relay (file:///C:/nitrologic/fountain/roha/slopfountain.ts:4241:17)
+    at async chat (file:///C:/nitrologic/fountain/roha/slopfountain.ts:4442:6)
+    at async file:///C:/nitrologic/fountain/roha/slopfountain.ts:4627:2
+
+
 const palette: number[] = [
     0x000000, 0xFFFFFF, 0x782922, 0x87D6DD,
     0xA85FB4, 0x55A049, 0x40318D, 0xC4C25E,

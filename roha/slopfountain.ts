@@ -3676,11 +3676,12 @@ function plainHistory(history,model){
 			case "system":
 				list.push({role:"system",content});
 				break;
-			case "assistant":
-				if(item.tool_calls){
-					list.push({role:"assistant",content,tool_calls:item.tool_calls});
-				}else{
-					list.push({role:"assistant",content});
+			case "assistant":{
+					if (roha.config.verbose) echo("[ASSISTANT]",item);
+					let entry={role:"assistant",content};
+					if (item.tool_calls) entry.tool_calls = item.tool_calls;
+					if (item.reasoning_content) entry.reasoning_content = item.reasoning_content;
+					list.push(entry);
 				}
 				break;
 			case "user":{
@@ -3689,7 +3690,7 @@ function plainHistory(history,model){
 				}
 				break;
 			case "tool":
-				if (roha.config.debugging) echo("[TOOL]",item)
+				if (roha.config.verbose) echo("[TOOL]",item)
 				const content=textify(item.content);
 				const entry={role:"tool", name:item.name, tool_call_id:item.tool_call_id, content};
 				list.push(entry);
@@ -3716,7 +3717,7 @@ function strictHistory(history){
 				break;
 			case "assistant":
 				if(item.tool_calls){
-					list.push({role:"tool",content,tool_calls:item.tool_calls});
+					list.push({role:"assistant",content,tool_calls:item.tool_calls});
 				}else{
 					list.push({role:"assistant",content});
 				}
@@ -3855,7 +3856,7 @@ let completionQueue: string[] = [];
 
 async function beginRelay() {
 	const send = () => {
-	if (completionQueue.length === 0) return;
+		if (completionQueue.length === 0) return;
 		const text = completionQueue.shift();
 		rohaHistory.push({role:"assistant", content:text});
 		flush();
@@ -3957,11 +3958,14 @@ async function relay(depth:number) {
 	// prepare payload
 		payload={model};
 		if(strictMode || responses){
+			echo("[RELAY] strictMode");
 			payload.messages=strictHistory(rohaHistory);
 		}else if(multiMode){
+			echo("[RELAY] multiMode");
 			// warning - not compatible with google generative ai api
 			payload.messages=multiHistory(rohaHistory)
 		}else{
+			echo("[RELAY] plainMode");
 			payload.messages=plainHistory(rohaHistory,model)
 		}
 		// if(config.hasCache) payload.cache_tokens=true;
@@ -4213,26 +4217,25 @@ async function relay(depth:number) {
 					}
 				}
 				if(validCallResult){
-					const content=choice.message.content;
-					if(content){
-						if(debugging) echo("[RELAY] pushing asssistant model ?",depth,payload.model,mut,content);
-						rohaHistory.push({role:"assistant",name:payload.model,mut,content,tool_calls:toolCalls});
-					}
-
+					if(debugging) echo("[RELAY] validCallResult",choice);
+//					echo("[RELAY] validCallResult",choice.message);
+					let item={role:"assistant",name:payload.model,tool_calls:toolCalls}
+					if(choice.message.content) item.content=choice.message.content;
+					if(choice.message.reasoning_content) item.reasoning_content=choice.message.reasoning_content;
+					rohaHistory.push(item);
 					const toolResults=await processToolCalls(calls);
 					for (const result of toolResults) {
 						debugValue("result",result);
 						const id=result.tool_call_id;
 						const title="ToolCall:"+id;
 						const name=rohaCallNames[id];
-//						echo("[RELAY] tool result name",name);
-//						const content = result.name+" replied "+result.content;
 						const content = result.content;
 						const item={role:"tool",title,name,tool_call_id:id,content};
-						debugValue("item",item);
-						if(debugging) echo("[RELAY] pushing tool result",item);
+//						echo("[RELAY] pushing tool result",item);
 						rohaHistory.push(item);
 					}
+				}else{
+					echo("[RELAY] validCallResult FALSE");
 				}
 
 				const spent=await relay(depth+1); // Recursive call to process tool results
