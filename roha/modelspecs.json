@@ -16,11 +16,13 @@
 		"purpose": "locally hosted ollama model"
 	},
 	"glm-5.1@zai":{
+		"active": true,
 		"pricing": [1.40, 0.26, 4.40],
 		"released": "2026-04-08",
 		"purpose": "frontier Chinese model"	
 	},
 	"glm-5@zai":{
+		"deprecated":true,
 		"pricing": [1.00, 0.20, 3.20],
 		"released": "2026-02-11",
 		"purpose": "frontier Chinese model"
@@ -124,6 +126,10 @@
 		"purpose":"speech-to-speech voice agents",
 		"endpoints":["wss://api.openai.com/v1/realtime"]
 	},
+	"models/gemini-robotics-er-1.6-preview@gemini":{
+		"pricing":[1.00,5.00],
+		"released":"2026-04-15"
+	},
 	"models/gemini-3.1-pro-preview@gemini":{
 		"pricing":[2.00,0.20,12.0],
 		"released":"2026-03-19"
@@ -143,11 +149,13 @@
 		"purpose":"2M context window."
 	},
 	"grok-4-1-fast-non-reasoning@xai":{
+		"deprecated":true,
 		"pricing": [0.20, 0.05, 0.50],
 		"released": "2025-11-17",
 		"purpose":"2M context window."
 	},
 	"grok-4-1-fast-reasoning@xai":{
+		"deprecated":true,
 		"pricing": [0.20, 0.05, 0.50],
 		"released": "2025-11-17",
 		"purpose":"2M context window."
