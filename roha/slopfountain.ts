@@ -12,7 +12,7 @@ import { OpenAI, ChatCompletionRequest, ChatCompletionResponse } from "jsr:@open
 
 import { CohereClientV2 } from "npm:cohere-ai";
 import { Mistral } from "npm:@mistralai/mistralai";
-import { GoogleGenerativeAI } from "npm:@google/generative-ai";
+import { GoogleGenerativeAI, GenerativeModel } from "npm:@google/generative-ai";
 import { Anthropic, toFile } from "npm:@anthropic-ai/sdk";
 import { TextToSpeechClient } from "npm:@google-cloud/text-to-speech";
 
@@ -43,7 +43,8 @@ const rohaMihi="Welcome to slop fountain a many:many user model research project
 
 const rohaGuide=[
 	"As a guest assistant language model please be mindful of others, courteous and professional.",
-	"Keep response short, only post code on request and do not patronise.",
+//	"Keep response short, only post code on request and do not patronise.",
+	"Only post code on request and do not patronise.",
 	"Use tabs when indenting source files.",
 	"Prefer named reusable functions over inlining code with arrow and map style suggestions."
 ]
@@ -107,6 +108,7 @@ type ConfigFlags = {
 	budget: false;
 	syncRelay: boolean;
 	listen: boolean;
+	thinking: boolean;
 };
 
 // a shared context state
@@ -148,6 +150,7 @@ const ResetTemperature=0.7;
 let grokTemperature=ResetTemperature;
 
 let grokThink=0.0;
+let grokGrounded=0.95;
 
 const ANSI={
 	ESC:"\x1B[",
@@ -338,7 +341,8 @@ const flagNames={
 	slops : "console worker scripts",
 	budget : "cheap models for the win",
 	syncRelay : "one thing at a time mode",
-	listen : "listen for remote connections on port 8081"
+	listen : "listen for remote connections on port 8081",
+	thinking : "enable thinking mode with dual prupose models"
 };
 
 const emptyConfig:ConfigFlags={
@@ -361,7 +365,8 @@ const emptyConfig:ConfigFlags={
 	slops:false,
 	budget:false,
 	syncRelay:true,
-	listen:false
+	listen:false,
+	thinking:true
 };
 
 const emptyRoha={
@@ -1010,7 +1015,8 @@ const GeminiVoices=["Zephyr","Puck","Charon","Kore","Fenrir","Leda","Orus","Aoed
 	"Algenib","Rasalgethi","Laomedeia","Achernar","Alnilam","Schedar","Gacrux","Pulcherrima",
 	"Achird","Zubenelgenubi","Vindemiatrix","Sadachbia","Sadaltager","Sulafat"];
 
-const previewTTS="models/gemini-2.5-flash-preview-tts";
+//const previewTTS="models/gemini-2.5-flash-preview-tts";
+const previewTTS="models/gemini-3.1-flash-tts-preview";
 
 async function geminiSay(content:string,voiceName="Kore"){
 	const endpoint=rohaEndpoint["gemini"];
@@ -1734,13 +1740,27 @@ async function connectAnthropic(account,config){
 						const model = payload.model;
 						const system = anthropicSystem(payload);
 						const messages = await anthropicMessages(sdk, payload);
-						const temperature = grokTemperature;
-						const max_tokens = 2048; // Anthropic max_tokens
-						const request = { model, max_tokens, temperature, system, messages };
+						const max_tokens = 8192; // Anthropic max_tokens
+						const request = { model, max_tokens, system, messages };
+
+						const name=model+"@anthropic";
+						const info=name in modelSpecs?modelSpecs[name]:{};
+						const cold=info?.cold;
+						if(!cold){
+							request.temperature=grokTemperature;
+						}							
+//						request.top_p=grokGrounded;
 						if (payload.tools) {
 							request.tools = anthropicTools(payload); // Ensure this maps tools to Anthropic format
 						}
+						if(roha.config.thinking) {
+							request.thinking={type:"adaptive"};
+							request.output_config={effort:"high"};
+						}
 						const options = { headers: { "anthropic-beta": "files-api-2025-04-14" } };
+
+						echo("[Anthropic]",request,options);
+
 						const reply = await sdk.messages.create(request, options);
 						// Map Anthropic stop_reason to OpenAI finish_reason
 						const finishReasonMap = {
@@ -3955,14 +3975,14 @@ async function relay(depth:number) {
 	// prepare payload
 		payload={model};
 		if(strictMode || responses){
-			echo("[RELAY] strictMode");
+//			echo("[RELAY] strictMode");
 			payload.messages=strictHistory(rohaHistory);
 		}else if(multiMode){
-			echo("[RELAY] multiMode");
+//			echo("[RELAY] multiMode");
 			// warning - not compatible with google generative ai api
 			payload.messages=multiHistory(rohaHistory)
 		}else{
-			echo("[RELAY] plainMode");
+//			echo("[RELAY] plainMode");
 			payload.messages=plainHistory(rohaHistory,model)
 		}
 		// if(config.hasCache) payload.cache_tokens=true;
@@ -3975,12 +3995,17 @@ async function relay(depth:number) {
 		if(info && !info.cold){
 			payload.temperature=grokTemperature;
 		}
+
+		payload.top_p=grokGrounded;
+
 		if(info && info.max_tokens){
 			payload.max_tokens=info.max_tokens;
 		}
 		if(info && info.pricing.length>3 && grokThink>0){
 			payload.config={thinkingConfig:{thinkingBudget:grokThink}};
 		}
+
+
 		if(debugging){
 			const dump=JSON.stringify(payload,null,"\t");
 			console.warn("[RELAY] payload",dump);
