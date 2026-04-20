@@ -3735,9 +3735,7 @@ function strictHistory(history){
 	for(const _item of history){
 		const item={..._item};
 		const src="["+itemSource(item)+"] ";
-		echo("[TESTING] ")
 		const content=src+item.content;	 //todo: testing revisit src+
-		echo("[TESTING]",content);
 		switch(item.role){
 			case "system":
 				list.push({role:"system",content});
