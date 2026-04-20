@@ -1232,6 +1232,16 @@ let geminiCallCount=0;
 
 function geminiToolCalls(geminiCalls){
 	return geminiCalls.map((call) => ({
+		thought_signature: "call_" + (geminiCallCount++),
+		function_call: {
+			name: call.name,
+			args: call.args
+		}
+	}));
+}
+
+function oldGeminiToolCalls(geminiCalls){
+	return geminiCalls.map((call) => ({
 		id: "call_" + (geminiCallCount++),
 		type: "function",
 		function: {
@@ -1759,7 +1769,7 @@ async function connectAnthropic(account,config){
 						}
 						const options = { headers: { "anthropic-beta": "files-api-2025-04-14" } };
 
-						echo("[Anthropic]",request,options);
+						if(roha.config.debugging) echo("[Anthropic]",request,options);
 
 						const reply = await sdk.messages.create(request, options);
 						// Map Anthropic stop_reason to OpenAI finish_reason

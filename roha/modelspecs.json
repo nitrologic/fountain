@@ -76,6 +76,7 @@
 	},
 	"claude-sonnet-4-6@anthropic":{
 		"pricing":[3.0,0.30,15.0],
+		"cold":true,
 		"purpose":"frontier model for coding, agentic search, and creative writing"
 	},
 	"claude-haiku-4-5-20251001@anthropic":{
