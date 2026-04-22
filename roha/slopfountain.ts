@@ -1925,7 +1925,7 @@ function onSpeak(endpoint, apiKey, config) {
 async function connectOpenAI(account,config) {
 	try{
 		const apiKey=config.env?getEnv(config.env):"";
-		const endpoint=new OpenAI({ apiKey, baseURL: config.url });
+		const endpoint=new OpenAI({ apiKey, baseURL: config.url, timeout: 86400000 });
 		if(roha.config.debugging){
 //			debugValue("endpoint",endpoint)
 		}

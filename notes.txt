@@ -1,3 +1,21 @@
+[nitro@ryzen5] no code just discussion, i would like to discuss blx opcode next
+[gpt-5.3-codex] #Great next topic. `BLX` is exactly where Thumb-2 call mechanics get subtle.
+[gpt-5.3-codex] #
+[gpt-5.3-codex] #At a high level, you likely care about two encodings:
+[gpt-5.3-codex] #
+[gpt-5.3-codex] #1. `BLX (register)` — 16-bit Thumb encoding (often listed as T1)
+[gpt-5.3-codex] #	- Branches to address in a register and sets `LR` for return (a call).
+[gpt-5.3-codex] #	- Can switch instruction set state depending on target bit0 semantics (on M-profile, effectively
+[gpt-5.3-codex] #always Thumb state, but alignment/bit0 rules still matter).
+[gpt-5.3-codex] #	- This is probably what your stub `blx_n(reg16 rm)` is aiming for.
+[gpt-5.3-codex] #
+[gpt-5.3-codex] #2. `BLX (immediate)` — 32-bit encoding in ARMv7 (A/R profiles)
+[gpt-5.3-codex] #	- On Cortex-M33 specifically, interworking to ARM state is not a thing, so immediate `BLX` is
+[gpt-5.3-codex] #generally not part of normal M-profile usage the way `BL` is.
+[gpt-5.3-codex] #	- For your RP2350 Cortex-M33 generator, the practical “far call immediate” is usually just
+[gpt-5.3-codex] #`BL` wide, not `BLX` immediate.
+[gpt-5.3-codex] #
+
 # Pico Component VidBit16 Hardware Design
 
 ## 1. Overview
