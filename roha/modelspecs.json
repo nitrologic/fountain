@@ -112,6 +112,7 @@
 	"gpt-5.3-codex@openai":{
 		"released": "2026-03-6",
 		"pricing":[1.75,14.00],
+		"active": true,
 		"endpoints":["v1/responses"],
 		"purpose":"High Cybersecurity Capability"
 	},

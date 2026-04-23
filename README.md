@@ -37,7 +37,7 @@ Pleased to welcome 🎉 Grok 4.20 🎉 ChatGPT 5.4 <del>🎉 Gemini 3.1  🎉 Z.
 
 ## Developer setup
 
-Install [Deno 2.7.4](https://deno.com/)
+Install [Deno 2.7.13](https://deno.com/)
 
 ### Researcher Links
 
