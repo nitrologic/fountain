@@ -26,7 +26,7 @@ const brandFountain="Fountain";
 const fountainVersion="1.7.6";
 const fountainName=brandFountain+" "+fountainVersion;
 
-const defaultModel="deepseek-chat@deepseek";
+const defaultModel="deepseek-v4-flash@deepseek";
 
 const statusChar=" ꔀ "; //courtesy Vai Syllabary
 const activeChar="❃";
