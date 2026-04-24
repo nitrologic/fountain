@@ -111,13 +111,13 @@
 		"purpose":"frontier model for coding, agentic search, and creative writing",
 		"reality":"rate limited 20,000 input tokens per minute"
 	},
-	"gpt-5.5@openai":{
+	"gpt-5.5-2026-04-23@openai":{
 		"pricing":[5.00,0.50,30.0],
 		"cold":true,
 		"released": "2026-04-23",
 		"purpose":"gpt-5.5"
 	},
-	"gpt-5.5-pro@openai":{
+	"gpt-5.5-pro-2026-04-23@openai":{
 		"pricing":[30.00,180.0],
 		"cold":true,
 		"released": "2026-04-23",
