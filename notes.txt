@@ -1,3 +1,9 @@
+[FORGE] modifying modelList
+[FORGE] added gpt-5.5-2026-04-23@openai
+[FORGE] added gpt-5.5-pro-2026-04-23@openai
+[FORGE] added gpt-5.5-pro@openai
+[FORGE] added gpt-5.5@openai
+
 >what time is it?
 +
 usage {"prompt_tokens":531,"completion_tokens":51,"total_tokens":582,"prompt_tokens_details":{"cached_tokens":0},"completion_tokens_details":{"reasoning_tokens":23},"prompt_cache_hit_tokens":0,"prompt_cache_miss_tokens":531}

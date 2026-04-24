@@ -4002,9 +4002,8 @@ async function relay(depth:number) {
 	// check cold:true in o4-mini-2025-04-16@openai before enabling temperature
 		if(info && !info.cold){
 			payload.temperature=grokTemperature;
+			payload.top_p=grokGrounded;
 		}
-
-		payload.top_p=grokGrounded;
 
 		if(info && info.max_tokens){
 			payload.max_tokens=info.max_tokens;
