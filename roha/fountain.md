@@ -4,6 +4,10 @@ A research tool for advanced model manipulation.
 
 Timestamps in logging files use slopmarks, a hexadecimal encoding of sixteenths of a second since 2025.4.12.
 
+# plan
+
+replace tool logging with [mahi] tags and test per API
+
 # documentation
 
 CLI Reference Manual - forge user documentation [forge.md](forge.md)
@@ -22,6 +26,17 @@ Requires an api environment variable, see accounts.json for latest
 * COHERE_API_KEY
 * MOONSHOT_API_KEY
 * HUGGINGFACE_API_KEY
+
+# supported
+
+The following native API are used by slop fountain:
+
+```
+		"api": "OpenAI",
+		"api": "DeepSeek",
+		"api": "Google",
+		"api": "Anthropic",
+```
 
 # history
 
