@@ -6,11 +6,16 @@
 
 import { Client, GatewayIntentBits, AttachmentBuilder } from "npm:discord.js@14.15.3";
 
+const key=Deno.args[0]||"DISCORD_BOT";
+const botName=Deno.args[1]||"sloppy";
+const portNumber=Deno.args[2]||8081;
+
 // receive message from fountain /announce and echo to discord bot with splurt
 // keep json flat single line
 // guildmembers intent not enabled at this time
 
-const sloppyBanner="[SLOPPY] sloppy 0.08 🦜 a stochastic parrot from slop fountain";
+const sloppyTag = botName+" - a stochastic parrot from slop fountain";
+const sloppyBanner="[SLOPPY] sloppy 0.10 🦜 splurt:"+sloppyTag;
 
 async function sleep(ms:number) {
 	await new Promise(function(resolve) {setTimeout(resolve, ms);});
@@ -26,12 +31,13 @@ const Splurt=false;	// debug sloppy bot
 
 function splurt(...data: any[]){
 	if(Splurt){
-		console.error("[SPLURT]",data);
+		console.error("[SPLURT]",botName,data);
 	}
 }
 
 // discord channel send
 
+const DumpUser=false;
 const DumpChannel=true;
 const DumpGuild=false;
 
@@ -42,6 +48,16 @@ let quoteCount=0;
 let openChannel="1473539274384211999";
 
 let directChannels={};
+
+async function dumpUser(channel,userId){
+	if(channel.guild && channel.guild.members){
+		const members=channel.guild.members;
+		splurt("userId",channel.id,userId);
+		const member = await members.fetch(userId);		
+		splurt("user",channel.id,userId,member||"<member error>");
+	}
+//	const user = await discordClient.users.fetch(userId);
+}
 
 async function dumpChannel(channel){
 	if(channel && channel.guild && channel.guild.id){
@@ -65,7 +81,7 @@ async function dumpChannel(channel){
 // rate guard required, a sleep 1500 ms currently in force on all writes
 // no recipients permissions at this time
 
-async function messageSloppy(message:string,from:string){
+async function messageSloppy(message:string,userId:string){
 	// suppress embeds
 	message = message.replace(/https\S+/g, "<$&>");
 	if(openChannel){
@@ -74,8 +90,12 @@ async function messageSloppy(message:string,from:string){
 		if(DumpChannel)
 			await dumpChannel(channel);
 
+		if(DumpUser && userId){
+			await dumpUser(channel,userId);
+		}
+
 		if (channel?.isTextBased()) {
-			splurt("discord fetch",channel.name,message.length);
+			splurt("discord fetch from",userId,channel.name,message.length);
 			const chunks=chunkContent(message,2000-400);
 			for(const chunk of chunks){
 //				const post=from+chunk;
@@ -105,7 +125,7 @@ async function onFountain(message:string){
 				cursor+=json.length;
 				const payload=JSON.parse(json);
 				for(const {message,from} of payload.messages){
-					await messageSloppy(message,"💫"+from+":");
+					await messageSloppy(message,from);
 				}
 			}
 		}catch(error){
@@ -201,9 +221,9 @@ const rxBuffer = new Uint8Array(rxBufferSize);
 
 let slopPipe:Deno.Conn;
 
-async function connectFountain():Promise<boolean>{
+async function connectFountain(port:number):Promise<boolean>{
 	try{
-		slopPipe = await Deno.connect({hostname:"localhost",port:8081});
+		slopPipe = await Deno.connect({hostname:"localhost",port});
 		(slopPipe as Deno.TcpConn).setNoDelay(true);
 		splurt("connected with noDelay","localhost:8081");
 		return true;
@@ -373,11 +393,11 @@ Deno.addSignalListener("SIGINT", () => {
 	Deno.exit(0);
 });
 
-const token=Deno.env.get("DISCORD_BOT");
+const token=Deno.env.get(key);
 await discordClient.login(token)
 
 await sleep(20e3);
-await connectFountain();
+await connectFountain(portNumber);
 writeFountain("{\"action\":\"connect\"}");
 let portPromise=readFountain();
 let systemPromise=initSystem();

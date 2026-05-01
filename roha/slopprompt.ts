@@ -31,6 +31,7 @@ function echo(...args:any[]){
 }
 
 let listenerPromise;
+let riffPromise;
 const slopConnections=new Map();
 let receivePromises={};
 
@@ -62,21 +63,23 @@ async function readNamedConnection(name:string,connection:Deno.TcpConn){
 // TODO: short circuit - Fatal JavaScript out of memory: Ineffective mark-compacts near heap limit
 
 let connectionCount=0;
-let slopListener=null;
+let slopListener=[];
+let slopNames={};
 
 // returns {connection,name} or {error}
 
-async function listenPort(port:number){
-	if(!slopListener){
+async function listenPort(port:number,slopName:string){
+	if(!slopListener[port]){
 		try{
-			slopListener=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
+			slopListener[port]=Deno.listen({ hostname: "localhost", port, transport: "tcp" });
 		}catch(error){
 			echo("listenPort listen failure",port);
 			return {error:error};
 		}
 	}
-	echo("[PROMPT] listening for slop on port",port);
-	const connection=await slopListener.accept();
+	slopNames[port]=slopName;
+	echo("[PROMPT] listening for slop",port,slopName);
+	const connection=await slopListener[port].accept();
 	const name="connection"+(connectionCount++);
 	return {connection,name};
 }
@@ -86,7 +89,8 @@ export function listenService(){
 		echo("[PROMPT] listenService - listenPort already active");
 		return;
 	}
-	listenerPromise=listenPort(8081);
+	listenerPromise=listenPort(8081,"sloppy");
+	riffPromise=listenPort(8082,"riff");
 }
 
 export async function announceCommand(words:string[]){
@@ -495,7 +499,9 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		while(true){
 			const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
 			const receivers=Object.values(receivePromises);
-			const race=listenerPromise?[readPromise,timerPromise,listenerPromise,...receivers]:[readPromise,timerPromise,...receivers];
+			const race=listenerPromise?[readPromise,timerPromise,listenerPromise,riffPromise,...receivers]
+				:[readPromise,timerPromise,...receivers];
+//			const race=listenerPromise?[readPromise,timerPromise,listenerPromise,...receivers]:[readPromise,timerPromise,...receivers];
 //			const race=listenerPromise?[readPromise,timerPromise,listenerPromise]:[readPromise,timerPromise];
 			winner=await Promise.race(race);
 			if(winner==null){
@@ -535,7 +541,9 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			}
 			echo("connection received for",name);
 			slopConnections.set(name,connection);
-			listenerPromise=listenPort(8081);
+			// TODO: call listenService helper
+			listenerPromise=listenPort(8081,"sloppy");
+			riffPromise=listenPort(8082,"riff");
 			const receiver=readNamedConnection(name,connection);
 			receivePromises[name]=receiver;
 			//echo("reading connection 1",name);

@@ -2,12 +2,13 @@
 	"tasks":{
 		"ditto": "deno run --allow-net --allow-env --allow-write=./forge slopsearch.ts",
 		"slopfountain": "deno run --allow-sys --allow-run --allow-net --allow-env --allow-read --allow-write=./forge slopfountain.ts",
-		"sloppybot": "deno run --allow-net --allow-env ../sloppy/sloppybot.ts",
+		"sloppybot": "deno run --allow-net --allow-env ../sloppy/sloppybot.ts DISCORD_BOT sloppy 8081",
+		"sloppybot2": "deno run --allow-net --allow-env ../sloppy/sloppybot.ts DISCORD_BOT2 rif 8082",
 		"sloppylisten": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read ../sloppy/sloppylisten.ts",
 		"sloppynet": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read ../sloppy/sloppynet.ts",
 		"sloppyhost": "deno run --allow-run --allow-net --allow-env --allow-sys --allow-read ../sloppy/sloppyhost.ts",
 		"fountain":{"dependencies":["slopfountain"]},
-		"sloppy":{"dependencies":["sloppybot","slopfountain"]}
+		"sloppy":{"dependencies":["sloppybot","sloppybot2","slopfountain"]}
 	},
 	"imports": {
 		"@openai/openai": "jsr:@openai/openai@^5.23.0"

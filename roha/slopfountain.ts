@@ -341,7 +341,7 @@ const flagNames={
 	slops : "console worker scripts",
 	budget : "cheap models for the win",
 	syncRelay : "one thing at a time mode",
-	listen : "listen for remote connections on port 8081",
+	listen : "listen for remote connections on port 8081..8082",
 	thinking : "enable thinking mode with dual prupose models"
 };
 
