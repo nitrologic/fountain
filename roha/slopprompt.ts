@@ -30,8 +30,10 @@ function echo(...args:any[]){
 	console.error(text);
 }
 
-let listenerPromise;
+let sloppyPromise;
 let riffPromise;
+let listenerPromise;
+let sloppyListen:boolean=false;
 const slopConnections=new Map();
 let receivePromises={};
 
@@ -89,8 +91,9 @@ export function listenService(){
 		echo("[PROMPT] listenService - listenPort already active");
 		return;
 	}
-	listenerPromise=listenPort(8081,"sloppy");
-	riffPromise=listenPort(8082,"riff");
+	sloppyPromise=listenPort(8081,"sloppy");
+	listenerPromise=sloppyPromise;
+	sloppyListen=true;
 }
 
 export async function announceCommand(words:string[]){
@@ -499,8 +502,7 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 		while(true){
 			const timerPromise=new Promise<null>(res => setTimeout(() => res(null), interval));
 			const receivers=Object.values(receivePromises);
-			const race=listenerPromise?[readPromise,timerPromise,listenerPromise,riffPromise,...receivers]
-				:[readPromise,timerPromise,...receivers];
+			const race=listenerPromise?[readPromise,timerPromise,listenerPromise,...receivers]:[readPromise,timerPromise,...receivers];
 //			const race=listenerPromise?[readPromise,timerPromise,listenerPromise,...receivers]:[readPromise,timerPromise,...receivers];
 //			const race=listenerPromise?[readPromise,timerPromise,listenerPromise]:[readPromise,timerPromise];
 			winner=await Promise.race(race);
@@ -542,8 +544,15 @@ export async function slopPrompt(message:string,interval:number,refreshHandler?:
 			echo("connection received for",name);
 			slopConnections.set(name,connection);
 			// TODO: call listenService helper
-			listenerPromise=listenPort(8081,"sloppy");
-			riffPromise=listenPort(8082,"riff");
+			if(sloppyListen){
+				riffPromise=listenPort(8082,"riff");
+				listenerPromise=riffPromise;
+				sloppyListen=false;
+			}else{
+				sloppyPromise=listenPort(8081,"sloppy");
+				listenerPromise=sloppyPromise;
+				sloppyListen=true;
+			}
 			const receiver=readNamedConnection(name,connection);
 			receivePromises[name]=receiver;
 			//echo("reading connection 1",name);
