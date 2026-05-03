@@ -1,8 +1,10 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
-[![Deno](https://img.shields.io/badge/deno-2.4.2-black?logo=deno)](https://deno.land/)
-[![Discord](https://img.shields.io/discord/GUILD_ID?label=discord&logo=discord)](https://discord.gg/xkSVNT2xYR)
+This repository is scheduled for demolition.
 
-# ꕶLOP Fountain ⛲
+Please see here for nitrologic roha foundry forge fountain latest generation:
+
+[slop relay](https://github.com/nitrologic/relay)
+
+# ꕶLOP Fountain ⛲ (DEPRECATED)
 
 Home of nitrologic Slop Fountain — a 4th generation roha foundry forge LLM tool.
 
